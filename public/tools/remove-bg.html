@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI在线抠图 - 免费图片背景去除 | AgentGongju.com</title>
+<meta name="description" content="免费AI在线抠图工具，一键去除图片背景，更换纯色或透明背景。支持人像、商品、动物等多种图片类型。">
+<meta name="keywords" content="AI抠图,在线抠图,去除背景,免费抠图,图片背景去除,remove background">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.upload-area{text-align:center;padding:40px;border:2px dashed rgba(99,102,241,0.3);border-radius:16px;cursor:pointer;transition:all 0.3s}
+.upload-area:hover{border-color:#6366f1;background:rgba(99,102,241,0.05)}
+.upload-icon{font-size:48px;margin-bottom:10px}
+.compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:20px;display:none}
+.compare-grid.active{display:grid}
+.compare-item{text-align:center}
+.compare-item img{width:100%;border-radius:8px}
+.compare-item .label{color:#94a3b8;font-size:0.85rem;margin-top:6px}
+.btn-generate{width:100%;padding:14px;margin-top:16px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all 0.3s}
+.btn-generate:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.btn-generate:disabled{opacity:0.5;cursor:not-allowed}
+.btn-download{display:inline-block;padding:10px 24px;background:linear-gradient(135deg,#22c55e,#16a34a);border-radius:8px;color:white;text-decoration:none;margin-top:10px;font-weight:500}
+@media(max-width:768px){.compare-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a><a href="image-to-video.html">图转视频</a><a href="text-to-video.html">文生视频</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>✂️ AI 在线抠图</h1><p>一键去除图片背景，免费、快速、精准</p></div>
+<div class="card">
+<div class="upload-area" id="uploadArea">
+<div class="upload-icon">🖼️</div>
+<div style="color:#94a3b8">点击上传图片或拖拽到此区域</div>
+<div style="color:#64748b;font-size:0.8rem;margin-top:6px">支持 JPG / PNG，建议 500KB 以上</div>
+<input type="file" id="fileInput" accept="image/jpeg,image/png" style="display:none">
+</div>
+<div class="compare-grid" id="compareGrid">
+<div class="compare-item"><img id="originalImg"><div class="label">原始图片</div></div>
+<div class="compare-item"><img id="resultImg"><div class="label">抠图结果</div></div>
+</div>
+<button class="btn-generate" id="generateBtn">✂️ 一键去除背景</button>
+<div id="downloadArea" style="text-align:center;display:none;margin-top:12px">
+<a class="btn-download" id="downloadBtn" download="removebg.png">⬇️ 下载透明背景图片</a></div></div></div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const uploadArea=document.getElementById('uploadArea');const fileInput=document.getElementById('fileInput');
+uploadArea.addEventListener('click',()=>fileInput.click());
+uploadArea.addEventListener('dragover',e=>{e.preventDefault();uploadArea.style.borderColor='#6366f1'});
+uploadArea.addEventListener('drop',e=>{e.preventDefault();handleFile(e.dataTransfer.files[0])});
+fileInput.addEventListener('change',e=>{if(e.target.files[0])handleFile(e.target.files[0])});
+let currentFile=null;
+function handleFile(file){if(!file.type.match('image.*')){alert('请上传图片');return}
+currentFile=file;const reader=new FileReader();reader.onload=e=>{document.getElementById('originalImg').src=e.target.result;document.getElementById('compareGrid').classList.add('active')};reader.readAsDataURL(file)}
+document.getElementById('generateBtn').addEventListener('click',async()=>{
+if(!currentFile){alert('请先上传图片！');return}
+const btn=document.getElementById('generateBtn');btn.disabled=true;btn.textContent='⏳ 处理中...';
+try{
+const formData=new FormData();formData.append('image',currentFile);
+const res=await fetch('/api/remove-bg',{method:'POST',body:formData});
+const data=await res.json();
+if(data.success&&data.result_url){document.getElementById('resultImg').src=data.result_url;document.getElementById('downloadBtn').href=data.result_url;document.getElementById('downloadArea').style.display='block';}
+else alert('处理失败: '+(data.error||'请重试'));
+}catch(err){alert('网络错误: '+err.message);}
+finally{btn.disabled=false;btn.textContent='✂️ 一键去除背景';}});
+</script>
+</body>
+</html>

@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI文生视频 - 文字转视频在线生成 | AgentGongju.com</title>
+<meta name="description" content="免费AI文生视频工具，输入文字描述即可生成AI视频。支持多种风格：写实、动漫、水墨、赛博朋克等，一键生成短视频内容。">
+<meta name="keywords" content="文生视频,文字转视频,AI视频生成,text to video,免费AI视频">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+.tool-container { max-width: 1000px; margin: 100px auto 60px; padding: 0 20px; }
+.tool-header { text-align: center; margin-bottom: 40px; }
+.tool-header h1 { font-size: 2.2rem; background: linear-gradient(135deg, #6366f1, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 10px; }
+.tool-header p { color: #94a3b8; }
+.card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 16px; padding: 30px; margin-bottom: 24px; }
+.card label { display: block; color: #e2e8f0; margin-bottom: 8px; font-weight: 500; }
+textarea { width: 100%; min-height: 120px; padding: 16px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; color: #e2e8f0; font-size: 0.95rem; resize: vertical; outline: none; font-family: inherit; }
+textarea:focus { border-color: #6366f1; }
+textarea::placeholder { color: #64748b; }
+.param-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+select { width: 100%; padding: 12px 16px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; color: #e2e8f0; font-size: 0.9rem; outline: none; }
+select:focus { border-color: #6366f1; }
+.style-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 8px; margin-bottom: 20px; }
+.style-btn { padding: 8px 12px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.03); color: #cbd5e1; border-radius: 8px; cursor: pointer; font-size: 0.85rem; text-align: center; transition: all 0.2s; }
+.style-btn:hover { border-color: #6366f1; background: rgba(99,102,241,0.1); }
+.style-btn.active { border-color: #6366f1; background: rgba(99,102,241,0.2); color: #a5b4fc; }
+.prompt-tips { background: rgba(99,102,241,0.08); border: 1px solid rgba(99,102,241,0.15); border-radius: 12px; padding: 16px; margin-bottom: 20px; font-size: 0.85rem; }
+.prompt-tips strong { color: #a5b4fc; }
+.prompt-tips p { color: #94a3b8; margin: 4px 0; }
+.example-btn { display: inline-block; padding: 4px 10px; background: rgba(99,102,241,0.1); border: 1px solid rgba(99,102,241,0.2); border-radius: 6px; color: #a5b4fc; cursor: pointer; font-size: 0.8rem; margin: 2px; transition: all 0.2s; }
+.example-btn:hover { background: rgba(99,102,241,0.2); }
+.btn-generate { width: 100%; padding: 14px; background: linear-gradient(135deg, #6366f1, #a855f7); border: none; border-radius: 12px; color: white; font-size: 1.05rem; font-weight: 600; cursor: pointer; transition: all 0.3s; }
+.btn-generate:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(99,102,241,0.3); }
+.btn-generate:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+.result-area { display: none; margin-top: 30px; }
+.result-area.active { display: block; }
+.result-video { width: 100%; max-height: 450px; border-radius: 12px; background: #000; }
+.result-actions { display: flex; gap: 12px; margin-top: 15px; }
+.result-actions a { flex: 1; text-align: center; padding: 12px; border-radius: 10px; text-decoration: none; font-weight: 500; }
+.btn-download { background: linear-gradient(135deg, #22c55e, #16a34a); color: white; }
+.btn-download:hover { transform: translateY(-1px); box-shadow: 0 4px 15px rgba(34,197,94,0.3); }
+.history-area { margin-top: 40px; }
+.history-area h3 { color: #e2e8f0; margin-bottom: 16px; }
+.history-item { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 10px; padding: 12px 16px; margin-bottom: 8px; display: flex; align-items: center; gap: 12px; }
+.history-item .prompt-preview { flex: 1; color: #94a3b8; font-size: 0.9rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.history-item .tag { font-size: 0.75rem; padding: 2px 8px; border-radius: 4px; background: rgba(99,102,241,0.15); color: #a5b4fc; }
+.history-item .play-btn { color: #6366f1; cursor: pointer; }
+@media (max-width: 768px) { .param-grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<nav class="navbar">
+  <div class="nav-inner">
+    <a href="../" class="logo">🛠 AgentGongju</a>
+    <div class="nav-links">
+      <a href="../">首页</a>
+      <a href="../#tools">工具</a>
+      <a href="image-to-video.html">图转视频</a>
+      <a href="story-video.html">故事视频</a>
+    </div>
+  </div>
+</nav>
+
+<div class="tool-container">
+  <div class="tool-header">
+    <h1>📝→🎬 AI 文生视频</h1>
+    <p>输入文字描述，AI 自动生成匹配的视频画面</p>
+  </div>
+
+  <div class="card">
+    <label>🎯 描述你想要的视频画面</label>
+    <div class="prompt-tips">
+      <strong>💡 提示技巧：</strong>
+      <p>【主体】+【动作】+【场景】+【镜头】+【风格】</p>
+      <p>例如：<span class="example-btn" onclick="fillExample(0)">日出海面 金色阳光</span>
+      <span class="example-btn" onclick="fillExample(1)">未来城市 霓虹雨夜</span>
+      <span class="example-btn" onclick="fillExample(2)">小猫窗台 午后阳光</span>
+      <span class="example-btn" onclick="fillExample(3)">产品展示 旋转展示</span></p>
+    </div>
+    <textarea id="promptInput" placeholder="详细描述你想要的画面...&#10;例如：一只橘猫趴在窗台上，午后温暖的阳光洒进来，猫咪慵懒地眨眼睛，镜头缓慢推近"></textarea>
+  </div>
+
+  <div class="card">
+    <label>🎨 风格</label>
+    <div class="style-grid" id="styleOptions">
+      <button class="style-btn active">写实</button>
+      <button class="style-btn">动漫</button>
+      <button class="style-btn">水墨</button>
+      <button class="style-btn">赛博朋克</button>
+      <button class="style-btn">吉卜力</button>
+      <button class="style-btn">油画</button>
+      <button class="style-btn">像素</button>
+      <button class="style-btn">水彩</button>
+    </div>
+
+    <div class="param-grid">
+      <div>
+        <label style="color:#94a3b8;font-size:0.85rem;margin-bottom:4px;">时长</label>
+        <select id="duration">
+          <option value="5">5 秒</option>
+          <option value="10" selected>10 秒</option>
+          <option value="15">15 秒</option>
+        </select>
+      </div>
+      <div>
+        <label style="color:#94a3b8;font-size:0.85rem;margin-bottom:4px;">比例</label>
+        <select id="aspectRatio">
+          <option value="16:9">16:9 横屏</option>
+          <option value="9:16">9:16 竖屏</option>
+          <option value="1:1">1:1 方形</option>
+        </select>
+      </div>
+      <div>
+        <label style="color:#94a3b8;font-size:0.85rem;margin-bottom:4px;">画质</label>
+        <select id="quality">
+          <option value="standard">标准</option>
+          <option value="high">高清</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <button class="btn-generate" id="generateBtn">🎬 生成视频</button>
+
+  <div class="result-area" id="resultArea">
+    <div class="card">
+      <div style="text-align:center;margin-bottom:15px;color:#22c55e;font-weight:600;font-size:1.1rem">✅ 视频生成成功！</div>
+      <video class="result-video" id="resultVideo" controls></video>
+      <div class="result-actions">
+        <a class="btn-download" id="downloadBtn" download="ai-video.mp4">⬇️ 下载视频</a>
+        <a class="btn-download" style="background:linear-gradient(135deg,#6366f1,#a855f7)" href="javascript:void(0)" onclick="alert('分享到朋友圈或发给朋友！')">🔗 分享</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="history-area" id="historyArea" style="display:none">
+    <h3>📋 生成历史</h3>
+    <div id="historyList"></div>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p>
+  </div>
+</footer>
+
+<script>
+let currentStyle = '写实';
+let history = JSON.parse(localStorage.getItem('videoHistory') || '[]');
+
+document.querySelectorAll('.style-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.style-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentStyle = btn.textContent;
+  });
+});
+
+const examples = [
+  '金色阳光从海平面升起，波光粼粼的海面，海鸥飞过，广角全景，温暖色调',
+  '霓虹灯闪烁的未来城市街道，雨夜，倒影在湿漉漉的地面，赛博朋克风格，慢镜头',
+  '一只橘猫趴在木质窗台上，午后温暖的阳光洒进来，猫咪眯着眼睛，温馨宁静',
+  '产品在白色背景上缓缓旋转，柔和的侧光，展示产品细节和质感'
+];
+
+function fillExample(idx) {
+  document.getElementById('promptInput').value = examples[idx];
+}
+
+document.getElementById('generateBtn').addEventListener('click', async () => {
+  const prompt = document.getElementById('promptInput').value.trim();
+  if(!prompt) { alert('请输入视频描述！'); return; }
+
+  const btn = document.getElementById('generateBtn');
+  btn.disabled = true;
+  btn.textContent = '⏳ 正在生成...';
+
+  try {
+    const res = await fetch('/api/text-to-video', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        prompt,
+        style: currentStyle,
+        duration: document.getElementById('duration').value,
+        aspect_ratio: document.getElementById('aspectRatio').value,
+        quality: document.getElementById('quality').value
+      })
+    });
+    const data = await res.json();
+
+    if(data.success && data.video_url) {
+      document.getElementById('resultArea').classList.add('active');
+      document.getElementById('resultVideo').src = data.video_url;
+      document.getElementById('downloadBtn').href = data.video_url;
+
+      history.unshift({ prompt: prompt.substring(0, 40) + (prompt.length > 40 ? '...' : ''), style: currentStyle, url: data.video_url, time: new Date().toLocaleString() });
+      if(history.length > 10) history.pop();
+      localStorage.setItem('videoHistory', JSON.stringify(history));
+      renderHistory();
+    } else {
+      alert('生成失败: ' + (data.error || '请稍后重试'));
+    }
+  } catch(err) {
+    alert('网络错误: ' + err.message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '🎬 生成视频';
+  }
+});
+
+function renderHistory() {
+  if(history.length === 0) return;
+  document.getElementById('historyArea').style.display = 'block';
+  document.getElementById('historyList').innerHTML = history.map((item, i) =>
+    '<div class="history-item"><span class="tag">' + item.style + '</span><span class="prompt-preview">' + item.prompt + '</span><span style="color:#64748b;font-size:0.8rem">' + item.time + '</span><span class="play-btn" onclick="playHistory(' + i + ')">▶ 播放</span></div>'
+  ).join('');
+}
+
+function playHistory(i) {
+  document.getElementById('resultArea').classList.add('active');
+  document.getElementById('resultVideo').src = history[i].url;
+  document.getElementById('downloadBtn').href = history[i].url;
+  document.getElementById('resultVideo').scrollIntoView({ behavior: 'smooth' });
+}
+
+renderHistory();
+</script>
+</body>
+</html>
