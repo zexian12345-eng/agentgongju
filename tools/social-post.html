@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 朋友圈文案 | AgentGongju.com</title>
+<meta name="description" content="AI朋友圈文案生成器，根据主题和风格自动生成高质量朋友圈短文案">
+<meta name="keywords" content="朋友圈文案,AI文案,短文案,发圈文案">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:90px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.8;white-space:pre-wrap;min-height:60px;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📱 AI 朋友圈文案</h1><p>根据主题和心情，生成一条高级感拉满的朋友圈文案</p></div>
+
+<div class="card"><label>🎯 发圈主题（想发什么）</label>
+<input type="text" id="topic" placeholder="例如：刚考完驾照 / 深夜加班 / 今日探店">
+<div class="param-row">
+<div><label>风格</label><select id="style"><option>清新治愈</option><option>幽默搞笑</option><option>文艺高级</option><option>正能量励志</option><option>简短高冷</option></select></div>
+<div><label>是否配表情</label><select id="emo"><option value="y">加 emoji</option><option value="n">纯文字</option></select></div></div>
+<button class="btn-gen" id="genBtn">✨ 生成文案</button></div>
+<div class="result-area" id="resultArea"><div class="card"><div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 已生成 3 条，任你挑选</div><div class="result-box" id="out"></div><button class="copy-btn" onclick="copyResult()">📋 复制</button></div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function copyResult(){navigator.clipboard.writeText(document.getElementById('out').textContent).then(()=>alert('✅ 已复制！'))}
+document.getElementById('genBtn').addEventListener('click',()=>{
+const topic=document.getElementById('topic').value.trim();if(!topic){alert('请输入发圈主题');return}
+const style=document.getElementById('style').value;const emo=document.getElementById('emo').value==='y';
+const em=emo?[' ✨',' 🌸',' 🎈',' ☀️']:['','','',''];
+const lib={
+'清新治愈':[topic+'的日子，温柔且有光'+em[0],topic+'不必太赶，好风景都在路上'+em[1],'把'+topic+'过成喜欢的样子，就是最好的生活'+em[2]],
+'幽默搞笑':['刚'+topic+'完，整个人又行了'+em[0],topic+'？也就亿点点小意思'+em[1],'别问'+topic+'难不难，问就是快乐加倍'+em[2]],
+'文艺高级':['于'+topic+'处，见天地也见自己'+em[0],topic+'，不过人间一场清欢'+em[1],'今夜无所有，聊赠'+topic+'风'+em[2]],
+'正能量励志':['每一次'+topic+'，都是对未来的认真投资'+em[0],'咬牙'+(topic.slice(-2)||'前行')+'，是送给明天最好的礼物'+em[1],'越努力越幸运，'+topic+'便是我给生活的回应'+em[2]],
+'简短高冷':[topic+'。完。'+em[0],'今日：'+topic+em[1],topic+'，收工。'+em[2]]};
+const list=lib[style]||lib['清新治愈'];
+document.getElementById('resultArea').classList.add('active');
+document.getElementById('out').textContent='【'+style+'】\n\n1. '+list[0]+'\n\n2. '+list[1]+'\n\n3. '+list[2];
+});
+</script>
+</body>
+</html>

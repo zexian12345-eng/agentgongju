@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 学习助手 | AgentGongju.com</title>
+<meta name="description" content="AI学习助手，知识点总结、题目解析、学习计划、错题分析一键生成">
+<meta name="keywords" content="AI学习,学习助手,知识点总结,学习计划,解题">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:100px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.9;white-space:pre-wrap;min-height:60px;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🎓 AI 学习助手</h1><p>知识点总结 · 题目解析 · 学习计划 · 错题分析</p></div>
+
+<div class="card"><label>📚 学习模式</label>
+<select id="mode"><option value="sum">📖 知识点总结</option><option value="solve">🧩 题目解析</option><option value="plan">🗓️ 学习计划制定</option><option value="error">❌ 错题分析</option></select>
+<label>📝 输入内容（学习主题 / 题目 / 学习情况）</label>
+<textarea id="input" placeholder="例如知识点总结：牛顿第二定律
+或题目解析：一个物体质量为2kg，受10N水平力，求加速度
+或学习计划：还有3周考英语四级，每天能学2小时"></textarea>
+<div class="param-row"><div><label>学科</label><select id="subject"><option value="物理">物理</option><option value="数学">数学</option><option value="英语">英语</option><option value="语文">语文</option><option value="化学">化学</option><option value="通用">通用</option></select></div><div><label>水平</label><select id="lvl"><option value="初学">初学入门</option><option value="进阶">中等进阶</option><option value="备考">考前冲刺</option></select></div></div>
+<button class="btn-gen" id="genBtn">🚀 开始学习</button></div>
+<div class="result-area" id="resultArea"><div class="card"><div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 学习内容已生成</div><div class="result-box" id="out"></div><button class="copy-btn" onclick="copyResult()">📋 复制内容</button></div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function copyResult(){navigator.clipboard.writeText(document.getElementById('out').textContent).then(()=>alert('✅ 已复制！'))}
+document.getElementById('genBtn').addEventListener('click',()=>{
+const mode=document.getElementById('mode').value;const input=document.getElementById('input').value.trim();
+if(!input){alert('请输入学习内容');return}
+const sub=document.getElementById('subject').value;const lvl=document.getElementById('lvl').value;
+let out='';
+if(mode==='sum'){
+const subj=sub==='物理'?'力与运动':sub==='数学'?'函数':sub==='英语'?'定语从句':sub==='语文'?'文言文实词':sub==='化学'?'化学反应':'核心知识点';
+out='【'+sub+' · '+subj+' 知识点总结】\n\n一、核心概念\n· 明确该知识点的定义与本质，抓住关键词\n· 掌握其适用条件与前提\n\n二、关键公式 / 要点\n· 梳理主线，把每个要点串联成知识网\n· 结合典型例题加深理解\n\n三、常见易错点\n· 注意边界条件与特殊情形\n· 整理同类易混淆概念进行对比\n\n四、学习方法（'+lvl+'）\n· '+(lvl==='初学'?'先理解概念，再做简单题巩固':'先抓高频考点，再专项突破难点')+'\n· 每学完一个要点，合上书本自述一遍以检验掌握度';
+}else if(mode==='solve'){
+const subject2=sub==='物理'?'力是改变物体运动状态的原因':sub==='数学'?'根据已知条件逐步推导':sub==='英语'?'分析句子结构与语法要点':sub==='化学'?'依据化学反应方程式进行分析':'结合所学知识分析题干';
+out='【题目解析】\n\n题目：'+input+'\n\n<第一步 · 审题> '+subject2+'。\n\n<第二步 · 思路> 先提取题干中的关键信息，确定考查的核心知识点，再选择合适的方法求解。\n\n<第三步 · 求解> '+(sub==='物理'&&input.includes('加速度')?'由 F=ma 得 a=F/m=10÷2=5 m/s²，方向与力相同。':'代入已知条件，按步骤逐步计算，注意单位统一。')+'\n\n<第四步 · 检验> 检查结果是否合理，回头核对每一步计算。\n\n💡 掌握这道题后，建议举一反三，再做同类变式巩固。';
+}else if(mode==='plan'){
+out='【学习计划 · '+input+'】\n\n第1周 · 打基础\n· 每天保证规律学习，先搭建知识框架\n· 用思维导图梳理高频考点\n\n第2周 · 强专项\n· 集中攻克薄弱环节，配合专项练习\n· 建立错题本，及时复盘\n\n第3周 · 重实战\n· 进行限时模拟训练，提升做题速度\n· 考前回归基础知识，查漏补缺\n\n每日小贴士：学×45分钟休息5分钟，效率更高；睡前回顾今日所学，记忆更牢固。';
+}else{
+out='【错题分析报告】\n\n💥 错题：'+input+'\n\n🟥 出错原因\n· 基础概念理解不透彻\n· 解题步骤缺失或思路偏差\n\n🟩 正确思路\n· 重新明确题目考查点\n· 按步骤规范作答，规范表述\n\n✅ 改进措施\n· 将该题整理进错题本，标注错因\n· 每周重做一次同类题，直到完全掌握\n\n📌 建议：'+(lvl==='备考'?'考前重点回顾此类高频错题':'平时多总结审题技巧，避免审题失误')+'。';
+}
+document.getElementById('resultArea').classList.add('active');
+document.getElementById('out').textContent=out;
+});
+</script>
+</body>
+</html>

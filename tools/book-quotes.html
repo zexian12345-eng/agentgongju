@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>书摘金句 | AgentGongju.com</title>
+<meta name="description" content="经典读书名句，好书金句摘抄">
+<meta name="keywords" content="书摘,金句,名言,读书笔记,励志语句">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:100px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.btn-gen:disabled{opacity:.5;cursor:not-allowed}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.8;white-space:pre-wrap;min-height:60px;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📚 书摘金句</h1><p>每日精选励志书摘</p></div>
+<div class="card"><label>生成数量</label><input type="number" id="qcount" value="3" min="1" max="8"><button class="btn-gen" id="quoteBtn">生成金句</button></div><div class="result-area" id="resultArea"><div class="card"><div class="result-box" id="result"></div></div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+
+const quotes=['读书是在别人思想的帮助下，建立起自己的思想。','书籍是造就灵魂的工具。','读万卷书，行万里路。','书犹药也，善读之可以医愚。','书山有路勤为径，学海无涯苦作舟。','读书破万卷，下笔如有神。','知识就是力量。','书籍是人类进步的阶梯。','学而不思则罔，思而不学则殆。','立身以立学为先，立学以读书为本。'];
+document.getElementById('quoteBtn').addEventListener('click',()=>{const n=parseInt(document.getElementById('qcount').value)||3;const picked=[];while(picked.length<n){const q=quotes[Math.floor(Math.random()*quotes.length)];if(!picked.includes(q))picked.push(q)}document.getElementById('resultArea').classList.add('active');document.getElementById('result').textContent='今日书摘金句：\n\n'+picked.map((q,i)=>(i+1)+'. '+q).join('\n\n');});
+</script>
+</body>
+</html>

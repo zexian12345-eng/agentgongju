@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 会议议程生成器 | AgentGongju.com</title>
+<meta name="description" content="一键生成高效会议议程表，含议题、时长、责任人、结论记录，让会议不再冗长低效">
+<meta name="keywords" content="会议议程,会议纪要,效率办公,团队管理,会议">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:70px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:22px;color:#e2e8f0;line-height:2;white-space:pre-wrap;min-height:60px;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🗂 AI 会议议程生成器</h1><p>高效开会，议题清晰、时间可控、结论可落地</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>📌 会议主题</label><input type="text" id="topic" placeholder="如：季度项目复盘会"></div>
+<div><label>⏱ 会议总时长（分钟）</label><input type="number" id="total" min="15" max="120" value="30"></div>
+</div>
+<label>📝 会议要点（每行一个，可写2-5条）</label>
+<textarea id="points" placeholder="例如：
+项目进度汇报
+下季度目标确认
+风险问题讨论"></textarea>
+<button class="btn-gen" id="genBtn">📋 生成议程</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 会议议程表</div>
+<div class="result-box" id="result"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制议程</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const roles=['项目负责人','产品经理','技术负责人','HR 主持','运营主管'];
+function pick(a){return a[Math.floor(Math.random()*a.length)]}
+document.getElementById('genBtn').addEventListener('click',()=>{
+let topic=document.getElementById('topic').value.trim();
+const total=parseInt(document.getElementById('total').value||30);
+let points=document.getElementById('points').value.trim();
+if(!points){alert('请填写至少一个会议要点');return}
+if(!topic)topic='团队例会';
+const list=points.split(/\n+/).map(x=>x.trim()).filter(x=>x&&x.length<30).slice(0,5);
+if(list.length<1)list.push(topic);
+const slots=splitTime(total,list);
+const tl=new Date();const start=new Date(tl.getTime()+5*60000);
+let cursor=new Date(start.getTime());
+let out=`📋 会议议程表\n\n【会议主题】${topic}   【时长】${total}分钟\n\n`;
+out+=`┌─────────────────────────────\n`;
+slots.forEach((s,i)=>{
+const t0=fmt(cursor);cursor=new Date(cursor.getTime()+s.min*60000);const t1=fmt(cursor);
+out+=`│ ${t0}-${t1}  | 环节${i+1}：${s.t}\n│ 主讲：${pick(roles)}\n│ 目标：${s.goal}\n${i<slots.length-1?'├─────────────────────────────':''}\n`;
+});
+out+=`└─────────────────────────────\n\n【总结留白】最后${Math.max(3,Math.min(8,slots[0].min))}分钟，由主持人复盘行动项与责任人。\n\n✅ 高效开会三原则：议题提前发、时间严格控、结论有责任人。`;
+document.getElementById('resultArea').classList.add('active');
+document.getElementById('result').textContent=out;
+function fmt(d){return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')}
+function splitTime(total,list){
+const n=list.length;
+const base=Math.floor(total/n);let rem=total-base*n;const arr=[];let used=0;
+// 开头5分钟开场白
+const o=Math.min(5,total);arr.push({t:'开场 & 明确目标',min:o,goal:'对齐背景，主持人说明要解决的问题'});used+=o;
+// 末尾留总结
+let res=total-used;const leave=Math.max(3,Math.min(8,Math.floor(res*0.15)));
+const topicsN=n;const remain=res-leave;
+const per=Math.floor(remain/topicsN);let extra=remain-per*topicsN;
+list.forEach(t=>{const m=per+(extra>0?1:0);if(extra>0)extra--;arr.push({t,min:m,goal:'讨论'+(t)+'，得出可执行结论'});});
+arr.push({t:'总结 & 行动项',min:leave,goal:'明确每位参会人的下一步任务与截止时间'});
+return arr;
+}
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('result').textContent).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

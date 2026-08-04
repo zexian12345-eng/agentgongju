@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 心情语录 | AgentGongju.com</title>
+<meta name="description" content="AI心情语录生成器，按心情生成治愈、励志或文艺的一句话文案">
+<meta name="keywords" content="心情语录,暖心文案,励志语录,治愈短句">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:80px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;min-height:60px;margin-bottom:12px;font-size:1.1rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🌿 AI 心情语录</h1><p>告诉我此刻的心情，为你写一句恰到好处的文案</p></div>
+
+<div class="card"><label>🙂 你此刻的心情</label>
+<select id="mood"><option>开心</option><option>疲惫</option><option>迷茫</option><option>失恋难受</option><option>深夜emo</option><option>元气满满</option><option>焦虑紧张</option></select>
+<div class="param-row">
+<div><label>想要的感觉</label><select id="tone"><option>治愈暖心</option><option>励志鼓劲</option><option>文艺高级</option><option>幽默解压</option></select></div>
+<div><label>生成条数</label><select id="count"><option value="1">1 条</option><option value="3">3 条</option><option value="5">5 条</option></select></div></div>
+<button class="btn-gen" id="genBtn">💌 生成语录</button></div>
+<div class="result-area" id="resultArea"><div class="card"><div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 语录已生成</div><div class="result-box" id="out"></div><button class="copy-btn" onclick="copyResult()">📋 复制</button></div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function copyResult(){navigator.clipboard.writeText(document.getElementById('out').textContent).then(()=>alert('✅ 已复制！'))}
+const pools={
+'开心':{'治愈暖心':['今天的快乐，是恰到好处的心动。','心里有光，眼里有笑，一切都刚好。'],'励志鼓劲':['保持热爱，好运气自然向你靠拢。'],'文艺高级':['此刻风也温柔，花也在微笑。'],'幽默解压':['快乐到飞起，快！拉住我！']},
+'疲惫':{'治愈暖心':['累了就停下来歇歇，天不会塌的。','把疲惫交给夜晚，把力气留给明天。'],'励志鼓劲':['你已经在很努力地撑着了，真的很了不起。'],'文艺高级':['万物皆有裂痕，那是光照进来的地方。'],'幽默解压':['兄弟，先充个电，世界还等着你发光呢。']},
+'迷茫':{'治愈暖心':['看不清方向的时候，就先走好眼前这一步。'],'励志鼓劲':['迷茫是因为你在向上，坚持就有答案。'],'文艺高级':['山重水复疑无路，柳暗花明又一村。'],'幽默解压':['谁说一定要看清远方？脚下踩实就行。']},
+'失恋难受':{'治愈暖心':['曾经的美好是真的，往前走也真的会好。'],'励志鼓劲':['结束，是为了让更对的人有机会出现。'],'文艺高级':['我先成为自己，再遇见你。'],'幽默解压':['哭完这顿，妆还得重画，太亏了，矜持点！']},
+'深夜emo':{'治愈暖心':['夜深了，温柔地抱抱自己。'],'励志鼓劲':['会过去的，天会亮的，你会更好的。'],'文艺高级':['把心事交给月亮，它替你保密。'],'幽默解压':['emo归emo，明天还是要喝奶茶的。']},
+'元气满满':{'治愈暖心':['今天的我，是世界的小太阳。'],'励志鼓劲':['冲啊！今天又是超棒的一天！'],'文艺高级':['眼里有星辰，脚下有力量。'],'幽默解压':['电量满格，谁也别想拦我起飞！']},
+'焦虑紧张':{'治愈暖心':['别怕，慢慢来，你已经很好了。'],'励志鼓劲':['深呼吸，你最担心的事，多半不会发生。'],'文艺高级':['心若安定，万事从容。'],'幽默解压':['先深呼吸三次，再想想待会儿吃点啥。']}};
+document.getElementById('genBtn').addEventListener('click',()=>{
+const mood=document.getElementById('mood').value;const tone=document.getElementById('tone').value;const count=parseInt(document.getElementById('count').value);
+const pool=(pools[mood]&&pools[mood][tone])||['愿你的每一天都值得期待。'];
+let out='【'+mood+' · '+tone+'】\n\n';let i=0;const used=new Set();
+while(i<Math.min(count,pool.length)){const q=pool[i%(pool.length)];if(!used.has(q)){used.add(q);i++;out+=q+'\n'}}
+document.getElementById('resultArea').classList.add('active');
+document.getElementById('out').textContent=out.trim();
+});
+</script>
+</body>
+</html>

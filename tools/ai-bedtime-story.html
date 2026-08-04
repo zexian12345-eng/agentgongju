@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 儿童睡前故事生成器 | AgentGongju.com</title>
+<meta name="description" content="根据主题一键生成温馨的儿童睡前故事，适合亲子阅读哄睡，含故事梗概与晚安寄语">
+<meta name="keywords" content="睡前故事,儿童故事,亲子,哄睡,绘本">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:60px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:22px;color:#e2e8f0;line-height:2;white-space:pre-wrap;min-height:60px;margin-bottom:12px;font-family:serif;font-size:1.05rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🌙 AI 儿童睡前故事生成器</h1><p>为你的小宝贝编一个甜甜的梦</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>👧 孩子昵称</label><input type="text" id="child" placeholder="如：小月亮"></div>
+<div><label>🐰 故事主角（可选）</label><input type="text" id="hero" placeholder="如：小兔子"></div>
+</div>
+<label>📖 今日主题/想听的故事（可选）</label>
+<input type="text" id="theme" placeholder="如：勇敢、友情、晚安、星星、学会分享">
+<button class="btn-gen" id="genBtn">🌟 为我讲故事</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">🌛 温馨故事时间</div>
+<div class="result-box" id="result"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制故事</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const heroes=['小兔子','小刺猬','小狐狸','小熊猫','小企鹅','小松鼠','小猫咪','小恐龙','小熊','小海豚'];
+const places=['森林','月亮河','星星谷','云朵城堡','彩虹桥','竹林','果园','海边','梦幻岛','花田'];
+const themes={勇敢:'学会鼓起勇气面对小小的害怕',友情:'和朋友一起分享快乐',晚安:'和月亮道一声温柔的晚安',星星:'追逐一颗会发光的星星',分享:'把心爱的东西分享给伙伴',诚实:'不说谎、做个诚实的好孩子',善良:'帮助别人让心里暖暖的'};
+const morals=['原来，勇气就藏在我们的心里，只要敢迈出第一步，就会发现它其实一点也不可怕。','好朋友的陪伴，让夜晚也变得温暖又明亮。','分享，能让一份快乐变成很多份快乐！','每一个小小的善举，都会像星星一样，照亮别人的夜空。'];
+function rand(a){return a[Math.floor(Math.random()*a.length)]}
+document.getElementById('genBtn').addEventListener('click',()=>{
+let child=document.getElementById('child').value.trim()||'宝贝';
+const heroIn=document.getElementById('hero').value.trim();
+const themeIn=document.getElementById('theme').value.trim();
+const hero=heroIn||rand(heroes);
+const place=rand(places);
+const th=themeIn&&themes[themeIn]?themes[themeIn]:(themes[rand(Object.keys(themes))]);
+const s1=rand(['在一个洒满星星的夜晚','在风儿轻轻唱歌的那个晚上','当月亮悄悄爬上树梢的时候']);
+const btn2=rand(['突然','就在这时','谁知','可是']);
+const story=`${s1}，${child}和${hero}一起散步到${place}。${btn2}，${hero}发现前面有一条亮晶晶的小路，路的尽头好像藏着什么秘密。${th}。
+
+于是，${hero}鼓起勇气，拉着${child}的小手往前走。走着走着，遇到了${rand(['一棵会说话的老橡树','一盏会眨眼的萤火虫灯','一座弯弯的彩虹滑梯','一只打盹的月亮船'])}。它笑眯眯地说：「只要你们${rand(['闭上眼睛数三下','把手放在一起','笑着说一句晚安'])}，就能看见最特别的惊喜！」
+
+${child}和${hero}照着做了，眼前忽然出现一片闪闪发亮的光。原来，藏在这里的是一个装满${rand(['甜甜的梦','暖暖的拥抱','七彩的勇气','软软的云朵枕头'])}的宝盒。${hero}开心地说：「原来${rand(['勇气','分享','快乐','友爱'])}就是最珍贵的宝藏呀！」
+
+故事讲完了，${child}甜甜地打了个哈欠。${morals[Math.floor(Math.random()*morals.length)]}晚安，${child}，愿你的梦里也有星星闪烁。`;
+document.getElementById('resultArea').classList.add('active');
+document.getElementById('result').textContent=story;
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('result').textContent).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

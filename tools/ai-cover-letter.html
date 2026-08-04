@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 求职信生成器 | AgentGongju.com</title>
+<meta name="description" content="根据求职岗位和个人经历生成专业求职信/自我介绍，突出优势打动HR">
+<meta name="keywords" content="求职信,自我介绍,自荐信,简历优化,求职">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:70px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:22px;color:#e2e8f0;line-height:2;white-space:pre-wrap;min-height:60px;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📝 AI 求职信生成器</h1><p>针对岗位突出你的核心优势，打动HR</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>🙋 你的称呼</label><input type="text" id="name" placeholder="如：王小明"></div>
+<div><label>💼 应聘岗位</label><input type="text" id="job" placeholder="如：新媒体运营"></div>
+</div>
+<label>🏢 目标公司（选填）</label>
+<input type="text" id="company" placeholder="如：字节跳动">
+<label>📌 你的相关经历/优势（简短填写）</label>
+<textarea id="exp" placeholder="例如：3年新媒体经验，带号涨粉20万，擅长数据分析与内容策划"></textarea>
+<button class="btn-gen" id="genBtn">📄 生成求职信</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 你的求职信</div>
+<div class="result-box" id="result"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制求职信</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const open=['您好！','尊敬的招聘负责人：','您好！HR您好：'];
+const traits=['学习能力强，做事认真负责','沟通协作能力突出，结果导向','抗压能力强，能高效执行任务','逻辑清晰，善于总结复盘'];
+function pick(a){return a[Math.floor(Math.random()*a.length)]}
+document.getElementById('genBtn').addEventListener('click',()=>{
+const nm=document.getElementById('name').value.trim();
+const job=document.getElementById('job').value.trim();
+const comp=document.getElementById('company').value.trim();
+const exp=document.getElementById('exp').value.trim();
+if(!job){alert('请填写应聘岗位');return}
+if(!nm){alert('请填写你的称呼');return}
+const expLine=exp?`我长期深耕于相关领域，${exp}。`:`我在过往的工作中积累了扎实的专业能力和丰富的实战经验。`;
+const compLine=comp?`贵司「${comp}」在行业内的口碑与平台让我心向往之，`:'贵司的业务方向与团队氛围让我深感认同，';
+const letter=`${pick(open)}
+
+您好，我是${nm}，今天看到了贵司${job}岗位的招聘信息，诚心希望能加入贵司。
+
+${expLine}${compLine}这也是我投递这份简历的重要原因。
+
+我的优势在于：${pick(traits)}；能够独立负责、快速上手，同时保持与团队的紧密配合。我相信我的经验与热情，能够为团队带来实实在在的价值。
+
+非常期待有机会与您做进一步交流，我的联系方式已附在简历中，随时欢迎您联系。感谢您抽出宝贵时间阅读我的求职信！
+
+此致
+敬礼！
+
+${nm}
+
+（日期：${new Date().getFullYear()}年${new Date().getMonth()+1}月${new Date().getDate()}日）`;
+document.getElementById('resultArea').classList.add('active');
+document.getElementById('result').textContent=letter;
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('result').textContent).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

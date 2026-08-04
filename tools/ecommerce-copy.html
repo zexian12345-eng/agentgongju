@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 电商产品文案生成器 | AgentGongju.com</title>
+<meta name="description" content="为淘宝/京东/拼多多商品一键生成主图文案、详情页卖点与朋友圈种草文案">
+<meta name="keywords" content="电商文案,淘宝文案,产品卖点,种草文案,详情页">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:70px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;min-height:60px;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🛒 AI 电商产品文案生成器</h1><p>卖点+主图+详情+种草，一站式搞定</p></div>
+
+<div class="card">
+<label>🏷 产品名称</label>
+<input type="text" id="product" placeholder="如：便携榨汁杯">
+<label>⭐ 产品核心卖点（用逗号分隔，如：无线充电,大容量,便携）</label>
+<input type="text" id="sell" placeholder="输入产品的3-5个卖点">
+<label>💰 目标人群/场景（可选）</label>
+<input type="text" id="aud" placeholder="如：上班族、健身人群、学生党">
+<button class="btn-gen" id="genBtn">📝 生成文案</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 全套文案</div>
+<div class="result-box" id="result"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制文案</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const hkSuffix=['我的懒人神器','救了我的命','真的想安利给所有人','用了就回不去了','忍不住回购第3次','性价比天花板'];
+const pz=['颜值在线','性价比之选','人手一个','谁用谁知道','闭眼入不踩雷','实力与颜值并存'];
+function pick(a){return a[Math.floor(Math.random()*a.length)]}
+document.getElementById('genBtn').addEventListener('click',()=>{
+let prod=document.getElementById('product').value.trim();
+const sellIn=document.getElementById('sell').value.trim();
+const aud=document.getElementById('aud').value.trim();
+if(!prod){alert('请输入产品名称');return}
+const sells=sellIn?sellIn.split(/[,，、]+/).filter(x=>x).slice(0,5):['品质出众','颜值在线','实用耐造','超值好价'];
+if(sells.length<2)while(sells.length<2)sells.push('超值好价');
+const audLine=aud?('适合'+aud+'使用。'):('男女老少皆宜，人人可用。');
+const title=pick(['升级款'+prod,pick(['爆款','新款'])+' '+prod,prod+' '+pick(['入手正当时','闭眼入']),'这款'+prod+pick(hkSuffix)]);
+const mainline=pick(['一用就爱上','真正的'+pick(['神器','宝藏']),'懒人必备','高性价比之王']);
+const content=`【📢 主图爆文标题】\n${title}\n\n【⭐ 五大核心卖点】\n1. ${sells[0]}：直接解决你的日常痛点，省心省力！\n2. ${sells[1]}：${pick(['细节拉满','品质有保障','经久耐用'])}，用过都说好。\n3. ${sells[2]||'贴心设计'}：${pick(['人性化设计','处处为你想','非常顺手'])}。\n4. ${sells[3]||'超值好价'}：${pick(['性价比让利到底','这个价位很难不爱','买到就是赚到'])}。\n5. ${sells[4]||'售后无忧'}：${pick(['品质保证','放心入手','物有所值'])}。\n\n【📍 详情页文案】\n${pick(['姐妹们冲！','这款真的可以','强烈安利'])}这款${prod}，${mainline}！${pick(pz)}，${audLine}${pick(['自留送人都合适','送人也有面子','日常必备款'])}。\n\n【🌸 朋友圈种草文案】\n真心给大家安利这款${prod}！${sells[0]}，${sells[1]}，超级好用，太香了！${pick(pz)}，${pick(['姐妹们放心冲','闭眼入不踩雷','快收藏起来'])}！\n\n#${cleanTag(prod)} #好物分享 #${pick(['居家好物','宝藏单品','幸福感好物'])} #良心推荐`;
+document.getElementById('resultArea').classList.add('active');
+document.getElementById('result').textContent=content;
+});
+function cleanTag(s){return (s.replace(/[^\u4e00-\u9fa5A-Za-z0-9]/g,'')||'好物')}
+function copyResult(){navigator.clipboard.writeText(document.getElementById('result').textContent).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 命理测算大师 | AgentGongju.com</title>
+<meta name="description" content="AI命理测算，输入生辰推算五行命格、生肖运程、性格脾气与开运建议，仅供娱乐参考">
+<meta name="keywords" content="AI算命,生辰八字,五行,生肖,命理,运势">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=number],input[type=date]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.stat{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:16px;text-align:center}
+.stat .k{color:#94a3b8;font-size:.85rem;margin-bottom:6px}
+.stat .v{font-size:1.4rem;font-weight:700;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;min-height:60px;margin-bottom:12px}
+@media(max-width:600px){.param-row,.grid-2{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🔮 AI 命理测算大师</h1><p>输入生辰，解读你的五行命格与开运之道</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>🎂 出生日期</label><input type="date" id="birth"></div>
+<div><label>👤 称呼（选填）</label><input type="text" id="name" placeholder="如：小楠"></div>
+</div>
+<div><label>⏰ 出生时辰</label>
+<select id="hour">
+<option value="extract">不确定</option>
+<option value="0-1">子时 (23-1点)</option>
+<option value="2-3">丑时 (1-3点)</option>
+<option value="4-5">寅时 (3-5点)</option>
+<option value="6-7">卯时 (5-7点)</option>
+<option value="8-9">辰时 (7-9点)</option>
+<option value="10-11">巳时 (9-11点)</option>
+<option value="12-13">午时 (11-13点)</option>
+<option value="14-15">未时 (13-15点)</option>
+<option value="16-17">申时 (15-17点)</option>
+<option value="18-19">酉时 (17-19点)</option>
+<option value="20-21">戌时 (19-21点)</option>
+<option value="22-23">亥时 (21-23点)</option>
+</select></div>
+<button class="btn-gen" id="genBtn">🔮 开始测算</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:16px">✅ 测算结果（仅供娱乐参考）</div>
+<div id="resultBox"></div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const fiveEl=['金','木','水','火','土'];
+const elColor={'金':'#fde047','木':'#4ade80','水':'#60a5fa','火':'#f87171','土':'#fbbf24'};
+const zodiac=['鼠','牛','虎','兔','龙','蛇','马','羊','猴','鸡','狗','猪'];
+const traits={
+'金':['果断刚毅','讲原则重义气','适合稳定可靠的工作','多在金融、机械、司法领域有天赋'],
+'木':['积极向上','仁慈宽厚','适应力强','适合教育、文化、健康养生领域'],
+'水':['聪明善变','能言善道','人缘极佳','适合贸易、物流、传媒、旅游行业'],
+'火':['热情奔放','行动力强','有领导风范','适合互联网、能源、演艺、营销领域'],
+'土':['踏实稳重','值得信赖','有耐心','适合房地产、农业、建筑、公益事业']};
+const advice='本周宜：多接触绿色植物 / 常做深呼吸 / 保持规律作息 / 佩戴暖色系饰品。';
+document.getElementById('genBtn').addEventListener('click',()=>{
+const birth=document.getElementById('birth').value;
+if(!birth){alert('请选择出生日期');return}
+const nm=document.getElementById('name').value.trim()||'有缘人';
+const d=new Date(birth);
+const year=d.getFullYear(),month=d.getMonth()+1;
+const daySum=(year+d.getDate()+month)%5;
+const mainEl=fiveEl[daySum];
+const subEl=fiveEl[(year%5+1)%5];
+const zx=zodiac[(year-4)%12];
+const hourSel=document.getElementById('hour').value;
+const box=document.getElementById('resultBox');box.innerHTML='';
+const html=`
+<div class="grid-2">
+<div class="stat"><div class="k">☯️ 五行主命</div><div class="v" style="-webkit-text-fill-color:${elColor[mainEl]}">${mainEl}</div></div>
+<div class="stat"><div class="k">🐾 生肖属相</div><div class="v" style="-webkit-text-fill-color:${elColor[subEl]}">${zx}</div></div>
+</div>
+<div class="grid-2">
+<div class="stat"><div class="k">🧬 性格特质</div><div class="v" style="font-size:1rem;color:#a5b4fc">${traits[mainEl][0]}·${traits[mainEl][1]}</div></div>
+<div class="stat"><div class="k">💼 天赋行业</div><div class="v" style="font-size:1rem;color:#a5b4fc">${traits[mainEl][3]}</div></div>
+</div>
+<div class="result-box">${nm}，你是${mainEl}命之人（辅以${subEl}气）。${traits[mainEl][0]}、${traits[mainEl][1]}是你天生的底色，${traits[mainEl][2]}。${hourSel==='extract'?'':getHourTip(hourSel)}
+天机所示：你${traits[mainEl][4]}。
+🍀 开运指引：${advice}
+━━━━━━━━━━
+⚠️ 本测算由程序随机演绎，仅供娱乐，切勿迷信。</div>`;
+box.innerHTML=html;
+document.getElementById('resultArea').classList.add('active');
+});
+function getHourTip(h){const t={'0-1':'子时出生，灵气内敛，悟性极高','2-3':'丑时出生，沉稳内秀，大器晚成','4-5':'寅时出生，胆识过人，敢闯敢拼','6-7':'卯时出生，温和善良，人缘天成','8-9':'辰时出生，志存高远，贵气渐显','10-11':'巳时出生，心思缜密，多才多艺','12-13':'午时出生，热情开朗，桃花旺盛','14-15':'未时出生，温厚可靠，财源广进','16-17':'申时出生，机敏灵活，善于变通','18-19':'酉时出生，才华横溢，注重细节','20-21':'戌时出生，忠诚重义，朋友众多','22-23':'亥时出生，聪慧通透，福泽深厚'}[h];return '⏰ '+t+'。'}
+</script>
+</body>
+</html>

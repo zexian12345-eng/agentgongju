@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BMI 健康计算 | AgentGongju.com</title>
+<meta name="description" content="免费BMI体质指数计算工具，查看健康体重范围">
+<meta name="keywords" content="BMI计算,体质指数,健康体重,肥胖指数">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:100px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.btn-gen:disabled{opacity:.5;cursor:not-allowed}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.8;white-space:pre-wrap;min-height:60px;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🧮 BMI 健康计算</h1><p>计算BMI并给出健康建议</p></div>
+
+<div class="card"><div class="param-row">
+<div><label>身高 (cm)</label><input type="number" id="height" placeholder="如 170"></div>
+<div><label>体重 (kg)</label><input type="number" id="weight" placeholder="如 65"></div></div>
+<button class="btn-gen" id="bmiBtn">🧮 计算 BMI</button></div>
+<div class="result-area" id="resultArea"><div class="card"><div class="result-box" id="result"></div></div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+
+document.getElementById('bmiBtn').addEventListener('click',()=>{
+const h=parseFloat(document.getElementById('height').value)/100;const w=parseFloat(document.getElementById('weight').value);
+if(!h||!w){alert('请输入身高体重');return}
+const bmi=w/(h*h);let level,emoji;if(bmi<18.5){level='偏瘦';emoji='🍃'}else if(bmi<24){level='正常';emoji='✅'}else if(bmi<28){level='偏胖';emoji='⚠️'}else{level='肥胖';emoji='🔴'}
+const idealMin=18.5*h*h,idealMax=24*h*h;
+const out='🧮 您的 BMI 指数：'+bmi.toFixed(1)+'\n\n📊 评级：'+emoji+' '+level+'\n\n理想体重范围：'+idealMin.toFixed(1)+' - '+idealMax.toFixed(1)+' kg\n\n💡 建议：'+(bmi<18.5?'适当增加营养摄入，加强运动。':(bmi<24?'保持健康的饮食和运动习惯！':(bmi<28?'注意控制饮食，增加运动量。':'建议咨询专业医生制定减重计划。')));
+document.getElementById('resultArea').classList.add('active');document.getElementById('result').textContent=out;});
+
+</script>
+</body>
+</html>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 简历优化 | AgentGongju.com</title>
+<meta name="description" content="AI简历优化工具，把平淡的工作经历改成HR一眼看中的加分写法">
+<meta name="keywords" content="简历优化,简历修改,求职简历,简历润色">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:120px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;min-height:60px;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📄 AI 简历优化</h1><p>把你的经历改写成HR一眼心动的“加分写法”</p></div>
+
+<div class="card"><label>🖊 岗位方向</label>
+<input type="text" id="job" placeholder="例如：运营 / 产品 / 销售">
+<label>💼 你的工作经历（简单写即可）</label>
+<textarea id="exp" placeholder="例如：\n负责公众号运营，涨了不少粉。\n处理客户投诉，解决了问题。\n组织了几次线下活动。"></textarea>
+<div class="param-row">
+<div><label>简历风格</label><select id="style"><option>标准稳重</option><option>数据量化</option><option>突出亮点</option></select></div>
+<div><label>是否要自我评价</label><select id="self"><option value="y">加上</option><option value="n">不要</option></select></div></div>
+<button class="btn-gen" id="genBtn">✨ 优化简历</button></div>
+<div class="result-area" id="resultArea"><div class="card"><div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 优化后的经历描述</div><div class="result-box" id="out"></div><button class="copy-btn" onclick="copyResult()">📋 复制</button></div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function copyResult(){navigator.clipboard.writeText(document.getElementById('out').textContent).then(()=>alert('✅ 已复制！'))}
+document.getElementById('genBtn').addEventListener('click',()=>{
+const job=document.getElementById('job').value.trim()||'目标岗位';const exp=document.getElementById('exp').value.trim();if(!exp){alert('请输入工作经历');return}
+const style=document.getElementById('style').value;const self=document.getElementById('self').value;
+const lines=exp.split('\n').filter(l=>l.trim());
+let out='【岗位方向：'+job+'】\n\n■ 项目/工作经历（优化版）\n';
+lines.forEach((l,i)=>{
+out+=(i+1)+'. '+l.trim().replace(/。$/,'')+'，有效提升整体效率，获得较好反馈与认可。\n';
+});
+out+='\n■ 亮点补充（建议根据实际情况细化数字）\n• 量化产出：周期完成率≥95%，关键指标环比提升。\n• 协作沟通：跨部门高效协同，推动项目按期落地。\n• 学习成长：快速掌握新工具/方法并落地应用。';
+if(self==='y'){out+='\n\n■ 自我评价\n责任心强、执行力高，善于在压力下找出路，期待能在'+job+'领域持续深耕并创造价值。'}
+if(style==='数据量化')out+='\n\n📌 提示：请把经历中的“很多/不错/较大”替换为具体数字，例如涨粉3.2万、转化率提升18%等，最有说服力。';
+else if(style==='突出亮点')out+='\n\n📌 提示：把最亮眼的成绩放在每条经历开头，用“借助XX实现了XX增长”句式更抓眼球。';
+document.getElementById('resultArea').classList.add('active');
+document.getElementById('out').textContent=out;
+});
+</script>
+</body>
+</html>

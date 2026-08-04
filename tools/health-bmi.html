@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 健康 BMI 体脂分析 | AgentGongju.com</title>
+<meta name="description" content="免费计算BMI体脂率，个性化健康建议">
+<meta name="keywords" content="BMI,体脂率,健康,减肥,身体质量指数">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:100px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.btn-gen:disabled{opacity:.5;cursor:not-allowed}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.9;white-space:pre-wrap;min-height:60px;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>❤️ AI 健康 BMI 分析</h1><p>科学评估体重，get个性化健康建议</p></div>
+
+<div class="card"><div class="param-row"><div><label>📏 身高 (cm)</label>
+<input type="number" id="height" placeholder="如 170" min="50"></div>
+<div><label>⚖️ 体重 (kg)</label>
+<input type="number" id="weight" placeholder="如 60" min="10"></div></div>
+<div class="param-row"><div><label>👥 性别</label>
+<select id="gender"><option value="男">男</option><option value="女">女</option></select></div>
+<div><label>🎂 年龄</label>
+<input type="number" id="age" value="30" min="1" max="120"></div></div></div>
+<div class="card"><button class="btn-gen" id="genBtn">🧮 开始分析</button></div>
+<div class="result-area" id="resultArea"><div class="card"><div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 分析报告</div>
+<div class="result-box" id="result"></div><button class="copy-btn" onclick="copyResult()">📋 复制</button></div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+document.getElementById('genBtn').addEventListener('click',()=>{
+const h=parseFloat(document.getElementById('height').value),w=parseFloat(document.getElementById('weight').value);
+if(!h||!w||h<50||h>250||w<10||w>300){alert('请输入有效的身高体重');return}
+const bmi=w/((h/100)*(h/100));
+let level,color,adv;
+if(bmi<18.5){level='偏瘦';color='#f59e0b';adv='建议适当增加营养摄入，多吃优质蛋白，搭配轻度增肌训练，保持健康体重。'}
+else if(bmi<24){level='正常';color='#22c55e';adv='体重非常标准！建议继续保持健康饮食和规律运动的好习惯。'}
+else if(bmi<28){level='超重';color='#f97316';adv='体重略超标的范畴，建议控制热量摄入，增加有氧运动，循序渐进地减重。'}
+else{level='肥胖';color='#ef4444';adv='体重超出健康范围较多，建议制定科学的减重计划，在医生或营养师指导下进行，健康优先。'}
+const ideal=(h-100)*0.9;
+const age=document.getElementById('age').value||30;
+const gender=document.getElementById('gender').value;
+const out=`【健康BMI分析报告】\n\n📏 身高：${h}cm   ⚖️ 体重：${w}kg\n\n🏷 BMI 值：${bmi.toFixed(1)}\n📊 评级：${level}\n🟢 理想体重：约 ${ideal.toFixed(1)}kg\n\n💬 AI 建议：${adv}\n\n🎯 每周建议：结合${gender==='男'?'力量训练+适度有氧':'有氧运动+核心训练'}，每天饮水量充足，规律作息。\n\n⚠️ 温馨提示：本结果为参考测算，具体请咨询专业医生。`;
+document.getElementById('resultArea').classList.add('active');document.getElementById('result').textContent=out;});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('result').textContent).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

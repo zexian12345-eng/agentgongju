@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 短视频爆款文案生成器 | AgentGongju.com</title>
+<meta name="description" content="一键生成抖音/快手/视频号爆款文案，含标题、口播脚本、钩子开头与标签推荐">
+<meta name="keywords" content="短视频文案,抖音文案,口播,爆款,视频脚本">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:80px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;min-height:60px;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🎬 AI 短视频爆款文案生成器</h1><p>标题+口播+标签一条龙，助力上热门</p></div>
+
+<div class="card">
+<label>📌 视频主题（如：自律的一天、新手做菜翻车）</label>
+<input type="text" id="topic" placeholder="输入你的视频主题">
+<div class="param-row">
+<div><label>🎯 内容类型</label>
+<select id="type">
+<option value="vlog">Vlog日常</option>
+<option value="knowledge">知识干货</option>
+<option value="food">美食</option>
+<option value="beauty">美妆穿搭</option>
+<option value="funny">搞笑段子</option>
+<option value="talent">才艺展示</option>
+</select></div>
+<div><label>📏 视频时长</label>
+<select id="len">
+<option value="15">15秒节奏</option>
+<option value="30">30秒常规</option>
+<option value="60">1分钟深度</option>
+</select></div>
+</div>
+<button class="btn-gen" id="genBtn">🔥 生成爆款文案</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 文案脚本</div>
+<div class="result-box" id="result"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制文案</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const hooks=['刷到就赚到了！','求求大数据把我推给需要的人！','这条视频我劝你看到最后，不然肠子悔青！','别划走，30秒教你一个别人不会的秘密。','朋友们，如果不是亲身经历我真的不敢相信……','第1次做，没想到效果这么炸裂！'];
+const tags={vlog:['#日常vlog','#自律的一天','#记录生活','#独居生活','#治愈系'],knowledge:['#知识分享','#干货','#学习方法','#涨知识','#科普'],food:['#美食','#家常菜','#厨房新手','#治愈美食','#一日三餐'],beauty:['#美妆','#穿搭','#变美','#化妆教程','#氛围感'],funny:['#搞笑','#沙雕日常','#段子','#快乐源泉','#整活'],talent:['#才艺','#舞蹈','#唱歌','#钢琴','#高能现场']};
+const bodyMap={vlog:['早上好呀，今天是我记录日常的第'+pick(['3','7','30'])+'天，先给自己泡杯咖啡。','忙碌的午后也要记得好好吃饭哦，今天做了我爱吃的。','晚上窝在沙发里，一天的疲惫都值了。'],knowledge:['很多人不知道，其实这个技巧新手也能秒懂。','掌握这个方法，效率至少翻三倍。','划重点！这一步一定要记下来。'],food:['首先我们准备一口锅，油热下锅。','焖上五分钟，香味一下子就出来了。','出锅前撒上葱花，绝了！'],beauty:['姐妹们，这个妆前小技巧真的绝！','选对色系，整个人气质都不一样。','最后一步定妆，持妆一整天！'],funny:['本来想做个正经视频，结果翻车了哈哈。','这操作我练了三天，今天终于成了。','原谅我笑点低，这画面真的绷不住。'],talent:['一首'+pick(['暖心','炸裂','燃动'])+'的歌送给大家。','这一刻，只想把热爱留在镜头里。','希望能戳中你的心巴！']};
+const cta=['觉得有用的话，点个关注，我每天分享一个！','喜欢就双击屏幕支持一下，么么哒～','关注我，下期更精彩！','觉得对你有帮助，记得转发给需要的朋友。'];
+function pick(a){return a[Math.floor(Math.random()*a.length)]}
+document.getElementById('genBtn').addEventListener('click',()=>{
+let topic=document.getElementById('topic').value.trim();
+const type=document.getElementById('type').value;
+const len=document.getElementById('len').value;
+if(!topic){topic={vlog:'记录我的真实日常',knowledge:'一个超实用的知识',food:'一道家常美味',beauty:'一个变美的小技巧',funny:'一段爆笑日常',talent:'我的才艺展示'}[type];}
+const hook=pick(hooks);
+const b=bodyMap[type];
+const title=pick(['爆款标题：'+pick(['天啊','救命','没人告诉我','姐妹快看'])+'！关于「'+topic+'」',
+'🔥 '+pick(['千万别错过','建议收藏'])+'！「'+topic+'」'+pick(['看完你会感谢我','学到就是赚到'])]);
+const out=`${title}\n\n【开头钩子】\n${hook}\n\n【口播脚本】\n${b[0]}\n${len==='60'?'（展开）'+b[1]:''}\n${len==='60'?'（升华）'+b[2]:'（节奏紧凑，直接收尾）'}\n\n【互动引导】\n@${pick(['博主','姐妹们','家人们','老铁们'])}，${pick(cta)}\n\n【推荐标签】\n${tags[type].join(' ')}`;
+document.getElementById('resultArea').classList.add('active');
+document.getElementById('result').textContent=out;
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('result').textContent).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

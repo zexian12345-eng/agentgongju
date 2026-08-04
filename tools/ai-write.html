@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI写作助手 - 免费在线AI文案生成 | AgentGongju.com</title>
+<meta name="description" content="免费AI写作助手，支持文章生成、文案改写、标题创作、小红书文案、抖音脚本等多种写作场景。">
+<meta name="keywords" content="AI写作,免费AI写作,文案生成,小红书文案,抖音脚本">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select, textarea{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit}
+textarea{min-height:120px;resize:vertical}
+select:focus,textarea:focus{border-color:#6366f1}
+.btn-generate{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all 0.3s}
+.btn-generate:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.btn-generate:disabled{opacity:0.5;cursor:not-allowed}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.8;white-space:pre-wrap;min-height:100px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;margin-top:12px;font-size:0.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+</style>
+</head>
+<body><div style="background:linear-gradient(135deg,#6366f1,#a855f7);color:#fff;text-align:center;padding:12px 20px;font-size:0.9rem;position:relative;z-index:99">
+🚧 该功能正在接入真实 AI 引擎，即将上线。可以先体验其他 80+ 个可用工具 → <a href="/" style="color:#fff;font-weight:700;text-decoration:underline">返回首页</a>
+</div>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a><a href="image-to-video.html">图转视频</a><a href="text-to-video.html">文生视频</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>✍️ AI 写作助手</h1><p>AI 帮你写文章、写文案、写脚本，快速高效</p></div>
+<div class="card">
+<label>📋 写作场景</label>
+<select id="scene"><option>小红书种草文案</option><option>抖音短视频脚本</option><option>朋友圈推广文案</option><option>公众号文章</option><option>产品描述</option><option>SEO文章</option><option>标题创作</option><option>文案改写/润色</option></select>
+</div>
+<div class="card">
+<label>✏️ 输入主题或要求</label>
+<textarea id="contentInput" placeholder="请描述你想写的内容主题和要求...&#10;&#10;例如：写一篇关于失眠的公众号文章，目标受众是25-35岁的上班族，语气温暖治愈"></textarea>
+</div>
+<button class="btn-generate" id="generateBtn">✍️ 开始写作</button>
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 写作完成</div>
+<div class="result-box" id="resultContent"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制内容</button>
+</div></div></div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+document.getElementById('generateBtn').addEventListener('click', async ()=>{
+const scene=document.getElementById('scene').value;const content=document.getElementById('contentInput').value.trim();
+if(!content){alert('请输入写作主题！');return}
+const btn=document.getElementById('generateBtn');btn.disabled=true;btn.textContent='⏳ 写作中...';
+try{
+const res=await fetch('/api/ai-write',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({scene,content})});
+const data=await res.json();
+if(data.success&&data.text){document.getElementById('resultArea').classList.add('active');document.getElementById('resultContent').textContent=data.text;}
+else alert('生成失败: '+(data.error||'请重试'));
+}catch(err){alert('网络错误: '+err.message);}
+finally{btn.disabled=false;btn.textContent='✍️ 开始写作';}
+});
+function copyResult(){const text=document.getElementById('resultContent').textContent;navigator.clipboard.writeText(text).then(()=>alert('✅ 已复制到剪贴板！'));}
+</script>
+</body>
+</html>

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI数字人播报 - 在线数字人视频生成 | AgentGongju.com</title>
+<meta name="description" content="免费AI数字人播报工具，输入文字即可生成数字人播报视频。适用于新闻播报、产品介绍、课程讲解等场景。">
+<meta name="keywords" content="数字人,AI数字人,数字人播报,数字人视频生成,免费数字人">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+textarea{width:100%;min-height:120px;padding:16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:12px;color:#e2e8f0;font-size:0.95rem;resize:vertical;outline:none;font-family:inherit}
+textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0}
+select{width:100%;padding:12px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none}
+select:focus{border-color:#6366f1}
+.avatar-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:16px 0}
+.avatar-item{padding:8px;text-align:center;border:2px solid transparent;border-radius:10px;cursor:pointer;transition:all 0.2s}
+.avatar-item:hover{border-color:rgba(99,102,241,0.3)}
+.avatar-item.active{border-color:#6366f1;background:rgba(99,102,241,0.1)}
+.avatar-item .emoji{font-size:32px}
+.avatar-item .name{color:#94a3b8;font-size:0.75rem;margin-top:4px}
+.btn-generate{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all 0.3s}
+.btn-generate:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.btn-generate:disabled{opacity:0.5;cursor:not-allowed}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.result-video{width:100%;border-radius:12px;background:#000}
+.status-area{display:none;margin-top:16px;text-align:center}
+.status-area.active{display:block}
+.spinner{display:inline-block;width:40px;height:40px;border:3px solid rgba(99,102,241,0.2);border-top-color:#6366f1;border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media(max-width:600px){.avatar-grid{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body><div style="background:linear-gradient(135deg,#6366f1,#a855f7);color:#fff;text-align:center;padding:12px 20px;font-size:0.9rem;position:relative;z-index:99">
+🚧 该功能正在接入真实 AI 引擎，即将上线。可以先体验其他 80+ 个可用工具 → <a href="/" style="color:#fff;font-weight:700;text-decoration:underline">返回首页</a>
+</div>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a><a href="image-to-video.html">图转视频</a><a href="text-to-video.html">文生视频</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>👤 AI 数字人播报</h1><p>输入文字，选择数字人形象，一键生成播报视频</p></div>
+<div class="card">
+<label>👩 选择数字人形象</label>
+<div class="avatar-grid" id="avatarGrid">
+<div class="avatar-item active"><div class="emoji">👩‍💼</div><div class="name">职场丽人</div></div>
+<div class="avatar-item"><div class="emoji">👨‍💼</div><div class="name">商务精英</div></div>
+<div class="avatar-item"><div class="emoji">🧑‍🏫</div><div class="name">知性讲师</div></div>
+<div class="avatar-item"><div class="emoji">👩‍🎤</div><div class="name">时尚主播</div></div>
+</div></div>
+<div class="card">
+<label>📝 播报文案</label>
+<textarea id="scriptInput" placeholder="输入数字人要说的话...&#10;&#10;例如：大家好，欢迎来到 AI 工具工具有，每天分享一个实用的 AI 小工具，帮您提高工作效率。"></textarea>
+<div class="param-row">
+<div><label style="color:#94a3b8;font-size:0.85rem">🎙️ 声音</label><select id="voice"><option>标准女声</option><option>标准男声</option><option>温柔女声</option></select></div>
+<div><label style="color:#94a3b8;font-size:0.85rem">🎬 背景</label><select id="bg"><option>办公室</option><option>演播室</option><option>科技蓝</option><option>纯色</option></select></div></div></div>
+<button class="btn-generate" id="generateBtn">👤 生成数字人视频</button>
+<div class="status-area" id="statusArea"><div class="spinner"></div><p style="color:#94a3b8;margin-top:12px">正在生成数字人视频，约需 2-3 分钟...</p></div>
+<div class="result-area" id="resultArea"><div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 数字人视频生成完成</div>
+<video class="result-video" id="resultVideo" controls></video></div></div></div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+document.querySelectorAll('.avatar-item').forEach(item=>{item.addEventListener('click',()=>{document.querySelectorAll('.avatar-item').forEach(i=>i.classList.remove('active'));item.classList.add('active')})});
+document.getElementById('generateBtn').addEventListener('click',async()=>{
+const script=document.getElementById('scriptInput').value.trim();if(!script){alert('请输入播报文案！');return}
+const btn=document.getElementById('generateBtn');btn.disabled=true;btn.textContent='⏳ 生成中...';
+document.getElementById('statusArea').classList.add('active');
+try{
+const res=await fetch('/api/digital-human',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({script,voice:document.getElementById('voice').value,bg:document.getElementById('bg').value})});
+const data=await res.json();
+document.getElementById('statusArea').classList.remove('active');
+if(data.success&&data.video_url){document.getElementById('resultArea').classList.add('active');document.getElementById('resultVideo').src=data.video_url;}
+else alert('生成失败: '+(data.error||'请重试'));
+}catch(err){document.getElementById('statusArea').classList.remove('active');alert('网络错误: '+err.message);}
+finally{btn.disabled=false;btn.textContent='👤 生成数字人视频';}});
+</script>
+</body>
+</html>
