@@ -5,6 +5,7 @@
 <meta name="description" content="免费在线AI翻译工具，支持中英日韩互译">
 <meta name="keywords" content="AI翻译,免费翻译,在线翻译,中英互译">
 <link rel="stylesheet" href="../css/style.css">
+<script src="../js/paywall.js"></script>
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -45,6 +46,7 @@ input:focus,select:focus,textarea:focus{border-color:#6366f1}
 
 function copyResult(){navigator.clipboard.writeText(document.getElementById('result').textContent).then(()=>alert('✅ 已复制！'))}
 document.getElementById('translateBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI翻译'))return;
 const text=document.getElementById('text').value.trim();if(!text){alert('请输入内容');return}
 const dir=document.getElementById('dir').value;const dict={cn2en:'这 是 一 条 自动 翻译 的 示例 结果（正式版将接入 大语言模型 实时 翻译）。',
 en2cn:'This is an auto-generated example translation. The full version will connect to an LLM for real-time translation.',
