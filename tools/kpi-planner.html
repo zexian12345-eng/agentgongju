@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KPI 目标规划助手 | AgentGongju.com</title>
+<meta name="description" content="KPI目标规划助手，帮你设定科学可控的季度/年度目标，拆解成行动步骤与量化指标，让工作更有方向">
+<meta name="keywords" content="KPI,目标设定,OKR,绩效考核,工作规划,目标拆解,职场管理">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:70px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.8;white-space:pre-wrap;margin-bottom:12px;font-size:.92rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{color:#94a3b8;font-size:.8rem;line-height:1.8;margin-top:6px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🎯 KPI 目标规划助手</h1><p>把笼统的想法，拆成可执行的量化目标</p></div>
+
+<div class="card">
+<label>🎯 你的工作目标（想达成什么）</label>
+<textarea id="goal" placeholder="例如：本季度提升销售额、完成产品上线、提升团队人效、加强个人学习成长"></textarea>
+<div class="param-row">
+<div><label>⏳ 目标周期</label>
+<select id="period">
+<option value="季度">季度目标</option>
+<option value="月度">月度目标</option>
+<option value="年度">年度目标</option>
+</select></div>
+<div><label>📊 当前进度（%）</label>
+<select id="progress">
+<option value="0">0%（刚开始）</option>
+<option value="30">约30%</option>
+<option value="50">约50%</option>
+<option value="70">约70%</option>
+</select></div>
+</div>
+<label>🚀 可衡量的数字目标（可选）</label>
+<input type="text" id="metric" placeholder="例如：销售额从80万提升到120万">
+<button class="btn-gen" id="genBtn">🧩 生成规划</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🗺️ 你的目标拆解方案</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制方案</button>
+<div class="tip">💡 提示：建议每周末复盘一次进度，按月调整策略，让目标始终保持在正确的轨道上。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const STEPS={
+'销售':['拆解目标：将总销售额按渠道/客户数分解到每周','制作客户清单：盘点高潜客户，制定跟进话术','优化转化：测试不同报价与促销方案','复盘迭代：每周复盘漏斗各环节数据','强化留存：成交后做好回访与转介绍'],
+'产品':['明确范围：锁定本周期核心功能与非目标','节点计划：按周排布设计/开发/测试里程碑','协调资源：明确各环节负责人与交付时间','质量把控：提前制定测试用例与验收标准','验收上线：预留灰度与迭代反馈窗口'],
+'人效':['诊断现状：梳理关键流程环节与瓶颈','优化流程：去除重复步骤，引入提效工具','明确分工：为成员设定清晰的职责边界','培训赋能：补足团队短板技能','结果追踪：用数据衡量效率提升幅度'],
+'学习':['明确主题：锁定本阶段最核心的学习领域','制定课表：分解为每日/每周的固定学习时段','输出倒逼：用笔记/实践检验掌握程度','定期自测：设置阶段测验检验效果','复盘调整：根据反馈持续优化学习方式'],
+'通用':['量化目标：将目标转化为可衡量指标','分解阶段：按时间拆出月度/周度里程碑','排序优先级：识别最关键的两三件事','设定检查点：每周固定时间复盘进度','制定应对：预判风险并准备备选方案']};
+const PERIOD_STR={'季度':'12周','月度':'4周','年度':'52周'};
+function pick(a){return a[Math.floor(Math.random()*a.length)];}
+document.getElementById('genBtn').addEventListener('click',()=>{
+const goal=document.getElementById('goal').value.trim();
+if(!goal){alert('请输入你的工作目标');return;}
+const period=document.getElementById('period').value;
+const prog=document.getElementById('progress').value;
+const metric=document.getElementById('metric').value.trim();
+let key='通用';
+if(/销售|业绩|销售|营收/.test(goal))key='销售';
+else if(/产品|上线|功能/.test(goal))key='产品';
+else if(/人效|团队|效率|协作/.test(goal))key='人效';
+else if(/学习|成长|读书|技能|考试/.test(goal))key='学习';
+const steps=STEPS[key]||STEPS['通用'];
+const weekly=(14-prog/10).toFixed(1);
+const out=`【${period}目标】${goal}\n${metric?'量化指标：'+metric+'\n':''}当前进度：${prog}%　·　周期：${PERIOD_STR[period]}
+
+━━━━━━━━━━━ 目标拆解（${key}类）━━━━━━━━━━━
+${steps.map((s,i)=>`${i+1}️⃣ ${s}`).join('\n')}
+
+━━━━━━━━━━━ 量化阶段里程碑 ━━━━━━━━━━━
+· 前期（前 ${Math.max(2, Math.ceil(steps.length/3))} 周）：完成诊断与核心动作，进度提升、打牢基础
+· 中期：关键动作落地并初见成效
+· 后期：冲刺收尾、复盘沉淀，达成${metric?('「'+metric+'」'):'既定目标'}
+
+━━━━━━━━━━━ 每周行动提醒 ━━━━━━━━━━━
+· 每周固定${pick(['周日晚','周五下午','每周一早晨'])}预留 30 分钟复盘进度；
+· 建议本周即可启动第一步：${steps[0].split('：')[1]||steps[0]}。
+
+保持节奏，循序渐进，把大目标化整为零，坚持就一定能突破。`;
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 规划已复制！'))}
+</script>
+</body>
+</html>

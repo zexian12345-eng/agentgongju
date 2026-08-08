@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 每日运势 | AgentGongju.com</title>
+<meta name="description" content="AI每日运势，结合十二生肖/星座，今日宜忌、事业财运爱情指数与幸运数字，一键查看今日运势，仅供娱乐">
+<meta name="keywords" content="运势,每日运势,星座运势,生肖运势,宜忌,今日运程">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.luck-row{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:16px}
+.luck{background:rgba(255,255,255,0.04);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:16px;text-align:center}
+.luck .lv{font-size:1.6rem;font-weight:700;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.luck .lb{color:#94a3b8;font-size:.8rem;margin-top:4px}
+.bar-area{margin-bottom:18px}
+.bar-area .bar-label{display:flex;justify-content:space-between;color:#cbd5e1;font-size:.85rem;margin-bottom:6px}
+.bar{height:10px;background:rgba(255,255,255,0.06);border-radius:6px;overflow:hidden}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,#6366f1,#a855f7);border-radius:6px;transition:width .8s}
+.yiji{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.25);border-radius:12px;padding:16px;margin-bottom:14px;color:#e2e8f0;line-height:1.9;font-size:.9rem;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem;margin-top:8px}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.today-note{background:rgba(168,85,247,0.08);border:1px solid rgba(168,85,247,0.3);border-radius:12px;padding:16px;color:#e9d5ff;line-height:2;font-size:.92rem;margin-bottom:6px}
+@media(max-width:600px){.param-row,.luck-row,.yiji{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>⛩️ AI 每日运势</h1><p>生肖 × 星座 × 今日宜忌，打开今日好运气</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>🐲 生肖</label>
+<select id="zodiac">
+<option value="鼠">🐭 鼠</option><option value="牛">🐮 牛</option><option value="虎">🐯 虎</option>
+<option value="兔">🐰 兔</option><option value="龙">🐲 龙</option><option value="蛇">🐍 蛇</option>
+<option value="马">🐴 马</option><option value="羊">🐑 羊</option><option value="猴">🐵 猴</option>
+<option value="鸡">🐔 鸡</option><option value="狗">🐶 狗</option><option value="猪">🐷 猪</option>
+</select></div>
+<div><label>♊ 星座</label>
+<select id="constellation">
+<option value="白羊座">♈ 白羊座</option><option value="金牛座">♉ 金牛座</option><option value="双子座">♊ 双子座</option>
+<option value="巨蟹座">♋ 巨蟹座</option><option value="狮子座">♌ 狮子座</option><option value="处女座">♍ 处女座</option>
+<option value="天秤座">♎ 天秤座</option><option value="天蝎座">♏ 天蝎座</option><option value="射手座">♐ 射手座</option>
+<option value="摩羯座">♑ 摩羯座</option><option value="水瓶座">♒ 水瓶座</option><option value="双鱼座">♓ 双鱼座</option>
+</select></div>
+</div>
+<button class="btn-gen" id="genBtn">🔮 查看今日运势</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:16px">📅 今日运程详情</div>
+<div class="today-note" id="noteBox"></div>
+<div class="luck-row" id="luckRow"></div>
+<div class="yiji" id="yijiBox"></div>
+<div style="text-align:right"><button class="copy-btn" onclick="copyResult()">📋 复制今日运势</button></div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function rnd(n){return Math.floor(Math.random()*n)}
+function todayStr(){const d=new Date();return `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日`;}
+const luckData=[
+{name:'事业运势',base:72,emo:'💼'},
+{name:'爱情运势',base:70,emo:'💘'},
+{name:'财运指数',base:68,emo:'💰'},
+{name:'健康活力',base:75,emo:'💪'},{name:'贵人助力',base:65,emo:'🤝'}];
+const yi=['宜读书','宜交友','宜出行','宜签约','宜健身','宜学习','宜冥想','宜整理'];
+const ji=['忌冲动','忌熬夜','忌过度承诺','忌口舌之争','忌冲动消费','忌拖延','忌贪小便宜','忌熬夜应酬'];
+const zodiacTips={
+'鼠':'今日思维活跃，抓细节见真章','牛':'踏实肯干，稳中有进','虎':'闯劲十足，宜主动出击','兔':'人和事顺，温柔有力量','龙':'气势如虹，贵人显现','蛇':'静观其变，以静制动','马':'行动力满格，一马当先','羊':'温和从容，福泽自至','猴':'机敏灵活，转机在手','鸡':'精进专注，声名渐起','狗':'忠诚可靠，得人信任','猪':'心态乐观，福气自来'};
+document.getElementById('genBtn').addEventListener('click',()=>{
+const zodiac=document.getElementById('zodiac').value;
+const star=document.getElementById('constellation').value;
+const seed=rnd(90)+rnd(210)+{鼠:1,牛:2,虎:3,兔:4,龙:5,蛇:6,马:7,羊:8,猴:9,鸡:10,狗:11,猪:12}[zodiac];
+grades={事业:35+rnd(30)+seed%40,爱情:35+rnd(30)+(seed%17),财运:35+rnd(30)+(seed%13)};
+grades.事业=Math.min(100,grades.事业);grades.爱情=Math.min(100,grades.爱情);grades.财运=Math.min(100,grades.财运);
+const luckRow=document.getElementById('luckRow');luckRow.innerHTML='';
+[['事业',grades.事业,'💼'],['爱情',grades.爱情,'💘'],['财运',grades.财运,'💰']].forEach(([k,v,em])=>{
+luckRow.innerHTML+=`<div class="luck"><div class="lv">${v}</div><div class="lb">${em} ${k}运势</div></div>`;
+});
+document.getElementById('noteBox').innerHTML=`<strong>${zodiac} · ${star}</strong> 今日（${todayStr()}）：${zodiacTips[zodiac] ?? '运势平稳'}。整体${grades.事业>=78?'高开':'稳中有升'}，把握今天的好节奏。`;
+const y=pick(yi,rnd(yi.length)+3);const j=pick(ji,rnd(ji.length)+3);
+function pick(arr,n){const s=[...arr];for(let i=s.length-1;i>0;i--){const k=rnd(i+1);[s[i],s[k]]=[s[k],s[i]];}return s.slice(0,n).join('　');}
+document.getElementById('yijiBox').innerHTML=`<div>✅ <strong>宜</strong><br>${y}</div><div>📛 <strong>忌</strong><br>${j}</div>`;
+window._fortune=`【AI 每日运势】${zodiac}·${star} ${todayStr()}\n事业${grades.事业} · 爱情${grades.爱情} · 财运${grades.财运}\n宜：${y.replaceAll('\u3000',' ')}\n忌：${j.replaceAll('\u3000',' ')}\n${zodiacTips[zodiac]??'运势平稳'}\n(仅供娱乐参考)`;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(window._fortune||document.body.innerText).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

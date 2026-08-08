@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>海报标语生成器 | AgentGongju.com</title>
+<meta name="description" content="一键生成吸睛的海报标语，支持促销、活动、招聘、广告等多种场景，中文押韵朗朗上口">
+<meta name="keywords" content="海报标语,宣传语,广告语,促销标语,活动宣传,文案">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:70px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.8;white-space:pre-wrap;margin-bottom:12px;font-size:.92rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{color:#94a3b8;font-size:.8rem;line-height:1.8;margin-top:6px}
+.swatch{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🪧 海报标语生成器</h1><p>一句话抓住眼球，让海报自带传播力</p></div>
+
+<div class="card">
+<label>🏷️ 品牌 / 主题名称</label>
+<input type="text" id="brand" placeholder="例如：新店开业、春季大促、夏日冰饮、新品发布">
+<label>🎯 标语场景</label>
+<select id="scene">
+<option value="促销">🛒 促销打折</option>
+<option value="开业">🎊 新店开业</option>
+<option value="招聘">💼 招聘招募</option>
+<option value="品牌">✨ 品牌形象</option>
+<option value="活动">📣 活动宣传</option>
+<option value="季节">🍂 季节主题</option>
+</select>
+<label>😊 语气风格</label>
+<select id="tone">
+<option value="热血">🔥 热血冲劲</option>
+<option value="温暖">🌤️ 温暖治愈</option>
+<option value="幽默">😂 幽默俏皮</option>
+<option value="高端">💎 高端大气</option>
+<option value="文艺">🎐 文艺清新</option>
+</select>
+<button class="btn-gen" id="genBtn">🎨 生成标语</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🏆 精选标语 · 共 10 条</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 一键复制全部</button>
+<div class="tip">💡 提示：每条标语均已押韵，可直接用于海报主标题、视频封面、宣传单页，多次生成可获取更多版本。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const BANK={
+'促销':['全场直降，买到就是赚到','价格撕到底，品质不打折','限时疯抢，错过再等一年','半价来袭，手慢就没有','今日特惠，省下的就是赚的','错过今天，多花一半'],
+'开业':['新店开张，礼遇全场','开业大吉，好礼等你','剪彩迎客，聚惠八方','今天开业，全场惊喜','新店驾到，诚意满满','宾至如归，开业酬宾'],
+'招聘':['高薪诚聘，虚位以待','你有才华，我有平台','志同道合，一起搞事','多劳多得，梦想起航','加入我们，共创未来','钱多事少离家近，只等你来'],
+'品牌':['匠心之作，值得信赖','品质为骨，诚信为魂','专注一事，做到极致','始于初心，忠于品质','好产品，自己会说话','用实力，赢得口碑'],
+'活动':['全城热浪，等你来嗨','狂欢开启，不见不散','就这个周末，燥起来','大幕拉开，好戏连台','呼朋唤友，一起来玩','人气爆棚，先到先得'],
+'季节':['春风十里，不如有你','夏日炎炎，清凉一夏','秋高气爽，收获满满','冬日暖阳，温暖入怀','四季轮转，好物常伴','应季而食，正当其时']};
+const TONE={
+'热血':['冲就完了','全力以赴','一往无前','燃爆全场','说干就干','火力全开'],
+'温暖':['温柔以待','岁月静好','暖心相伴','被治愈到了','悄悄温暖你','慢下来享受'],
+'幽默':['钱包说了算','快乐加倍','属实上头','快乐源泉','不买后悔一年','真香警告'],
+'高端':['臻于至善','非凡之选','品质之巅','格调之选','悦享人生','封面之作'],
+'文艺':['诗意栖居','把日子过成诗','向光而行','心有山海','岁月温柔','遇见美好']};
+const SUFFIX=theme=>[`${theme}，值得拥有`,`${theme}，就选我们`,`${theme}，品质看得见`,`${theme}，给生活加点甜`,`${theme}，从这里开始`,`${theme}，心动不如行动`];
+function pick(a){return a[Math.floor(Math.random()*a.length)];}
+document.getElementById('genBtn').addEventListener('click',()=>{
+const brand=document.getElementById('brand').value.trim()||'本店';
+const scene=document.getElementById('scene').value;
+const tone=document.getElementById('tone').value;
+const core=BANK[scene];
+const toneList=TONE[tone];
+let out='';
+for(let i=0;i<10;i++){
+const a=pick(core);
+const b=pick(toneList);
+const fmt=i%3===0?`· ${a}，${b}`:(i%3===1?`· ${brand}${a} — ${b}`:`· ${a}｜${b}`);
+out+=fmt+'\n';
+}
+document.getElementById('outputBox').innerText='【'+scene+'主题 · '+tone+'风格】\n\n'+out+'\n··· 以上标语由 AI 生成，可自由选用 ···';
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 标语已复制！'))}
+</script>
+</body>
+</html>

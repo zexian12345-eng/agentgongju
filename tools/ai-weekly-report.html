@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 周报生成器 | AgentGongju.com</title>
+<meta name="description" content="AI周报生成器，输入本周工作要点，自动生成结构清晰、数据亮眼的周报，研发/运营/市场/产品多岗位模板一键切换">
+<meta name="keywords" content="AI周报,周报生成,工作总结,日报,职场工具">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:80px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;margin-bottom:12px;font-size:.92rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📊 AI 周报生成器</h1><p>把零散工作自动写成领导爱看的周报</p></div>
+
+<div class="card">
+<label>🗒️ 本周工作内容（分点或用逗号、顿号概括）</label>
+<textarea id="tasks" placeholder="例如：完成登录模块重构，修复3个线上bug，上线新版首页，竞品调研"></textarea>
+<div class="param-row">
+<div><label>💼 岗位类型</label>
+<select id="role">
+<option value="研发">💻 研发/技术</option>
+<option value="产品">📱 产品经理</option>
+<option value="运营">📈 运营</option>
+<option value="市场">📣 市场</option>
+<option value="设计">🎨 设计</option>
+<option value="销售">🤝 销售</option>
+</select></div>
+<div><label>📅 汇报周期</label>
+<select id="period">
+<option value="周报">📆 本周周报</option>
+<option value="月报">📅 本月月报</option>
+<option value="日报">📌 今日日报</option>
+</select></div>
+</div>
+<div class="param-row">
+<div><label>👥 汇报对象</label>
+<select id="audience">
+<option value="上级">👔 直属上级</option>
+<option value="部门">🏢 部门全员</option>
+<option value="老板">🧑‍💼 老板</option>
+</select></div>
+<div><label>✍️ 篇幅长度</label>
+<select id="length">
+<option value="精简">精简版</option>
+<option value="标准" selected>标准版</option>
+<option value="详细">详细版</option>
+</select></div>
+</div>
+<button class="btn-gen" id="genBtn">✨ 生成周报</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">✍️ 你的周报</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制周报</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function dateRange(){const now=new Date();const dow=(now.getDay()+6)%7;const mon=new Date(now);mon.setDate(now.getDate()-dow);const sun=new Date(mon);sun.setDate(mon.getDate()+6);const f=d=>`${d.getMonth()+1}月${d.getDate()}日`;return f(mon)+' — '+f(sun);}
+const roleTips={
+'研发':{done:['完成系统性能优化，关键接口响应时间降低 30%','修复线上 bug，保障核心服务稳定运行','补充单元测试，覆盖率提升至 85%'],plan:['推进新功能模块开发','梳理历史技术债并制定优化排期'],risk:'部分接口依赖第三方，存在偶发超时，已制定降级预案'},
+'产品':{done:['组织用户访谈，沉淀 12 条核心需求','输出新版 PRD 并推动评审通过','跟进版本迭代，按期上线可用'],plan:['梳理下期迭代功能优先级','验证核心数据指标变化趋势'],risk:'需求变更频繁，需加强与研发侧沟通对齐'},
+'运营':{done:['策划并落地主题活动，新增用户环比 +18%','优化内容选题，单篇阅读量破万','整理社群数据并输出运营日报'],plan:['推进下一波转化活动','深耕优质内容矩阵布局'],risk:'投放流量波动，需加大对高转化渠道投入'},
+'市场':{done:['完成竞品调研并输出分析报告','推进品牌内容合作，曝光超 10 万','优化活动物料，点击率提升 25%'],plan:['策划下一阶段品牌传播campaign','拓展 2 个新投放渠道'],risk:'外部活动排期冲突，需提前锁定资源'},
+'设计':{done:['完成新版视觉稿并交付开发','优化组件规范，提升复用率','配合运营输出活动主视觉'],plan:['推进深色模式适配','沉淀设计走查清单'],risk:'设计资源紧张，需按优先级排期'},
+'销售':{done:['跟进重点客户，新增意向线索 20 个','促成 3 笔订单签约','优化销售话术并组织内部培训'],plan:['深挖老客户复购','拓展开拓新客户名单'],risk:'个别客户决策周期长，需持续跟进维系'}};
+document.getElementById('genBtn').addEventListener('click',()=>{
+const tasks=document.getElementById('tasks').value.trim();
+if(!tasks){alert('请先填写本周工作内容');return;}
+const role=document.getElementById('role').value;
+const period=document.getElementById('period').value;
+const aud=document.getElementById('audience').value;
+const len=document.getElementById('length').value;
+const tips=roleTips[role];
+const tArr=tasks.split(/[，。、;；,.]/).filter(x=>x.trim());
+const title=period==='周报'?`工作周报（${dateRange()}）`:period==='月报'?'工作月报':'工作日报';
+const greet=aud==='老板'?'致老板':aud==='部门'?'致各位同事':'致上级';
+let out=`【${title}】\n${greet}，\n\n`;
+out+=`一、本周成果\n`;
+tArr.forEach(t=>out+=`1. 完成「${t.trim()}」相关工作，整体推进顺利。\n`);
+tips.done.slice(0,len==='详细'?3:2).forEach(d=>out+=`4. ${d}\n`);
+if(len==='详细'){out+=`\n二、数据与亮点\n`;out+=`· 本周核心指标整体稳中有升，关键项目按期交付。\n· 内部分工明确，协作效率得到有效提升。\n`;}
+out+=`\n三、本周经验与思考\n· 通过流程梳理，减少了重复沟通成本。\n· 对「${tArr[0]||'核心项目'}」有了更深入的把控，后续将复用这套方法。\n`;
+out+=`\n四、下周计划\n`;
+tips.plan.forEach(p=>out+=`1. ${p}\n`);
+out+=`\n五、风险与需协调事项\n· ${tips.risk}\n`;
+if(len!=='精简'){out+=`\n请审阅，如有需要调整请随时沟通。`;}
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 周报已复制！'))}
+</script>
+</body>
+</html>

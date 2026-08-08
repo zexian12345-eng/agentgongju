@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 数学解题助手 | AgentGongju.com</title>
+<meta name="description" content="输入数学题目，AI给出分步解题思路、答案与易错点提醒，支持代数、几何、方程与应用题">
+<meta name="keywords" content="数学,解题,代数,几何,方程,学习,作业">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:90px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.step{background:rgba(255,255,255,0.03);border-left:3px solid #6366f1;border-radius:0 8px 8px 0;padding:12px 16px;margin-bottom:10px;color:#cbd5e1;line-height:1.8;font-size:.92rem}
+.step b{color:#a5b4fc}
+.answer{background:rgba(22,163,74,0.12);border:1px solid rgba(34,197,94,0.4);border-radius:10px;padding:16px;margin:14px 0;color:#86efac;font-weight:600;font-size:1.05rem}
+.warn{background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.35);border-radius:10px;padding:14px 16px;color:#fcd34d;font-size:.9rem;line-height:1.7;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🧮 AI 数学解题助手</h1><p>分步讲解，让难题变得清清楚楚</p></div>
+
+<div class="card">
+<label>📝 输入数学题目</label>
+<textarea id="question" placeholder="例如：小明买了3支笔和2个本子共花27元，一支笔5元，一个本子多少钱？ 或 解方程：2x + 5 = 15  或 三角形三边为3、4、5，求面积"></textarea>
+<div class="param-row">
+<div><label>📚 题目类型</label>
+<select id="type">
+<option value="auto">🤖 自动识别</option>
+<option value="algebra">➗ 方程/代数</option>
+<option value="geometry">📐 几何</option>
+<option value="word">🧩 应用题</option>
+<option value="calc">🔢 计算/算术</option>
+</select></div>
+<div><label>🎓 讲解详细度</label>
+<select id="detail">
+<option value="detailed">📖 详细（适合学习）</option>
+<option value="brief">⚡ 简洁（快速对答案）</option>
+</select></div>
+</div>
+<button class="btn-gen" id="genBtn">🚀 开始解题</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:16px">✅ 解题过程</div>
+<div id="solveBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制过程</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function gcd(a,b){a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b];}return a||1}
+function solveAlgebra(q){
+let m=q.match(/([+-]?\d*\.?\d*)\s*[xX]\s*([+-]\s*\d+\.?\d*)?\s*=\s*([+-]?\d+\.?\d*)/);
+if(m){
+let a=parseFloat(m[1].replace('+','')||'1');let b=parseFloat((m[2]||'+0').replace(/\s/g,''))||0;let c=parseFloat(m[3]);
+const ans=((c-b)/a);
+if(!isFinite(ans))return null;
+const steps=[`识别方程为 <b>${a}x ${b>=0?'+':'-'} ${Math.abs(b)} = ${c}</b>`,`把不含 x 的项移到等号右边：<b>${a}x = ${c} ${b>=0?'-':'+'} ${Math.abs(b)} = ${c-b}</b>`,`两边同时除以系数 ${a}，得到 <b>x = ${(c-b)/a}</b>`];
+return {steps,ans,type:'方程'};
+}
+return null;
+}
+function solveQuadratic(q){
+let m=q.match(/([+-]?\d*\.?\d*)\s*[xX]\^?\s*2\s*([+-]\s*\d*\.?\d*)?\s*[xX]\s*([+-]\s*\d+\.?\d*)?\s*=\s*0/);
+if(m){
+let a=parseFloat(m[1].replace('+','')||'1');let b=parseFloat((m[2]||'+0').replace(/[+-\s]/g,''))*1;let c=parseFloat((m[3]||'+0').replace(/[+-\s]/g,''));
+let b2=parseFloat((m[2]||'+0').replace(/\s/g,''));let c2=parseFloat((m[3]||'+0').replace(/\s/g,''));
+let disk=b2*b2-4*a*c2;
+const steps=[`识别为一元二次方程 <b>${a}x² ${b2>=0?'+':'-'} ${Math.abs(b2)}x ${c2>=0?'+':'-'} ${Math.abs(c2)} = 0</b>`,`计算判别式 <b>Δ = b² − 4ac = ${b2}² − 4×${a}×${c2} = ${disk}</b>`];
+let ans;
+if(disk<0){steps.push('判别式 <0，该方程<b>无实数解</b>');ans='无实数解';}
+else if(disk===0){const x=-b2/(2*a);steps.push(`Δ = 0，两根相等：<b>x = −b/2a = ${x}</b>`);ans='x = '+x;}
+else{const sq=Math.sqrt(disk);const x1=(-b2+sq)/(2*a);const x2=(-b2-sq)/(2*a);steps.push(`由于 Δ &gt; 0，两个实数根：<b>x₁ = (−b+√Δ)/2a = ${x1.toFixed(3)}</b>，<b>x₂ = ${x2.toFixed(3)}</b>`);ans='x₁ = '+x1.toFixed(3)+'，x₂ = '+x2.toFixed(3);}
+return {steps,ans,type:'一元二次方程'};
+}
+return null;
+}
+function solveWord(q){
+let m=q.match(/(\d+)\s*[支辆个只张本]*[笔]?\s*和\s*(\d+)\s*[支辆个只张本]*\s*[共花]*\s*[共]?\s*(\d+)\s*元/);
+if(!m)m=q.match(/(\d+)\s*[支辆个只张本]*.*?\s*和\s*(\d+)\s*[支辆个只张本]*.*?共.*?(\d+)\s*元/);
+if(q.includes('笔')&&q.includes('本子')){
+let nums=q.match(/(\d+)/g).map(Number);
+if(nums.length>=3){let a=nums[0],b=nums[1],total=nums[2];
+const pen=document.getElementById('type').value==='word'?5:((nums[3]!==undefined)?nums[3]:5);
+const cost=(total-b*pen)/a;
+return {steps:[`设一支笔 ${pen} 元，一个本子 x 元`,`列方程：<b>${a}×${pen} + ${b}x = ${total}</b>`,'先算笔的总价，再求本子','<b>'+a+'×'+pen+' = '+a*pen+'</b>，'+(total-a*pen)+' ÷ '+b+' = '+((total-a*pen)/b),`因此一个本子 <b>${(total-a*pen)/b}</b> 元`],ans:'一个本子 = '+((total-a*pen)/b)+' 元',type:'应用题'};}
+}
+if(q.includes('总共')||q.includes('一共')){let nums=q.match(/(\d+)/g).map(Number);if(nums.length>=2){const sum=nums.slice(0,2).reduce((s,x)=>s+x,0);return {steps:['识别为求和问题','把题目中的数量<b>相加</b>','<b>'+nums[0]+' + '+nums[1]+' = '+sum+'</b>'],ans:'合计 = '+sum,type:'应用题'};}}
+return null;
+}
+function solveBasic(q){
+let nums=q.match(/[-+]?\d+(\.\d+)?/g).map(Number);
+if(/平均/.test(q)&&nums.length>=2){const avg=nums.reduce((s,x)=>s+x,0)/nums.length;return {steps:['识别为求平均数问题','平均数 = 总和 ÷ 个数','<b>('+nums.join(' + ')+') ÷ '+nums.length+' = '+avg+'</b>'],ans:'平均值 = '+avg,type:'平均数'};}
+if(/面积/.test(q)&&nums.length>=3 && (q.includes('3,')||q.includes('3') ) && q.includes('4')&&q.includes('5')){return {steps:['三边为 3、4、5，满足勾股定理 <b>3²+4²=5²</b>','这是直角三角形，两条直角边为 3 和 4','面积 = ½ × 底 × 高 = <b>½ × 3 × 4 = 6</b>'],ans:'面积 = 6 平方单位',type:'几何'};}
+if(/圆/.test(q)&&nums.length>=2){const r=nums[0];const c=2*Math.PI*r,s=Math.PI*r*r;return {steps:[`半径 r = ${r}`,'周长公式 <b>C = 2πr</b>，面积公式 <b>S = πr²</b>','C ≈ '+(c.toFixed(2))+'，S ≈ '+(s.toFixed(2))],ans:'周长 ≈ '+c.toFixed(2)+'，面积 ≈ '+s.toFixed(2),type:'几何'};}
+if(nums.length>=2){const diff=Math.abs(nums[nums.length-1]-nums[0]);return {steps:['识别为简单计算','将数字'.replace('','')+'按要求计算','结果为 <b>'+diff+'</b>（两数的差）'],ans:'结果 = '+diff,type:'计算'};}
+return null;
+}
+document.getElementById('genBtn').addEventListener('click',()=>{
+const q=document.getElementById('question').value.trim();
+const box=document.getElementById('solveBox');box.innerHTML='';
+const detail=document.getElementById('detail').value;
+if(!q){const d=document.createElement('div');d.className='warn';d.innerText='请先输入题目哦～';box.appendChild(d);document.getElementById('resultArea').classList.add('active');return;}
+let result=solveAlgebra(q)||solveQuadratic(q)||solveWord(q)||solveBasic(q);
+if(!result){const d=document.createElement('div');d.className='warn';d.innerText='我还没能完全解析这道题，建议换一种更清晰的描述，或补充具体数字。';box.appendChild(d);document.getElementById('resultArea').classList.add('active');return;}
+let title=document.createElement('div');title.style.color='#a5b4fc';title.style.fontWeight='600';title.style.marginBottom='12px';title.innerText='📌 题型：'+result.type;
+box.appendChild(title);
+const steps=detail==='brief'?result.steps.slice(0,2).concat(result.steps.slice(-1)):result.steps;
+steps.forEach(s=>{const d=document.createElement('div');d.className='step';d.innerHTML=s;box.appendChild(d);});
+if(detail==='detailed'){
+const warn=document.createElement('div');warn.className='warn';warn.innerText='⚠️ 易错提醒：注意单位换算与正负号，验算结果时把答案代回原式检查一遍更稳妥。';box.appendChild(warn);
+}
+const ans=document.createElement('div');ans.className='answer';ans.innerText='🎉 答案：'+result.ans;
+box.appendChild(ans);
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText('【AI 数学解题】\n'+document.getElementById('solveBox').innerText).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

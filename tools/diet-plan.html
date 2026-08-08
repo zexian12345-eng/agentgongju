@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 减脂增肌食谱 | AgentGongju.com</title>
+<meta name="description" content="输入性别、目标与当日热量，AI生成一天的营养均衡三餐食谱，含蛋白质、碳水与脂肪分配建议">
+<meta name="keywords" content="食谱,减脂,增肌,健身,饮食,营养,热量">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.meal{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:16px;margin-bottom:12px}
+.meal h4{color:#fbbf24;margin-bottom:8px;font-size:.95rem}
+.meal .f{font-size:.88rem;color:#cbd5e1;line-height:1.7}
+.meal .cal{font-size:.78rem;color:#64748b;margin-top:4px}
+.total{background:rgba(22,163,74,0.1);border:1px solid rgba(34,197,94,0.35);border-radius:10px;padding:14px;color:#86efac;font-size:.95rem;line-height:1.7;margin-bottom:10px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🥗 AI 减脂增肌食谱</h1><p>吃得对，练得值，健康好身材</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>👤 性别</label>
+<select id="gender"><option value="女">女性</option><option value="男">男性</option></select></div>
+<div><label>🎯 健身目标</label>
+<select id="goal">
+<option value="减脂">🔥 减脂</option>
+<option value="增肌">💪 增肌</option>
+<option value="维持">⚖️ 维持体态</option>
+</select></div>
+</div>
+<div class="param-row">
+<div><label>⚖️ 体重（公斤）</label><input type="number" id="weight" min="30" max="150" value="60"></div>
+<div><label>📊 当日目标热量（千卡，选填）</label><input type="number" id="cal" placeholder="留空则自动估算"></div>
+</div>
+<button class="btn-gen" id="genBtn">🥗 生成今日食谱</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:16px">✅ 今日营养食谱</div>
+<div class="total" id="totalBox"></div>
+<div id="mealBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制食谱</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const breakfast={
+'减脂':[['无糖燕麦片+水煮蛋+脱脂牛奶','燕麦50g提供慢碳，水煮蛋补充优质蛋白'],
+['全麦吐司2片+希腊酸奶+蓝莓','低脂高蛋白，纤维丰富利于代谢'],
+['菜肉馅包子1个+豆浆+小番茄','清淡饱腹，控油控糖']],
+'增肌':[['燕麦碗+香蕉+全脂牛奶+蛋白粉1勺','碳水和蛋白质双补充，支持训练恢复'],
+['鸡蛋三明治+牛油果+牛奶','鸡蛋提供蛋白，牛油果富含健康脂肪'],
+['馒头+卤蛋2个+豆浆','升糖适中，满足增肌热量需求']],
+'维持':[['杂粮粥+鸡蛋+凉拌黄瓜','均衡不油腻，营养全面'],
+['鲜肉馄饨+烫青菜','荤素搭配，满足日常所需'],
+['鸡蛋灌饼（少油）+无糖豆浆','解馋又不失控']]};
+const lunch={
+'减脂':[['糙米饭+香煎鸡胸肉+西兰花','鸡胸肉低脂高蛋白，糙米慢碳更耐饿'],
+['杂粮饭+清蒸鱼+蒜蓉生菜','蒸鱼低脂高蛋白，补足Omega-3'],
+['玉米+白灼虾+凉拌木耳','虾肉高蛋白低脂，饱腹清爽']],
+'增肌':[['米饭+红烧牛肉+炒青菜','牛肉富含肌酸与铁，助力增肌'],
+['米饭+椒盐鸡腿（去皮）+时蔬','充足蛋白质与碳水'],
+['意大利面+牛肉丸+西红柿蛋汤','意面缓释碳水，牛肉丸供能']],
+'维持':[['米饭+宫保鸡丁+炒时蔬','荤素搭配，家常营养'],
+['面条+荷包蛋+青菜','简单满足，控制油盐'],
+['红薯+瘦肉炒芹菜+豆腐汤','粗细搭配，营养均衡']]};
+const dinner={
+'减脂':[['蒸紫薯+清蒸鳕鱼+烫菠菜','晚餐低碳高蛋白，清淡助代谢'],
+['魔芋面+鸡胸肉丝+时蔬','低热量高纤维，很有饱腹感'],
+['南瓜+白灼虾+凉拌黄瓜','晚间低脂，易消化不堆积']],
+'增肌':[['米饭+牛排+烤芦笋','晚餐补充蛋白与碳水，助夜间修复'],
+['红薯+三文鱼+西兰花','三文鱼优质蛋白+健康脂肪'],
+['杂粮饭+鸡腿肉+菌菇汤','均衡供能，支持肌肉生长']],
+'维持':[['八宝粥+清炒虾仁+凉拌海带','清淡滋养，晚餐不负担'],
+['全麦馒头+蒸蛋羹+时蔬','软软的好吸收'],
+['蔬菜粥+豆腐煲+肉末','温和饱腹，家常味']]};
+function rand(a){return a[Math.floor(Math.random()*a.length)]}
+document.getElementById('genBtn').addEventListener('click',()=>{
+const gender=document.getElementById('gender').value;
+const goal=document.getElementById('goal').value;
+const weight=parseFloat(document.getElementById('weight').value)||60;
+let targetCal=parseFloat(document.getElementById('cal').value);
+if(!targetCal||targetCal<=0){
+const bmr=gender==='男'?10*weight+6.25*170-5*30+5:10*weight+6.25*170-5*30-161;
+targetCal=Math.round(goal==='减脂'?bmr*1.4-300:goal==='增肌'?bmr*1.4+350:bmr*1.4);
+}
+const meals=[
+['🌅 早餐','breakfast'],
+['☀️ 午餐','lunch'],
+['🌙 晚餐','dinner']];
+const box=document.getElementById('mealBox');box.innerHTML='';
+const [bf]=rand(breakfast[goal]),[lun]=rand(lunch[goal]),[dinner]=rand(dinner[goal]);
+const picks={breakfast:rand(breakfast[goal]),lunch:rand(lunch[goal]),dinner:rand(dinner[goal])};
+meals.forEach(([emo,lane])=>{const [food,desc]=picks[lane];
+const m=document.createElement('div');m.className='meal';
+m.innerHTML=`<h4>${emo} ${lane==='breakfast'?'早餐':lane==='lunch'?'午餐':'晚餐'}</h4><div class="f">🍽 ${food}<br>💡 ${desc}</div><div class="cal">约 ${Math.round(targetCal*({breakfast:0.3,lunch:0.4,dinner:0.3}[lane]))} 千卡</div>`;
+box.appendChild(m);});
+const protein=Math.round(weight*(goal==='增肌'?1.8:1.2));
+document.getElementById('totalBox').innerHTML=`🎯 今日目标热量约 <b>${targetCal} 千卡</b>　💪 建议蛋白质约 <b>${protein} 克</b><br>🍱 分配：早餐约30% · 午餐约40% · 晚餐约30%，可加餐水果/坚果。`;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText('【AI 减脂增肌食谱】\n'+document.getElementById('totalBox').innerText+'\n'+document.getElementById('mealBox').innerText).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 商务邮件助手 | AgentGongju.com</title>
+<meta name="description" content="输入邮件要点与语气风格，AI快速生成专业得体的商务邮件，支持正式、温和、催办等多种场景">
+<meta name="keywords" content="邮件,商务,办公,沟通,写信,英文邮件">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:80px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.mail-subject{background:rgba(99,102,241,0.12);border:1px solid rgba(99,102,241,0.35);border-radius:10px;padding:12px 16px;color:#a5b4fc;font-weight:600;margin-bottom:12px}
+.mail-body{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;margin-bottom:12px;font-size:.92rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>✉️ AI 商务邮件助手</h1><p>专业得体，三分钟搞定一封好邮件</p></div>
+
+<div class="card">
+<label>📌 收件人称呼</label>
+<input type="text" id="receiver" placeholder="例如：李总 / 张老师 / Sam，客户王先生">
+<label>📝 邮件要点（想说什么）</label>
+<textarea id="points" placeholder="例如：首先感谢对方上周的合作，然后想询问项目进度，最后约下周三下午开会进一步沟通。"></textarea>
+<div class="param-row">
+<div><label>🎭 语气风格</label>
+<select id="tone">
+<option value="正式">🎩 正式专业</option>
+<option value="亲切">🤝 亲切友好</option>
+<option value="催办">⏰ 礼貌催办</option>
+<option value="致歉">🙏 表达歉意</option>
+</select></div>
+<div><label>📮 邮件语言</label>
+<select id="lang">
+<option value="中文">中文</option>
+<option value="英文">English</option>
+</select></div>
+</div>
+<button class="btn-gen" id="genBtn">🚀 生成邮件</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:16px">✅ 邮件草稿</div>
+<div class="mail-subject" id="subjectBox"></div>
+<div class="mail-body" id="bodyBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制邮件</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function pick(arr){return arr[Math.floor(Math.random()*arr.length)]}
+document.getElementById('genBtn').addEventListener('click',()=>{
+const recv=document.getElementById('receiver').value.trim()||'尊敬的客户';
+const points=document.getElementById('points').value.trim();
+const tone=document.getElementById('tone').value;
+const lang=document.getElementById('lang').value;
+const subjBox=document.getElementById('subjectBox');const bodyBox=document.getElementById('bodyBox');
+if(lang==='英文'){genEnglish(recv,points,tone,subjBox,bodyBox);return;}
+let subject,body;
+const salutation=recv.includes('总')||recv.includes('老师')||recv.includes('先生')||recv.includes('女士')||recv.includes('经理')?recv:'尊敬的'+recv;
+if(tone==='正式'){
+subject='关于「'+clip(extract(points))+'」的沟通';
+body='尊敬的'+recv+'：\n\n您好！\n\n'+firstPara(points)+'\n\n'+midPara(points)+'\n\n期待您的回复。若有任何问题，欢迎随时联系我。\n\n顺祝商祺！\n此致\n敬礼';
+}else if(tone==='亲切'){
+subject='想和您聊聊「'+clip(extract(points))+'」';
+body='嗨，'+recv+'：\n\n最近怎么样？感谢您的持续支持，合作很愉快！\n\n'+firstPara(points)+'。'+midPara(points)+'\n\n方便的话我们约个时间详细聊～随时欢迎联系我！\n\n祝一切顺利，天天开心！';
+}else if(tone==='催办'){
+subject='关于「'+clip(extract(points))+'」的事项跟进';
+body='尊敬的'+recv+'：\n\n您好！打扰您了。\n\n抱歉冒昧跟进。'+firstPara(points)+'。想了解目前的进展，若已办妥请告知，以免重复打扰。\n\n若您这边比较忙，也可以安排同事对接，我们随时配合。\n\n盼复，感谢理解与支持！\n\n此致\n敬礼';
+}else{
+subject='关于「'+clip(extract(points))+'」的说明';
+body='尊敬的'+recv+'：\n\n您好！\n\n非常抱歉给您带来了不便/困扰。'+firstPara(points)+'。\n\n我们对本次情况深表歉意，并正在积极处理（已采取相应改进措施）。如有需要，我们愿全力配合弥补。\n\n恳请您的谅解，期待后续继续愉快合作。\n\n此致\n敬礼';
+}
+subjBox.innerText='📮 邮件主题：'+subject;
+bodyBox.innerText=body;
+document.getElementById('resultArea').classList.add('active');
+});
+function genEnglish(recv,points,tone,subjBox,bodyBox){
+const topic=extract(points);
+let subject,body;
+if(tone==='催办'){
+subject='Following up: '+capitalize(topic);
+body='Dear '+recv+',\n\nGreetings.\n\n'+firstPara(points)+'. Could you kindly let me know the latest status? We\'d be happy to assist on our end whenever convenient.\n\nThank you for your attention, and I look forward to your reply.\n\nBest regards';
+}else{
+subject='About: '+capitalize(topic);
+body='Dear '+recv+',\n\nI hope this message finds you well.\n\n'+firstPara(points)+'. '+midPara(points)+'\n\nPlease feel free to reach out if you have any questions. I look forward to hearing from you.\n\nBest regards';
+}
+subjBox.innerText='📮 Subject: '+subject;
+bodyBox.innerText=body;
+document.getElementById('resultArea').classList.add('active');
+}
+function extract(t){return (t||'我们的合作事项').split(/[，。,.;；\n]/)[0]}
+function clip(s){return s.length>18?s.slice(0,18)+'…':s}
+function capitalize(s){return s.charAt(0).toUpperCase()+s.slice(1)}
+function firstPara(p){const a=extract(p);return '关于您提到的「'+a+'」一事，我们已认真了解相关情况'}
+function midPara(p){const items=(p||'').split(/[，。,.;；\n]+/).filter(x=>x);
+const random=items.length>2?pick(items):'相关事项';
+return '同时，'+(items.slice(1).length?items.slice(1,4).join('；')+'。':'我们希望通过积极沟通推进这件事，请您给予支持。')+(toneRandom())}
+function toneRandom(){return ['','','同时我们也会做好相应准备，请您放心。'][Math.floor(Math.random()*3)]}
+function copyResult(){navigator.clipboard.writeText(document.getElementById('subjectBox').innerText.replace('📮 ','')+'\n\n'+document.getElementById('bodyBox').innerText).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

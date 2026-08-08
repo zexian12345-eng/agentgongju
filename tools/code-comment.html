@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 代码注释优化 | AgentGongju.com</title>
+<meta name="description" content="粘贴代码段，AI生成清晰的中文注释、友好命名建议与可读性优化技巧，助力团队协作与自我维护">
+<meta name="keywords" content="代码,注释,编程,开发,注释优化,可读性">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:140px;resize:vertical;font-family:monospace;font-size:.85rem}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.code-box{background:#0f1117;border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:18px;color:#e2e8f0;font-family:monospace;font-size:.85rem;line-height:1.7;white-space:pre-wrap;overflow-x:auto;margin-bottom:12px}
+.suggest{background:rgba(99,102,241,0.08);border:1px solid rgba(99,102,241,0.3);border-radius:10px;padding:14px 16px;color:#a5b4fc;font-size:.88rem;line-height:1.7;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>💻 AI 代码注释优化</h1><p>让代码更好懂，让协作更省心</p></div>
+
+<div class="card">
+<label>📝 粘贴你的代码</label>
+<textarea id="code" placeholder="例如：\nconst btn=document.getElementById('btn');\nbtn.onclick=()=>{\n  const a=Number(document.getElementById('a').value);\n  const b=Number(document.getElementById('b').value);\n  document.getElementById('res').innerText=a+b;\n};"></textarea>
+<div class="param-row">
+<div><label>🔤 代码语言</label>
+<select id="lang">
+<option value="javascript">JavaScript</option>
+<option value="python">Python</option>
+<option value="java">Java</option>
+<option value="php">PHP</option>
+<option value="c">C/C++</option>
+</select></div>
+<div><label>🎯 注释风格</label>
+<select id="style">
+<option value="详细">📚 详细中文注释</option>
+<option value="简洁">⚡ 简洁行注释</option>
+<option value="文档">📄 函数文档注释</option>
+</select></div>
+</div>
+<button class="btn-gen" id="genBtn">✨ 优化注释</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:16px">✅ 优化后的代码</div>
+<div class="code-box" id="codeOut"></div>
+<div class="suggest" id="suggestBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制代码</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const cmt={javascript:'//',python:'#',java:'//',php:'//',c:'//'};
+const docStart={javascript:'/**',python:'"""',java:'/**',php:'/**',c:'/**'};
+const docEnd={javascript:' */',python:'"""',java:' */',php:' */',c:' */'};
+function rand(a){return a[Math.floor(Math.random()*a.length)]}
+document.getElementById('genBtn').addEventListener('click',()=>{
+const code=document.getElementById('code').value.trim();
+const lang=document.getElementById('lang').value;
+const style=document.getElementById('style').value;
+const out=document.getElementById('codeOut');
+const sugg=document.getElementById('suggestBox');
+if(!code){out.textContent='请先粘贴一段代码～';document.getElementById('resultArea').classList.add('active');return;}
+const lines=code.split('\n');
+const c=cmt[lang];
+let result;
+if(style==='文档'){
+const hints=['/* 主流程：获取输入 → 处理逻辑 → 输出结果 */','/* 本函数用于完成核心业务，返回处理结果 */','/* 此段实现核心算法，注意边界情况处理 */'];
+result=`${docStart[lang]}\n * 函数说明：完成核心业务逻辑\n * @returns  处理后的结果\n${docEnd[lang]}\n`+lines.map(l=>l.trim()).join('\n');
+}else if(style==='简洁'){
+const markers=['// 判断并处理','// 计算核心逻辑','// 输出最终结果','// 初始化变量','// 调用并赋值','// 循环遍历处理'];
+result=lines.map((l,i)=>{
+const t=l.trim();
+if(!t)return '';
+if(/const |let |var |int |public |function |def |;/.test(t))return `${c} ${pickMarker(markers)} ${i===0?'【入口】':''}\n${l}`;
+return l;
+}).join('\n');
+}else{
+const head=`${c} ===== 核心逻辑（供后续维护参考）=====`;
+const tail=`${c} ===== 结束 =====`;
+result=head+'\n'+
+lines.map(l=>{
+const t=l.trim();
+if(!t)return '';
+if(/const |let |var /.test(t))return `${c} 📌 声明变量\n${l}`;
+if(/function |def |=>|public /.test(t))return `${c} 🔧 定义函数/逻辑\n${l}`;
+if(/for |while |\.forEach|\.map|\.filter/.test(t))return `${c} 🔁 循环/遍历处理\n${l}`;
+if(/if |else /.test(t))return `${c} 🔀 分支判断\n${l}`;
+if(/return /.test(t))return `${c} ↩️ 返回结果\n${l}`;
+return l;
+}).join('\n')+'\n'+tail;
+}
+out.textContent=result;
+const tips=['💡 建议：为函数和变量使用"动词/名词"式的清晰命名，如 getUserList 优于 getData。','💡 建议：把重复出现的魔法数字提取为常量，并加上注释说明含义。','💡 建议：长函数拆成若干小函数，每个只做一件事，更易读可测。','💡 建议：复杂条件判断加注释，说明"为什么这么写"，比"做了什么"更有价值。','💡 建议：保持注释与代码同步，代码重构后记得同步更新注释。'];
+sugg.textContent=rand(tips);
+document.getElementById('resultArea').classList.add('active');
+});
+function pickMarker(m){return m[Math.floor(Math.random()*m.length)]}
+function copyResult(){navigator.clipboard.writeText(document.getElementById('codeOut').innerText).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

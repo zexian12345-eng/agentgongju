@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>教师通知话术生成器 | AgentGongju.com</title>
+<meta name="description" content="教师通知话术生成器，一键生成给家长、学生、同事的通知文案，语气得体，适用于群发通知、作业布置、安全提醒、活动通知等场景">
+<meta name="keywords" content="教师通知,家长群通知,班级通知,作业发布,安全提醒,家校沟通">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:70px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.8;white-space:pre-wrap;margin-bottom:12px;font-size:.92rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{color:#94a3b8;font-size:.8rem;line-height:1.8;margin-top:6px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📢 教师通知话术生成器</h1><p>措辞得体，家校沟通不犯难</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>📨 通知对象</label>
+<select id="to">
+<option value="家长">家长</option>
+<option value="学生">学生</option>
+<option value="同事">教职工</option>
+</select></div>
+<div><label>📄 通知类型</label>
+<select id="type">
+<option value="作业">布置作业</option>
+<option value="安全">安全提醒</option>
+<option value="活动">活动/会议通知</option>
+<option value="考试">考试安排</option>
+<option value="表扬">表扬/公示</option>
+</select></div>
+</div>
+<label>📝 通知内容要点（具体事情）</label>
+<textarea id="detail" placeholder="例如：本周五下午课后三点，召开家长会；学生明天记得带美术课材料；近期流感多发，注意防范等"></textarea>
+<label>🏷️ 落款（老师姓名，可选）</label>
+<input type="text" id="sign" placeholder="例如：班主任 王老师">
+<button class="btn-gen" id="genBtn">✉️ 生成通知</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">💬 通知话术</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制通知</button>
+<div class="tip">💡 提示：已内置亲切、专业的语气，群发前可根据年级与家校氛围微调措辞。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const OPEN={
+'家长':['各位家长好，',"尊敬的家长们：",'家长朋友们，大家好！'],
+'学生':['同学们，',"各位同学请注意：",'亲爱的小伙伴们：'],
+'同事':['各位老师好，',"各位同事：",'各位同仁：']};
+const TYPE={
+'作业':{title:'本周作业安排',body:'以下作业请同学们合理安排时间完成，家长可适当提醒督促，但请让孩子独立完成、巩固所学。'},
+'安全':{title:'重要安全提醒',body:'近期请务必提高安全意识，注意出行、食品与居家用电安全。请家长加强监护与提醒，共筑安全防线。'},
+'活动':{title:'活动通知',body:'现将活动安排告知大家，请大家提前做好准备，按时参加。感谢理解与配合！'},
+'考试':{title:'考试安排',body:'考试临近，请大家及时做好复习规划，查漏补缺。考试当天请提前到校，诚信应考。'},
+'表扬':{title:'表扬与公示',body:'对近期表现优异的同学提出表扬，希望继续保持、再接再厉，也希望大家向他们学习！'}};
+const CLOSE={
+'家长':'感谢各位家长的理解与支持，如有疑问欢迎随时与我沟通，谢谢大家！',
+'学生':'请大家认真对待，有不理解的地方随时来找老师，我们一起加油！',
+'同事':'感谢各位配合，工作中有任何问题欢迎随时交流，谢谢大家！'};
+function pick(a){return a[Math.floor(Math.random()*a.length)];}
+document.getElementById('genBtn').addEventListener('click',()=>{
+const to=document.getElementById('to').value;
+const type=document.getElementById('type').value;
+const detail=document.getElementById('detail').value.trim();
+const sign=document.getElementById('sign').value.trim();
+if(!detail){alert('请输入通知的具体内容要点');return;}
+const t=TYPE[type];
+const open=pick(OPEN[to]);
+const out=`${open}\n\n【${t.title}】\n${detail.replace(/[。；;]\s*$/,'。')}\n\n${t.body}\n\n${CLOSE[to]}${sign?'\n\n—— '+sign:''}`;
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 通知已复制！'))}
+</script>
+</body>
+</html>

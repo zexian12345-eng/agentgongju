@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 文案改写助手 | AgentGongju.com</title>
+<meta name="description" content="AI文案改写助手，一键扩写、精简、改口语、改正式，让一段话适配多种场景，公众号、电商、广告文案皆可用">
+<meta name="keywords" content="文案改写,内容改写,文案润色,扩写,精简,口语化,写作助手">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:90px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;margin-bottom:12px;font-size:.92rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>✍️ AI 文案改写</h1><p>一段话，多副面孔——扩写、精简、随时换口味</p></div>
+
+<div class="card">
+<label>📝 原始文案 / 内容</label>
+<textarea id="src" placeholder="例如：这款保温杯很保温，价格便宜，学生都用它，超级推荐。"></textarea>
+<div class="param-row">
+<div><label>🎯 改写方向</label>
+<select id="mode">
+<option value="扩写">➕ 扩写丰富</option>
+<option value="精简">➖ 精简浓缩</option>
+<option value="口语">💬 口语化</option>
+<option value="正式">📜 正式书面</option>
+<option value="营销">📢 营销种草</option>
+<option value="温柔">🌿 温柔治愈</option>
+</select></div>
+<div><label>📐 篇幅</label>
+<select id="len">
+<option value="短">短（1-2句）</option>
+<option value="中" selected>中（3-5句）</option>
+<option value="长">长（丰富的段落）</option>
+</select></div>
+</div>
+<button class="btn-gen" id="genBtn">✨ 开始改写</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🔄 改写结果</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制改写结果</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const openers={
+'扩写':['让我们从更丰富的角度看看这件事——','细细说来，这背后还有不少值得说道的地方：'],
+'精简':['一句话说清楚就是：','说白了，核心只有一个——'],
+'口语':['说真的，','你听我讲，'],
+'正式':['兹就所述内容，谨作如下陈述：','现将相关要义作正式说明如下：'],
+'营销':['别划走，听我安利！','这个真的绝了，闭眼冲！'],
+'温柔':['愿你慢慢读，这里藏着一份温柔：','带着一点暖意，说给你听：']};
+const linkers=['更进一步说','与此同时','值得一提的是','换一个角度看','说到底','如此以来'];
+function rand(a){return a[Math.floor(Math.random()*a.length)]}
+document.getElementById('genBtn').addEventListener('click',()=>{
+const src=document.getElementById('src').value.trim();
+if(!src){alert('请先输入原始文案');return;}
+const mode=document.getElementById('mode').value;
+const len=document.getElementById('len').value;
+let out=openers[mode][Math.floor(Math.random()*openers[mode].length)];
+// 提取关键短语
+const parts=src.split(/[，。、,.;；！!？?]/).filter(x=>x.trim());
+const core=parts[0]||src;
+if(mode==='扩写'){
+out+='\n『'+core+'』——这不仅是简单的'+src.length>2?src.slice(0,6):'一点'+'，更代表了一种贴近生活的用心。';
+if(len!=='短'){out+=rand(linkers)+'，从日常的细节里，往往最能看见真正的品质与温度。';}
+}
+else if(mode==='精简'){
+out+=core.split('很').join('')+'。';
+}
+else if(mode==='口语'){
+out+=src.replace(/本品/g,'这').replace(/十分/g,'超').replace(/非常/g,'超').replace(/优质/g,'好用')+'！真的是用了就不想换那种。';
+}
+else if(mode==='正式'){
+out+='\n所述'+core+'，经多方考量确系具备实用价值，特此郑重推荐。'.replace(/，.*/,'，谨供参考。');
+}
+else if(mode==='营销'){
+out+='\n🔥 这款'+core+'，用过的人都在偷偷回购！'+rand(['趁现在赶紧安排上！','手慢真的会后悔！','链接我放这了，懂的都懂！']);
+}
+else{
+out+='\n愿每个读到'+core+'的人，都能感受到一丝被认真对待的温暖。';
+}
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 改写文案已复制！'))}
+</script>
+</body>
+</html>

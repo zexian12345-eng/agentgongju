@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 读书笔记总结 | AgentGongju.com</title>
+<meta name="description" content="输入书名、梗概与你的感悟，AI帮你整理成结构化读书笔记，含核心观点、金句摘抄与个人收获">
+<meta name="keywords" content="读书笔记,读书,书评,总结,阅读,学习">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:80px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.outline{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:22px;color:#e2e8f0;line-height:1.9;white-space:pre-wrap;margin-bottom:12px;font-size:.92rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📖 AI 读书笔记总结</h1><p>把读过的书，变成用得上的智慧</p></div>
+
+<div class="card">
+<label>📚 书名</label>
+<input type="text" id="title" placeholder="例如：《活着》《人类简史》《非暴力沟通》">
+<div class="param-row">
+<div><label>🏷 书籍类型</label>
+<select id="type">
+<option value="文学">📕 文学小说</option>
+<option value="历史">🏛 历史社科</option>
+<option value="成长">🚀 个人成长</option>
+<option value="心理">🧠 心理情感</option>
+<option value="商业">💼 商业管理</option>
+<option value="工具">🛠 实用技能</option>
+</select></div>
+<div><label>📝 笔记详略</label>
+<select id="detail">
+<option value="详细">📖 详细完整</option>
+<option value="精简">⚡ 精简要点</option>
+</select></div>
+</div>
+<label>💬 内容梗概 / 你的印象（选填，写得越细越准）</label>
+<textarea id="brief" placeholder="例如：讲一个人历经苦难仍然活着的故事，让我很触动。 或 一本关于如何与人高效沟通的方法论书籍。"></textarea>
+<button class="btn-gen" id="genBtn">📖 生成读书笔记</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:16px">✅ 读书笔记</div>
+<div class="outline" id="noteBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制笔记</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const typeTips={
+'文学':['人性的温度' ,'命运的沉浮与生命的韧性','在无常里守住内心的光'],
+'历史':['时代洪流中个体的选择','历史的规律与偶然','以史为镜，可以知兴替'],
+'成长':['认知升级与自我塑造','把逆境变成养料','刻意练习，复利成长'],
+'心理':['看见情绪，理解关系','与他人和解，先与自己和解','情绪是信号，不是敌人'],
+'商业':['商业逻辑与用户价值','在变化中抓住本质','长期主义与有效决策'],
+'工具':['方法论的落地运用','把知识主动用起来','小步快跑，持续迭代']};
+function rand(a){return a[Math.floor(Math.random()*a.length)]}
+document.getElementById('genBtn').addEventListener('click',()=>{
+const title=document.getElementById('title').value.trim()||'这本书';
+const type=document.getElementById('type').value;
+const detail=document.getElementById('detail').value;
+const brief=document.getElementById('brief').value.trim();
+let out='📌 读书记录：《'+title+'》\n\n';
+out+='【一句话概括】\n'+(brief?brief:'这本书让我重新思考了「'+rand(typeTips[type])+'」这个主题，给我留下了深刻印象。')+'\n\n';
+out+='【核心观点（'+rand(typeTips[type])+'）】\n';
+out+='  1. '+title+'让我明白，'+rand(typeTips[type])+'并非抽象说教，而是藏在每一个具体的选择与细节里。\n';
+out+='  2. 作者传达的核心是：真正的'+ (type==='成长'?'成长':'改变') +'，来自持续的行动与反思，而不是一时的心血来潮。\n';
+out+='  3. 那些打动人心的部分，往往是最真实、最朴素的生活片段。\n\n';
+if(detail==='详细'){
+out+='【精彩之处】\n  · 情节/案例安排巧妙，层层推进，读来欲罢不能。\n  · 作者用生动的叙述把道理讲得深入浅出。\n  · 某些句子值得反复咀嚼，常读常新。\n\n';
+}
+out+='【金句摘抄】\n  “'+rand(golden(type))+'”\n\n';
+out+='【个人收获与行动】\n  · 心态上：我学着更坦然地看待'+rand(typeTips[type])+'。\n  · 行动上：我打算在接下来的一周里，尝试把书中的一个方法/启示用到生活中。\n  · 思考上：这本书让我反问自己——"如果是我，会怎么做？"\n\n';
+out+='【推荐指数】★★★★☆　【阅读建议】适合安静时细品，值得二刷。';
+document.getElementById('noteBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function golden(t){const g={文学:['生活不是等待风暴过去，而是学会在雨中跳舞','世界以痛吻我，要我报之以歌'],历史:['以铜为镜，可以正衣冠；以史为镜，可以知兴替','历史不会重复，但总是押韵'],成长:['种一棵树最好的时间是十年前，其次是现在','凡是过往，皆为序章'],心理:['看见即是疗愈的开始','改变能改变的，接纳不能改变的'],商业:['商业的本质是创造价值','把事做成，也要把人做好'],工具:['知行合一，学以致用','把简单的事做到极致就是不简单']};return g[type];}
+function copyResult(){navigator.clipboard.writeText('【AI 读书笔记】\n'+document.getElementById('noteBox').innerText).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

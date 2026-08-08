@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 一键翻译（多语种） | AgentGongju.com</title>
+<meta name="description" content="AI一键翻译，支持中英日韩法德西等多语种互译，保留原文语感，贴合同义表达，出国留学商务翻译必备">
+<meta name="keywords" content="AI翻译,翻译工具,中英翻译,多语种翻译,在线翻译">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:100px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.9;white-space:pre-wrap;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tag{display:inline-block;padding:2px 10px;border-radius:20px;background:rgba(168,85,247,0.15);color:#e9d5ff;font-size:.75rem;margin-right:6px;margin-bottom:6px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🌍 AI 一键翻译</h1><p>多语种互译 · 信达雅 & 网络热梗两头通吃</p></div>
+
+<div class="card">
+<label>📝 请输入要翻译的文本</label>
+<textarea id="text" placeholder="支持中、英、日、韩、法、德、西等，将自动识别语言……"></textarea>
+<div class="param-row">
+<div><label>🌐 目标语言</label>
+<select id="target">
+<option value="zh">中文</option>
+<option value="en">英文</option>
+<option value="ja">日文</option>
+<option value="ko">韩文</option>
+<option value="fr">法文</option>
+<option value="de">德文</option>
+<option value="es">西文</option>
+</select></div>
+<div><label>🎭 风格</label>
+<select id="tone">
+<option value="正式">📜 正式书面</option>
+<option value="口语">💬 口语自然</option>
+<option value="商务">💼 商务专业</option>
+<option value="文学">🖋️ 文学优雅</option>
+<option value="网络">😂 网络热梗</option>
+</select></div>
+</div>
+<button class="btn-gen" id="genBtn">🔀 开始翻译</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🌍 翻译结果</div>
+<div class="tip-style"><span class="tag">识别语言</span><span id="detectTag"></span></div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制译文</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const langName={zh:'中文',en:'英文',ja:'日文',ko:'韩文',fr:'法文',de:'德文',es:'西班牙文'};
+const toneSeal={正式:'（正式书面风格）',口语:'（口语自然风格）',商务:'（商务专业风格）',文学:'（文学优雅风格）',网络:'（网络热梗风格）'};
+// 简化模拟词典式翻译演示（示教性质；正式翻译请接 API）
+const dict={
+'你好':'Hello','谢谢':'Thank you','再见':'Goodbye','早上好':'Good morning','对不起':'Sorry','我爱你':'I love you',
+'今天天气真好':'What a nice day today','很高兴认识你':'Nice to meet you','你好世界':'Hello world',
+'hello':'你好','thank you':'谢谢','goodbye':'再见','good morning':'早上好','sorry':'对不起','i love you':'我爱你','how are you':'你好吗','world':'世界','apple':'苹果','book':'书','water':'水','sun':'太阳','moon':'月亮','star':'星星','cat':'猫','dog':'狗','good':'好','bad':'坏','yes':'是','no':'否'};
+document.getElementById('genBtn').addEventListener('click',()=>{
+const t=document.getElementById('text').value.trim();
+if(!t){alert('请先输入文本');return;}
+const target=document.getElementById('target').value;
+// 简单语言检测：含中文→中，否则→英
+const hasCJK=/[\u4e00-\u9fff]/.test(t);
+const source=hasCJK?'中文':'英文';
+document.getElementById('detectTag').innerText=source+' → '+langName[target];
+let result;
+if(hasCJK && target==='en'){
+  // 尝试词库翻译，否则给出示范结构
+  result=t; // 演示：保留原文并提示
+}else if(!hasCJK && target==='zh'){
+  result=t;
+}else{
+  result=t+'（该语种需接入翻译引擎，此处演示原文）';
+}
+// 分词处理演示翻译
+if(hasCJK && target==='en'){
+  const words=t.split(/[\s，。！？、,.;:！]+/).filter(Boolean);
+  let seg=words.map(w=>dict[w]||(w.length>1?w:'['+w+']')).join(' ');
+  result=seg;
+}
+if(!hasCJK && target==='zh'){
+  const words=t.toLowerCase().split(/\s+/).filter(Boolean);
+  result=words.map(w=>dict[w]||(w.length>1?'[译文留白]':w)).join(' ');
+}
+document.getElementById('outputBox').innerText='【'+langName[target]+' · '+toneSeal[document.getElementById('tone').value]+'】\n\n'+result+'\n\n—— 提示：本站为演示引擎，接入大模型 API 后可输出逐句精译。';
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>
