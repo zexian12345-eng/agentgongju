@@ -88,7 +88,10 @@
         '<div style="font-size:.85rem;color:#94a3b8">单工具永久解锁：<b style="color:#22c55e">3元</b></div>' +
         '<div style="font-size:.85rem;color:#94a3b8">全站全部工具：<b style="color:#22c55e">15元/年</b></div>' +
         '</div>' +
-        '<div style="font-size:.85rem;color:#94a3b8;margin-bottom:12px">📱 微信扫码支付后，截图发客服获取解锁码</div>' +
+        '<div style="font-size:.85rem;color:#94a3b8;margin-bottom:12px">💳 在线购买自动发码（推荐）</div>' +
+        '<a href="https://afdian.com/a/aigongjupai" target="_blank" rel="noopener" style="display:block;width:100%;padding:12px;background:rgba(99,102,241,.15);border:1px solid #6366f1;border-radius:12px;color:#a5b4fc;font-size:.95rem;font-weight:600;text-decoration:none;margin-bottom:14px">🛒 去爱发电购买（3元/15元）</a>' +
+        '<div style="font-size:.8rem;color:#64748b;margin-bottom:14px">支付后自动获得解锁码，回这里输入即可</div>' +
+        '<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><div style="flex:1;height:1px;background:rgba(255,255,255,.1)"></div><span style="color:#475569;font-size:.75rem">或扫码微信支付</span><div style="flex:1;height:1px;background:rgba(255,255,255,.1)"></div></div>' +
         '<img src="../img/wechat-pay.jpg" alt="微信收款码" style="width:200px;height:200px;object-fit:contain;border-radius:12px;margin-bottom:14px;background:#fff;padding:6px">' +
         '<div style="display:flex;gap:10px;margin-bottom:14px">' +
         '<input id="agj-code" placeholder="输入解锁码" style="flex:1;padding:12px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);border-radius:10px;color:#fff;text-align:center;letter-spacing:4px;font-size:1.1rem;outline:none">' +
@@ -122,11 +125,15 @@
         overlay.remove();
       });
     },
-    /** 验证解锁码：单工具码或全站码 */
+    /** 验证解锁码：爱发电卡密 / 固定码 */
     verifyCode: function (code, name) {
       if (!code) return { ok: false };
+      code = code.trim().toLowerCase();
+      // 固定码
       if (code === ALL_CODE) return { ok: true, type: 'all' };
       if (code === TOOL_CODE) return { ok: true, type: 'tool' };
+      // 爱发电卡密（16-23位hex，购买后自动发放）
+      if (/^[a-f0-9]{16,23}$/.test(code)) return { ok: true, type: 'tool' };
       return { ok: false };
     }
   };
