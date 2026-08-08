@@ -4,7 +4,7 @@
 <title>AI 朋友圈文案 | AgentGongju.com</title>
 <meta name="description" content="AI朋友圈文案生成器，根据主题和风格自动生成高质量朋友圈短文案">
 <meta name="keywords" content="朋友圈文案,AI文案,短文案,发圈文案">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -43,6 +43,7 @@ input:focus,select:focus,textarea:focus{border-color:#6366f1}
 <script>
 function copyResult(){navigator.clipboard.writeText(document.getElementById('out').textContent).then(()=>alert('✅ 已复制！'))}
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 朋友圈文案 | AgentGongju.com'))return;
 const topic=document.getElementById('topic').value.trim();if(!topic){alert('请输入发圈主题');return}
 const style=document.getElementById('style').value;const emo=document.getElementById('emo').value==='y';
 const em=emo?[' ✨',' 🌸',' 🎈',' ☀️']:['','','',''];

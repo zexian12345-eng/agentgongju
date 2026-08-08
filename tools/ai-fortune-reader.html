@@ -4,7 +4,7 @@
 <title>AI 命理测算大师 | AgentGongju.com</title>
 <meta name="description" content="AI命理测算，输入生辰推算五行命格、生肖运程、性格脾气与开运建议，仅供娱乐参考">
 <meta name="keywords" content="AI算命,生辰八字,五行,生肖,命理,运势">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -76,6 +76,7 @@ const traits={
 '土':['踏实稳重','值得信赖','有耐心','适合房地产、农业、建筑、公益事业']};
 const advice='本周宜：多接触绿色植物 / 常做深呼吸 / 保持规律作息 / 佩戴暖色系饰品。';
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 命理测算大师 | AgentGongju.com'))return;
 const birth=document.getElementById('birth').value;
 if(!birth){alert('请选择出生日期');return}
 const nm=document.getElementById('name').value.trim()||'有缘人';

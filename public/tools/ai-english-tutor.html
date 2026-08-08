@@ -4,7 +4,7 @@
 <title>AI 英语口语陪练 | AgentGongju.com</title>
 <meta name="description" content="AI英语智能陪练，输入你想说的中文，给出地道英文表达、发音拆解与跟读练习">
 <meta name="keywords" content="英语学习,口语,翻译,英语陪练,雅思口语">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -61,6 +61,7 @@ const templates={daily:[['I just love sleeping in on weekends and letting my min
 const tips=['🗣 发音要点：注意连读「sleeping in」中的 g 可以弱读。','🌀 语气提示：休闲话题用轻松上扬的语调，显得自然亲切。','💡 替换词汇：love 可用 enjoy / really like；unwind 可用 decompress / take it easy。','✨ 高分加分：加一句「It really helps me recharge.」会更地道。'];
 function rand(a){return a[Math.floor(Math.random()*a.length)]}
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 英语口语陪练 | AgentGongju.com'))return;
 let cn=document.getElementById('cn').value.trim();
 const scene=document.getElementById('scene').value;
 if(!cn){alert('请输入你想说的话');return}

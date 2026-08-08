@@ -4,7 +4,7 @@
 <title>AI 求职信生成器 | AgentGongju.com</title>
 <meta name="description" content="根据求职岗位和个人经历生成专业求职信/自我介绍，突出优势打动HR">
 <meta name="keywords" content="求职信,自我介绍,自荐信,简历优化,求职">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -57,6 +57,7 @@ const open=['您好！','尊敬的招聘负责人：','您好！HR您好：'];
 const traits=['学习能力强，做事认真负责','沟通协作能力突出，结果导向','抗压能力强，能高效执行任务','逻辑清晰，善于总结复盘'];
 function pick(a){return a[Math.floor(Math.random()*a.length)]}
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 求职信生成器 | AgentGongju.com'))return;
 const nm=document.getElementById('name').value.trim();
 const job=document.getElementById('job').value.trim();
 const comp=document.getElementById('company').value.trim();

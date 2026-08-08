@@ -4,7 +4,7 @@
 <title>AI 正念冥想助手 | AgentGongju.com</title>
 <meta name="description" content="选择冥想场景与时长，生成专属正念冥想音频脚本，帮你放松身心、缓解焦虑、改善睡眠">
 <meta name="keywords" content="冥想,正念,放松,睡眠,减压,助眠">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -74,6 +74,7 @@ const breath=['吸气……（数1）……呼气……','吸气，感受空气�
 const imag={sleep:'想象你漂浮在一片温暖的海面上，月光洒下，海风轻柔地拂过脸颊……',stress:'想象你的烦恼化作一片淡淡的云，慢慢飘向远方，直到消失不见……',focus:'想象你的注意力像一束柔和的光，稳稳地聚焦在呼吸上……',mood:'想象你站在一片开满鲜花的草地上，微风带来阵阵花香……',gratitude:'在心里默默感谢今天遇见的每一个人，感谢自己……'};
 function pick(a){return a[Math.floor(Math.random()*a.length)]}
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 正念冥想助手 | AgentGongju.com'))return;
 const goal=document.getElementById('goal').value;
 const dur=parseInt(document.getElementById('dur').value);
 const audio=document.getElementById('audio').value;

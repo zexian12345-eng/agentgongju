@@ -4,7 +4,7 @@
 <title>谈薪涨薪话术助手 | AgentGongju.com</title>
 <meta name="description" content="谈薪涨薪话术助手，为求职谈薪、年终提薪、转正加薪等场景生成得体又有底气的沟通话术，助你争取合理回报">
 <meta name="keywords" content="谈薪话术,涨薪申请,提薪,薪资谈判,加薪,年终考核,offer谈判">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -83,6 +83,7 @@ const CLOSE={
 '晋升加薪':['既然承担了更多，我也有信心拿出相应的产出，期待与回报相匹配。','我会用行动证明这个决定值得，请您放心。']};
 function pick(a){return a[Math.floor(Math.random()*a.length)];}
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('谈薪涨薪话术助手 | AgentGongju.com'))return;
 const scene=document.getElementById('scene').value;
 const chan=document.getElementById('chan').value;
 const ach=document.getElementById('achieve').value.trim();

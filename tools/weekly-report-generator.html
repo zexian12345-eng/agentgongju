@@ -4,7 +4,7 @@
 <title>AI 周报生成器 | AgentGongju.com</title>
 <meta name="description" content="AI周报生成器，输入本周工作内容，自动生成结构化的工作周报与计划">
 <meta name="keywords" content="周报生成,AI周报,工作周报,周报模板">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -48,6 +48,7 @@ input:focus,select:focus,textarea:focus{border-color:#6366f1}
 <script>
 function copyResult(){navigator.clipboard.writeText(document.getElementById('out').textContent).then(()=>alert('✅ 已复制！'))}
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 周报生成器 | AgentGongju.com'))return;
 const who=document.getElementById('who').value.trim()||'本人';
 const work=document.getElementById('work').value.trim();if(!work){alert('请输入本周工作内容');return}
 const tone=document.getElementById('tone').value;const plan=document.getElementById('plan').value;

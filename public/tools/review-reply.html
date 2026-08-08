@@ -4,7 +4,7 @@
 <title>高情商聊天回复生成器 | AgentGongju.com</title>
 <meta name="description" content="高情商聊天回复生成器，针对领导、同事、客户、对象等不同对象，一键生成得体又暖心的微信/聊天回复话术">
 <meta name="keywords" content="高情商回复,聊天话术,微信回复,职场沟通,怼人高情商,挽回话术">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -105,6 +105,7 @@ const BANK={
 '强韧':['谢谢您的关心，这件事我有自己的安排，会处理好的。','我明白您的意思，不过这件事我会按我自己的节奏来。','您放心，我有分寸，会对自己负责。']}};
 function pick(a){return a[Math.floor(Math.random()*a.length)];}
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('高情商聊天回复生成器 | AgentGongju.com'))return;
 const who=document.getElementById('who').value;
 const situation=document.getElementById('situation').value.trim();
 const tone=document.getElementById('tone').value;

@@ -4,7 +4,7 @@
 <title>AI 朋友圈文案生成器 | AgentGongju.com</title>
 <meta name="description" content="AI朋友圈文案生成器，输入你想分享的内容或主题，自动生成有格调有共鸣的朋友圈文案，配图建议与话题标签一并给到">
 <meta name="keywords" content="朋友圈文案,文案生成,发朋友圈,配文,社交媒体">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -75,6 +75,7 @@ const stylePool={
 const tags=['#记录生活','#日常碎片','#小确幸','#此刻心情','#今日份快乐','#生活美学'];
 function urlAdd(){return window.location.host||'agentgongju'};
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 朋友圈文案生成器 | AgentGongju.com'))return;
 const topic=document.getElementById('topic').value.trim();
 if(!topic){alert('请先输入想分享的内容');return;}
 const style=document.getElementById('style').value;

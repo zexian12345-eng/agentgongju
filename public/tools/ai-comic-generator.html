@@ -4,7 +4,7 @@
 <title>AI 漫画分镜生成器 | AgentGongju.com</title>
 <meta name="description" content="根据故事情节自动拆分成漫画分镜脚本，含镜头描述、对白、旁白，适合漫画/短视频创作">
 <meta name="keywords" content="AI漫画,分镜脚本,漫画生成,分镜师,故事板">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -70,6 +70,7 @@ const shotTypes=['大远景 establishing shot','全景 wide shot','中景 medium
 function rand(a){return a[Math.floor(Math.random()*a.length)]}
 function makeDialogue(){const d=[['「发生了什么事？」','（惊讶的表情）'],['「不要怕，我来帮你！」','（温柔的语气）'],['「谢谢你……」','（感动落泪）'],['「等等我！」','（拼命追赶）'],['「我就知道会这样。」','（无奈扶额）'],['「哇！太棒了！」','（欢呼雀跃）'],['「这是个秘密哦。」','（神秘一笑）'],['「一切都好啦。」','（如释重负）']];return rand(d)}
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 漫画分镜生成器 | AgentGongju.com'))return;
 let story=document.getElementById('story').value.trim();
 if(!story){alert('请输入故事情节');return}
 let n=parseInt(document.getElementById('panels').value||6);n=Math.max(4,Math.min(8,n));

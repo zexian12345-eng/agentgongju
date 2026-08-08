@@ -4,7 +4,7 @@
 <title>教师通知话术生成器 | AgentGongju.com</title>
 <meta name="description" content="教师通知话术生成器，一键生成给家长、学生、同事的通知文案，语气得体，适用于群发通知、作业布置、安全提醒、活动通知等场景">
 <meta name="keywords" content="教师通知,家长群通知,班级通知,作业发布,安全提醒,家校沟通">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -83,6 +83,7 @@ const CLOSE={
 '同事':'感谢各位配合，工作中有任何问题欢迎随时交流，谢谢大家！'};
 function pick(a){return a[Math.floor(Math.random()*a.length)];}
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('教师通知话术生成器 | AgentGongju.com'))return;
 const to=document.getElementById('to').value;
 const type=document.getElementById('type').value;
 const detail=document.getElementById('detail').value.trim();

@@ -4,7 +4,7 @@
 <title>AI 品牌起名 | AgentGongju.com</title>
 <meta name="description" content="AI品牌起名，输入行业/产品类型，生成有记忆点、有寓意、可注册的品牌名，附域名与寓意说明，创业开店起名必备">
 <meta name="keywords" content="品牌起名,店铺起名,公司起名,商标,创意命名,创业">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -74,6 +74,7 @@ const stylePool={
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a}
 function slug(en){return en.toLowerCase();}
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 品牌起名 | AgentGongju.com'))return;
 const industry=document.getElementById('industry').value.trim();
 if(!industry){alert('请先填写行业/产品类型');return;}
 const style=document.getElementById('style').value;

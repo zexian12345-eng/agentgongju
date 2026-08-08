@@ -4,7 +4,7 @@
 <title>MBTI 性格测试 | AgentGongju.com</title>
 <meta name="description" content="专业版MBTI 16型人格测试，28道题免费测出你的性格类型与职业天赋">
 <meta name="keywords" content="MBTI,性格测试,16型人格,心理测试,职场">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -91,6 +91,7 @@ group.querySelectorAll('.opt').forEach(o=>o.classList.remove('sel'));btn.classLi
 });
 }
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('MBTI 性格测试 | AgentGongju.com'))return;
 let scored=true;
 questions.forEach((q,i)=>{
 const group=document.querySelector(`.q-opt[data-i="${i}"]`);

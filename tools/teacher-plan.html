@@ -4,7 +4,7 @@
 <title>AI 教案生成器 | AgentGongju.com</title>
 <meta name="description" content="输入课程主题、年级与课时，AI快速生成完整教案，包含教学目标、重难点、教学过程与板书设计">
 <meta name="keywords" content="教案,教师,教学,备课,课程设计,教育">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -71,6 +71,7 @@ const assignments=['完成课后练习与思考题','观察生活并记录相关
 const themes=['知识立意','素养导向','学以致用'];
 function rand(a){return a[Math.floor(Math.random()*a.length)]}
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 教案生成器 | AgentGongju.com'))return;
 const topic=document.getElementById('topic').value.trim()||'本课主题';
 const grade=document.getElementById('grade').value;
 const dur=document.getElementById('duration').value;

@@ -4,7 +4,7 @@
 <title>海报标语生成器 | AgentGongju.com</title>
 <meta name="description" content="一键生成吸睛的海报标语，支持促销、活动、招聘、广告等多种场景，中文押韵朗朗上口">
 <meta name="keywords" content="海报标语,宣传语,广告语,促销标语,活动宣传,文案">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -83,6 +83,7 @@ const TONE={
 const SUFFIX=theme=>[`${theme}，值得拥有`,`${theme}，就选我们`,`${theme}，品质看得见`,`${theme}，给生活加点甜`,`${theme}，从这里开始`,`${theme}，心动不如行动`];
 function pick(a){return a[Math.floor(Math.random()*a.length)];}
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('海报标语生成器 | AgentGongju.com'))return;
 const brand=document.getElementById('brand').value.trim()||'本店';
 const scene=document.getElementById('scene').value;
 const tone=document.getElementById('tone').value;

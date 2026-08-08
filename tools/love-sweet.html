@@ -4,7 +4,7 @@
 <title>AI 撩人情话助手 | AgentGongju.com</title>
 <meta name="description" content="免费生成土味情话、撩人甜话，恋爱氛围感拉满">
 <meta name="keywords" content="情话,撩人,土味情话,恋爱,甜蜜,表白">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -52,7 +52,7 @@ const arr=repo[st];const line=arr[Math.floor(Math.random()*arr.length)];
 return nm?nm+'，'+line:line;
 }
 function show(v){document.getElementById('resultArea').classList.add('active');document.getElementById('result').textContent='💌 '+v+'\n\n✨ 试着自己再加工一下，真诚最重要哦。';}
-document.getElementById('genBtn').addEventListener('click',()=>show(getFlow()));
+document.getElementById('genBtn').addEventListener('click',()=>{if(!Paywall.countUse('爱情缘分测试'))return;show(getFlow());});
 function genAgain(){show(getFlow())}
 function copyResult(){navigator.clipboard.writeText(document.getElementById('result').textContent).then(()=>alert('✅ 已复制！'))}
 </script>

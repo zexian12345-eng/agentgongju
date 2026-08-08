@@ -4,7 +4,7 @@
 <title>AI 品牌起名 | AgentGongju.com</title>
 <meta name="description" content="AI品牌名/公司名生成器，按行业自动生成多个好听有寓意的备选名称">
 <meta name="keywords" content="AI起名,品牌起名,公司起名,名字生成">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -55,6 +55,7 @@ const dict={
 const toneMap={大气:['际','鼎','盛','宏'],文艺:['墨','溪','云','舟'],可爱:['小','萌','乐','豆'],极简:['一','新','简','本']};
 function copyText(t){navigator.clipboard.writeText(t).then(()=>alert('✅ 已复制：'+t))}
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 品牌起名 | AgentGongju.com'))return;
 const ind=document.getElementById('industry').value;const tone=document.getElementById('tone').value;
 const n=Math.min(12,Math.max(4,parseInt(document.getElementById('count').value)||8));
 const pool=dict[ind];const sfx=toneMap[tone];let html='';const used=new Set();

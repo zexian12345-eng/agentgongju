@@ -4,7 +4,7 @@
 <title>AI 英文写作润色 | AgentGongju.com</title>
 <meta name="description" content="AI英文写作润色，输入英文段落，一键润色为更地道、更professional的英文，附翻译与修改说明，写作留学党必备">
 <meta name="keywords" content="英文润色,英文写作,语法修正,论文润色,英语学习,留学">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -77,6 +77,7 @@ const goalIntro={
 '日常':'polished to sound natural and conversational.',
 '正式':'polished to a polished, formal register.'};
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 英文写作润色 | AgentGongju.com'))return;
 const src=document.getElementById('src').value.trim();
 if(!src){alert('请先输入英文原文');return;}
 const goal=document.getElementById('goal').value;

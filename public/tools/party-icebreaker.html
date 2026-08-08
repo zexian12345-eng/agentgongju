@@ -4,7 +4,7 @@
 <title>AI 聚会破冰游戏 | AgentGongju.com</title>
 <meta name="description" content="输入聚会场景与人数，AI推荐的破冰游戏、暖场话题与互动节目，让聚会氛围瞬间升温">
 <meta name="keywords" content="聚会,破冰,游戏,团建,活动,派对,暖场">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -87,6 +87,7 @@ const games=[
 {name:'小时候的糗事分享',desc:'轮流分享一件童年糗事，笑中带暖拉近距离',rule:'回忆杀环节，气氛瞬间松弛，适合家庭与小范围朋友。',scene:['朋友','相亲','家庭','同学'],need:4}];
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a}
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 聚会破冰游戏 | AgentGongju.com'))return;
 const scene=document.getElementById('scene').value;
 const people=parseInt(document.getElementById('count').value);
 const num=parseInt(document.getElementById('num').value);

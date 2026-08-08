@@ -4,7 +4,7 @@
 <title>AI模拟面试官 | AgentGongju.com</title>
 <meta name="description" content="AI模拟面试官，按岗位随机抽题，帮你提前演练常见面试问题">
 <meta name="keywords" content="面试模拟,模拟面试,面试题,求职,面试技巧">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -52,6 +52,7 @@ const bank={
 const hr=['请做个自我介绍','你的优缺点分别是什么？','为什么选择我们公司？','未来3年的职业规划？','期望薪资是多少？','你最大的成就是什么？','如何看待加班？'];
 const tips='回答Tips：用「背景-行动-结果」结构举例，突出数据与个人贡献，保持真诚积极。';
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI模拟面试官 | AgentGongju.com'))return;
 const job=document.getElementById('job').value;const round=document.getElementById('round').value;const bg=document.getElementById('bg').value.trim();
 const pool=(round.includes('HR')||round.includes('终面'))?hr:(bank[job]||bank['运营专员']);
 const idx=[];const picked=[];const tmp=[...pool];while(tmp.length&&picked.length<5){picked.push(tmp.splice(Math.floor(Math.random()*tmp.length),1)[0]);}

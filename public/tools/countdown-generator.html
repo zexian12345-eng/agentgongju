@@ -4,7 +4,7 @@
 <title>AI 朋友圈倒计时文案 | AgentGongju.com</title>
 <meta name="description" content="免费生成朋友圈/生日/节日倒计时文案，文艺短句一键生成">
 <meta name="keywords" content="倒计时,朋友圈文案,生日,文案生成,AI文案">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -56,6 +56,7 @@ const pool={
 旅行:[['出发倒计时 {d} 天！✈️','世界那么大，这次换个地方做梦。'],
 ['还有 {d} 天启程，','心已经飞向远方。']]};
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 朋友圈倒计时文案 | AgentGongju.com'))return;
 const t=document.getElementById('type').value,d=document.getElementById('days').value||'3',ev=document.getElementById('event').value.trim()||'这个特别的日子';
 const arr=pool[t];const p=arr[Math.floor(Math.random()*arr.length)];
 const cw=p[0].replace('{d}',d).replace('{ev}',ev)+'\n'+p[1];

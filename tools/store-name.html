@@ -4,7 +4,7 @@
 <title>AI 店铺起名 | AgentGongju.com</title>
 <meta name="description" content="输入店铺类型与关键词，AI批量生成好听好记的店铺名字，附广告语与含义解读，适合网店、实体店取名">
 <meta name="keywords" content="起名,店铺,店名,品牌,取名,网店">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -78,6 +78,7 @@ const taglines={
 '烘焙':'甜到心里','网店':'好物随你挑','奶茶':'double快乐','餐饮':'人间烟火味'};
 function rand(a){return a[Math.floor(Math.random()*a.length)]}
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 店铺起名 | AgentGongju.com'))return;
 const type=document.getElementById('type').value;
 const note=document.getElementById('note').value.trim();
 const pool=pools[type];

@@ -4,7 +4,7 @@
 <title>AI 古文翻译白话 | AgentGongju.com</title>
 <meta name="description" content="免费将文言文/古文翻译成现代白话文，通俗易懂">
 <meta name="keywords" content="古文翻译,文言文,白话文,古诗翻译,语文学习">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -42,6 +42,7 @@ input:focus,select:focus,textarea:focus{border-color:#6366f1}
 // 常见文言字词对照表（示例翻译引擎）
 const dict={'之':'的/它','者':'…的人','也':'表判断','曰':'说','吾':'我','汝':'你','尔':'你','乃':'于是/才','於':'在','其':'他的/大概','斯':'这','焉':'于此/哪里','乎':'吗/呢','哉':'啊','矣':'了','故':'所以','是以':'因此','尝':'曾经','盖':'大概','遂':'于是','弗':'不','莫':'没有谁','若':'像/如果','犹':'还/如同','皆':'都','咸':'都','但':'只','唯':'只有','甚':'很','益':'更加','何':'什么','安':'怎么'};
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 古文翻译白话 | AgentGongju.com'))return;
 let txt=document.getElementById('text').value.trim();if(!txt){alert('请输入文言文');return}
 // 词条匹配翻译演示
 let out='【白话文译文】\n\n';

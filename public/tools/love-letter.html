@@ -4,7 +4,7 @@
 <title>AI情书生成器 | AgentGongju.com</title>
 <meta name="description" content="AI情书生成器，一键写出走心、浪漫、甜蜜的情书，适合告白、纪念日与恋爱日常">
 <meta name="keywords" content="情书,告白,恋爱,甜言蜜语,浪漫文案">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -50,6 +50,7 @@ const bodies={
 '挽留和好':['我们之间或许有误会，但我的心意你懂的。','想和你重新好好走一遍。','不要放弃我们，好吗？','那些美好的回忆，我不想轻易说再见。']};
 const endings=['永远爱你的我','一直守候的人','满心都是你的人','想和你到老的我'];
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI情书生成器 | AgentGongju.com'))return;
 const name=document.getElementById('name').value.trim()||'亲爱的';const scene=document.getElementById('scene').value;const detail=document.getElementById('detail').value.trim();
 const pool=bodies[scene]||bodies['日常甜言'];
 const picks=[];const t=[...pool];while(t.length&&picks.length<4){picks.push(t.splice(Math.floor(Math.random()*t.length),1)[0]);}

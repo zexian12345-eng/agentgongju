@@ -4,7 +4,7 @@
 <title>AI 五笔编码查询 | AgentGongju.com</title>
 <meta name="description" content="免费在线五笔字根编码查询，输入汉字自动显示五笔编码和拆分">
 <meta name="keywords" content="五笔,五笔编码,字根,输入法,汉字拆分">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -44,6 +44,7 @@ const wub={'我':'TRNT','你':'WQIY','他':'WBN','她':'VBN','爱':'EPDC','中':
 const dict={};
 for(const k in wub)dict[k]=wub[k];
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 五笔编码查询 | AgentGongju.com'))return;
 let kw=document.getElementById('kw').value.trim();if(!kw){alert('请输入汉字');return}
 kw=kw.replace(/[^a-zA-Z\u4e00-\u9fa5]/g,'').slice(0,20);
 let out='【五笔编码查询】\n\n';

@@ -4,7 +4,7 @@
 <title>AI学习路线规划 | AgentGongju.com</title>
 <meta name="description" content="AI学习路线规划器，按目标自动拆解成可执行的分阶段学习路径">
 <meta name="keywords" content="学习路线,学习规划,学习计划,零基础,技能学习">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -52,6 +52,7 @@ const paths={
 '英语学习':['音标与发音','高频词汇与语法','听说能力训练','阅读与写作','口语场景实战'],
 '设计插画':['造型与色彩基础','软件工具掌握','构图与审美','风格探索','作品集打造']};
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI学习路线规划 | AgentGongju.com'))return;
 const dir=document.getElementById('dir').value;const level=document.getElementById('level').value;const cycle=document.getElementById('cycle').value;const hours=document.getElementById('hours').value;const goal=document.getElementById('goal').value.trim();
 const list=paths[dir]||paths['编程入门'];
 let out='【'+dir+' · '+level+' · '+cycle+'\u3000每天'+hours+'小时】\n\n';

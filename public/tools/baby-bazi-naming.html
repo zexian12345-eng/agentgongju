@@ -4,7 +4,7 @@
 <title>宝宝八字起名助手 | AgentGongju.com</title>
 <meta name="description" content="根据宝宝出生信息、姓氏与五行偏好，智能推荐寓意吉祥的好名字，含名字解释">
 <meta name="keywords" content="宝宝起名,八字起名,取名,五行,寓意">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -65,6 +65,7 @@ const girlMean={'涵':'涵养深厚，温婉大方','雨':'如雨润物，温柔
 const anyMean={'恒':'持之以恒，初心不改','承':'承前启后，责任担当','嘉':'嘉言懿行，品貌俱佳','若':'上善若水，大智若愚','诗':'腹有诗书，才情横溢','望':'前途有望，满怀希冀','斯':'温润如玉，君子之行','安':'平安顺遂，岁月静好'};
 function rand(a){return a[Math.floor(Math.random()*a.length)]}
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('宝宝八字起名助手 | AgentGongju.com'))return;
 const sur=document.getElementById('surname').value.trim();
 if(!sur){alert('请输入姓氏');return}
 const gender=document.getElementById('gender').value;

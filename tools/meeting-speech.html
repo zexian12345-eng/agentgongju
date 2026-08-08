@@ -4,7 +4,7 @@
 <title>周会发言稿生成 | AgentGongju.com</title>
 <meta name="description" content="周会/晨会发言稿生成器，输入本周工作和下周计划，一键生成得体发言稿">
 <meta name="keywords" content="周会发言,会议发言稿,周报发言,工作总结,晨会">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -45,6 +45,7 @@ input:focus,select:focus,textarea:focus{border-color:#6366f1}
 <script>
 function copyResult(){navigator.clipboard.writeText(document.getElementById('out').textContent).then(()=>alert('✅ 已复制！'))}
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('周会发言稿生成 | AgentGongju.com'))return;
 const mt=document.getElementById('mt').value;const style=document.getElementById('style').value;const done=document.getElementById('done').value.trim();const plan=document.getElementById('plan').value.trim();
 const open={'简洁干练':'大家早上好，我简单汇报一下。','详实细致':'各位好，下面我详细汇报本周进展。','积极进取':'大家好，本周整体推进顺利，我来做个汇报。'};
 const clos = {'简洁干练':'以上是我的汇报，谢谢大家。','详实细致':'以上就是详细情况，有问题欢迎会后交流。','积极进取':'我们会继续加油，争取下周有更大突破，谢谢。'};

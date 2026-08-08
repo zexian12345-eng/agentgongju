@@ -4,7 +4,7 @@
 <title>AI 婚礼致辞与祝福 | AgentGongju.com</title>
 <meta name="description" content="输入与新人关系，AI生成婚礼致辞、红包祝福语、朋友圈文案，词藻真诚动人，让祝福更走心">
 <meta name="keywords" content="婚礼,致辞,祝福语,红包,文案,结婚">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -63,6 +63,7 @@ input:focus,select:focus,textarea:focus{border-color:#6366f1}
 <script>
 function rand(a){return a[Math.floor(Math.random()*a.length)]}
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 婚礼致辞与祝福 | AgentGongju.com'))return;
 const rel=document.getElementById('relation').value;
 const type=document.getElementById('type').value;
 const box=document.getElementById('resultBox');

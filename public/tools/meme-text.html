@@ -4,7 +4,7 @@
 <title>AI 表情包文字生成 | AgentGongju.com</title>
 <meta name="description" content="免费生成超全朋友圈/聊天表情包配文字案，渣到没朋友">
 <meta name="keywords" content="表情包,配文,朋友圈文案,聊天斗图,AI文案">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -48,6 +48,7 @@ const repo={
 '正能量':['今天也要元气满满鸭！','冲鸭，未来可期！','格局打开','别急，好戏在后头','每天进步一点点','你是最胖的！啊不，最棒的！','保持热爱，奔赴山海','一切都会好起来的！'],
 '舔狗':['宝，我今天输液了，输的是想你的夜','宝，我今天吃饺子没蘸醋，因为想你有点酸','宝，在吗？在的话回我，不在的话我等你','今天的风好大，把我的心动都吹向你','宝，别打电话了，我在想你','舔狗不得 house，但我心甘情愿']};
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 表情包文字生成 | AgentGongju.com'))return;
 const s=document.getElementById('style').value,kw=document.getElementById('kw').value.trim();
 const arr=repo[s];let out='【表情包配文 · '+s+'】\n\n';
 let chosen=arr[Math.floor(Math.random()*arr.length)];

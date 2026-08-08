@@ -4,7 +4,7 @@
 <title>星座婚配指数测试 | AgentGongju.com</title>
 <meta name="description" content="星座婚配指数测试，分析两人星座的默契指数、相处建议与优势互补，趣味又走心的星座速配小工具">
 <meta name="keywords" content="星座配对,星座速配,十二星座,婚配指数,爱情配对,默契">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -96,6 +96,7 @@ const PICK=[
 '偶尔小摩擦，但都是甜味','越磨合越有默契','能读懂对方的欲言又止','是彼此的加分项'];
 function pick(a){return a[Math.floor(Math.random()*a.length)];}
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('星座婚配指数测试 | AgentGongju.com'))return;
 const a=document.getElementById('z1').value;
 const b=document.getElementById('z2').value;
 const rel=document.getElementById('rel').value;

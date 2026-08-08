@@ -4,7 +4,7 @@
 <title>BMI 健康计算 | AgentGongju.com</title>
 <meta name="description" content="免费BMI体质指数计算工具，查看健康体重范围">
 <meta name="keywords" content="BMI计算,体质指数,健康体重,肥胖指数">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -42,6 +42,7 @@ input:focus,select:focus,textarea:focus{border-color:#6366f1}
 <script>
 
 document.getElementById('bmiBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('BMI 健康计算 | AgentGongju.com'))return;
 const h=parseFloat(document.getElementById('height').value)/100;const w=parseFloat(document.getElementById('weight').value);
 if(!h||!w){alert('请输入身高体重');return}
 const bmi=w/(h*h);let level,emoji;if(bmi<18.5){level='偏瘦';emoji='🍃'}else if(bmi<24){level='正常';emoji='✅'}else if(bmi<28){level='偏胖';emoji='⚠️'}else{level='肥胖';emoji='🔴'}

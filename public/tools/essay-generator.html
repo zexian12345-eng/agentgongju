@@ -4,7 +4,7 @@
 <title>AI 作文生成器 | AgentGongju.com</title>
 <meta name="description" content="AI中小学生作文生成，命题作文/周记/读后感一键生成大纲与范文">
 <meta name="keywords" content="作文生成,AI作文,命题作文,周记,读后感">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -58,6 +58,7 @@ const title='《'+topic+'》';
 return '标题：'+title+'\n\n'+o+'\n\n'+parasX[0]+'\n\n'+parasX[1]+'\n\n'+parasX[2]+'\n\n'+gnote+'\n\n（全文约'+len+'字，供写作参考）';
 }
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 作文生成器 | AgentGongju.com'))return;
 const type=document.getElementById('type').value;const topic=document.getElementById('topic').value.trim();
 if(!topic){alert('请输入作文题目');return}
 const grade=document.getElementById('grade').value;const len=document.getElementById('len').value;

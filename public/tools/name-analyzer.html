@@ -4,7 +4,7 @@
 <title>AI 起名测字 | AgentGongju.com</title>
 <meta name="description" content="AI姓名测字打分，分析五行、笔画、寓意吉凶，帮你起名改名">
 <meta name="keywords" content="测名字,姓名打分,起名,五行测试">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -49,6 +49,7 @@ function copyResult(){navigator.clipboard.writeText(document.getElementById('det
 const wuxingChars={'木':['林','森','梓','荣','楠','楷','柏'],'火':['炎','煜','烨','熙','煊','烁'],'土':['坤','垚','培','峰','岚','嵩'],'金':['鑫','锐','铭','钧','锋','钧'],'水':['淼','霖','涵','泽','浩','清']};
 function charWuxing(c){for(const k in wuxingChars){if(wuxingChars[k].includes(c))return k}return ['木','火','土','金','水'][Math.floor(Math.random()*5)]}
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 起名测字 | AgentGongju.com'))return;
 const name=document.getElementById('name').value.trim();if(!name||name.length<2){alert('请输入至少两个字的名字');return}
 const year=document.getElementById('year').value.trim();const chars=name.split('');
 const strokes=chars.map(c=>{let s=0;for(const ch of c){s+=(ch.charCodeAt(0)%15)+5}return s});

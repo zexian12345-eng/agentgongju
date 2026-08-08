@@ -4,7 +4,7 @@
 <title>微信公众号爆款标题 | AgentGongju.com</title>
 <meta name="description" content="AI公众号标题生成器，一键生成吸睛、高点击率的爆款文章标题">
 <meta name="keywords" content="公众号标题,爆款标题,微信文章,标题生成">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -49,6 +49,7 @@ const tpl={
 '干货型':['{kw}完整指南：从入门到精通','{kw}实操手册，收藏这一篇就够了','手把手教你{kw}，零基础也能上手','{kw}保姆级教程，建议反复阅读','{kw}避坑清单，小白必看'],
 '情绪型':['看完这篇{kw}，我彻底清醒了','{kw}让我重新找回了自己','深夜聊聊{kw}，句句说到心坎','{kw}教会我的{n}件事','如果早点懂{kw}，就不会走这么多弯路']};
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('微信公众号爆款标题 | AgentGongju.com'))return;
 const topic=document.getElementById('topic').value.trim();const type=document.getElementById('type').value;const style=document.getElementById('style').value;
 if(!topic){alert('请先输入文章主题～');return;}
 const pools=tpl[style]||tpl['干货型'];const n=[5,7,8,9,10][Math.floor(Math.random()*5)];const m=[1,2,3,4][Math.floor(Math.random()*4)];

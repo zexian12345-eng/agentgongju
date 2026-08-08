@@ -4,7 +4,7 @@
 <title>AI 代码注释优化 | AgentGongju.com</title>
 <meta name="description" content="粘贴代码段，AI生成清晰的中文注释、友好命名建议与可读性优化技巧，助力团队协作与自我维护">
 <meta name="keywords" content="代码,注释,编程,开发,注释优化,可读性">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -70,6 +70,7 @@ const docStart={javascript:'/**',python:'"""',java:'/**',php:'/**',c:'/**'};
 const docEnd={javascript:' */',python:'"""',java:' */',php:' */',c:' */'};
 function rand(a){return a[Math.floor(Math.random()*a.length)]}
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 代码注释优化 | AgentGongju.com'))return;
 const code=document.getElementById('code').value.trim();
 const lang=document.getElementById('lang').value;
 const style=document.getElementById('style').value;

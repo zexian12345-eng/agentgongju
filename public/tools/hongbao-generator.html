@@ -4,7 +4,7 @@
 <title>AI 红包封面文案 | AgentGongju.com</title>
 <meta name="description" content="免费生成微信红包封面祝福语，节日/结婚/生日红包文案一键生成">
 <meta name="keywords" content="红包封面,祝福语,红包文案,微信红包,AI文案">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -49,6 +49,7 @@ const pool={
 '感谢':['{n}，辛苦啦！一点心意请笑纳 🙏','感谢一路的支持','愿你付出皆有回报。']};
 const okMap={'春节':['万事顺遂','财源广进','平安喜乐','心想事成'],'结婚':['永结同心','幸福美满'],'生日':['快乐无忧','梦想成真'],'开工':['蒸蒸日上','势不可挡'],'感谢':['顺顺利利','前程似锦']};
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 红包封面文案 | AgentGongju.com'))return;
 const sc=document.getElementById('scene').value,n=document.getElementById('name').value.trim();
 const nm=n?n+'，':'';
 const arr=pool[sc];

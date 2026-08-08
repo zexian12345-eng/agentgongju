@@ -4,7 +4,7 @@
 <title>AI 每日好运签 | AgentGongju.com</title>
 <meta name="description" content="免费AI每日运势签文，一签解今日，心情科技感拉满">
 <meta name="keywords" content="每日签,运势,好运,求签,塔罗,AI运势">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -49,6 +49,7 @@ const levels=[['大吉','上上签，诸事顺遂，所向披靡！','#22c55e'],
 ['小吉','小事顺遂，大事需留意，谋定而后动。','#38bdf8']];
 const sips={事业:['事业如登山，今日宜稳步攀登，明日自见峰顶。','工作中多一份主动，机会就多一份靠近。'],感情:['缘分自有天定，今天主动一点，好事将近。','真挚的心，终会被温柔以待。'],考试:['笔下有神，心有所向，今日答题如行云流水。','文昌星动，发挥稳定，必可如愿以偿。'],财运:['财星当位，正财得宜，稳中求进，切莫贪高。','小财不散，大财可期，今日宜储蓄。'],夸夸:['春风得意马蹄疾，今日的你格外亮眼。']};
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 每日好运签 | AgentGongju.com'))return;
 const wish=document.getElementById('wish').value.trim();
 const dt=new Date();const dstr=dt.getMonth()+1+'月'+dt.getDate()+'日';
 let lv=levels[Math.floor(Math.random()*levels.length)];

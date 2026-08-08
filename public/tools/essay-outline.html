@@ -4,7 +4,7 @@
 <title>AI 论文大纲生成 | AgentGongju.com</title>
 <meta name="description" content="输入论文主题与要求，AI自动生成结构化写作大纲，包含引言、分论点、例证与结论，助力论文写作">
 <meta name="keywords" content="论文,大纲,写作,毕业论文,提纲,报告">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -71,6 +71,7 @@ const pointBank=[
 ['总结与展望','总结全文核心观点，指出研究不足并展望未来研究方向']];
 function rand(a){return a[Math.floor(Math.random()*a.length)]}
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 论文大纲生成 | AgentGongju.com'))return;
 const topic=document.getElementById('topic').value.trim()||'人工智能与教育融合';
 const type=document.getElementById('type').value;
 const depth=document.getElementById('depth').value;

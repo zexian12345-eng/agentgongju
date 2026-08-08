@@ -4,7 +4,7 @@
 <title>AI习惯养成计划 | AgentGongju.com</title>
 <meta name="description" content="AI习惯养成助手，科学规划新习惯，生成21天打卡计划与执行建议">
 <meta name="keywords" content="习惯养成,打卡计划,21天,自律,习惯管理">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -46,6 +46,7 @@ input:focus,select:focus,textarea:focus{border-color:#6366f1}
 function copyResult(){navigator.clipboard.writeText(document.getElementById('out').textContent).then(()=>alert('✅ 已复制！'))}
 const intensityMap={'超轻起步':['只做5分钟，重在启动','降低难度，先坚持'],'适中':['保持基础量，稳定执行','设定固定时段'],'挑战自我':['逐渐加量，每周升阶','今天多做一个阶段']};
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI习惯养成计划 | AgentGongju.com'))return;
 const habit=document.getElementById('habit').value.trim();const freq=document.getElementById('freq').value;const cycle=document.getElementById('cycle').value;const tag=document.getElementById('tag').value;const inten=document.getElementById('inten').value;
 if(!habit){alert('请输入想养成的习惯～');return;}
 const tips=intensityMap[inten];

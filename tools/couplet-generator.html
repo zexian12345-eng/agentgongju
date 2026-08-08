@@ -4,7 +4,7 @@
 <title>AI 对联生成器 | AgentGongju.com</title>
 <meta name="description" content="AI春节对联/趣味对联生成器，输入上联自动对出工整下联与横批">
 <meta name="keywords" content="对联生成,春节对联,AI对联,春联,上联下联">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -52,6 +52,7 @@ const pairs={
 谐趣:[['上一上二上出对联','人大人在在在门心','横批：一马当先'],['天上掉馅饼','人间多好事','横批：想来就来'],['熬夜加班不脱发','奶茶火锅吃不胖','横批：心想事成']]
 };
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 对联生成器 | AgentGongju.com'))return;
 const up=document.getElementById('up').value.trim();
 const type=document.getElementById('type').value;
 const pool=pairs[type];let chosen=pool[Math.floor(Math.random()*pool.length)];

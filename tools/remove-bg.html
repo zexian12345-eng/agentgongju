@@ -4,7 +4,7 @@
 <title>AI在线抠图 - 免费图片背景去除 | AgentGongju.com</title>
 <meta name="description" content="免费AI在线抠图工具，一键去除图片背景，更换纯色或透明背景。支持人像、商品、动物等多种图片类型。">
 <meta name="keywords" content="AI抠图,在线抠图,去除背景,免费抠图,图片背景去除,remove background">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -57,6 +57,7 @@ let currentFile=null;
 function handleFile(file){if(!file.type.match('image.*')){alert('请上传图片');return}
 currentFile=file;const reader=new FileReader();reader.onload=e=>{document.getElementById('originalImg').src=e.target.result;document.getElementById('compareGrid').classList.add('active')};reader.readAsDataURL(file)}
 document.getElementById('generateBtn').addEventListener('click',async()=>{
+if(!Paywall.countUse('AI在线抠图 - 免费图片背景去除 | AgentGongju.com'))return;
 if(!currentFile){alert('请先上传图片！');return}
 const btn=document.getElementById('generateBtn');btn.disabled=true;btn.textContent='⏳ 处理中...';
 try{

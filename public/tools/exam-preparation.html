@@ -4,7 +4,7 @@
 <title>AI 考前冲刺计划 | AgentGongju.com</title>
 <meta name="description" content="输入考试科目、剩余天数与每天学习时长，AI生成科学的考前冲刺时间表，含每日任务、复习轮次与心态调整建议">
 <meta name="keywords" content="考试,复习,冲刺,计划,备考,学习">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -67,6 +67,7 @@ const rest=h-study;
 return {study,rest};
 }
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 考前冲刺计划 | AgentGongju.com'))return;
 const subRaw=document.getElementById('subject').value.trim();
 const subjects=(subRaw||'全部科目').split(/[，,、\s]+/).filter(x=>x).slice(0,5);
 const days=Math.max(1,parseInt(document.getElementById('days').value)||14);

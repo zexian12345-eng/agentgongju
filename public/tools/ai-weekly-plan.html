@@ -4,7 +4,7 @@
 <title>AI 周工作计划生成器 | AgentGongju.com</title>
 <meta name="description" content="一键生成一周工作计划表，适合职场人士提前规划，含每日任务、优先级与复盘提醒">
 <meta name="keywords" content="周计划,工作计划,效率,时间管理,职场">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -75,6 +75,7 @@ const days=['周一','周二','周三','周四','周五','周末'];
 const taskPool={'通用':['处理日常邮件与审批','整理本周会议纪要','推进重点项目进度','复盘上周数据','参加团队周例会','完善工作文档','对接跨部门协作'],'产品':['梳理需求池优先级','撰写产品需求文档','参与需求评审会','跟进版本迭代','分析用户反馈','设计竞品调研','更新产品路线图'],'运营':['更新公众号推文','策划活动方案','分析粉丝增长数据','回复用户私信','制作短视频素材','优化选题库','复盘投放效果'],'开发':['修复线上Bug','推进功能开发','代码审查Code Review','优化接口性能','编写单元测试','技术方案评审','部署迭代版本'],'销售':['跟进意向客户','制定拜访计划','整理客户报价','复盘成交漏斗','维护老客关系','参加销售晨会','收集竞品情报'],'市场':['撰写营销方案','对接广告投放','准备活动物料','分析投放数据','媒体关系维护','制作宣传素材','策划品牌事件'],'教师':['备课与教案整理','批改学生作业','组织课堂互动','与家长沟通反馈','设计教学课件','组织课后答疑','参加教研会议']};
 function rand(a){return a[Math.floor(Math.random()*a.length)]}
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 周工作计划生成器 | AgentGongju.com'))return;
 let goals=document.getElementById('goals').value.trim();
 const job=document.getElementById('job').value;
 const pace=document.getElementById('pace').value;

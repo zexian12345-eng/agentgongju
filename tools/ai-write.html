@@ -4,7 +4,7 @@
 <title>AI写作助手 - 免费在线AI文案生成 | AgentGongju.com</title>
 <meta name="description" content="免费AI写作助手，支持文章生成、文案改写、标题创作、小红书文案、抖音脚本等多种写作场景。">
 <meta name="keywords" content="AI写作,免费AI写作,文案生成,小红书文案,抖音脚本">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -49,6 +49,7 @@ select:focus,textarea:focus{border-color:#6366f1}
 <footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
 <script>
 document.getElementById('generateBtn').addEventListener('click', async ()=>{
+if(!Paywall.countUse('AI写作助手 - 免费在线AI文案生成 | AgentGongju.com'))return;
 const scene=document.getElementById('scene').value;const content=document.getElementById('contentInput').value.trim();
 if(!content){alert('请输入写作主题！');return}
 const btn=document.getElementById('generateBtn');btn.disabled=true;btn.textContent='⏳ 写作中...';

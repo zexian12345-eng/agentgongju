@@ -4,7 +4,7 @@
 <title>AI 简历优化 | AgentGongju.com</title>
 <meta name="description" content="AI简历优化工具，将大白话工作经历改写成专业量化表达，提升求职竞争力">
 <meta name="keywords" content="简历优化,求职简历,AI改简历,简历润色">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -50,6 +50,7 @@ function copyResult(){navigator.clipboard.writeText(document.getElementById('out
 const gold=['主导','负责','统筹','落地','产出','搭建','优化','复盘','赋能','驱动'];
 const verbs={运营:'负责公众号日常运营，持续输出高质量内容，阅读量稳定提升20%+',活动:'统筹策划系列活动并推进落地，单场参与人次超预期达成目标',用户:'搭建并维护核心用户社群，通过精细化运营提升用户活跃与转介绍率'};
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 简历优化 | AgentGongju.com'))return;
 const job=document.getElementById('job').value.trim()||'目标岗位';
 const exp=document.getElementById('exp').value.trim();if(!exp){alert('请输入原始经历');return}
 const tone=document.getElementById('tone').value;const lvl=document.getElementById('lvl').value;

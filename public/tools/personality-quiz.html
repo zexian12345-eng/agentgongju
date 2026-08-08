@@ -4,7 +4,7 @@
 <title>AI 性格测试 | AgentGongju.com</title>
 <meta name="description" content="AI趣味性格测试，回答几个小问题，测出你的隐藏性格标签">
 <meta name="keywords" content="性格测试,心理测试,MBTI,趣味测试">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -59,6 +59,7 @@ const combos={
 'ENFP':'元气冒险家：点子多、热情满，走到哪都热闹。',
 'INTJ':'深邃谋略家：独立思考，表面平静内心有宇宙。'};
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 性格测试 | AgentGongju.com'))return;
 const v=q=>document.querySelector('input[name="'+q+'"]:checked').value;
 const a=v('q1')+v('q2')+v('q3')+v('q4');
 let desc=combos[a];

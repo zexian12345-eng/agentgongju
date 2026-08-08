@@ -4,7 +4,7 @@
 <title>AI 护肤方案定制 | AgentGongju.com</title>
 <meta name="description" content="根据肤质、年龄、环境等定制个性化护肤方案，明确早晚护肤流程与成分建议，科学护肤不走弯路">
 <meta name="keywords" content="护肤品,护肤方案,肤质检测,成分护肤,早C晚A,补水保湿">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -106,6 +106,7 @@ const SKINTEXT={
 '敏感肌':'屏障较脆弱，优先修护维稳，避开酒精香精与强酸猛药',
 '中性':'肤质均衡，做好基础保湿与防晒即可'};
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 护肤方案定制 | AgentGongju.com'))return;
 const skin=document.getElementById('skin').value;
 const age=document.getElementById('age').value;
 const env=document.getElementById('env').value;

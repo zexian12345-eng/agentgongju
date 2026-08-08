@@ -4,7 +4,7 @@
 <title>AI 润色改写工具 | AgentGongju.com</title>
 <meta name="description" content="AI文本润色改写，一键将口语化或平淡文字改写成专业、优美、口语等风格">
 <meta name="keywords" content="文字润色,文案改写,AI润色,文本润色">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -43,6 +43,7 @@ function copyResult(){navigator.clipboard.writeText(document.getElementById('out
 const openings={专业:'基于当前情况，现将相关内容整理如下：',优美:'时光无言，却记录着每一次用心。',口语:'跟你说个好消息，这事可太给力了！',凝练:'概而言之：',激励:'每一次尝试都值得被认真对待！'};
 const closings={专业:'以上建议供参考，如有疑问欢迎沟通交流。',优美:'愿这份用心，能如春风般温暖您的心田。',口语:'总之就这么个事，很值得试试哈！',凝练:'—— 一句话，足够了。',激励:'向前一步，美好自会不期而遇。'};
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 润色改写工具 | AgentGongju.com'))return;
 const text=document.getElementById('text').value.trim();if(!text){alert('请输入文本');return}
 const tone=document.getElementById('tone').value;const len=document.getElementById('len').value;
 let core=text;

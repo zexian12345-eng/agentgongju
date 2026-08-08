@@ -4,7 +4,7 @@
 <title>AI 儿童睡前故事生成器 | AgentGongju.com</title>
 <meta name="description" content="根据主题一键生成温馨的儿童睡前故事，适合亲子阅读哄睡，含故事梗概与晚安寄语">
 <meta name="keywords" content="睡前故事,儿童故事,亲子,哄睡,绘本">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -57,6 +57,7 @@ const themes={勇敢:'学会鼓起勇气面对小小的害怕',友情:'和朋友
 const morals=['原来，勇气就藏在我们的心里，只要敢迈出第一步，就会发现它其实一点也不可怕。','好朋友的陪伴，让夜晚也变得温暖又明亮。','分享，能让一份快乐变成很多份快乐！','每一个小小的善举，都会像星星一样，照亮别人的夜空。'];
 function rand(a){return a[Math.floor(Math.random()*a.length)]}
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 儿童睡前故事生成器 | AgentGongju.com'))return;
 let child=document.getElementById('child').value.trim()||'宝贝';
 const heroIn=document.getElementById('hero').value.trim();
 const themeIn=document.getElementById('theme').value.trim();

@@ -4,7 +4,7 @@
 <title>AI 梦境详析 | AgentGongju.com</title>
 <meta name="description" content="输入你做的梦，AI结合常见意象与现代心理学，解析梦境寓意、情绪暗示与生活启示，仅供参考娱乐">
 <meta name="keywords" content="解梦,梦境,心理学,潜意识,做梦">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -91,6 +91,7 @@ const moods={
 '困惑':['梦境让你困惑，往往是你内心也在寻找答案','给自己一点安静时间，答案自会浮现']};
 function rand(a){return a[Math.floor(Math.random()*a.length)]}
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 梦境详析 | AgentGongju.com'))return;
 const txt=document.getElementById('dream').value.trim();
 const mood=document.getElementById('mood').value;
 const angle=document.getElementById('angle').value;

@@ -4,7 +4,7 @@
 <title>毕业谢师致辞生成器 | AgentGongju.com</title>
 <meta name="description" content="毕业谢师致辞生成器，一键生成感人的毕业发言、谢师感言、师生情致辞，适用于毕业典礼、谢师宴、纪念册留言">
 <meta name="keywords" content="毕业致辞,谢师宴,毕业感言,感谢老师,师生情,毕业发言稿">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -96,6 +96,7 @@ const CLOSE={
 '研究生毕业':'师恩如海，终生难忘。愿您一切安好！'};
 function pick(a){return a[Math.floor(Math.random()*a.length)];}
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('毕业谢师致辞生成器 | AgentGongju.com'))return;
 const teacher=document.getElementById('teacher').value.trim()||'老师';
 const stage=document.getElementById('stage').value;
 const occ=document.getElementById('occ').value;

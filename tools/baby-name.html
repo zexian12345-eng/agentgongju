@@ -4,7 +4,7 @@
 <title>AI 宝宝取名 | AgentGongju.com</title>
 <meta name="description" content="AI智能取名工具，根据姓氏和偏好推荐好名字">
 <meta name="keywords" content="宝宝取名,AI取名,姓名推荐,起名">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -42,6 +42,7 @@ input:focus,select:focus,textarea:focus{border-color:#6366f1}
 <script>
 
 document.getElementById('nameBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 宝宝取名 | AgentGongju.com'))return;
 const surname=document.getElementById('surname').value.trim();if(!surname){alert('请输入姓氏');return}
 const gender=document.getElementById('gender').value;const meaning=document.getElementById('meaning').value;
 const boy=['子轩','浩然','宇辰','铭泽','亦辰','思远','俊熙','天佑','泽宇','承俊','嘉懿','宇航'];

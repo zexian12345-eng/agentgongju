@@ -4,7 +4,7 @@
 <title>写作灵感选题器 | AgentGongju.com</title>
 <meta name="description" content="AI写作灵感选题生成器，为博主、作者、内容创作者一键生成爆款选题与内容角度">
 <meta name="keywords" content="写作灵感,选题,爆款选题,内容创作,选题灵感,自媒体">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -51,6 +51,7 @@ const topics={
 '美妆时尚':['普通女生如何找到自己的风格','护肤品的正确使用顺序','平价又高级的穿搭思路','换季皮肤护理全攻略']};
 const hooks=['教你轻松上手','看完就懂','亲测有效','建议收藏慢慢看','很多人不知道','别再走弯路了'];
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('写作灵感选题器 | AgentGongju.com'))return;
 const field=document.getElementById('field').value;const plat=document.getElementById('plat').value;const hot=document.getElementById('hot').value.trim();
 const pool=topics[field]||topics['职场成长'];
 const picks=[];const t=[...pool];while(t.length&&picks.length<5){picks.push(t.splice(Math.floor(Math.random()*t.length),1)[0]);}

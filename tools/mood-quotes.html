@@ -4,7 +4,7 @@
 <title>AI 心情语录 | AgentGongju.com</title>
 <meta name="description" content="AI心情语录生成器，按心情生成治愈、励志或文艺的一句话文案">
 <meta name="keywords" content="心情语录,暖心文案,励志语录,治愈短句">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -51,6 +51,7 @@ const pools={
 '元气满满':{'治愈暖心':['今天的我，是世界的小太阳。'],'励志鼓劲':['冲啊！今天又是超棒的一天！'],'文艺高级':['眼里有星辰，脚下有力量。'],'幽默解压':['电量满格，谁也别想拦我起飞！']},
 '焦虑紧张':{'治愈暖心':['别怕，慢慢来，你已经很好了。'],'励志鼓劲':['深呼吸，你最担心的事，多半不会发生。'],'文艺高级':['心若安定，万事从容。'],'幽默解压':['先深呼吸三次，再想想待会儿吃点啥。']}};
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 心情语录 | AgentGongju.com'))return;
 const mood=document.getElementById('mood').value;const tone=document.getElementById('tone').value;const count=parseInt(document.getElementById('count').value);
 const pool=(pools[mood]&&pools[mood][tone])||['愿你的每一天都值得期待。'];
 let out='【'+mood+' · '+tone+'】\n\n';let i=0;const used=new Set();

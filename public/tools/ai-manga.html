@@ -4,7 +4,7 @@
 <title>AI 漫画生成 | AgentGongju.com</title>
 <meta name="description" content="AI漫画分镜生成，输入剧情一键生成漫画脚本与画面提示词">
 <meta name="keywords" content="AI漫画,漫画生成,分镜脚本,漫画提示词">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -49,6 +49,7 @@ input:focus,select:focus,textarea:focus{border-color:#6366f1}
 <script>
 function copyResult(){navigator.clipboard.writeText(document.getElementById('panelsOut').textContent).then(()=>alert('✅ 已复制！'))}
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 漫画生成 | AgentGongju.com'))return;
 const story=document.getElementById('story').value.trim();if(!story){alert('请输入剧情');return}
 const style=document.getElementById('style').value;const det=document.getElementById('det').value.trim();
 const n=Math.min(8,Math.max(2,parseInt(document.getElementById('panels').value)||4));

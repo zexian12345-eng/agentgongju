@@ -4,7 +4,7 @@
 <title>AI 懒人菜谱推荐 | AgentGongju.com</title>
 <meta name="description" content="根据现有食材和人数，智能推荐快手家常菜，含详细做法与买菜清单，新手也能做">
 <meta name="keywords" content="菜谱,家常菜,快手菜,懒人食谱,做饭">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -63,6 +63,7 @@ const rec=[
 {name:'清蒸鱼',key:['鱼','葱'],steps:['鱼身划刀，铺姜丝葱段。','水开后蒸8分钟。','淋蒸鱼豉油，浇热油即可。']}];
 function pick(a){return a[Math.floor(Math.random()*a.length)]}
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 懒人菜谱推荐 | AgentGongju.com'))return;
 let ings=document.getElementById('ing').value.trim();
 const num=parseInt(document.getElementById('num').value||2);
 const time=document.getElementById('time').value;

@@ -4,7 +4,7 @@
 <title>AI 简历优化 | AgentGongju.com</title>
 <meta name="description" content="AI简历优化工具，把平淡的工作经历改成HR一眼看中的加分写法">
 <meta name="keywords" content="简历优化,简历修改,求职简历,简历润色">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -45,6 +45,7 @@ input:focus,select:focus,textarea:focus{border-color:#6366f1}
 <script>
 function copyResult(){navigator.clipboard.writeText(document.getElementById('out').textContent).then(()=>alert('✅ 已复制！'))}
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 简历优化 | AgentGongju.com'))return;
 const job=document.getElementById('job').value.trim()||'目标岗位';const exp=document.getElementById('exp').value.trim();if(!exp){alert('请输入工作经历');return}
 const style=document.getElementById('style').value;const self=document.getElementById('self').value;
 const lines=exp.split('\n').filter(l=>l.trim());

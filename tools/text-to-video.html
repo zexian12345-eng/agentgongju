@@ -6,7 +6,7 @@
 <title>AI文生视频 - 文字转视频在线生成 | AgentGongju.com</title>
 <meta name="description" content="免费AI文生视频工具，输入文字描述即可生成AI视频。支持多种风格：写实、动漫、水墨、赛博朋克等，一键生成短视频内容。">
 <meta name="keywords" content="文生视频,文字转视频,AI视频生成,text to video,免费AI视频">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container { max-width: 1000px; margin: 100px auto 60px; padding: 0 20px; }
 .tool-header { text-align: center; margin-bottom: 40px; }
@@ -153,6 +153,7 @@ let history = JSON.parse(localStorage.getItem('videoHistory') || '[]');
 
 document.querySelectorAll('.style-btn').forEach(btn => {
   btn.addEventListener('click', () => {
+if(!Paywall.countUse('AI文生视频 - 文字转视频在线生成 | AgentGongju.com'))return;
     document.querySelectorAll('.style-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     currentStyle = btn.textContent;

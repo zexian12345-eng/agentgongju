@@ -4,7 +4,7 @@
 <title>AI健身计划生成器 | AgentGongju.com</title>
 <meta name="description" content="AI健身计划生成器，根据目标、水平和时间自动生成科学的每周训练计划">
 <meta name="keywords" content="健身计划,训练计划,减脂,增肌,运动计划,AI健身">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -50,6 +50,7 @@ const plans={
 '强化体能':{'零基础':['慢跑+基础拉伸','全身循环','休息','间歇训练','力量+体能','长距离慢跑','休息'],'初级':['有氧强化','力量训练','HIIT间歇','休息','全身挑战','耐力跑','休息']},
 '保持健康':{'零基础':['散步+拉伸','全身基础操','休息','快走有氧','核心稳定','瑜伽拉伸','休息'],'初级':['全身评估训练','有氧+力量','休息','核心+平衡','中等强度训练','舒缓拉伸','休息']}};
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI健身计划生成器 | AgentGongju.com'))return;
 const goal=document.getElementById('goal').value;const level=document.getElementById('level').value;const days=parseInt(document.getElementById('days').value);const time=document.getElementById('time').value;const cond=document.getElementById('cond').value.trim();
 const arr=plans[goal][level]||plans[goal]['零基础'];
 const pick=[];let i=0;while(pick.length<days){pick.push((dayNames[i]+'：'+arr[i%7]));i++;}

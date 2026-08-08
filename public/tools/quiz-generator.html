@@ -4,7 +4,7 @@
 <title>智能试卷出题机 | AgentGongju.com</title>
 <meta name="description" content="智能试卷出题机，一键生成随堂测验、单元测试、练习题与答案解析，支持多学科多难度，方便老师备课与家长辅导">
 <meta name="keywords" content="试卷生成,出题,在线试题,练习题,随堂测验,单元测试,题库">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -110,6 +110,7 @@ const ANSMAP={
 '综合常识':['24','风能','皮肤','示例：聊斋志异','H₂O','约 30万千米/秒']};
 function pick(a){return a[Math.floor(Math.random()*a.length)];}
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('智能试卷出题机 | AgentGongju.com'))return;
 const subject=document.getElementById('subject').value;
 const level=document.getElementById('level').value;
 const diff=document.getElementById('diff').value;

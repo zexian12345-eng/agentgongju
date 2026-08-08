@@ -4,7 +4,7 @@
 <title>AI 周公解梦 | AgentGongju.com</title>
 <meta name="description" content="AI周公解梦，输入你的梦境关键词，结合传统解梦文化与心理学视角，解读梦境象征与潜在暗示，仅供娱乐参考">
 <meta name="keywords" content="解梦,周公解梦,梦境解读,梦境预兆,心理分析">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -81,6 +81,7 @@ const symbols={
 function rand(a){return a[Math.floor(Math.random()*a.length)]}
 const feelOpen={平静:'你的梦整体基调平和，说明近期心态较为安稳。',焦虑:'梦境透出淡淡的紧张，或许与近期的压力有关。',兴奋:'这场梦带着愉悦与冲劲，预示你有股向上的能量。',恐惧:'梦境中的不安在向你发出信号，提醒你留心近期变化。',美好:'如此美好的梦境，是潜意识给你的一份温柔馈赠。'};
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 周公解梦 | AgentGongju.com'))return;
 const dream=document.getElementById('dream').value.trim();
 if(!dream){alert('请先描述你的梦境');return;}
 const view=document.getElementById('view').value;

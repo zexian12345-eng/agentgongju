@@ -4,7 +4,7 @@
 <title>KPI 目标规划助手 | AgentGongju.com</title>
 <meta name="description" content="KPI目标规划助手，帮你设定科学可控的季度/年度目标，拆解成行动步骤与量化指标，让工作更有方向">
 <meta name="keywords" content="KPI,目标设定,OKR,绩效考核,工作规划,目标拆解,职场管理">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -75,6 +75,7 @@ const STEPS={
 const PERIOD_STR={'季度':'12周','月度':'4周','年度':'52周'};
 function pick(a){return a[Math.floor(Math.random()*a.length)];}
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('KPI 目标规划助手 | AgentGongju.com'))return;
 const goal=document.getElementById('goal').value.trim();
 if(!goal){alert('请输入你的工作目标');return;}
 const period=document.getElementById('period').value;

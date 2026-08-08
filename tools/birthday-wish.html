@@ -4,7 +4,7 @@
 <title>AI 生日祝福 | AgentGongju.com</title>
 <meta name="description" content="AI生日祝福语生成器，给朋友家人写一条走心又特别的生日祝福">
 <meta name="keywords" content="生日祝福,祝福语生成,生日快乐,贺卡文案">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -43,6 +43,7 @@ input:focus,select:focus,textarea:focus{border-color:#6366f1}
 <script>
 function copyResult(){navigator.clipboard.writeText(document.getElementById('out').textContent).then(()=>alert('✅ 已复制！'))}
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 生日祝福 | AgentGongju.com'))return;
 const person=document.getElementById('person').value.trim()||'亲爱的你';const style=document.getElementById('style').value;const wish=document.getElementById('wish').value;
 const lists={
 '温馨走心':['又长大一岁啦，生日快乐～愿你眼里有光，心中有爱，被这个世界温柔以待。','希望你岁岁平安，把日子过成诗，生日快乐，永远做最开心的自己。','感恩遇见，愿你的每一个明天都比今天更值得期待。'],

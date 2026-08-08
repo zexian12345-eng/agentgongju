@@ -4,7 +4,7 @@
 <title>单位换算器 | AgentGongju.com</title>
 <meta name="description" content="免费单位换算工具，支持长度重量温度面积体积数据">
 <meta name="keywords" content="单位换算,长度换算,重量换算,温度换算">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -55,6 +55,7 @@ document.getElementById('unitType').addEventListener('change',updateUnits);
 function updateUnits(){const type=document.getElementById('unitType').value;const units=Object.keys(convTable[type]);const opts=units.map(u=>`<option>${u}</option>`).join('');document.getElementById('fromUnit').innerHTML=opts;document.getElementById('toUnit').innerHTML=opts;document.getElementById('toUnit').selectedIndex=1;}
 updateUnits();
 document.getElementById('convertBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('单位换算器 | AgentGongju.com'))return;
 const type=document.getElementById('unitType').value;const val=parseFloat(document.getElementById('value').value);if(isNaN(val)){alert('请输入数值');return}
 const from=document.getElementById('fromUnit').value;const to=document.getElementById('toUnit').value;
 let result;

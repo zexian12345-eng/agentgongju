@@ -4,7 +4,7 @@
 <title>AI 招聘JD生成 | AgentGongju.com</title>
 <meta name="description" content="AI招聘JD生成器，输入岗位信息自动生成专业规范的招聘职位描述">
 <meta name="keywords" content="招聘JD,职位描述,招聘文案,岗位JD,HR工具">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -46,6 +46,7 @@ h4{color:#a5b4fc;margin:8px 0 6px}
 <script>
 function copyResult(){navigator.clipboard.writeText(document.getElementById('out').textContent).then(()=>alert('✅ 已复制！'))}
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 招聘JD生成 | AgentGongju.com'))return;
 const job=document.getElementById('job').value.trim();if(!job){alert('请输入职位名称');return}
 const duties=document.getElementById('duties').value.split(/[,，、]/).map(s=>s.trim()).filter(Boolean);
 const ind=document.getElementById('industry').value;const exp=document.getElementById('exp').value;const sal=document.getElementById('salary').value.trim();

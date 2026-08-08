@@ -4,7 +4,7 @@
 <title>AI 学习计划 | AgentGongju.com</title>
 <meta name="description" content="AI学习计划生成器，根据目标时间和科目自动生成可执行的学习计划表">
 <meta name="keywords" content="学习计划,备考计划,AI学习,学习安排">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -43,6 +43,7 @@ input:focus,select:focus,textarea:focus{border-color:#6366f1}
 <script>
 function copyResult(){navigator.clipboard.writeText(document.getElementById('out').textContent).then(()=>alert('✅ 已复制！'))}
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 学习计划 | AgentGongju.com'))return;
 const goal=document.getElementById('goal').value.trim();if(!goal){alert('请输入学习目标');return}
 const hours=document.getElementById('hours').value;const base=document.getElementById('base').value;
 const phases=[

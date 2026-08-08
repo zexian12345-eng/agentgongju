@@ -4,7 +4,7 @@
 <title>每日星座运势 | AgentGongju.com</title>
 <meta name="description" content="免费星座运势查询，查看今日财运爱情事业">
 <meta name="keywords" content="星座运势,今日运势,每日星座,十二星座">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -41,6 +41,7 @@ input:focus,select:focus,textarea:focus{border-color:#6366f1}
 <script>
 
 document.getElementById('luckBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('每日星座运势 | AgentGongju.com'))return;
 const names=['白羊座','金牛座','双子座','巨蟹座','狮子座','处女座','天秤座','天蝎座','射手座','摩羯座','水瓶座','双鱼座'];
 const zodiac=document.getElementById('zodiac').value;const today=new Date();const seed=(zodiac.charCodeAt(0)+today.getDate())%10;
 const stars=['★☆☆☆☆','★★☆☆☆','★★★☆☆','★★★★☆','★★★★★'];const luck=[96,92,88,85,80,78,75,72,68,65,62,58];

@@ -4,7 +4,7 @@
 <title>AI 今日运势 | AgentGongju.com</title>
 <meta name="description" content="AI星座运势与幸运指引，选星座看今日健康事业感情财运">
 <meta name="keywords" content="今日运势,星座运势,每日占卜,幸运色">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -40,6 +40,7 @@ input:focus,select:focus,textarea:focus{border-color:#6366f1}
 <script>
 function copyResult(){navigator.clipboard.writeText(document.getElementById('out').textContent).then(()=>alert('✅ 已复制！'))}
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 今日运势 | AgentGongju.com'))return;
 const z=document.getElementById('zodiac').value;
 const r=n=>Math.floor(Math.random()*(100-n+1))+n;
 const overall=r(72),luck=r(65),wealth=r(60),love=r(60),work=r(62),health=r(65);

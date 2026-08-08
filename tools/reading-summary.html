@@ -4,7 +4,7 @@
 <title>AI 读书笔记总结 | AgentGongju.com</title>
 <meta name="description" content="输入书名、梗概与你的感悟，AI帮你整理成结构化读书笔记，含核心观点、金句摘抄与个人收获">
 <meta name="keywords" content="读书笔记,读书,书评,总结,阅读,学习">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -74,6 +74,7 @@ const typeTips={
 '工具':['方法论的落地运用','把知识主动用起来','小步快跑，持续迭代']};
 function rand(a){return a[Math.floor(Math.random()*a.length)]}
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 读书笔记总结 | AgentGongju.com'))return;
 const title=document.getElementById('title').value.trim()||'这本书';
 const type=document.getElementById('type').value;
 const detail=document.getElementById('detail').value;

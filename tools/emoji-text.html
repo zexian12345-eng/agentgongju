@@ -4,7 +4,7 @@
 <title>Emoji文案翻译 | AgentGongju.com</title>
 <meta name="description" content="Emoji文案生成与翻译机，普通文案秒变卖萌生动的emoji版本，也支持把emoji翻译回文字">
 <meta name="keywords" content="emoji翻译,emoji文案,颜文字,表情符号,网络文案">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -48,6 +48,7 @@ function copyResult(){navigator.clipboard.writeText(document.getElementById('out
 const wordMap={'好':'😊','天气':'🌤️','太阳':'🌞','下雨':'🌧️','吃':'🍔','火锅':'🍲','喝':'🥤','水':'💧','开心':'😄','高兴':'🥳','爱':'❤️','喜欢':'💕','钱':'💰','可爱':'🐰','加油':'💪','辛苦':'😮💨','晚安':'🌙','早安':'☀️','谢谢':'🙏','生日':'🎂','礼物':'🎁','衣服':'👗','猫':'🐱','狗':'🐶','睡':'😴','哭':'😢','辣':'🌶️','花':'🌸','音乐':'🎵','车':'🚗','家':'🏠','工作':'💼','手机':'📱','笔':'✏️','睡觉':'🌙'};
 const signMap={'😊':'开心','😄':'高兴','😀':'大笑','😢':'难过','😭':'大哭','😡':'生气','😮':'惊讶','😴':'困倦','😍':'喜欢','🥰':'甜蜜','👍':'很棒','👎':'不好','❤️':'爱','💪':'加油','🎉':'庆祝','🎂':'生日','🌙':'夜晚','☀️':'天晴','🌧️':'下雨','🍔':'吃汉堡','🍲':'火锅','💰':'钱','🐱':'猫','🐶':'狗','🌸':'花','🎁':'礼物','🙏':'谢谢'};
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('Emoji文案翻译 | AgentGongju.com'))return;
 const txt=document.getElementById('input').value.trim();if(!txt){alert('请输入内容～');return;}
 let out='';
 if(mode===1){let r=txt;for(const k in wordMap){r=r.split(k).join(wordMap[k]+' ');}r=r.replace(/。$/,'').replace(/！?$/,'')+'！🥰';out=r;}

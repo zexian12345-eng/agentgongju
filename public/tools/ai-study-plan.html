@@ -4,7 +4,7 @@
 <title>AI 学习计划制定 | AgentGongju.com</title>
 <meta name="description" content="AI学习计划制定，输入学习目标与可支配时间，自动生成分阶段、可执行的周计划表，涵盖复习/练习/复盘，学生与自学必备">
 <meta name="keywords" content="学习计划,备考计划,自律计划,时间管理,学习方法,学习安排">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -78,6 +78,7 @@ input:focus,select:focus,textarea:focus{border-color:#6366f1}
 const dailyTips={'1-2小时':['碎片时间背知识卡片','单点突破，每天只攻一个模块'],'2-3小时':['黄金2小时高浓度练习+30分钟复盘','分主次模块交替推进'],'3-5小时':['上午新学、下午练习、晚间复盘','保持节奏避免疲劳'],'全天':['上午理论、下午实操、晚间总结','留出30分钟运动舒缓']};
 function rand(a){return a[Math.floor(Math.random()*a.length)]}
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 学习计划制定 | AgentGongju.com'))return;
 const goal=document.getElementById('goal').value.trim();
 if(!goal){alert('请先填写学习目标');return;}
 const time=document.getElementById('time').value;

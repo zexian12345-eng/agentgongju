@@ -4,7 +4,7 @@
 <title>AI 商务邮件助手 | AgentGongju.com</title>
 <meta name="description" content="输入邮件要点与语气风格，AI快速生成专业得体的商务邮件，支持正式、温和、催办等多种场景">
 <meta name="keywords" content="邮件,商务,办公,沟通,写信,英文邮件">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -67,6 +67,7 @@ input:focus,select:focus,textarea:focus{border-color:#6366f1}
 <script>
 function pick(arr){return arr[Math.floor(Math.random()*arr.length)]}
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 商务邮件助手 | AgentGongju.com'))return;
 const recv=document.getElementById('receiver').value.trim()||'尊敬的客户';
 const points=document.getElementById('points').value.trim();
 const tone=document.getElementById('tone').value;

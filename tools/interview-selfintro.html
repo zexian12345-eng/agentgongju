@@ -4,7 +4,7 @@
 <title>AI 面试自我评价 | AgentGongju.com</title>
 <meta name="description" content="免费生成面试三分钟自我介绍/自我评价，一键可复制">
 <meta name="keywords" content="面试,自我介绍,自我评价,求职,简历,AI职场">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -45,6 +45,7 @@ input:focus,select:focus,textarea:focus{border-color:#6366f1}
 <footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
 <script>
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 面试自我评价 | AgentGongju.com'))return;
 const job=document.getElementById('job').value.trim()||'目标岗位',years=document.getElementById('years').value||0;
 let st=document.getElementById('strength').value.trim();
 const defaultSt=['责任心强','执行力高','团队协作能力好'];

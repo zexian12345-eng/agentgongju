@@ -4,7 +4,7 @@
 <title>AI 绘画提示词生成器 | AgentGongju.com</title>
 <meta name="description" content="一键生成专业级AI绘画提示词，支持Midjourney/Stable Diffusion，中英文双语">
 <meta name="keywords" content="AI绘画,提示词,Prompt,Midjourney,Stable Diffusion,AI生成">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -94,6 +94,7 @@ const styleMap={'cinematic':'cinematic lighting, film still, 35mm','anime':'anim
 const lightMap={'golden-hour':'golden hour light','soft-light':'soft natural light','neon':'neon lighting, vibrant colors','moonlight':'moonlight, serene','studio':'studio lighting, professional','dreamy':'dreamy glow, ethereal atmosphere'};
 const detailMap={'high':'8k, ultra detailed, intricate details, masterpiece, best quality','normal':'highly detailed, sharp focus','simple':'minimalist, clean, simple composition'};
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 绘画提示词生成器 | AgentGongju.com'))return;
 let subject=document.getElementById('subject').value.trim();
 if(!subject){alert('请输入画面主体');return}
 const style=document.getElementById('style').value;

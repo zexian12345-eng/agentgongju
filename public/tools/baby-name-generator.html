@@ -4,7 +4,7 @@
 <title>AI 起名神器 | AgentGongju.com</title>
 <meta name="description" content="AI宝宝起名神器，根据姓氏和期望自动生成寓意美好的名字，附打分与解析">
 <meta name="keywords" content="宝宝起名,名字生成,AI起名,测名,男宝宝名字,女宝宝名字">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -48,6 +48,7 @@ const boy={文雅:['文轩','子墨','亦凡'],大气:['浩然','铭泽','世勋
 const girl={文雅:['诗涵','雅静','书瑶'],大气:['沐宸','舒宁','若曦'],健康:['安然','欣怡','静好'],聪明:['慧颖','灵犀','珂昕'],富贵:['亦辰','瑾瑜','梓萱']};
 const base={文雅:'文质彬彬，气韵儒雅',大气:'气度不凡，胸怀宽广',健康:'健健康康，平安顺遂',聪明:'聪慧过人，思维敏捷',富贵:'前程锦绣，富贵有余'};
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 起名神器 | AgentGongju.com'))return;
 const sur=document.getElementById('surname').value.trim();if(!sur){alert('请输入姓氏');return}
 const gen=document.getElementById('gender').value;const mean=document.getElementById('meaning').value;
 const avoid=document.getElementById('avoid').value.trim();

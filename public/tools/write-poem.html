@@ -4,7 +4,7 @@
 <title>AI 诗词创作助手 | AgentGongju.com</title>
 <meta name="description" content="AI诗词创作助手，快速生成绝句、律诗、词牌，支持多种主题与风格，适用于朋友圈、文案、文化创作等多种场景">
 <meta name="keywords" content="AI写诗,诗词创作,绝句,律诗,古诗词,藏头诗">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -91,6 +91,7 @@ const PARAS={
 '禅意':'空灵澄澈，于山水云月间体悟禅机，心境悠然，有一种超然物外的淡泊之美。'};
 function pick(a){return a[Math.floor(Math.random()*a.length)];}
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 诗词创作助手 | AgentGongju.com'))return;
 const theme=document.getElementById('theme').value.trim();
 if(!theme){alert('请输入创作主题');return;}
 const type=document.getElementById('type').value;

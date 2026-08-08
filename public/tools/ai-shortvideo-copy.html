@@ -4,7 +4,7 @@
 <title>AI 短视频爆款文案生成器 | AgentGongju.com</title>
 <meta name="description" content="一键生成抖音/快手/视频号爆款文案，含标题、口播脚本、钩子开头与标签推荐">
 <meta name="keywords" content="短视频文案,抖音文案,口播,爆款,视频脚本">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -70,6 +70,7 @@ const bodyMap={vlog:['早上好呀，今天是我记录日常的第'+pick(['3','
 const cta=['觉得有用的话，点个关注，我每天分享一个！','喜欢就双击屏幕支持一下，么么哒～','关注我，下期更精彩！','觉得对你有帮助，记得转发给需要的朋友。'];
 function pick(a){return a[Math.floor(Math.random()*a.length)]}
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 短视频爆款文案生成器 | AgentGongju.com'))return;
 let topic=document.getElementById('topic').value.trim();
 const type=document.getElementById('type').value;
 const len=document.getElementById('len').value;

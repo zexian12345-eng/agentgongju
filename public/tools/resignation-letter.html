@@ -4,7 +4,7 @@
 <title>AI 辞职信生成 | AgentGongju.com</title>
 <meta name="description" content="免费生成得体专业的辞职信，体面离职不伤感情">
 <meta name="keywords" content="辞职信,离职,辞职报告,离职申请,职场">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -49,6 +49,7 @@ input:focus,select:focus,textarea:focus{border-color:#6366f1}
 <footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
 <script>
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 辞职信生成 | AgentGongju.com'))return;
 const name=document.getElementById('name').value.trim()||'XXX',dept=document.getElementById('dept').value.trim()||'XX公司',boss=document.getElementById('boss').value.trim()||'领导',date=document.getElementById('date').value.trim()||'____年__月__日';
 let reason=document.getElementById('reason').value.trim();
 if(!reason)reason='出于个人职业规划与发展方向的考虑';

@@ -4,7 +4,7 @@
 <title>AI 智能标题生成 | AgentGongju.com</title>
 <meta name="description" content="AI智能标题生成，输入文章或视频主题，一键生成高点击、有钩子的标题，公众号、短视频、知乎爆款标题必备">
 <meta name="keywords" content="标题生成,爆款标题,文章标题,短视频标题,自媒体,内容创作">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -81,6 +81,7 @@ return pool[style]||pool['悬念'];
 }
 function copyText(t){navigator.clipboard.writeText(t).then(()=>{const b=event.target;const old=b.textContent;b.textContent='✅ 已复制';setTimeout(()=>b.textContent=old,1200);});}
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 智能标题生成 | AgentGongju.com'))return;
 const topic=document.getElementById('topic').value.trim();
 if(!topic){alert('请先输入内容主题');return;}
 const style=document.getElementById('style').value;

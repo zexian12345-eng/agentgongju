@@ -4,7 +4,7 @@
 <title>AI 会议纪要工具 | AgentGongju.com</title>
 <meta name="description" content="AI会议纪要生成器，输入会议记录流水账，自动整理成结构清晰的决议与待办">
 <meta name="keywords" content="会议纪要,AI办公,会议记录,待办事项">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -50,6 +50,7 @@ function copyResult(){navigator.clipboard.writeText(document.getElementById('out
 const people=['张总','李经理','王工','刘设计','陈运营','赵主管'];
 const actions=['推进产品方案评审并同步排期','输出竞品调研报告','整理用户反馈并输出优化建议','跟进技术联调进度','准备下轮汇报材料','确定上线运营投放方案'];
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 会议纪要工具 | AgentGongju.com'))return;
 const topic=document.getElementById('topic').value.trim()||'团队项目例会';
 const notes=document.getElementById('notes').value.trim();if(!notes){alert('请输入原始会议记录');return}
 const tone=document.getElementById('tone').value;const tags=document.getElementById('tags').value;

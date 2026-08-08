@@ -4,7 +4,7 @@
 <title>AI 应用产品起名 | AgentGongju.com</title>
 <meta name="description" content="输入产品类型与核心功能，AI生成国际化又易记的产品/应用名字，附吉祥域名与品牌调性建议">
 <meta name="keywords" content="起名,产品,应用,App,品牌,命名,互联网">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -79,6 +79,7 @@ const pool={
 ['小满','GoodEnough.app','小满胜万全'],['拾暖','WarmPick.com','生活中的小温暖']]};
 function rand(a){return a[Math.floor(Math.random()*a.length)]}
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 应用产品起名 | AgentGongju.com'))return;
 const type=document.getElementById('type').value;
 const func=document.getElementById('func').value.trim();
 const arr=pool[type];

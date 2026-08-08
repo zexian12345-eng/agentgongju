@@ -4,7 +4,7 @@
 <title>商品测评文案生成器 | AgentGongju.com</title>
 <meta name="description" content="商品测评文案生成器，一键生成真实感十足的好评、差评或中立测评文案，适用于电商评价、测评种草、买家秀文案等场景">
 <meta name="keywords" content="商品评价,测评文案,买家秀,好评,差评,种草文案,电商评价">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -82,6 +82,7 @@ const WEAK=['细节做工','客服响应','续航/耐用度','宣传与实际','
 function pick(a){return a[Math.floor(Math.random()*a.length)];}
 function shuffle(a){let r=[...a];for(let i=r.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[r[i],r[j]]=[r[j],r[i]];}return r;}
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('商品测评文案生成器 | AgentGongju.com'))return;
 const product=document.getElementById('product').value.trim()||'这款商品';
 const type=document.getElementById('type').value;
 const scene=document.getElementById('scene').value;

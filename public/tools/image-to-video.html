@@ -6,7 +6,7 @@
 <title>免费图转视频 - AI在线生成 | AgentGongju.com</title>
 <meta name="description" content="免费在线图转视频工具，上传图片即可生成流畅动画视频。支持缩放、平移、浮动等多种运镜效果，一键生成短视频，无需安装任何软件。">
 <meta name="keywords" content="图转视频,免费图转视频,图片转视频,AI视频生成,在线视频制作,image to video free">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container { max-width: 1200px; margin: 100px auto 60px; padding: 0 20px; }
 .tool-header { text-align: center; margin-bottom: 40px; }
@@ -156,6 +156,7 @@ let currentMotion = 'slow_zoom';
 // 运镜选择
 document.querySelectorAll('.option-btn').forEach(btn => {
   btn.addEventListener('click', () => {
+if(!Paywall.countUse('免费图转视频 - AI在线生成 | AgentGongju.com'))return;
     document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     currentMotion = btn.dataset.value;

@@ -4,7 +4,7 @@
 <title>AI 智能聊天 | AgentGongju.com</title>
 <meta name="description" content="AI在线聊天模拟器，选择角色即聊即回，陪伴你的每一次对话">
 <meta name="keywords" content="AI聊天,智能对话,聊天机器人,在线聊天">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -61,7 +61,7 @@ const chat=document.getElementById('chatbox');chat.appendChild(msg('bot',greet[r
 function send(){const v=document.getElementById('input').value.trim();if(!v)return;chat.appendChild(msg('user',v));document.getElementById('input').value='';
 const pool=replies[role]||replies['知心朋友'];const reply=pool[Math.floor(Math.random()*pool.length)];
 setTimeout(()=>{chat.appendChild(msg('bot',reply));chat.scrollTop=chat.scrollHeight;},400);chat.scrollTop=chat.scrollHeight;}
-document.getElementById('sendBtn').addEventListener('click',send);
+document.getElementById('sendBtn').addEventListener('click',()=>{if(!Paywall.countUse('AI聊天模拟'))return;send();});
 document.getElementById('input').addEventListener('keydown',e=>{if(e.key==='Enter')send()});
 </script>
 </body>

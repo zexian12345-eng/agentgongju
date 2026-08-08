@@ -4,7 +4,7 @@
 <title>AI在线配音 - 文字转语音免费工具 | AgentGongju.com</title>
 <meta name="description" content="免费AI配音工具，文字转语音在线生成。支持多种中文声音，适用于短视频配音、有声书制作、广告旁白等场景。">
 <meta name="keywords" content="AI配音,文字转语音,在线配音,免费配音,短视频配音,TTS">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -54,6 +54,7 @@ function pickVoice(){
   return pick||null;
 }
 document.getElementById('generateBtn').addEventListener('click', ()=>{
+if(!Paywall.countUse('AI在线配音 - 文字转语音免费工具 | AgentGongju.com'))return;
 const text=document.getElementById('textInput').value.trim();if(!text){alert('请输入文字内容！');return}
 speechSynthesis.cancel();
 const u=new SpeechSynthesisUtterance(text);

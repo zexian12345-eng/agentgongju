@@ -4,7 +4,7 @@
 <title>商品文案生成器 | AgentGongju.com</title>
 <meta name="description" content="AI商品卖点文案生成，电商详情页标题、卖点、种草文案一键生成">
 <meta name="keywords" content="商品文案,电商文案,卖点提炼,种草文案,标题生成">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -45,6 +45,7 @@ input:focus,select:focus,textarea:focus{border-color:#6366f1}
 <script>
 function copyResult(){navigator.clipboard.writeText(document.getElementById('out').textContent).then(()=>alert('✅ 已复制！'))}
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('商品文案生成器 | AgentGongju.com'))return;
 const prod=document.getElementById('prod').value.trim();if(!prod){alert('请输入商品名称');return}
 const feats=document.getElementById('feats').value.split(/[,，、]/).map(s=>s.trim()).filter(Boolean);
 const plat=document.getElementById('plat').value;const crowd=document.getElementById('crowd').value;

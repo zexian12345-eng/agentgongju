@@ -4,7 +4,7 @@
 <title>AI 视频标题生成 | AgentGongju.com</title>
 <meta name="description" content="AI视频标题生成器，根据内容关键词生成容易上热门的标题">
 <meta name="keywords" content="视频标题,标题生成,热点标题,内容创作">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -43,6 +43,7 @@ input:focus,select:focus,textarea:focus{border-color:#6366f1}
 <script>
 function copyResult(){navigator.clipboard.writeText(document.getElementById('out').textContent).then(()=>alert('✅ 已复制！'))}
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 视频标题生成 | AgentGongju.com'))return;
 const topic=document.getElementById('topic').value.trim();if(!topic){alert('请输入主题或关键词');return}
 const style=document.getElementById('style').value;const count=parseInt(document.getElementById('count').value);
 const libs={

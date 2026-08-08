@@ -4,7 +4,7 @@
 <title>AI 树洞心情陪伴 | AgentGongju.com</title>
 <meta name="description" content="AI树洞心情陪伴，写下你的心事与烦恼，获得温暖的共情回复与真实建议，温柔倾听你的每一个情绪，陪你走过低谷">
 <meta name="keywords" content="树洞,心情陪伴,情绪倾诉,心理疏导,安慰,倾听">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -76,6 +76,7 @@ const needLine={
 '陪伴':['我在听，你说的每一个字我都认真收下。','不需要急着说什么，把这一刻留给自己就好。','慢慢来，我陪你静静地待一会儿。'],
 '鼓励':['别怕，你比自己以为的更强大。','每一次坚持，都在悄悄升级你的内心。','风浪会过去，而你会在岸边变得更从容。']};
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 树洞心情陪伴 | AgentGongju.com'))return;
 const vent=document.getElementById('vent').value.trim();
 if(!vent){alert('先和树洞说说你的心事吧');return;}
 const mood=document.getElementById('mood').value;

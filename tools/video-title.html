@@ -4,7 +4,7 @@
 <title>AI 视频标题生成 | AgentGongju.com</title>
 <meta name="description" content="免费为短视频生成爆款吸粉标题，抖音快手B站通用">
 <meta name="keywords" content="视频标题,标题生成,短视频,抖音,自媒体,爆款">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -51,6 +51,7 @@ if(!arr.includes(title))arr.push(title);}
 return arr;
 }
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 视频标题生成 | AgentGongju.com'))return;
 const list=pickShuffled();
 let out='【爆款标题 10 选】\n\n';
 list.forEach((t,i)=>{out+=(i+1)+'. '+t+'\n';});

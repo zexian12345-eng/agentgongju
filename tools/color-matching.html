@@ -4,7 +4,7 @@
 <title>AI 色彩搭配方案 | AgentGongju.com</title>
 <meta name="description" content="AI色彩搭配师，输入主色调自动生成家居或穿搭的协调配色方案">
 <meta name="keywords" content="色彩搭配,配色方案,装修配色,穿搭配色">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -46,6 +46,7 @@ input:focus,select:focus,textarea:focus{border-color:#6366f1}
 const hexes={'暖橙':['#F97316','#FDBA74','#FFF7ED','#9A3412','#FDE68A'],'雾霾蓝':['#64748B','#93C5FD','#EFF6FF','#475569','#BFDBFE'],'莫兰迪灰':['#A8A29E','#E7E5E4','#F5F5F4','#78716C','#D6D3D1'],'抹茶绿':['#4D7C0F','#A3E635','#ECFCCB','#365314','#D9F99D'],'奶油白':['#FEF3C7','#FDE68A','#FFF7E6','#D97706','#FFFBEB'],'复古棕':['#92400E','#D6A05B','#F5E7D3','#6B3410','#E8D3B0'],'樱花粉':['#F9A8D4','#FBCFE8','#FFF0F6','#DB2777','#FDE7F0']};
 const hints={'家居装修':'大面积用浅色打底，重点饰面用主色，金属件点睛。','日常穿搭':'上浅下深不易出错，主色做点缀，避免一身纯色堆砌。','婚礼现场':'以白色为主舞台，主色做花艺与桌布点缀，浪漫又高级。','品牌设计':'主色占 Logo，辅助色做背景，点缀色提亮，保持对比度。'};
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 色彩搭配方案 | AgentGongju.com'))return;
 const color=document.getElementById('color').value;const scene=document.getElementById('scene').value;const count=parseInt(document.getElementById('count').value);
 let out='🌈 【'+color+' · '+scene+'】配色方案\n\n';
 for(let s=1;s<=count;s++){

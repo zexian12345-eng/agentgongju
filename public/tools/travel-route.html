@@ -4,7 +4,7 @@
 <title>AI 城市旅行攻略 | AgentGongju.com</title>
 <meta name="description" content="输入旅行目的地、天数与偏好，AI生成一份完整的三日游攻略，含行程安排、美食推荐与实用贴士">
 <meta name="keywords" content="旅行,攻略,行程,旅游,美食,景点,攻略生成">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -68,6 +68,7 @@ const famousCity={成都:['宽窄巷子','锦里','大熊猫基地','武侯祠',
 const foods={成都:['火锅','串串香','担担面','伤心凉粉','龙抄手'],西安:['肉夹馍','羊肉泡馍','凉皮','Biangbiang面','胡辣汤'],厦门:['沙茶面','土笋冻','海蛎煎','花生汤','姜母鸭'],重庆:['重庆小面','毛血旺','酸辣粉','烤鱼','抄手'],大理:['饵丝','乳扇','酸辣鱼','鲜花饼','白族三道茶'],杭州:['西湖醋鱼','龙井虾仁','东坡肉','片儿川','定胜糕'],北京:['北京烤鸭','炸酱面','豆汁','铜锅涮肉','驴打滚'],广州:['早茶','烧鹅','艇仔粥','肠粉','双皮奶'],上海:['生煎','小笼包','葱油拌面','蟹壳黄','红烧肉'],拉萨:['藏面','酥油茶','牦牛肉','糌粑','甜茶']};
 function rand(a){return a[Math.floor(Math.random()*a.length)]}
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 城市旅行攻略 | AgentGongju.com'))return;
 const city=document.getElementById('city').value.trim()||'成都';
 const days=parseInt(document.getElementById('days').value);
 const style=document.getElementById('style').value;

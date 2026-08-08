@@ -4,7 +4,7 @@
 <title>AI 宝宝起名 | AgentGongju.com</title>
 <meta name="description" content="AI宝宝起名，结合生辰、五行、寓意与音律，一键生成好听有内涵的好名字，附名字寓意与建议，宝宝取名必备">
 <meta name="keywords" content="宝宝起名,取名,名字寓意,五行,生辰八字,姓名">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -86,6 +86,7 @@ const neutral=[['安然','ān rán','平安泰然，一生顺遂、心性从容'
 const wuxingChar={金:['铭','锐','钧','钧','旗'],木:['荣','桦','栩','恺','桢'],水:['润','溪','澜','沛','淼'],火:['煜','烨','灵','焕','然'],土:['坤','堃','垚','懿','垚']};
 const styleAdv={文雅:'注重韵律与书卷气',大气:'选用寓意恢弘开阔的字',现代:'简约时尚、好写好听',传统:'取吉祥福气的传统字眼'};
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 宝宝起名 | AgentGongju.com'))return;
 const surname=document.getElementById('surname').value.trim();
 if(!surname){alert('请先填写姓氏');return;}
 const gender=document.getElementById('gender').value;

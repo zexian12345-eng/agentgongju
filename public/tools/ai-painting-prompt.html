@@ -4,7 +4,7 @@
 <title>AI 绘画提示词生成器 | AgentGongju.com</title>
 <meta name="description" content="AI绘画提示词生成器，一键生成专业级绘画Prompt，支持多种风格与画质参数，适用于Midjourney、Stable Diffusion等AI绘画工具">
 <meta name="keywords" content="AI绘画,提示词,prompt,Midjourney,Stable Diffusion,文生图">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -123,6 +123,7 @@ const cameraPrompt={
 'low angle':'low-angle shot, dramatic perspective',
 'depth of field':'shallow depth of field, blurred background'};
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 绘画提示词生成器 | AgentGongju.com'))return;
 const sub=document.getElementById('subject').value.trim();
 if(!sub){alert('请先描述你想画的主体内容');return;}
 const style=document.getElementById('style').value;

@@ -4,7 +4,7 @@
 <title>AI假期计划生成器 | AgentGongju.com</title>
 <meta name="description" content="AI假期/旅行计划生成器，根据自己的预算、天数和偏好自动生成个性化安排">
 <meta name="keywords" content="假期计划,旅行计划,旅游攻略,行程安排,度假计划">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -51,6 +51,7 @@ const acts={
 '购物体验':['购物商圈血拼','特色伴手礼店','文创集市','免税/大牌店','本地特产采购']};
 const budgetNote={'经济实惠':'住青旅/经济型，地铁+公交出行','舒适轻奢':'住中高端酒店，打车+高铁出行','高端享受':'住度假酒店，包车/头等出行'};
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI假期计划生成器 | AgentGongju.com'))return;
 const city=document.getElementById('city').value.trim()||'目的地';const days=parseInt(document.getElementById('days').value);const budget=document.getElementById('budget').value;const pref=document.getElementById('pref').value;const who=document.getElementById('who').value;
 const pool=acts[pref]||acts['休闲度假'];
 let out='【'+city+' · '+days+'天'+who+' · '+budget+'】\n\n';

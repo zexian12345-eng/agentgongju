@@ -4,7 +4,7 @@
 <title>AI 解梦 | AgentGongju.com</title>
 <meta name="description" content="免费在线解梦工具，解析梦境寓意">
 <meta name="keywords" content="解梦,梦境解析,周公解梦,AI解梦">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -41,6 +41,7 @@ input:focus,select:focus,textarea:focus{border-color:#6366f1}
 <script>
 
 document.getElementById('dreamBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 解梦 | AgentGongju.com'))return;
 const kw=document.getElementById('keyword').value.trim();if(!kw){alert('请输入梦境关键词');return}
 const dict={'水':'象征财富与情绪流动。梦见清澈的水预示财运亨通，浑浊的水则提示近期注意情绪管理。',
 '飞':'象征自由与抱负。梦见飞翔代表事业上升、愿望即将达成。',

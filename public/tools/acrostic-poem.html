@@ -4,7 +4,7 @@
 <title>AI 藏头诗生成 | AgentGongju.com</title>
 <meta name="description" content="免费生成藏头诗，结婚、庆生、祝福藏头诗一键生成">
 <meta name="keywords" content="藏头诗,生日诗,祝福诗,古诗生成,AI写诗">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -55,6 +55,7 @@ const c=rand(['远』','长','深','厚','高','阔','暖']);
 return a+' '+b+' '+c;
 }
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 藏头诗生成 | AgentGongju.com'))return;
 let kw=document.getElementById('kw').value.trim();if(!kw){alert('请输入藏头字');return}
 kw=kw.replace(/[^a-zA-Z\u4e00-\u9fa5]/g,'');
 if(kw.length>8)kw=kw.slice(0,8);

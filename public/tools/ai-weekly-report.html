@@ -4,7 +4,7 @@
 <title>AI 周报生成器 | AgentGongju.com</title>
 <meta name="description" content="AI周报生成器，输入本周工作要点，自动生成结构清晰、数据亮眼的周报，研发/运营/市场/产品多岗位模板一键切换">
 <meta name="keywords" content="AI周报,周报生成,工作总结,日报,职场工具">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -87,6 +87,7 @@ const roleTips={
 '设计':{done:['完成新版视觉稿并交付开发','优化组件规范，提升复用率','配合运营输出活动主视觉'],plan:['推进深色模式适配','沉淀设计走查清单'],risk:'设计资源紧张，需按优先级排期'},
 '销售':{done:['跟进重点客户，新增意向线索 20 个','促成 3 笔订单签约','优化销售话术并组织内部培训'],plan:['深挖老客户复购','拓展开拓新客户名单'],risk:'个别客户决策周期长，需持续跟进维系'}};
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 周报生成器 | AgentGongju.com'))return;
 const tasks=document.getElementById('tasks').value.trim();
 if(!tasks){alert('请先填写本周工作内容');return;}
 const role=document.getElementById('role').value;

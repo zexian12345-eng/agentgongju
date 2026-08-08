@@ -4,7 +4,7 @@
 <title>AI 周报生成器 | AgentGongju.com</title>
 <meta name="description" content="免费周报生成工具，一键生成工作周报">
 <meta name="keywords" content="周报生成,工作周报,自动写周报,AI周报">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -41,6 +41,7 @@ input:focus,select:focus,textarea:focus{border-color:#6366f1}
 <script>
 
 document.getElementById('reportBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 周报生成器 | AgentGongju.com'))return;
 const week=document.getElementById('week').value.trim();if(!week){alert('请输入本周工作内容');return}
 const d=new Date();const dateStr=d.getMonth()+1+'月'+d.getDate()+'日';
 const out='【本周工作周报 - '+dateStr+'】\n\n📋 一、本周工作概述\n本周主要完成了以下工作：\n'+week.split(/\n|,/).filter(x=>x.trim()).map((x,i)=>'  '+(i+1)+'. '+x.trim()).join('\n')+'\n\n📈 二、工作成果\n  • 完成了既定任务，进展顺利\n  • 与团队协作顺畅，沟通高效\n  • 积累了一定经验，为后续工作打下基础\n\n📌 三、下周计划\n  • 继续推进在手项目，确保按期交付\n  • 重点跟进新任务，合理安排时间\n  • 加强学习，提升工作效率\n\n（此报告由 AI 自动生成，可在此基础上修改完善）';

@@ -4,7 +4,7 @@
 <title>AI 健康 BMI 体脂分析 | AgentGongju.com</title>
 <meta name="description" content="免费计算BMI体脂率，个性化健康建议">
 <meta name="keywords" content="BMI,体脂率,健康,减肥,身体质量指数">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -47,6 +47,7 @@ input:focus,select:focus,textarea:focus{border-color:#6366f1}
 <footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
 <script>
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 健康 BMI 体脂分析 | AgentGongju.com'))return;
 const h=parseFloat(document.getElementById('height').value),w=parseFloat(document.getElementById('weight').value);
 if(!h||!w||h<50||h>250||w<10||w>300){alert('请输入有效的身高体重');return}
 const bmi=w/((h/100)*(h/100));

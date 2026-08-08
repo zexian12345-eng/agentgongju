@@ -4,7 +4,7 @@
 <title>内推推荐信生成器 | AgentGongju.com</title>
 <meta name="description" content="内推推荐信生成器，一键生成专业又真诚的求职内推信，适用于同事、校友、朋友内推，突出候选人优势">
 <meta name="keywords" content="内推信,推荐信,求职内推,招聘推荐,岗位推荐,同事推荐">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -80,6 +80,7 @@ const CHAN={
 const TRAITS=['解决问题的能力很强','学习能力出众，上手很快','责任心强，交付让人放心','合作意识好，团队反馈极佳','为人踏实靠谱，值得信赖','逻辑清晰，沟通表达到位'];
 function pick(a){return a[Math.floor(Math.random()*a.length)];}
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('内推推荐信生成器 | AgentGongju.com'))return;
 const name=document.getElementById('name').value.trim()||'这位候选人';
 const job=document.getElementById('job').value.trim()||'该岗位';
 const rel=document.getElementById('rel').value;

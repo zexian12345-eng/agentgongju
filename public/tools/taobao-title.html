@@ -4,7 +4,7 @@
 <title>电商商品标题优化 | AgentGongju.com</title>
 <meta name="description" content="淘宝、拼多多、抖音电商商品标题优化工具，自动补全卖点、属性、场景词提升搜索权重">
 <meta name="keywords" content="淘宝标题,商品标题,电商标题,标题优化,SEO标题">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -52,6 +52,7 @@ const attrMap={
 '母婴玩具':['环保材质','无味安全','易清洗','婴幼儿可用','加厚耐摔','早教益智','便携','可水洗','柔然亲肤','大牌同款']};
 const sceneWords=['家用','送礼','学生党','上班族','出差旅行','宿舍','户外','厨房','办公室','居家必备'];
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('电商商品标题优化 | AgentGongju.com'))return;
 const product=document.getElementById('product').value.trim();const cat=document.getElementById('cat').value;const plat=document.getElementById('plat').value;
 if(!product){alert('请先输入商品名称～');return;}
 const attr=attrMap[cat]||attrMap['数码3C'];const points=document.getElementById('points').value.split(/[,，]/).map(s=>s.trim()).filter(Boolean);

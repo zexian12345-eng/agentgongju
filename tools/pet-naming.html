@@ -4,7 +4,7 @@
 <title>宠物起名生成器 | AgentGongju.com</title>
 <meta name="description" content="宠物起名生成器，为猫咪、狗狗、仓鼠等萌宠一键生成好记又有趣的名字，支持多种风格寓意">
 <meta name="keywords" content="宠物起名,猫咪名字,狗狗名字,宠物名,萌宠,取名">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -94,6 +94,7 @@ const PETTAIL={
 function pick(a){return [...a][Math.floor(Math.random()*a.length)];}
 function shuffle(a){let r=[...a];for(let i=r.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[r[i],r[j]]=[r[j],r[i]];}return r;}
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('宠物起名生成器 | AgentGongju.com'))return;
 const pet=document.getElementById('pet').value;
 const gender=document.getElementById('gender').value;
 const style=document.getElementById('style').value;

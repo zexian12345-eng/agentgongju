@@ -4,7 +4,7 @@
 <title>AI 送礼物推荐 | AgentGongju.com</title>
 <meta name="description" content="免费根据对象和预算智能推荐礼物清单，送礼不再纠结">
 <meta name="keywords" content="礼物,送礼物,礼物推荐,送礼攻略,男友,女友,父母">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -53,6 +53,7 @@ const ideas={
 const hobbyMap={'运动':['运动手环','瑜伽垫','运动水壶'],'数码':['无线充电器','智能音箱','移动硬盘'],'读书':['电子书阅读器','文艺书签套装','精致台灯'],'美妆':['彩妆盘','美容仪','护手霜礼盒'],'游戏':['游戏手柄','键帽','主题周边']};
 function shuffle(a){return a.slice().sort(()=>Math.random()-0.5)}
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 送礼物推荐 | AgentGongju.com'))return;
 const who=document.getElementById('who').value,budget=parseFloat(document.getElementById('budget').value)||200,hobby=document.getElementById('hobby').value.trim();
 const base=ideas[who]||[];
 let custom=[];

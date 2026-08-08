@@ -4,7 +4,7 @@
 <title>情侣缘分测试 | AgentGongju.com</title>
 <meta name="description" content="免费情侣缘分配对测试，看看你们有多般配">
 <meta name="keywords" content="缘分测试,情侣配对,名字配对,爱情测试">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -37,6 +37,7 @@ input:focus,select:focus,textarea:focus{border-color:#6366f1}
 <script>
 
 document.getElementById('matchBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('情侣缘分测试 | AgentGongju.com'))return;
 const name1=document.getElementById('name1').value.trim();const name2=document.getElementById('name2').value.trim();
 if(!name1||!name2){alert('请输入双方名字');return}
 let hash=0;const s=name1+name2;for(let i=0;i<s.length;i++){hash=(hash*31+s.charCodeAt(i))%1000}

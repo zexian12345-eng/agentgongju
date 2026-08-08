@@ -4,7 +4,7 @@
 <title>表情头像生成 | AgentGongju.com</title>
 <meta name="description" content="免费随机表情头像生成器，个性社交头像">
 <meta name="keywords" content="表情头像,头像生成,社交头像,个性头像">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -38,6 +38,7 @@ input:focus,select:focus,textarea:focus{border-color:#6366f1}
 
 const pfps=['\U0001f981','\U0001f42f','\U0001f43b','\U0001f428','\U0001f428','\U0001f430','\U0001f98a','\U0001f43a','\U0001f431','\U0001f436','\U0001f984','\U0001f438','\U0001f433','\U0001f419','\U0001f98b','\U0001f41d','\U0001f989','\U0001f425','\U0001f99c','\U0001f439'];
 document.getElementById('avaBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('表情头像生成 | AgentGongju.com'))return;
 const n=parseInt(document.getElementById('count').value)||6;
 const picked=[];while(picked.length<n){const p=pfps[Math.floor(Math.random()*pfps.length)];if(!picked.includes(p))picked.push(p)}
 document.getElementById('resultArea').classList.add('active');document.getElementById('result').textContent='为您生成 '+n+' 个头像：\n\n'+picked.join('  ');});

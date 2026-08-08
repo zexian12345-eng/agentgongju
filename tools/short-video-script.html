@@ -4,7 +4,7 @@
 <title>AI 短视频脚本 | AgentGongju.com</title>
 <meta name="description" content="AI短视频脚本生成器，写出让人爱看的抖音/快手/视频号脚本">
 <meta name="keywords" content="短视频脚本,抖音脚本,视频脚本,文案生成">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -43,6 +43,7 @@ input:focus,select:focus,textarea:focus{border-color:#6366f1}
 <script>
 function copyResult(){navigator.clipboard.writeText(document.getElementById('out').textContent).then(()=>alert('✅ 已复制！'))}
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 短视频脚本 | AgentGongju.com'))return;
 const topic=document.getElementById('topic').value.trim();if(!topic){alert('请输入视频主题');return}
 const platform=document.getElementById('platform').value;const dur=document.getElementById('dur').value;
 const hooks=['很多人做'+topic+'一直失败，今天一次讲清楚','你可能一直弄错了，'+topic+'其实很简单','闺蜜都以为我会'+topic+'，其实只要3步'];

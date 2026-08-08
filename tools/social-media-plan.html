@@ -4,7 +4,7 @@
 <title>AI 社交媒体内容计划 | AgentGongju.com</title>
 <meta name="description" content="输入账号领域与目标，AI生成长达一周的社交媒体内容选题与排期，覆盖标题、形式与发布时间建议">
 <meta name="keywords" content="社交媒体,运营,内容,选题,排期,小红书,抖音,公众号">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -79,6 +79,7 @@ const goalTips={
 '品牌':['讲品牌故事','行业观点输出'],'互动':['发起投票','评论区提问','反常识观点']};
 function rand(a){return a[Math.floor(Math.random()*a.length)]}
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 社交媒体内容计划 | AgentGongju.com'))return;
 const niche=document.getElementById('niche').value.trim()||'你的领域';
 const platform=document.getElementById('platform').value;
 const goal=document.getElementById('goal').value;

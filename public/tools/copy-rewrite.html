@@ -4,7 +4,7 @@
 <title>AI 文案改写 | AgentGongju.com</title>
 <meta name="description" content="AI文案改写润色工具，一键让文字更生动、更专业、更有感染力">
 <meta name="keywords" content="文案改写,文字润色,AI润色,文案优化">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -43,6 +43,7 @@ input:focus,select:focus,textarea:focus{border-color:#6366f1}
 <script>
 function copyResult(){navigator.clipboard.writeText(document.getElementById('out').textContent).then(()=>alert('✅ 已复制！'))}
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 文案改写 | AgentGongju.com'))return;
 const text=document.getElementById('text').value.trim();if(!text){alert('请输入文案');return}
 const style=document.getElementById('style').value;const count=parseInt(document.getElementById('count').value);
 const pre={'商务专业':'','简洁精炼':'','情感走心':'','俏皮活泼':'','文采飞扬':''};

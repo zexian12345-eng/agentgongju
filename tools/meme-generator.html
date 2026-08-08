@@ -4,7 +4,7 @@
 <title>AI 表情包生成 | AgentGongju.com</title>
 <meta name="description" content="AI表情包文案生成器，生成文字图片和表情包文案创意，聊天斗图必备">
 <meta name="keywords" content="表情包生成,斗图,表情包文案,趣图">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -45,6 +45,7 @@ const douTu=['你礼貌吗？','这话我没法接','但凡有点用也不至于
 const textEmo=['[捂脸][捂脸][捂脸]','[流泪]但是我没哭','[裂开]','[跪了]','[狗头]保命','[旺柴]','比了个耶[耶]','我就静静看着[微笑]'];
 const replies=['好好好，你说的都对','确实，但下次别这样了','这不是巧了吗这不是','有没有一种可能……','嗯，很有道理，下次别说了','要不先这样吧','懂了，这就去做','你开心就好'];
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 表情包生成 | AgentGongju.com'))return;
 const scene=document.getElementById('scene').value.trim();
 const type=document.getElementById('type').value;
 const n=Math.min(8,Math.max(3,parseInt(document.getElementById('count').value)||5));

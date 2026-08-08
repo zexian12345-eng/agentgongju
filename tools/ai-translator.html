@@ -4,7 +4,7 @@
 <title>AI 一键翻译（多语种） | AgentGongju.com</title>
 <meta name="description" content="AI一键翻译，支持中英日韩法德西等多语种互译，保留原文语感，贴合同义表达，出国留学商务翻译必备">
 <meta name="keywords" content="AI翻译,翻译工具,中英翻译,多语种翻译,在线翻译">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -77,6 +77,7 @@ const dict={
 '今天天气真好':'What a nice day today','很高兴认识你':'Nice to meet you','你好世界':'Hello world',
 'hello':'你好','thank you':'谢谢','goodbye':'再见','good morning':'早上好','sorry':'对不起','i love you':'我爱你','how are you':'你好吗','world':'世界','apple':'苹果','book':'书','water':'水','sun':'太阳','moon':'月亮','star':'星星','cat':'猫','dog':'狗','good':'好','bad':'坏','yes':'是','no':'否'};
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 一键翻译（多语种） | AgentGongju.com'))return;
 const t=document.getElementById('text').value.trim();
 if(!t){alert('请先输入文本');return;}
 const target=document.getElementById('target').value;

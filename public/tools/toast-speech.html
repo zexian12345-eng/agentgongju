@@ -4,7 +4,7 @@
 <title>应酬敬酒词生成 | AgentGongju.com</title>
 <meta name="description" content="职场应酬敬酒词/祝酒词生成器，酒桌饭局得体话术，敬领导、敬同事、敬长辈、敬朋友">
 <meta name="keywords" content="敬酒词,祝酒词,应酬话术,酒桌文化,饭局敬酒">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -54,6 +54,7 @@ const bank={
 const endings={'健康':'身体健康、万事顺遂','事业':'工作顺利、心想事成','财运':'财源广进、生意兴隆','万事':'天天开心、诸事顺遂','喜事':'喜事连连、顺心如意'};
 const opener={'正式得体':'我敬大家，','真诚走心':'来，我敬各位，','幽默轻松':'那我也来凑个热闹，','简短干练':'话不多说，'};
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('应酬敬酒词生成 | AgentGongju.com'))return;
 const who=document.getElementById('who').value;const occ=document.getElementById('occ').value;const name=document.getElementById('name').value.trim();const style=document.getElementById('style').value;const wish=document.getElementById('wish').value;
 const pool=bank[who]||bank['朋友'];
 const line=pool[Math.floor(Math.random()*pool.length)];

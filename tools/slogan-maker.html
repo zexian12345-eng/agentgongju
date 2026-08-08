@@ -4,7 +4,7 @@
 <title>品牌Slogan生成器 | AgentGongju.com</title>
 <meta name="description" content="AI品牌Slogan生成器，为品牌、企业一键生成朗朗上口、有记忆点的广告语">
 <meta name="keywords" content="品牌slogan,广告语,品牌标语,营销口号,广告文案">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -52,6 +52,7 @@ const pools={
 '生活服务':['贴心服务每一天','让生活更轻松','懂你所需，如你所愿','便捷就在身边','温暖每一个家','为美好生活助力']};
 const styleMap={'简约大气':'','情感走心':'，因为你在意','个性酷炫':'，就这么不一样','专业权威':'，专业之选','诙谐幽默':'，谁用谁知道'};
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('品牌Slogan生成器 | AgentGongju.com'))return;
 const brand=document.getElementById('brand').value.trim()||'「本品牌」';const ind=document.getElementById('ind').value;const style=document.getElementById('style').value;const core=document.getElementById('core').value.trim();
 const base=pools[ind]||pools['餐饮食品'];
 const idx=[];const picked=[];const tmp=[...base];while(tmp.length&&picked.length<5){picked.push(tmp.splice(Math.floor(Math.random()*tmp.length),1)[0]);}

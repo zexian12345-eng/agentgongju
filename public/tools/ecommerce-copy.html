@@ -4,7 +4,7 @@
 <title>AI 电商产品文案生成器 | AgentGongju.com</title>
 <meta name="description" content="为淘宝/京东/拼多多商品一键生成主图文案、详情页卖点与朋友圈种草文案">
 <meta name="keywords" content="电商文案,淘宝文案,产品卖点,种草文案,详情页">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -55,6 +55,7 @@ const hkSuffix=['我的懒人神器','救了我的命','真的想安利给所有
 const pz=['颜值在线','性价比之选','人手一个','谁用谁知道','闭眼入不踩雷','实力与颜值并存'];
 function pick(a){return a[Math.floor(Math.random()*a.length)]}
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 电商产品文案生成器 | AgentGongju.com'))return;
 let prod=document.getElementById('product').value.trim();
 const sellIn=document.getElementById('sell').value.trim();
 const aud=document.getElementById('aud').value.trim();

@@ -4,7 +4,7 @@
 <title>记忆卡片生成器 | AgentGongju.com</title>
 <meta name="description" content="记忆卡片生成器，一键将知识点、单词、公式转为正反两面的记忆卡片，配合艾宾浩斯记忆法助力高效背诵与复习">
 <meta name="keywords" content="记忆卡片,学习卡片,单词卡,知识点背诵,艾宾浩斯,复习方法,抽认卡">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -72,6 +72,7 @@ const FRONT={'单词':'正面（单词）','公式':'正面（公式/定理）',
 const BACK={'单词':'反面（释义）','公式':'反面（公式/推导要点）','概念':'反面（定义说明）','事件':'反面（时间/要点）'};
 function shuffle(a){let r=[...a];for(let i=r.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[r[i],r[j]]=[r[j],r[i]];}return r;}
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('记忆卡片生成器 | AgentGongju.com'))return;
 const type=document.getElementById('type').value;
 const content=document.getElementById('content').value.trim();
 const order=document.getElementById('order').value;

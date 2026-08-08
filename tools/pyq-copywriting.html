@@ -4,7 +4,7 @@
 <title>AI 朋友圈文案生成 | AgentGongju.com</title>
 <meta name="description" content="AI朋友圈文案生成器，按场景风格生成配图建议与走心文案">
 <meta name="keywords" content="朋友圈文案,AI文案,发圈文案,社交媒体文案">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -54,6 +54,7 @@ const pool={
 };
 const imgMap={'旅行出游':'🏔️ 风景大片 ×1｜人物剪影 ×1','美食探店':'🍜 美食特写 ×3-4 拼图','心情分享':'☕ 饮品 + 窗边光影','工作日常':'💻 桌面专注感 + 城市夜景','健身打卡':'💪 训练照片 + 汗湿感','节日祝福':'🎉 节日氛围 + 礼物细节','晒娃萌宠':'🐱 萌宠/宝宝抓拍九宫格','读书学习':'📚 书页 + 手写笔记特写'};
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 朋友圈文案生成 | AgentGongju.com'))return;
 const sc=document.getElementById('scene').value;const tone=document.getElementById('tone').value;
 const topic=document.getElementById('topic').value.trim();
 const n=Math.min(5,Math.max(2,parseInt(document.getElementById('count').value)||3));

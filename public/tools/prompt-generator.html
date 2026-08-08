@@ -4,7 +4,7 @@
 <title>AI 绘画提示词生成 | AgentGongju.com</title>
 <meta name="description" content="AI绘画提示词制作器，面向Stable Diffusion/Midjourney，生成英文正向/负向提示词">
 <meta name="keywords" content="AI绘画,提示词生成,Stable Diffusion,SD提示词,Midjourney">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -49,6 +49,7 @@ function copyResult(){navigator.clipboard.writeText(document.getElementById('pos
 const styles={realistic:{en:'highly detailed, photorealistic, 8k, sharp focus, film grain',cn:'高清写实'},anime:{en:'anime style, cel shading, masterpiece, vibrant colors',cn:'二次元'},fantasy:{en:'epic fantasy illustration, intricate details, magical atmosphere',cn:'奇幻'},cyberpunk:{en:'cyberpunk, futuristic city, neon lights, intricate',cn:'赛博'},oil:{en:'oil painting, impasto brushstrokes, classical art style',cn:'油画'},watercolor:{en:'watercolor painting, soft washes, delicate',cn:'水彩'}};
 const lights={goldenhour:'golden hour lighting, warm glow',dramatic:'dramatic lighting, high contrast',soft:'soft natural lighting, gentle',neon:'neon lighting, colorful glow, night',backlit:'backlit silhouette, rim light'};
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 绘画提示词生成 | AgentGongju.com'))return;
 const sub=document.getElementById('subject').value.trim();if(!sub){alert('请输入画面主体');return}
 const st=document.getElementById('style').value;const ratio=document.getElementById('ratio').value;const lt=document.getElementById('light').value;
 const stx=styles[st];const ltx=lights[lt];

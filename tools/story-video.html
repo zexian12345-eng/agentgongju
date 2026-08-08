@@ -6,7 +6,7 @@
 <title>AI故事视频生成器 - 文字图片一键成片 | AgentGongju.com</title>
 <meta name="description" content="免费AI故事视频生成器，输入文字或上传图片，自动生成带脚本、画面、配音的完整视频故事。支持多种风格和时长选择。">
 <meta name="keywords" content="故事视频,AI视频生成,图片转故事,视频故事,自动配音,免费视频制作">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container { max-width: 1000px; margin: 100px auto 60px; padding: 0 20px; }
 .tool-header { text-align: center; margin-bottom: 40px; }
@@ -198,6 +198,7 @@ function updateStep(n, status) {
 }
 
 document.getElementById('generateBtn').addEventListener('click', async () => {
+if(!Paywall.countUse('AI故事视频生成器 - 文字图片一键成片 | AgentGongju.com'))return;
   const story = document.getElementById('storyInput').value.trim();
   if(!story && uploadedImages.length === 0) { alert('请输入故事文案或上传图片！'); return; }
 

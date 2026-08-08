@@ -4,7 +4,7 @@
 <title>AI 每日运势 | AgentGongju.com</title>
 <meta name="description" content="AI每日运势，结合十二生肖/星座，今日宜忌、事业财运爱情指数与幸运数字，一键查看今日运势，仅供娱乐">
 <meta name="keywords" content="运势,每日运势,星座运势,生肖运势,宜忌,今日运程">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -83,6 +83,7 @@ const ji=['忌冲动','忌熬夜','忌过度承诺','忌口舌之争','忌冲动
 const zodiacTips={
 '鼠':'今日思维活跃，抓细节见真章','牛':'踏实肯干，稳中有进','虎':'闯劲十足，宜主动出击','兔':'人和事顺，温柔有力量','龙':'气势如虹，贵人显现','蛇':'静观其变，以静制动','马':'行动力满格，一马当先','羊':'温和从容，福泽自至','猴':'机敏灵活，转机在手','鸡':'精进专注，声名渐起','狗':'忠诚可靠，得人信任','猪':'心态乐观，福气自来'};
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 每日运势 | AgentGongju.com'))return;
 const zodiac=document.getElementById('zodiac').value;
 const star=document.getElementById('constellation').value;
 const seed=rnd(90)+rnd(210)+{鼠:1,牛:2,虎:3,兔:4,龙:5,蛇:6,马:7,羊:8,猴:9,鸡:10,狗:11,猪:12}[zodiac];

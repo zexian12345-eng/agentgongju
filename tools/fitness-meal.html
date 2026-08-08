@@ -4,7 +4,7 @@
 <title>减脂增肌食谱生成器 | AgentGongju.com</title>
 <meta name="description" content="减脂增肌食谱生成器，根据目标、运动量和口味定制一天三餐的健康食谱，附热量估算与营养搭配建议">
 <meta name="keywords" content="减脂食谱,增肌餐,健身餐,健康饮食,减脂餐,营养搭配,轻食">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -94,6 +94,7 @@ const DINNER={
 '西式':['牛油果沙拉 + 烤鸡胸','烤蔬 + 全麦意面']};
 function pick(a){return a[Math.floor(Math.random()*a.length)];}
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('减脂增肌食谱生成器 | AgentGongju.com'))return;
 const goal=document.getElementById('goal').value;
 const act=document.getElementById('act').value;
 const taste=document.getElementById('taste').value;

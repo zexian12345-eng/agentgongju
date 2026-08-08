@@ -4,7 +4,7 @@
 <title>AI 漫画头像生成 | AgentGongju.com</title>
 <meta name="description" content="免费在线生成二次元漫画头像，支持多种画风和角色类型">
 <meta name="keywords" content="AI漫画,漫画头像,二次元,卡通头像,AI绘画">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -49,6 +49,7 @@ input:focus,select:focus,textarea:focus{border-color:#6366f1}
 const styleEn={'日系动漫':'Japanese anime style','美式漫画':'American comic style','赛博朋克':'cyberpunk style','水墨国风':'Chinese ink painting style','萌系Q版':'chibi kawaii style'};
 const colorEn={'粉色':'pink','蓝紫':'blue-purple','银白':'silver white','金色':'golden','暗黑':'dark'};
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 漫画头像生成 | AgentGongju.com'))return;
 const style=document.getElementById('style').value,g=document.getElementById('gender').value,c=document.getElementById('color').value,desc=document.getElementById('desc').value.trim()||'清新自然的表情';
 const scene=['城市夜晚街灯','春日樱花树下','未来科技实验室','古风宫殿背景','星空下仰望','咖啡馆午后阳光'];
 const s=scene[Math.floor(Math.random()*scene.length)];

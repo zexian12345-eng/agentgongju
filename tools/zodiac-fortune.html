@@ -4,7 +4,7 @@
 <title>星座运势测试 | AgentGongju.com</title>
 <meta name="description" content="AI今日星座运势、塔罗占卜、缘分指数，趣味测试你的每日运气">
 <meta name="keywords" content="星座运势,今日运势,塔罗占卜,缘分测试">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -51,6 +51,7 @@ function copyResult(){navigator.clipboard.writeText(document.getElementById('sig
 const cards=['正位 太阳','逆位 月亮','正位 星星','正位 恋人','逆位 隐士','正位 命运之轮','正位 力量','逆位 倒吊人','正位 世界','正位 皇后'];
 const cardMean={};
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('星座运势测试 | AgentGongju.com'))return;
 const sign=document.getElementById('sign').value;const type=document.getElementById('type').value;const wantTaro=document.getElementById('tarot').value;
 const score=55+Math.floor(Math.random()*45);
 const star='★★★★★'.slice(0,Math.round(score/20));

@@ -4,7 +4,7 @@
 <title>AI 会议纪要生成 | AgentGongju.com</title>
 <meta name="description" content="AI会议纪要生成，粘贴会议录音转文字或随手记的会议要点，自动整理出决策、待办、负责人与时间节点，办公提效必备">
 <meta name="keywords" content="会议纪要,会议记录,待办事项,办公效率,职场工具">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -60,6 +60,7 @@ const dateKw=['下周三','下周五','月底','周五前','下周一','本周�
 function nowStr(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
 function nextWeekday(day){const map={一:1,二:2,三:3,四:4,五:5,六:6,日:0,t日:0};const today=(new Date().getDay());let diff;Object.keys(map).forEach(k=>{if(day.includes(k))diff=(map[k]-today+7)%7||7;});const d=new Date();d.setDate(d.getDate()+(diff||7));return `${d.getMonth()+1}月${d.getDate()}日`;}
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 会议纪要生成 | AgentGongju.com'))return;
 const notes=document.getElementById('notes').value.trim();
 if(!notes){alert('请先粘贴会议要点');return;}
 const mtop=document.getElementById('mtopic').value.trim()||'项目例会';

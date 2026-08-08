@@ -4,7 +4,7 @@
 <title>AI读书笔记生成 | AgentGongju.com</title>
 <meta name="description" content="AI读书笔记助手，输入书名或读书心得，一键生成知识卡片、重点总结与读后感框架">
 <meta name="keywords" content="读书笔记,知识卡片,读后感,读书总结,学习方法">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -52,6 +52,7 @@ const notePools={
 '科技科普':['用数据说话，拒绝玄学','创新往往来自跨界结合','技术背后是人的需求','保持好奇，持续学习']};
 const qs=['这本书想让我记住什么？','对我当下的生活有什么启发？','我可以立刻做的一件小事是什么？','哪些内容我想再读一遍？'];
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI读书笔记生成 | AgentGongju.com'))return;
 const type=document.getElementById('type').value;const cat=document.getElementById('cat').value;const book=document.getElementById('book').value.trim()||'这本书';const note=document.getElementById('note').value.trim();
 const pool=notePools[cat]||notePools['理财成长'];
 let det=note?('\n· 你的关注点：'+note+'\n'):'\n';

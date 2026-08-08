@@ -4,7 +4,7 @@
 <title>AI数字人播报 - 在线数字人视频生成 | AgentGongju.com</title>
 <meta name="description" content="免费AI数字人播报工具，输入文字即可生成数字人播报视频。适用于新闻播报、产品介绍、课程讲解等场景。">
 <meta name="keywords" content="数字人,AI数字人,数字人播报,数字人视频生成,免费数字人">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -63,7 +63,8 @@ select:focus{border-color:#6366f1}
 <video class="result-video" id="resultVideo" controls></video></div></div></div>
 <footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
 <script>
-document.querySelectorAll('.avatar-item').forEach(item=>{item.addEventListener('click',()=>{document.querySelectorAll('.avatar-item').forEach(i=>i.classList.remove('active'));item.classList.add('active')})});
+document.querySelectorAll('.avatar-item').forEach(item=>{item.addEventListener('click',()=>{
+if(!Paywall.countUse('AI数字人播报 - 在线数字人视频生成 | AgentGongju.com'))return;document.querySelectorAll('.avatar-item').forEach(i=>i.classList.remove('active'));item.classList.add('active')})});
 document.getElementById('generateBtn').addEventListener('click',async()=>{
 const script=document.getElementById('scriptInput').value.trim();if(!script){alert('请输入播报文案！');return}
 const btn=document.getElementById('generateBtn');btn.disabled=true;btn.textContent='⏳ 生成中...';

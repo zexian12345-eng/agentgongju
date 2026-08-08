@@ -4,7 +4,7 @@
 <title>AI 商务邮件助手 | AgentGongju.com</title>
 <meta name="description" content="AI商务邮件助手，输入邮件要点，自动生成专业得体中英文商务邮件，催收、请假、汇报、邀约等多场景模板一键生成">
 <meta name="keywords" content="商务邮件,邮件写作,办公邮件,请假邮件,汇报邮件,职场">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -81,6 +81,7 @@ const sceneTpl={
 '致谢':{sub:'致谢','open':[],body:['感谢您一直以来给予的支持与信任：'],act:'期待未来继续携手，共创佳绩。'},
 '拒绝':{sub:'婉拒答复','open':[],body:['非常感谢您的邀请与信任，经慎重考虑：'],act:'希望未来仍有合作机会，再次感谢您的理解。'}};
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 商务邮件助手 | AgentGongju.com'))return;
 const points=document.getElementById('points').value.trim();
 if(!points){alert('请先填写邮件要点');return;}
 const scene=document.getElementById('scene').value;

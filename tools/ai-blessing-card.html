@@ -4,7 +4,7 @@
 <title>AI 祝福卡生成器 | AgentGongju.com</title>
 <meta name="description" content="为婚礼、生日、节日、升职等场景一键生成走心的祝福文案，大气雅致">
 <meta name="keywords" content="祝福语,祝福卡片,贺卡,结婚祝福,生日祝福,节日祝福">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -71,6 +71,7 @@ friend:{a:['认识你，是我最大的幸运！','你是我最好的朋友，�
 baby:{a:['恭喜喜得贵子/千金，母子平安！','欢迎小天使来到这个世界！'],b:['愿宝宝健康快乐地长大，一生平安顺遂。','愿这场爱的接力，点燃崭新的希望。']}};
 function pick(a){return a[Math.floor(Math.random()*a.length)]}
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 祝福卡生成器 | AgentGongju.com'))return;
 const scene=document.getElementById('scene').value;
 let to=document.getElementById('to').value.trim();
 let from=document.getElementById('from').value.trim();

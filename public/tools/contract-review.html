@@ -4,7 +4,7 @@
 <title>AI合同审查清单 | AgentGongju.com</title>
 <meta name="description" content="AI合同审查助手，输入合同核心条款，自动生成关键风险点和审查重点清单">
 <meta name="keywords" content="合同审查,合同条款,法律风险,合同要点,合同checklist">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -50,6 +50,7 @@ const items={
 '借款合同':['借款金额与收款账户','利率是否符合法定上限','还款期限与方式','提前还款条款','逾期利息与罚息','担保措施是否充分'],
 '合作框架协议':['合作范围与期限','投入与分成比例','退出机制','违约与争议解决','知识产权与保密','排他性与竞业限制']};
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI合同审查清单 | AgentGongju.com'))return;
 const type=document.getElementById('type').value;const role=document.getElementById('role').value;const content=document.getElementById('content').value.trim();
 const list=items[type]||items['买卖合同'];
 let out='【'+type+' · '+role+'】\n\n';

@@ -4,7 +4,7 @@
 <title>AI 花语大全查询 | AgentGongju.com</title>
 <meta name="description" content="免费查询各种花的花语寓意，送花送礼攻略">
 <meta name="keywords" content="花语,鲜花,寓意,送花,玫瑰,康乃馨">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -52,6 +52,7 @@ const db={'玫瑰':['我爱你、热烈的爱情','适合送给恋人或表白�
 '牡丹':['富贵、圆满、国色天香','花中之王，适合开业、乔迁等喜庆场合。'],
 '绣球花':['希望、圆满、忠贞','代表前程似锦，适合送毕业或庆祝成功的朋友。']};
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 花语大全查询 | AgentGongju.com'))return;
 const kw=document.getElementById('kw').value.trim();if(!kw){alert('请输入花名');return}
 let out='【花语查询】\n\n',found=false;
 for(const k in db){

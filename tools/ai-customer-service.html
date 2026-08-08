@@ -4,7 +4,7 @@
 <title>AI 客服话术生成 | AgentGongju.com</title>
 <meta name="description" content="AI客服话术生成，输入客户问题或场景，自动生成礼貌得体、能解决问题的客服回复话术，电商、售后、售前客服必备">
 <meta name="keywords" content="客服话术,客服回复,售前话术,售后话术,客服培训,电商客服">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -78,6 +78,7 @@ const sceneTpl={
 const toneTag={'专业':'您的反馈我们已收悉，将按规范流程为您处理。','亲切':'放心交给我们，一定会帮您办得妥妥的～','年轻':'收到收到，这就给你安排明明白白！'};
 function rand(a){return a[Math.floor(Math.random()*a.length)]}
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 客服话术生成 | AgentGongju.com'))return;
 const ask=document.getElementById('ask').value.trim();
 if(!ask){alert('请先描述客户问题或场景');return;}
 const scene=document.getElementById('scene').value;

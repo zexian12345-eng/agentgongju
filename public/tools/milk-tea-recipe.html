@@ -4,7 +4,7 @@
 <title>奶茶DIY配方生成器 | AgentGongju.com</title>
 <meta name="description" content="奶茶DIY配方生成器，一键生成网红奶茶、果茶、咖啡特调配方，含原料配比与教程步骤，在家也能做出好味道">
 <meta name="keywords" content="奶茶配方,DIY奶茶,果茶,冷萃,网红饮品,自制饮品">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -96,6 +96,7 @@ const ICE={ '正常冰':'冰块加满','少冰':'冰块少量','去冰':'不加�
 const TOPPING=['珍珠','椰果','芋圆','布丁','红豆','寒天','烧仙草','西米'];
 function pick(a){return a[Math.floor(Math.random()*a.length)];}
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('奶茶DIY配方生成器 | AgentGongju.com'))return;
 const type=document.getElementById('type').value;
 const sugar=document.getElementById('sugar').value;
 const ice=document.getElementById('ice').value;

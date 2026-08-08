@@ -4,7 +4,7 @@
 <title>AI 数学解题助手 | AgentGongju.com</title>
 <meta name="description" content="输入数学题目，AI给出分步解题思路、答案与易错点提醒，支持代数、几何、方程与应用题">
 <meta name="keywords" content="数学,解题,代数,几何,方程,学习,作业">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -114,6 +114,7 @@ if(nums.length>=2){const diff=Math.abs(nums[nums.length-1]-nums[0]);return {step
 return null;
 }
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 数学解题助手 | AgentGongju.com'))return;
 const q=document.getElementById('question').value.trim();
 const box=document.getElementById('solveBox');box.innerHTML='';
 const detail=document.getElementById('detail').value;

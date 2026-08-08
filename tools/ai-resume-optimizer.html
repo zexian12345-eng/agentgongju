@@ -4,7 +4,7 @@
 <title>AI 简历优化优化器 | AgentGongju.com</title>
 <meta name="description" content="AI简历优化优化器，输入你的工作经历，自动用STAR法则改写为量化、专业、高转化的简历描述，求职简历投递必备">
 <meta name="keywords" content="AI简历,简历优化,简历修改,求职,STAR法则,面试">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -81,6 +81,7 @@ const yearsStyle={
 '3-5年':['能独立负责模块至系统级别','具备跨部门协调与方案决策能力'],
 '5年以上':['具备技术前瞻与架构视野','能带领团队完成复杂系统交付']};
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 简历优化优化器 | AgentGongju.com'))return;
 const job=document.getElementById('job').value.trim()||'目标岗位';
 const years=document.getElementById('years').value;
 const focus=document.getElementById('focus').value;

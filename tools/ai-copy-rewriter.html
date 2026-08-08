@@ -4,7 +4,7 @@
 <title>AI 文案改写助手 | AgentGongju.com</title>
 <meta name="description" content="AI文案改写助手，一键扩写、精简、改口语、改正式，让一段话适配多种场景，公众号、电商、广告文案皆可用">
 <meta name="keywords" content="文案改写,内容改写,文案润色,扩写,精简,口语化,写作助手">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -74,6 +74,7 @@ const openers={
 const linkers=['更进一步说','与此同时','值得一提的是','换一个角度看','说到底','如此以来'];
 function rand(a){return a[Math.floor(Math.random()*a.length)]}
 document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 文案改写助手 | AgentGongju.com'))return;
 const src=document.getElementById('src').value.trim();
 if(!src){alert('请先输入原始文案');return;}
 const mode=document.getElementById('mode').value;
