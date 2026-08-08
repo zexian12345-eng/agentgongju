@@ -62,7 +62,8 @@
         '<div style="font-size:.85rem;color:#94a3b8">单工具永久解锁：<b style="color:#22c55e">3元</b></div>' +
         '<div style="font-size:.85rem;color:#94a3b8">全站全部工具：<b style="color:#22c55e">15元/年</b></div>' +
         '</div>' +
-        '<div style="font-size:.85rem;color:#94a3b8;margin-bottom:16px">📱 微信 / 支付宝扫码支付后<br>在下方输入 6 位解锁码 即可解锁</div>' +
+        '<div style="font-size:.85rem;color:#94a3b8;margin-bottom:12px">📱 微信扫码支付后，截图发客服获取解锁码</div>' +
+        '<img src="../img/wechat-pay.jpg" alt="微信收款码" style="width:200px;height:200px;object-fit:contain;border-radius:12px;margin-bottom:14px;background:#fff;padding:6px">' +
         '<div style="display:flex;gap:10px;margin-bottom:14px">' +
         '<input id="agj-code" placeholder="输入解锁码" style="flex:1;padding:12px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);border-radius:10px;color:#fff;text-align:center;letter-spacing:4px;font-size:1.1rem;outline:none">' +
         '</div>' +
