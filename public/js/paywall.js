@@ -1,9 +1,12 @@
 /**
- * AgentGongju.com 收费机制（v1）
+ * AgentGongju.com 收费机制（v2 正式版）
  * 规则：
  * 1. 每个工具免费使用前 9 次，第 10 次触发付费墙
  * 2. 下载类工具：点击下载时触发付费墙
- * 3. localStorage 记录使用次数与付费状态
+ * 3. 定价：单工具永久解锁 3元；全站全部工具 15元/年
+ * 4. 人工发码：用户扫码付款后截图发给客服，客服发对应解锁码
+ *    - 单工具解锁码：368888
+ *    - 全站解锁码：158888（有效期1年，到期需续费）
  * 
  * 用法：在工具页 <head> 引入本脚本，然后：
  *   - 在生成按钮点击事件开头调用 Paywall.countUse('工具名')，返回 true 则放行，false 则拦截
@@ -12,6 +15,9 @@
 (function () {
   var KEY_PREFIX = 'agj_';
   var FREE_USES = 9; // 前9次免费
+  var TOOL_CODE = '368888';   // 单工具解锁码（3元）
+  var ALL_CODE = '158888';    // 全站解锁码（15元/年）
+  var YEAR_MS = 365 * 24 * 3600 * 1000;
 
   function getKey(name) {
     return KEY_PREFIX + 'count_' + name;
@@ -19,14 +25,34 @@
   function getPaidKey(name) {
     return KEY_PREFIX + 'paid_' + name;
   }
+  function getAllPaidKey() {
+    return KEY_PREFIX + 'all_paid';
+  }
+  function getAllPaidTimeKey() {
+    return KEY_PREFIX + 'all_paid_time';
+  }
 
   var Paywall = {
     /** 获取当前使用次数 */
     getCount: function (name) {
       return parseInt(localStorage.getItem(getKey(name)) || '0', 10);
     },
-    /** 是否已付费 */
+    /** 是否已全站解锁（含到期检查） */
+    isAllPaid: function () {
+      if (localStorage.getItem(getAllPaidKey()) !== '1') return false;
+      var t = parseInt(localStorage.getItem(getAllPaidTimeKey()) || '0', 10);
+      if (!t) return false;
+      if (Date.now() - t > YEAR_MS) {
+        // 已过期，清除标记
+        localStorage.removeItem(getAllPaidKey());
+        localStorage.removeItem(getAllPaidTimeKey());
+        return false;
+      }
+      return true;
+    },
+    /** 是否已付费（全站或单工具） */
     isPaid: function (name) {
+      if (this.isAllPaid()) return true;
       return localStorage.getItem(getPaidKey(name)) === '1';
     },
     /** 记录一次使用，返回是否放行 */
@@ -76,8 +102,14 @@
       // 解锁按钮
       document.getElementById('agj-unlock').addEventListener('click', function () {
         var code = document.getElementById('agj-code').value.trim();
-        if (Paywall.verifyCode(code, name)) {
-          localStorage.setItem(getPaidKey(name), '1');
+        var result = Paywall.verifyCode(code, name);
+        if (result.ok) {
+          if (result.type === 'all') {
+            localStorage.setItem(getAllPaidKey(), '1');
+            localStorage.setItem(getAllPaidTimeKey(), String(Date.now()));
+          } else {
+            localStorage.setItem(getPaidKey(name), '1');
+          }
           overlay.remove();
           alert('✅ 解锁成功！现在可以继续使用了');
           location.reload();
@@ -90,11 +122,12 @@
         overlay.remove();
       });
     },
-    /** 验证解锁码（简单校验，正式版接后端） */
+    /** 验证解锁码：单工具码或全站码 */
     verifyCode: function (code, name) {
-      if (!code || code.length < 6) return false;
-      // v1：内置演示码 888888，正式版由后端签发
-      return code === '888888';
+      if (!code) return { ok: false };
+      if (code === ALL_CODE) return { ok: true, type: 'all' };
+      if (code === TOOL_CODE) return { ok: true, type: 'tool' };
+      return { ok: false };
     }
   };
 
