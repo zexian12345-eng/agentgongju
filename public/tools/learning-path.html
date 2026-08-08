@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI学习路线规划 | AgentGongju.com</title>
+<meta name="description" content="AI学习路线规划器，按目标自动拆解成可执行的分阶段学习路径">
+<meta name="keywords" content="学习路线,学习规划,学习计划,零基础,技能学习">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.8;white-space:pre-wrap;min-height:60px;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🧭 AI学习路线规划</h1><p>把你的目标自动拆解成可执行的分阶段学习路径</p></div>
+
+<div class="card"><div class="param-row">
+<div><label>学习方向</label><select id="dir"><option>编程入门</option><option>数据分析</option><option>产品设计</option><option>新媒体运营</option><option>英语学习</option><option>设计插画</option></select></div>
+<div><label>当前基础</label><select id="level"><option>零基础</option><option>有一定基础</option><option>进阶提升</option></select></div></div>
+<div class="param-row">
+<div><label>目标周期</label><select id="cycle"><option>3个月</option><option>6个月</option><option>一年</option></select></div>
+<div><label>每天可投入(小时)</label><select id="hours"><option value="1">1小时</option><option value="2">2小时</option><option value="3">3小时+</option></select></div></div>
+<div><label>具体目标（选填）</label>
+<input type="text" id="goal" placeholder="例如：想做一个自己的小程序"></div>
+<button class="btn-gen" id="genBtn">🗺️ 生成学习路线</button></div>
+<div class="result-area" id="resultArea"><div class="card"><div style="color:#22c55e;font-weight:600;margin-bottom:12px">🗺️ 你的分阶段学习路径</div><div class="result-box" id="out"></div><button class="copy-btn" onclick="copyResult()">📋 复制</button></div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function copyResult(){navigator.clipboard.writeText(document.getElementById('out').textContent).then(()=>alert('✅ 已复制！'))}
+const paths={
+'编程入门':['HTML/CSS网页基础','JavaScript核心语法','Git版本控制','前端框架入门','做一个个人项目'],
+'数据分析':['Excel数据处理','SQL数据库查询','Python/Pandas基础','数据可视化','实战分析案例'],
+'产品设计':['产品思维与需求分析','用户研究与竞品分析','原型绘制(Figma)','交互与文档撰写','完整项目实战'],
+'新媒体运营':['平台规则与定位','内容选题与创作','排版与视觉优化','数据复盘与涨粉','爆款案例拆解'],
+'英语学习':['音标与发音','高频词汇与语法','听说能力训练','阅读与写作','口语场景实战'],
+'设计插画':['造型与色彩基础','软件工具掌握','构图与审美','风格探索','作品集打造']};
+document.getElementById('genBtn').addEventListener('click',()=>{
+const dir=document.getElementById('dir').value;const level=document.getElementById('level').value;const cycle=document.getElementById('cycle').value;const hours=document.getElementById('hours').value;const goal=document.getElementById('goal').value.trim();
+const list=paths[dir]||paths['编程入门'];
+let out='【'+dir+' · '+level+' · '+cycle+'\u3000每天'+hours+'小时】\n\n';
+let stageNames=cycle==='一年'?['第1-4月（打基础）','第5-8月（重点突破）','第9-12月（综合实战）']:cycle==='6个月'?['第1-2月（打基础）','第3-4月（重点突破）','第5-6月（综合实战）']:['第1个月（打基础）','第2个月（重点突破）','第3个月（综合实战）'];
+let per=Math.max(1,Math.ceil(list.length/3));
+let idx=0;list.forEach((step,i)=>{if(i%per===0){out+='\n📍 '+stageNames[Math.floor(i/per)]+'\n';}out+='  · '+step+'\n';});
+if(goal)out+='\n🎯 目标聚焦：围绕「'+goal+'」优先安排相关模块学习。\n';
+out+='\n💡 建议：\n· 每周至少产出一个小作品/练习，边学边用\n· 优先「先跑通再深入」，不追求一次学透\n· 遇到瓶颈先查官方文档与优质教程\n· 定期回顾总结，及时调整节奏';
+document.getElementById('resultArea').classList.add('active');
+document.getElementById('out').textContent=out;
+});
+</script>
+</body>
+</html>

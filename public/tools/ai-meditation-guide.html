@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 正念冥想助手 | AgentGongju.com</title>
+<meta name="description" content="选择冥想场景与时长，生成专属正念冥想音频脚本，帮你放松身心、缓解焦虑、改善睡眠">
+<meta name="keywords" content="冥想,正念,放松,睡眠,减压,助眠">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:22px;color:#e2e8f0;line-height:2;white-space:pre-wrap;min-height:60px;margin-bottom:12px;font-family:serif;font-size:1.05rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🧘 AI 正念冥想助手</h1><p>生成专属引导语，陪你放松身心</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>🎯 冥想目的</label>
+<select id="goal">
+<option value="sleep">改善睡眠</option>
+<option value="stress">缓解焦虑/减压</option>
+<option value="focus">专注力提升</option>
+<option value="mood">情绪放松</option>
+<option value="gratitude">感恩与平静</option>
+</select></div>
+<div><label>⏱ 冥想时长（分钟）</label>
+<select id="dur">
+<option value="3">3分钟（快速放松）</option>
+<option value="5">5分钟（日常）</option>
+<option value="10">10分钟（深度）</option>
+<option value="15">15分钟（睡前）</option>
+</select></div>
+</div>
+<label>🎵 背景音提示（选填）</label>
+<select id="audio">
+<option value="none">无需配乐提示</option>
+<option value="rain">雨声</option>
+<option value="forest">森林鸟鸣</option>
+<option value="ocean">海浪</option>
+<option value="singingbowl">颂钵</option>
+</select>
+<button class="btn-gen" id="genBtn">🧘 生成冥想引导</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 冥想引导脚本</div>
+<div class="result-box" id="result"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制引导语</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const openings={sleep:'找一个舒服的姿势躺下，让身体完全贴上床垫，缓缓地闭上眼睛。',stress:'先找个安静的地方坐下，双脚踩实地面，双手轻轻放在膝盖上。',focus:'坐直身体，脊柱向上延伸，把注意力带回此刻。',mood:'深呼吸一次，把今天的思绪轻轻放下。',gratitude:'找一个令你感到安心的位置坐好，让身体放松下来。'};
+const breath=['吸气……（数1）……呼气……','吸气，感受空气充满肺部；呼气，肩膀慢慢下沉。','吸气，身体微微舒展；呼气，把紧绷感全部释放。','随着呼吸，让思绪像落叶一样轻轻飘落。'];
+const imag={sleep:'想象你漂浮在一片温暖的海面上，月光洒下，海风轻柔地拂过脸颊……',stress:'想象你的烦恼化作一片淡淡的云，慢慢飘向远方，直到消失不见……',focus:'想象你的注意力像一束柔和的光，稳稳地聚焦在呼吸上……',mood:'想象你站在一片开满鲜花的草地上，微风带来阵阵花香……',gratitude:'在心里默默感谢今天遇见的每一个人，感谢自己……'};
+function pick(a){return a[Math.floor(Math.random()*a.length)]}
+document.getElementById('genBtn').addEventListener('click',()=>{
+const goal=document.getElementById('goal').value;
+const dur=parseInt(document.getElementById('dur').value);
+const audio=document.getElementById('audio').value;
+const audTip=audio==='none'?'':`（建议配合${document.getElementById('audio').selectedOptions[0].textContent}背景音）`;
+const core=Array.from({length:Math.min(4,Math.max(2,Math.floor(dur/3)))},()=>pick(breath)).join('\n');
+const ending={sleep:'……睡意一点一点漫上来，就让身体跟着下沉，沉入柔软的黑夜，好好睡一觉吧。',stress:'……现在你感到前所未有的轻松，带着这份平静，继续你的一天。',focus:'……把这份专注写在掌心里，缓缓睁开眼，带着清醒回到当下。',mood:'……嘴角不自觉地扬起微笑，内心被温柔填满。',gratitude:'……带着满心感恩，缓缓睁开眼睛，把这份善意带回生活。'}[goal];
+const script=`🧘 AI 正念冥想 · 引导脚本${audTip}\n\n【准备】\n${openings[goal]}\n\n【呼吸引导】\n${core}\n\n【意象放松】\n${imag[goal]}\n继续自然地呼吸，不用刻意控制，让一切顺其自然。\n\n【结束】\n${ending}\n\n🕊 建议：每天坚持${dur}分钟，身心会越来越轻盈。`;
+document.getElementById('resultArea').classList.add('active');
+document.getElementById('result').textContent=script;
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('result').textContent).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

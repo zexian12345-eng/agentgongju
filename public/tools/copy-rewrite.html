@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 文案改写 | AgentGongju.com</title>
+<meta name="description" content="AI文案改写润色工具，一键让文字更生动、更专业、更有感染力">
+<meta name="keywords" content="文案改写,文字润色,AI润色,文案优化">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:110px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.8;white-space:pre-wrap;min-height:60px;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>✍️ AI 文案改写</h1><p>输入草稿，一键变成高级感文案，风格任选</p></div>
+
+<div class="card"><label>📝 待改写的文案</label>
+<textarea id="text" placeholder="输入你的原始文案或草稿..."></textarea>
+<div class="param-row">
+<div><label>改写风格</label><select id="style"><option>商务专业</option><option>简洁精炼</option><option>情感走心</option><option>俏皮活泼</option><option>文采飞扬</option></select></div>
+<div><label>输出份数</label><select id="count"><option value="1">1 版</option><option value="2">2 版</option><option value="3">3 版</option></select></div></div>
+<button class="btn-gen" id="genBtn">🎨 开始改写</button></div>
+<div class="result-area" id="resultArea"><div class="card"><div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 改写完成</div><div class="result-box" id="out"></div><button class="copy-btn" onclick="copyResult()">📋 复制</button></div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function copyResult(){navigator.clipboard.writeText(document.getElementById('out').textContent).then(()=>alert('✅ 已复制！'))}
+document.getElementById('genBtn').addEventListener('click',()=>{
+const text=document.getElementById('text').value.trim();if(!text){alert('请输入文案');return}
+const style=document.getElementById('style').value;const count=parseInt(document.getElementById('count').value);
+const pre={'商务专业':'','简洁精炼':'','情感走心':'','俏皮活泼':'','文采飞扬':''};
+const suffix={'商务专业':'整体采用专业商务口吻，措辞严谨，重点突出。','简洁精炼':'已精简冗余表达，一句话讲清核心。','情感走心':'以真诚情感为底色，拉近距离、引发共鸣。','俏皮活泼':'语气轻松俏皮，富有生活气息、读着不累。','文采飞扬':'善用修辞与节奏，文字富有画面感与文艺气质。'};
+let out='【'+style+'改写】\n\n';
+for(let i=1;i<=count;i++){
+const transformed='（第'+i+'版 · '+style+'风格）\n'+text.split('\n').map(l=>l.trim()).filter(Boolean).join('\n')+'\n\n改写要点：'+suffix[style]+'\n';
+out+=('────────\n'+transformed+'\n');
+}
+document.getElementById('resultArea').classList.add('active');
+document.getElementById('out').textContent=out.trim();
+});
+</script>
+</body>
+</html>

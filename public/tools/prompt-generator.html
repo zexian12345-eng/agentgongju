@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 绘画提示词生成 | AgentGongju.com</title>
+<meta name="description" content="AI绘画提示词制作器，面向Stable Diffusion/Midjourney，生成英文正向/负向提示词">
+<meta name="keywords" content="AI绘画,提示词生成,Stable Diffusion,SD提示词,Midjourney">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.8;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+h4{color:#a5b4fc;margin:6px 0}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🎨 AI 绘画提示词</h1><p>一键生成 SD / MJ 中英文绘画提示词</p></div>
+
+<div class="card"><label>🖼️ 画面主体（中文描述）</label>
+<input type="text" id="subject" placeholder="例如：穿汉服的少女站在樱花树下">
+<div class="param-row" style="margin-top:12px"><div><label>画风</label><select id="style"><option value="realistic">写实摄影</option><option value="anime">二次元动漫</option><option value="fantasy">奇幻插画</option><option value="cyberpunk">赛博朋克</option><option value="oil">油画</option><option value="watercolor">水彩</option></select></div><div><label>画幅比例</label><select id="ratio"><option value="1:1">1:1 方形</option><option value="16:9">16:9 横版</option><option value="9:16">9:16 竖版</option><option value="3:2">3:2 横版</option></select></div></div>
+<div><label>光线氛围</label><select id="light"><option value="goldenhour">黄金时刻</option><option value="dramatic">戏剧光</option><option value="soft">柔和自然光</option><option value="neon">霓虹夜光</option><option value="backlit">逆光剪影</option></select></div>
+<button class="btn-gen" id="genBtn">✨ 生成提示词</button></div>
+<div class="result-area" id="resultArea"><div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 提示词已生成</div>
+<h4>📈 正向提示词（Positive）</h4><div class="result-box" id="pos"></div>
+<h4>🚫 负向提示词（Negative）</h4><div class="result-box" id="neg"></div>
+<h4>📏 参数建议</h4><div class="result-box" id="param"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制全部</button></div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function copyResult(){navigator.clipboard.writeText(document.getElementById('pos').textContent+'\n'+document.getElementById('neg').textContent+'\n'+document.getElementById('param').textContent).then(()=>alert('✅ 已复制！'))}
+const styles={realistic:{en:'highly detailed, photorealistic, 8k, sharp focus, film grain',cn:'高清写实'},anime:{en:'anime style, cel shading, masterpiece, vibrant colors',cn:'二次元'},fantasy:{en:'epic fantasy illustration, intricate details, magical atmosphere',cn:'奇幻'},cyberpunk:{en:'cyberpunk, futuristic city, neon lights, intricate',cn:'赛博'},oil:{en:'oil painting, impasto brushstrokes, classical art style',cn:'油画'},watercolor:{en:'watercolor painting, soft washes, delicate',cn:'水彩'}};
+const lights={goldenhour:'golden hour lighting, warm glow',dramatic:'dramatic lighting, high contrast',soft:'soft natural lighting, gentle',neon:'neon lighting, colorful glow, night',backlit:'backlit silhouette, rim light'};
+document.getElementById('genBtn').addEventListener('click',()=>{
+const sub=document.getElementById('subject').value.trim();if(!sub){alert('请输入画面主体');return}
+const st=document.getElementById('style').value;const ratio=document.getElementById('ratio').value;const lt=document.getElementById('light').value;
+const stx=styles[st];const ltx=lights[lt];
+const aspectMap={'1:1':'1:1, square composition','16:9':'16:9, widescreen','9:16':'9:16, vertical portrait','3:2':'3:2, landscape'};
+const aspect=aspectMap[ratio];
+const posEn='masterpiece, best quality, '+stx.en+', '+ltx+' , '+sub+', ultra detailed, professional, '+aspect;
+const neg='lowres, bad anatomy, bad hands, extra fingers, blurry, watermark, text, signature, deformed, ugly, oversaturated, jpeg artifacts';
+document.getElementById('pos').textContent=posEn;
+document.getElementById('neg').textContent=neg;
+document.getElementById('param').textContent='Steps: 28 ｜ CFG: 7 ｜ Sampler: DPM++ 2M Karras ｜ 比例 1:1\n（SD 可直接粘贴使用；MJ 可使用 /imagine prompt 并添加 --ar 1:1）';
+document.getElementById('resultArea').classList.add('active');
+});
+</script>
+</body>
+</html>

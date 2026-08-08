@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 绘画提示词生成器 | AgentGongju.com</title>
+<meta name="description" content="一键生成专业级AI绘画提示词，支持Midjourney/Stable Diffusion，中英文双语">
+<meta name="keywords" content="AI绘画,提示词,Prompt,Midjourney,Stable Diffusion,AI生成">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=number],input[type=range]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:80px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.btn-gen:disabled{opacity:.5;cursor:not-allowed}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.8;white-space:pre-wrap;min-height:60px;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tag-chip{display:inline-block;background:rgba(99,102,241,0.15);color:#a5b4fc;padding:2px 10px;border-radius:20px;font-size:.8rem;margin:0 6px 6px 0}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🎨 AI 绘画提示词生成器</h1><p>一键生成专业级绘画提示词，支持中英双语</p></div>
+
+<div class="card">
+<label>🖼 画面主体描述（中文，如：穿汉服的少女站在樱花树下）</label>
+<input type="text" id="subject" placeholder="描述你想画的内容">
+<div class="param-row">
+<div><label>🎨 绘画风格</label>
+<select id="style">
+<option value="cinematic">电影感 Cinematic</option>
+<option value="anime">日系动漫 Anime</option>
+<option value="oil">油画 Oil painting</option>
+<option value="watercolor">水彩 Watercolor</option>
+<option value="cyberpunk">赛博朋克 Cyberpunk</option>
+<option value="photorealistic">写实摄影 Photorealistic</option>
+<option value="chinese-painting">中国水墨画</option>
+<option value="ghibli">吉卜力风 Studio Ghibli</option>
+<option value="3d-render">3D 渲染 3D render</option>
+</select></div>
+<div><label>🕐 光线氛围</label>
+<select id="light">
+<option value="golden-hour">黄金时刻 Golden hour</option>
+<option value="soft-light">柔和自然光 Soft natural light</option>
+<option value="neon">霓虹灯光 Neon lights</option>
+<option value="moonlight">月光 Moonlight</option>
+<option value="studio">摄影棚灯光 Studio lighting</option>
+<option value="dreamy">梦幻梦幻光 Dreamy glow</option>
+</select></div>
+</div>
+<div class="param-row">
+<div><label>🔍 画幅比例</label>
+<select id="ratio">
+<option value="--ar 16:9">16:9 横屏</option>
+<option value="--ar 9:16">9:16 竖屏</option>
+<option value="--ar 1:1">1:1 方形</option>
+<option value="--ar 3:4">3:4 竖版</option>
+</select></div>
+<div><label>📏 画面细节</label>
+<select id="detail">
+<option value="high">超细节 8k, ultra detailed</option>
+<option value="normal">常规细节 highly detailed</option>
+<option value="simple">简洁极简 minimal</option>
+</select></div>
+</div>
+<label>⚙️ 高级参数（默认即可，可留空）</label>
+<input type="text" id="extra" placeholder="如：--v 6 --stylize 500（专业用户）">
+<button class="btn-gen" id="genBtn">✨ 生成提示词</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 生成的提示词</div>
+<div class="result-box" id="resultCn"></div>
+<div class="result-box" id="resultEn" style="border-color:rgba(168,85,247,0.3)"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制英文版</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const styleMap={'cinematic':'cinematic lighting, film still, 35mm','anime':'anime style, Studio Ghibli inspired, cel shading','oil':'oil painting, impasto brushstrokes, classical art','watercolor':'watercolor painting, soft washes','cyberpunk':'cyberpunk, neon city, dystopian','photorealistic':'photorealistic, 8k, DSLR photo','chinese-painting':'chinese ink wash painting, shan shui','ghibli':'studio ghibli style, warm colors, whimsical','3d-render':'3d render, octane, pixar style'};
+const lightMap={'golden-hour':'golden hour light','soft-light':'soft natural light','neon':'neon lighting, vibrant colors','moonlight':'moonlight, serene','studio':'studio lighting, professional','dreamy':'dreamy glow, ethereal atmosphere'};
+const detailMap={'high':'8k, ultra detailed, intricate details, masterpiece, best quality','normal':'highly detailed, sharp focus','simple':'minimalist, clean, simple composition'};
+document.getElementById('genBtn').addEventListener('click',()=>{
+let subject=document.getElementById('subject').value.trim();
+if(!subject){alert('请输入画面主体');return}
+const style=document.getElementById('style').value;
+const light=document.getElementById('light').value;
+const ratio=document.getElementById('ratio').value;
+const detail=document.getElementById('detail').value;
+const extra=document.getElementById('extra').value.trim();
+const styleCn=strCn(style); const lightCn=strCn(light);
+const styleEn=styleMap[style]; const lightEn=lightMap[light]; const detailEn=detailMap[detail];
+const cn='主体：'+subject+'，'+styleCn+'，'+lightCn+'，'+(detail==='high'?'超精细细节':'精细细节')+'，高清，质量最佳。';
+const suff=extra?(' '+extra):(ratio==='--ar 1:1'?'':' '+ratio);
+const en=subject+' '+styleEn+', '+lightEn+', '+detailEn+', '+suff;
+document.getElementById('resultArea').classList.add('active');
+document.getElementById('resultCn').textContent=cn;
+document.getElementById('resultEn').textContent=en;
+});
+function strCn(k){const m={'cinematic':'电影感','anime':'日系动漫','oil':'油画风格','watercolor':'水彩风格','cyberpunk':'赛博朋克','photorealistic':'写实摄影','chinese-painting':'中国水墨画','ghibli':'吉卜力动画风','3d-render':'3D渲染'};return m[k]||k}
+function copyResult(){navigator.clipboard.writeText(document.getElementById('resultEn').textContent).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>谈薪涨薪话术助手 | AgentGongju.com</title>
+<meta name="description" content="谈薪涨薪话术助手，为求职谈薪、年终提薪、转正加薪等场景生成得体又有底气的沟通话术，助你争取合理回报">
+<meta name="keywords" content="谈薪话术,涨薪申请,提薪,薪资谈判,加薪,年终考核,offer谈判">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:70px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.8;white-space:pre-wrap;margin-bottom:12px;font-size:.92rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{color:#94a3b8;font-size:.8rem;line-height:1.8;margin-top:6px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>💰 谈薪涨薪话术助手</h1><p>有成绩有底气，谈钱不尴尬</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>📌 沟通场景</label>
+<select id="scene">
+<option value="求职谈薪">求职 offer 谈薪</option>
+<option value="年度涨薪">年度/考核涨薪</option>
+<option value="转正加薪">转正加薪</option>
+<option value="晋升加薪">晋升提薪</option>
+</select></div>
+<div><label>💬 沟通方式</label>
+<select id="chan">
+<option value="当面">当面沟通</option>
+<option value="邮件">书面邮件</option>
+<option value="信息">微信消息</option>
+</select></div>
+</div>
+<label>🏆 你的业绩亮点（一定要写，这是底气的来源）</label>
+<textarea id="achieve" placeholder="例如：本年度业绩增长 30%、主导上线了重点项目、带团队完成目标、获评优秀员工"></textarea>
+<label>🎯 期望涨幅 / 期望薪资（可选）</label>
+<input type="text" id="expect" placeholder="例如：期望涨幅 15%-20%，或期望月薪 2.5w">
+<button class="btn-gen" id="genBtn">💬 生成话术</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">💬 谈薪沟通话术</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制话术</button>
+<div class="tip">💡 提示：谈薪核心是「摆事实、讲价值、给台阶」，把业绩讲清楚，薪资自然有依据。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const OPEN={
+'求职谈薪':['能给我这个offer和认可，我很感谢，也很珍惜这次机会。','非常感谢贵司发来的offer，我认真考虑了很久，很认同这个团队和方向。'],
+'年度涨薪':['感谢公司一直以来的培养，想借这次考核和领导沟通一下我的情况。','这一年度我在岗位上投入了很多，也想和领导聊聊薪资调整的空间。'],
+'转正加薪':['这段时间能顺利融入团队，多亏领导的指导，我也想在转正时谈一下定薪。','转正之际，想结合试用期的表现，和领导沟通一下我的薪资期待。'],
+'晋升加薪':['这次被委以更重的职责，我很感激，也想就随之而来的回报沟通一下。','伴随职责的更新，我相信薪资也会与之匹配，想和领导聊聊方案。']};
+const VALUE={
+'求职谈薪':['基于我的经验与这个岗位的对标要求，我期望能有X工资的水平','希望在这个职级上，能匹配到更合理的一档'],
+'年度涨薪':['这一年我完成了……也希望公司能认可我的价值体现'],
+'转正加薪':['试用期我快速上手并带来了可见产出，希望在定薪上有所体现'],
+'晋升加薪':['职责扩大后，希望薪酬随之调整到与之匹配的水平']};
+const CLOSE={
+'求职谈薪':['如果能达成共识，我非常愿意尽快入职，与团队一起创造价值。','我很喜欢这个岗位，也相信我们的合作一定能双赢，期待您的答复。'],
+'年度涨薪':['我会继续用更亮眼的业绩回报公司，也请您考虑一下我的诉求。','无论结果如何，我都感恩这段经历，会继续努力把工作做好。'],
+'转正加薪':['希望领导能给我一个合理的定薪，让我更安心地长期发展。','我会以转正为新的起点，做出更大贡献。'],
+'晋升加薪':['既然承担了更多，我也有信心拿出相应的产出，期待与回报相匹配。','我会用行动证明这个决定值得，请您放心。']};
+function pick(a){return a[Math.floor(Math.random()*a.length)];}
+document.getElementById('genBtn').addEventListener('click',()=>{
+const scene=document.getElementById('scene').value;
+const chan=document.getElementById('chan').value;
+const ach=document.getElementById('achieve').value.trim();
+const expect=document.getElementById('expect').value.trim();
+if(!ach){alert('建议填写业绩亮点，谈薪更有底气');return;}
+const expectLine=expect?`，${expect}`:'在合理范围内给出符合我贡献的涨幅';
+const o=pick(OPEN[scene]);
+const v=pick(VALUE[scene]);
+const c=pick(CLOSE[scene]);
+let out='';
+if(chan==='当面'){
+out=`领导（面试官）好，${o}。${v}。\n\n我想先说说我这一阶段的主要成绩：${ach}。基于这些实际产出与对团队的贡献，我希望能${expectLine}。\n\n我也理解公司有通盘的考量，${c}`;
+}else if(chan==='邮件'){
+out=`尊敬的领导：\n\n您好！${o}。\n\n回顾这段时间的工作，我主要取得了以下成果：\n${ach}\n\n基于以上价值与付出，希望就薪资予以审视，${expectLine}。\n\n${c}\n\n期待您的回复，再次感谢！\n\n此致\n敬礼\n〔您的姓名〕`;
+}else{
+out=`XX领导/HR您好～ ${o} ${v}。我这阶段的主要成绩：${ach}。希望${expectLine}，${c}`;
+}
+out+='\n\n——— 谈薪小贴士 ———\n· 先摆价值再谈数字，把成绩数据化\n· 报期望时留一点合理弹性\n· 保持尊重与建设性，谈不拢也别撕破脸';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 话术已复制！'))}
+</script>
+</body>
+</html>

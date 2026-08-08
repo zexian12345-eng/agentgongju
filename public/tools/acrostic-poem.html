@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 藏头诗生成 | AgentGongju.com</title>
+<meta name="description" content="免费生成藏头诗，结婚、庆生、祝福藏头诗一键生成">
+<meta name="keywords" content="藏头诗,生日诗,祝福诗,古诗生成,AI写诗">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:100px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.btn-gen:disabled{opacity:.5;cursor:not-allowed}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;min-height:60px;margin-bottom:12px;font-family:serif;font-size:1.1rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📜 AI 藏头诗生成</h1><p>用名字/祝福语创作古风藏头诗</p></div>
+
+<div class="card"><label>✏️ 请输入藏头字（如：生日快乐、我爱小明）</label>
+<input type="text" id="kw" placeholder="输入名字或祝福语作为藏头">
+<button class="btn-gen" id="genBtn">📜 作诗</button></div>
+<div class="result-area" id="resultArea"><div class="card"><div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 藏头诗</div>
+<div class="result-box" id="result"></div><button class="copy-btn" onclick="copyResult()">📋 复制</button></div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+// 常用意象词库
+const banks={start:['春','风','花','月','山','水','云','星','梦','心','喜','福','祥','瑞','好','美','愿','祝','爱','暖','耀','辉','清','明','雅','乐','安','康','和','顺'],mid:['江','河','湖','海','霞','虹','光','霞','影','韵','诗','酒','琴','书','画','叶','露','霜','雪','松','竹','梅','兰','菊','莲'],end:['春回','情长','意浓','如初','永驻','长存','满庭','芳华','如意','顺遂','平安','喜乐','锦绣','繁华','胜春']};
+function rand(a){return a[Math.floor(Math.random()*a.length)]}
+// 根据字义选择对应意象
+function lineFor(ch){
+const t={生:['愿随','双翼','同','飞','天','涯'],快:['欢','乐','无','疆','共','此','宵'],日:['光','阴','似','箭','珍','今','朝'],快:['心','随','所','愿','自','由','行'],乐:['有','知','音','相','伴','终','老'],爱:['两','情','相','悦','永','结','好'],我:['自','此','山','高','水','长']};
+return t[ch];
+}
+// 生成一个对仗句（藏头字为ch）
+function makeLine(ch,n){
+const a=rand(['春','花','秋','月','江','山','风','云','星','雨']);
+const b=rand(['心','梦','情','意','志','怀','愿']);
+const c=rand(['远』','长','深','厚','高','阔','暖']);
+return a+' '+b+' '+c;
+}
+document.getElementById('genBtn').addEventListener('click',()=>{
+let kw=document.getElementById('kw').value.trim();if(!kw){alert('请输入藏头字');return}
+kw=kw.replace(/[^a-zA-Z\u4e00-\u9fa5]/g,'');
+if(kw.length>8)kw=kw.slice(0,8);
+const lines=[];const heads=kw.split('');
+heads.forEach(ch=>{
+let body;
+const special={生:'辰逢春色满人间',快:'意人生乐未央',乐:'康长伴岁安宁',爱:'意绵绵两心知',我:'心向明月照君怀',日:'照山河气象新'};
+if(special[ch])body=special[ch];else body=rand(['寻','望','揽','抱','追','藏','踏','揽'])+rand(['春风','明月','星辰','山河','烟霞','晴空'])+rand(['来','去','驻','入怀','渐浓','正开']);
+lines.push(ch+' '+body);
+});
+const out='《藏头诗·'+kw+'》\n\n'+lines.join('\n')+'\n\n——AI 藏头诗 · 仅供娱乐';
+document.getElementById('resultArea').classList.add('active');document.getElementById('result').textContent=out;});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('result').textContent).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 祝福卡生成器 | AgentGongju.com</title>
+<meta name="description" content="为婚礼、生日、节日、升职等场景一键生成走心的祝福文案，大气雅致">
+<meta name="keywords" content="祝福语,祝福卡片,贺卡,结婚祝福,生日祝福,节日祝福">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:60px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:22px;color:#e2e8f0;line-height:2.2;white-space:pre-wrap;min-height:60px;margin-bottom:12px;font-family:serif;font-size:1.05rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>💌 AI 祝福卡生成器</h1><p>一句话生成走心祝福，发贺卡不发愁</p></div>
+
+<div class="card">
+<label>🎉 祝福场景</label>
+<select id="scene">
+<option value="wedding">结婚祝福</option>
+<option value="birthday">生日祝福</option>
+<option value="festival">节日祝福</option>
+<option value="promotion">升职加薪</option>
+<option value="parent">送父母</option>
+<option value="friend">闺蜜/朋友</option>
+<option value="baby">新生宝宝</option>
+</select>
+<div class="param-row">
+<div><label>👤 收礼人称呼</label><input type="text" id="to" placeholder="如：老王、闺蜜小美"></div>
+<div><label>👤 署名（选填）</label><input type="text" id="from" placeholder="如：你的好友阿楠"></div>
+</div>
+<label>💬 想特别表达的话（选填，可留空）</label>
+<textarea id="extra" placeholder="例如：愿你们的感情长长久久"></textarea>
+<button class="btn-gen" id="genBtn">💌 生成祝福</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 你的祝福卡片</div>
+<div class="result-box" id="result"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制祝福</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const pools={
+wedding:{a:['祝你们新婚快乐，白头偕老！','新婚大吉，百年好合！','从今天起，你们就是彼此最温暖的港湾。'],b:['愿你们的爱情如陈年老酒，愈久愈香。','愿你们执子之手，与子偕老，把日子过成诗。']},
+birthday:{a:['生日快乐！愿你岁岁平安，年年如意。','恭祝你福寿安康，笑口常开！','祝你新的一岁，快乐加倍，烦恼清零！'],b:['愿你吃得好睡得香，想要的都拥有，得不到的都释怀。','愿你的每一天都被温柔以待，被幸福包围。']},
+festival:{a:['节日快乐！愿你阖家欢乐，万事顺遂！','祝你节日愉快，笑口常开！'],b:['愿美好的节日，伴你一整年的好运气。','愿这份节日的温暖，常驻你心间。']},
+promotion:{a:['恭喜升职！实至名归，前程似锦！','祝贺高升，事业节节高！'],b:['愿你带领团队再创佳绩，前程一片光明。','愿你在新的岗位上大展宏图，再攀高峰。']},
+parent:{a:['爸爸妈妈，你们辛苦了！','感谢您们无私的付出与守候。'],b:['愿您们身体健康，笑口常开，儿孙绕膝享天伦。','愿岁月温柔待您，我们永远爱您。']},
+friend:{a:['认识你，是我最大的幸运！','你是我最好的朋友，没有之一！'],b:['愿我们友谊长存，一起到老。','愿你被这世界温柔相待，快乐常伴。']},
+baby:{a:['恭喜喜得贵子/千金，母子平安！','欢迎小天使来到这个世界！'],b:['愿宝宝健康快乐地长大，一生平安顺遂。','愿这场爱的接力，点燃崭新的希望。']}};
+function pick(a){return a[Math.floor(Math.random()*a.length)]}
+document.getElementById('genBtn').addEventListener('click',()=>{
+const scene=document.getElementById('scene').value;
+let to=document.getElementById('to').value.trim();
+let from=document.getElementById('from').value.trim();
+const extra=document.getElementById('extra').value.trim();
+const p=pools[scene];
+const nameMap={'wedding':'这对幸福的新人','birthday':(to||'寿星'),'festival':(to||'你'),'promotion':(to||'你'),'parent':(to||'爸爸妈妈'),'friend':(to||'我的好朋友'),'baby':(to||'这个可爱的宝贝')};
+const title={wedding:'🎊 致新婚的你们',birthday:'🎂 生日快乐',festival:'🎉 节日快乐',promotion:'🎉 恭贺升职',parent:'💕 致我最爱的家人',friend:'🤗 致我的好朋友',baby:'👶 欢迎小天使'}[scene];
+const card=`${title}\n\n亲爱的${nameMap[scene]}：\n\n${pick(p.a)}\n\n${pick(p.b)}${extra?'\n\n特别祝福：'+extra:''}\n\n此心，日月可鉴；此情，历久弥新。\n\n${from?('—— '+from):''}`;
+document.getElementById('resultArea').classList.add('active');
+document.getElementById('result').textContent=card;
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('result').textContent).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI读书笔记生成 | AgentGongju.com</title>
+<meta name="description" content="AI读书笔记助手，输入书名或读书心得，一键生成知识卡片、重点总结与读后感框架">
+<meta name="keywords" content="读书笔记,知识卡片,读后感,读书总结,学习方法">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:90px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.8;white-space:pre-wrap;min-height:60px;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📚 AI读书笔记助手</h1><p>一键生成知识卡片、重点总结与读后感框架</p></div>
+
+<div class="card"><div class="param-row">
+<div><label>输出类型</label><select id="type"><option>知识卡片</option><option>重点总结</option><option>读后感框架</option></select></div>
+<div><label>书籍分类</label><select id="cat"><option>理财成长</option><option>心理学</option><option>工作方法</option><option>文学小说</option><option>科技科普</option></select></div></div>
+<div><label>书名 / 主题</label>
+<input type="text" id="book" placeholder="例如：《原子习惯》"></div>
+<div><label>你印象最深的内容（选填，让笔记更贴合）</label>
+<textarea id="note" placeholder="例如：强调环境的改变比意志力更重要"></textarea>
+<button class="btn-gen" id="genBtn">📖 生成读书笔记</button></div>
+<div class="result-area" id="resultArea"><div class="card"><div style="color:#22c55e;font-weight:600;margin-bottom:12px">📝 你的读书笔记</div><div class="result-box" id="out"></div><button class="copy-btn" onclick="copyResult()">📋 复制</button></div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function copyResult(){navigator.clipboard.writeText(document.getElementById('out').textContent).then(()=>alert('✅ 已复制！'))}
+const notePools={
+'理财成长':['复利思维：坚持长期主义','消费降级，注意力解放','把目标拆成可执行的小习惯','投资自己永远是最稳的投资'],
+'心理学':['接纳情绪，而不是对抗','认知偏差影响我们判断','自律来自习惯而非意志力','关注行为背后的深层动机'],
+'工作方法':['先完成再完美','用清单减少决策消耗','重要不紧急的事优先','把时间花在高产出的事上'],
+'文学小说':['人物命运折射时代','细节让故事更动人','用冲突推动情节','留白比圆满更耐人寻味'],
+'科技科普':['用数据说话，拒绝玄学','创新往往来自跨界结合','技术背后是人的需求','保持好奇，持续学习']};
+const qs=['这本书想让我记住什么？','对我当下的生活有什么启发？','我可以立刻做的一件小事是什么？','哪些内容我想再读一遍？'];
+document.getElementById('genBtn').addEventListener('click',()=>{
+const type=document.getElementById('type').value;const cat=document.getElementById('cat').value;const book=document.getElementById('book').value.trim()||'这本书';const note=document.getElementById('note').value.trim();
+const pool=notePools[cat]||notePools['理财成长'];
+let det=note?('\n· 你的关注点：'+note+'\n'):'\n';
+let out='【'+book+' · '+type+'】\n\n';
+if(type==='知识卡片'){out+='📇 知识卡片：\n';pool.slice(0,4).forEach((p,i)=>out+=(i+1)+'. '+p+'\n');out+='\n复习口令：每周翻阅一次，关联到实际生活。';}
+else if(type==='重点总结'){out+='📌 核心要点：\n';pool.slice(0,4).forEach((p,i)=>out+=(i+1)+'. '+p+'\n');out+='\n📚 一句话总结：读完这本书，最有价值的是把其中一个观点真正用起来。'+det;}
+else{out+='📃 读后感结构建议：\n· 开篇：概述本书核心与整体印象\n· 主体：'+pool.slice(0,3).join('；')+'\n· 升华：'+(note||'这本书对我思维方式的启发')+'\n· 结尾：结合自身行动与期望\n\n📌 写作提示：'+(note?('围绕你提到的「'+note.slice(0,15)+'」展开。'):'多用具体经历和感受，避免空泛。');}
+out+='\n\n💡 追问自己：'+qs[Math.floor(Math.random()*qs.length)];
+document.getElementById('resultArea').classList.add('active');
+document.getElementById('out').textContent=out;
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>毕业谢师致辞生成器 | AgentGongju.com</title>
+<meta name="description" content="毕业谢师致辞生成器，一键生成感人的毕业发言、谢师感言、师生情致辞，适用于毕业典礼、谢师宴、纪念册留言">
+<meta name="keywords" content="毕业致辞,谢师宴,毕业感言,感谢老师,师生情,毕业发言稿">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:70px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.8;white-space:pre-wrap;margin-bottom:12px;font-size:.92rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{color:#94a3b8;font-size:.8rem;line-height:1.8;margin-top:6px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🎓 毕业谢师致辞生成器</h1><p>把感恩的话，说得真挚动人</p></div>
+
+<div class="card">
+<label>🎓 称呼 / 对象</label>
+<input type="text" id="teacher" placeholder="例如：班主任张老师、导师李教授、小学班主任">
+<div class="param-row">
+<div><label>📅 毕业阶段</label>
+<select id="stage">
+<option value="小学毕业">小学毕业</option>
+<option value="初中毕业">初中毕业</option>
+<option value="高中毕业">高中毕业</option>
+<option value="大学毕业">大学毕业</option>
+<option value="研究生毕业">研究生毕业</option>
+</select></div>
+<div><label>📝 致辞场合</label>
+<select id="occ">
+<option value="毕业典礼">毕业典礼发言</option>
+<option value="谢师宴">谢师宴致辞</option>
+<option value="纪念册">纪念册留言</option>
+<option value="朋友圈">朋友圈感言</option>
+</select></div>
+</div>
+<div class="param-row">
+<div><label>💬 想说的话（回忆点，可选）</label>
+<input type="text" id="memory" placeholder="例如：老师深夜批改作业、考前辅导鼓励"></div>
+<div><label>😢 致辞长度</label>
+<select id="len">
+<option value="short">简短（约100字）</option>
+<option value="mid">适中（约250字）</option>
+<option value="long">完整（约400字）</option>
+</select></div>
+</div>
+<button class="btn-gen" id="genBtn">🌸 生成致辞</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">💌 你的致辞</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制致辞</button>
+<div class="tip">💡 提示：可在生成内容基础上补充你自己的真实回忆，让致辞更有温度与感染力。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const STAGE={
+'小学毕业':'那些懵懂又闪亮的日子，是您牵着我们一步步走过',
+'初中毕业':'青春的叛逆与成长，都有您的包容与指引',
+'高中毕业':'三年奋战的日日夜夜，您是我们最坚实的后盾',
+'大学毕业':'四年求知路，您教会我的不止是知识，更是如何做人',
+'研究生毕业':'科研路上的每一次跌倒与爬起，都离不开您的耐心与点拨'};
+const OCC={
+'毕业典礼':['敬爱的老师、亲爱的同学们：','最后，请允许我代表全体同学，向您深深鞠一躬。','祝您桃李满天下，健康常相伴！'],
+'谢师宴':['恩师在上：','这杯酒，敬您的谆谆教诲与无私付出。','愿您身体健康、笑口常开、桃李满园！'],
+'纪念册':['致我最敬爱的老师：','这笔一纸间，写不尽对您的感激。','愿日后重逢时，我们都成了更好的自己。'],
+'朋友圈':['毕业了，最想感谢的人还是您。','那些陪伴与教导，我都记在心里。','老师，谢谢您！想您了！']};
+const MEM=["您深夜批改作业的那盏灯","您考前一遍遍耐心的讲解","您记得我们每个人名字的心","您在我们失意时的一个微笑","您总说不放弃任何一个人的坚持"];
+const CLOSE={
+'小学毕业':'愿每一个孩子都能成为您的骄傲，我们永远爱您！',
+'初中毕业':'前路漫漫，但您给的勇气足以照亮远方！',
+'高中毕业':'愿时光善待您，愿我们不负您的期许！',
+'大学毕业':'您说的每一句，都将成为我前行路上的星光！',
+'研究生毕业':'师恩如海，终生难忘。愿您一切安好！'};
+function pick(a){return a[Math.floor(Math.random()*a.length)];}
+document.getElementById('genBtn').addEventListener('click',()=>{
+const teacher=document.getElementById('teacher').value.trim()||'老师';
+const stage=document.getElementById('stage').value;
+const occ=document.getElementById('occ').value;
+const memory=document.getElementById('memory').value.trim();
+const len=document.getElementById('len').value;
+const o=OCC[occ];
+const mem=memory||pick(MEM);
+let core=`还记得${mem}的时光。${STAGE[stage]}，您的每一次鼓励，都像春雨般润物无声。如今我们即将各奔东西，但您种下的那颗种子，会一直在我们心里生根发芽。`;
+let out=o[0]+'\n'+o[1].replace('最后，','')+'\n\n'+core+'\n\n';
+if(len!=='short'){
+out+=`是您教会我们，成绩之外还有更重要的东西——真诚、坚韧与担当。数年相处，您不仅是传授知识的师者，更是照亮人生道路的灯塔。`;
+if(len==='long'){
+out+=`那些与您一起度过的课堂、批改过的作业、谈心过的午后，都将成为我们青春里最珍贵的宝藏。有人说毕业是结束，但我们知道，这也是带着您的祝福重新出发的开始。`;
+}
+out+='\n\n'+o[2]+'\n\n'+CLOSE[stage];
+}else{out+='\n'+o[2]+'\n\n'+CLOSE[stage];}
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 致辞已复制！'))}
+</script>
+</body>
+</html>

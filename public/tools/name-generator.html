@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 起名神器 | AgentGongju.com</title>
+<meta name="description" content="AI起名神器，为店铺、品牌、游戏角色、网名一键生成好听现代的名字">
+<meta name="keywords" content="AI起名,店铺起名,品牌起名,游戏ID,网名生成">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:90px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.8;white-space:pre-wrap;min-height:60px;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🌟 AI 起名神器</h1><p>店铺 / 品牌 / 角色 / 网名，一键生成好听的名字</p></div>
+
+<div class="card"><label>🎯 起名类型</label>
+<select id="type"><option>奶茶店铺名</option><option>服装品牌名</option><option>游戏角色名</option><option>网名昵称</option><option>宠物名字</option><option>工作室名</option></select>
+<div class="param-row">
+<div><label>风格偏好</label><select id="style"><option>文艺清新</option><option>潮流酷炫</option><option>可爱萌系</option><option>古典雅致</option></select></div>
+<div><label>生成数量</label><select id="count"><option value="6">6 个</option><option value="9">9 个</option><option value="12">12 个</option></select></div></div>
+<button class="btn-gen" id="genBtn">✨ 开始起名</button></div>
+<div class="result-area" id="resultArea"><div class="card"><div style="color:#22c55e;font-weight:600;margin-bottom:12px">😎 为你挑选的名字</div><div class="result-box" id="out"></div><button class="copy-btn" onclick="copyResult()">📋 复制</button></div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function copyResult(){navigator.clipboard.writeText(document.getElementById('out').textContent).then(()=>alert('✅ 已复制！'))}
+const names={
+'奶茶店铺名':['一杯晴','奶香时光','小鹿出杯','糖分研究所','芋见你','半糖主义','撞奶星球','茶里茶气','甜度满格','波波茶'],
+'服装品牌名':['衣然自得','简序','云裳集','初见','衣橱日记','素裹','布言布语','潮汐衣社','妍衣','轻装简行'],
+'游戏角色名':['暗夜剑啸','北风孤狼','星陨之心','墨隐','风启','铁血蔷薇','幻刃','霜落','影舞者','逐光者'],
+'网名昵称':['半盏清欢','人间草木','月亮邮递员','温柔藏不住','山海皆可平','晚风作酒','南巷清风','枕着星河','贩卖日落','拾光男孩'],
+'宠物名字':['团子','豆包','雪球','布丁','奶盖','可乐','小白','麻薯','汤圆','奶酪'],
+'工作室名':['匠心营造','此刻成立','问与答工作室','初见设计','启航视觉','拾光影视','专注工坊','向上创意','一隅设计','云创空间']};
+document.getElementById('genBtn').addEventListener('click',()=>{
+const type=document.getElementById('type').value;const style=document.getElementById('style').value;const count=parseInt(document.getElementById('count').value);
+let pool=names[type]||names['网名昵称'];let out='【'+type+' · '+style+'】\n\n';
+const idx=[];while(idx.length<count){let i=Math.floor(Math.random()*pool.length);if(!idx.includes(i))idx.push(i)}
+idx.forEach((i,n)=>{out+=(n+1)+'. '+pool[i]+'   '+(n%3===2?'\n':'')});
+out+='\n\n💡 小贴士：结合'+style+'风格与品牌调性，选一个念起来顺口、寓意好的即可。';
+document.getElementById('resultArea').classList.add('active');
+document.getElementById('out').textContent=out;
+});
+</script>
+</body>
+</html>

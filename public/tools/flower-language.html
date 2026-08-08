@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 花语大全查询 | AgentGongju.com</title>
+<meta name="description" content="免费查询各种花的花语寓意，送花送礼攻略">
+<meta name="keywords" content="花语,鲜花,寓意,送花,玫瑰,康乃馨">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:100px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.btn-gen:disabled{opacity:.5;cursor:not-allowed}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;min-height:60px;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🌸 AI 花语大全</h1><p>查花语、学送礼，把心意说得刚刚好</p></div>
+
+<div class="card"><label>🌷 查询花名</label>
+<input type="text" id="kw" placeholder="如：玫瑰、百合、向日葵、康乃馨...">
+<button class="btn-gen" id="genBtn">🌸 查询花语</button></div>
+<div class="result-area" id="resultArea"><div class="card"><div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 花语详解</div>
+<div class="result-box" id="result"></div><button class="copy-btn" onclick="copyResult()">📋 复制</button></div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const db={'玫瑰':['我爱你、热烈的爱情','适合送给恋人或表白，红玫瑰代表热恋，粉玫瑰代表初恋与甜蜜承诺。'],
+'白玫瑰':['纯洁、尊敬、我足以与你相配','适合同事或长辈表达敬意，也适合婚礼场景。'],
+'百合':['纯洁、百年好合、心想事成','婚礼和祝福新人的首选，寓意婚姻美满。'],
+'向日葵':['沉默的爱、忠诚、阳光开朗','送给朋友或健身激励型朋友，代表积极正能量。'],
+'康乃馨':['母爱、温馨、宽容','母亲节送妈妈的经典之选，红色象征健康，粉色象征感恩。'],
+'郁金香':['博爱、体贴、高雅、爱的告白','荷兰国花，适合表达深深的爱意与欣赏。'],
+'菊花':['高洁、清净、健康长寿','敬奉长辈、祭奠时常用，也代表坚贞不屈。'],
+'满天星':['清纯、思念、配角却温柔','常作配花，代表默默守护的支持与陪伴。'],
+'勿忘我':['永恒的爱、永远的回忆','适合表达"请记得我"，寄托长情与思念。'],
+'栀子花':['永恒的爱与守候、喜悦','初夏开花，洁白芬芳，寓意不变的心意。'],
+'牡丹':['富贵、圆满、国色天香','花中之王，适合开业、乔迁等喜庆场合。'],
+'绣球花':['希望、圆满、忠贞','代表前程似锦，适合送毕业或庆祝成功的朋友。']};
+document.getElementById('genBtn').addEventListener('click',()=>{
+const kw=document.getElementById('kw').value.trim();if(!kw){alert('请输入花名');return}
+let out='【花语查询】\n\n',found=false;
+for(const k in db){
+if(kw.includes(k)||k.includes(kw)){
+out+='🌸 '+'【'+k+'】\n🌹 花语：'+db[k][0]+'\n💝 建议：'+db[k][1]+'\n\n';
+found=true;
+}}
+if(!found)out+='❌ 暂未收录「'+kw+'」，试一试：玫瑰、百合、向日葵、康乃馨、郁金香...';
+out+='\n✨ 送花小贴士：结合场合与对方心意挑选，真诚最重要哦。';
+document.getElementById('resultArea').classList.add('active');document.getElementById('result').textContent=out;});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('result').textContent).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

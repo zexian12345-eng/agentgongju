@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 润色改写工具 | AgentGongju.com</title>
+<meta name="description" content="AI文本润色改写，一键将口语化或平淡文字改写成专业、优美、口语等风格">
+<meta name="keywords" content="文字润色,文案改写,AI润色,文本润色">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:120px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.9;white-space:pre-wrap;min-height:60px;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>✒️ AI 润色改写</h1><p>一键将平淡文字改写为专业、优美、亲和等多种风格</p></div>
+
+<div class="card"><label>📝 原始文本</label>
+<textarea id="text" placeholder="粘贴需要润色的文字，例如：我们做了个新东西，挺好的，大家都能用，希望你们一定试试。"></textarea>
+<div class="param-row"><div><label>目标风格</label><select id="tone"><option value="专业">专业正式</option><option value="优美">优美文艺</option><option value="口语">自然口语</option><option value="凝练">精炼简洁</option><option value="激励">积极励志</option></select></div><div><label>篇幅</label><select id="len"><option value="same">保持原长</option><option value="shorter">更简短</option><option value="longer">更丰富</option></select></div></div>
+<button class="btn-gen" id="genBtn">✨ 开始润色</button></div>
+<div class="result-area" id="resultArea"><div class="card"><div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 润色结果</div><div class="result-box" id="out"></div><button class="copy-btn" onclick="copyResult()">📋 复制结果</button></div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function copyResult(){navigator.clipboard.writeText(document.getElementById('out').textContent).then(()=>alert('✅ 已复制！'))}
+const openings={专业:'基于当前情况，现将相关内容整理如下：',优美:'时光无言，却记录着每一次用心。',口语:'跟你说个好消息，这事可太给力了！',凝练:'概而言之：',激励:'每一次尝试都值得被认真对待！'};
+const closings={专业:'以上建议供参考，如有疑问欢迎沟通交流。',优美:'愿这份用心，能如春风般温暖您的心田。',口语:'总之就这么个事，很值得试试哈！',凝练:'—— 一句话，足够了。',激励:'向前一步，美好自会不期而遇。'};
+document.getElementById('genBtn').addEventListener('click',()=>{
+const text=document.getElementById('text').value.trim();if(!text){alert('请输入文本');return}
+const tone=document.getElementById('tone').value;const len=document.getElementById('len').value;
+let core=text;
+if(len==='shorter'){core=text.slice(0,Math.min(30,text.length))+(text.length>30?'…':'')+',言简意赅。';}
+else if(len==='longer'){core=text+'。在原本内容的基础上，我们进一步聚焦核心价值，让表达更加完整、清晰，也更易于传达与理解。';}
+let result;
+if(tone==='专业'){result=openings.专业+'\n'+core+'。\n'+closings.专业;}
+else if(tone==='优美'){result=openings.优美+'\n'+core+'，细品之下，更觉其中的用心与坚持。\n'+closings.优美;}
+else if(tone==='口语'){result=openings.口语+'\n'+core+'，绝对值得一试！\n'+closings.口语;}
+else if(tone==='凝练'){result=openings.凝练+'「'+core+'」。\n'+closings.凝练;}
+else{result=openings.激励+'\n'+core+'，让我们一起把想法变成现实！\n'+closings.激励;}
+document.getElementById('resultArea').classList.add('active');
+document.getElementById('out').textContent='【'+document.getElementById('tone').selectedOptions[0].text+'】\n\n'+result+'\n\n（示例改写，正式版将接入大模型按语义深度润色）';
+});
+</script>
+</body>
+</html>

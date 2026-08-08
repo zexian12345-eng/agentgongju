@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 树洞心情陪伴 | AgentGongju.com</title>
+<meta name="description" content="AI树洞心情陪伴，写下你的心事与烦恼，获得温暖的共情回复与真实建议，温柔倾听你的每一个情绪，陪你走过低谷">
+<meta name="keywords" content="树洞,心情陪伴,情绪倾诉,心理疏导,安慰,倾听">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:120px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.reply{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.25);border-radius:12px;padding:20px;margin-bottom:14px;line-height:2;color:#e2e8f0;font-size:.95rem;white-space:pre-wrap}
+.reply .who{color:#a855f7;font-weight:600;margin-bottom:8px}
+.warm-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.warm-btn:hover{background:rgba(99,102,241,0.25)}
+.disclaimer{color:#64748b;font-size:.78rem;margin-top:10px;line-height:1.7}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🫂 AI 树洞陪伴</h1><p>把心事交给大树，它负责倾听与温柔</p></div>
+
+<div class="card">
+<label>💭 此刻的心情 / 想倾诉的事</label>
+<textarea id="vent" placeholder="说说最近遇到的困扰、压力或小确幸，这里没有评判，只有倾听……"></textarea>
+<div class="param-row">
+<div><label>🎭 现在的心情</label>
+<select id="mood">
+<option value="低落">😔 低落</option>
+<option value="焦虑">😟 焦虑</option>
+<option value="生气">😠 生气</option>
+<option value="迷茫">🤔 迷茫</option>
+<option value="疲惫">🥱 疲惫</option>
+<option value="平静">😌 平静</option>
+</select></div>
+<div><label>🤝 需要怎样的回应</label>
+<select id="need">
+<option value="安慰">🫂 需要被安慰</option>
+<option value="建议">💡 想要建议</option>
+<option value="陪伴">🎧 只想有人听</option>
+<option value="鼓励">🌱 需要鼓励</option>
+</select></div>
+</div>
+<button class="btn-gen" id="genBtn">🎙️ 说给树洞听</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div id="replyBox"></div>
+<button class="warm-btn" onclick="copyResult()">📋 复制这段话</button>
+<div class="disclaimer">💙 树洞是一个温暖的倾听者。若你正处在极端情绪中，请记得及时寻求身边人的帮助或专业心理支持，你并不孤单。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function rand(a){return a[Math.floor(Math.random()*a.length)]}
+const moodOpen={
+'低落':'你愿意把这份低落说出来，就已经很有勇气了。','焦虑':'焦虑在敲门，有时候它只是想被你看见。','生气':'生气说明你在乎，这份在乎本身就很有分量。','迷茫':'在路口停留不是停滞，是在为下一步积蓄方向。','疲惫':'你撑了这么久，真的很不容易。','平静':'能带着平静来分享心情，是很好的状态。'};
+const needLine={
+'安慰':['这份委屈，不该由你一个人来扛。','抱抱此刻的你，你已经做得很好了。','把那些没说出口的委屈，交给我吧。'],
+'建议':['不妨把大问题拆成最小的第一步，走好眼前这一小步就赢了。','有时候换个角度，困扰会松绑。','先照顾好自己，再谈解决问题，顺序很重要。'],
+'陪伴':['我在听，你说的每一个字我都认真收下。','不需要急着说什么，把这一刻留给自己就好。','慢慢来，我陪你静静地待一会儿。'],
+'鼓励':['别怕，你比自己以为的更强大。','每一次坚持，都在悄悄升级你的内心。','风浪会过去，而你会在岸边变得更从容。']};
+document.getElementById('genBtn').addEventListener('click',()=>{
+const vent=document.getElementById('vent').value.trim();
+if(!vent){alert('先和树洞说说你的心事吧');return;}
+const mood=document.getElementById('mood').value;
+const need=document.getElementById('need').value;
+const box=document.getElementById('replyBox');box.innerHTML='';
+let reply='';
+reply+=`${moodOpen[mood]}\n\n`;
+reply+=`你说：「…${vent.length>80?vent.slice(0,80)+'…':vent}」\n`;
+reply+=`我懂那种感受，不必用大道理压倒它。\n\n`;
+reply+=`${rand(needLine[need])}\n\n`;
+reply+=`今天，也请记得好好吃饭、好好睡觉。这世界偶尔锋利，但你值得被温柔以待。`;
+window._reply=reply;
+box.innerHTML=`<div class="reply"><div class="who">🌳 树洞的回信</div>${reply}</div>`;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText('【树洞的回信】\n'+window._reply).then(()=>alert('✅ 已复制这份温柔'))}
+</script>
+</body>
+</html>

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>品牌Slogan生成器 | AgentGongju.com</title>
+<meta name="description" content="AI品牌Slogan生成器，为品牌、企业一键生成朗朗上口、有记忆点的广告语">
+<meta name="keywords" content="品牌slogan,广告语,品牌标语,营销口号,广告文案">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:80px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.8;white-space:pre-wrap;min-height:60px;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>💡 品牌Slogan生成器</h1><p>一键生成朗朗上口、有记忆点的品牌广告语</p></div>
+
+<div class="card"><label>🏷️ 品牌名称</label>
+<input type="text" id="brand" placeholder="例如：山野咖啡">
+<div class="param-row">
+<div><label>行业领域</label><select id="ind"><option>餐饮食品</option><option>美妆护肤</option><option>数码科技</option><option>服装时尚</option><option>教育培训</option><option>生活服务</option></select></div>
+<div><label>Slogan风格</label><select id="style"><option>简约大气</option><option>情感走心</option><option>个性酷炫</option><option>专业权威</option><option>诙谐幽默</option></select></div></div>
+<div><label>品牌核心信息（选填，如主打产品/理念）</label><input type="text" id="core" placeholder="例如：有机慢烘焙，纯粹山野味"></div>
+<button class="btn-gen" id="genBtn">🚀 生成Slogan</button></div>
+<div class="result-area" id="resultArea"><div class="card"><div style="color:#22c55e;font-weight:600;margin-bottom:12px">⭐ 为你精选的Slogan</div><div class="result-box" id="out"></div><button class="copy-btn" onclick="copyResult()">📋 复制</button></div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function copyResult(){navigator.clipboard.writeText(document.getElementById('out').textContent).then(()=>alert('✅ 已复制！'))}
+const pools={
+'餐饮食品':['每一口，都是天然','好味道，源自真心','用心做好每一餐','舌尖上的极致享受','鲜，看得见','一口就爱上'],
+'美妆护肤':['让美丽自然发生','你的美，值得被看见','焕发肌肤新活力','天生丽质，从这一刻','水润每一天','自信，由内而外'],
+'数码科技':['智享新生活','科技，让生活更简单','快人一步，尽在掌握','创新，永不止步','连接你的世界','大有可为'],
+'服装时尚':['穿出你的态度','风格，就是你的标签','因你而精彩','潮流由你定义','舒适与时尚兼得','穿出好心情'],
+'教育培训':['让学习更有价值','陪伴每一步成长','点亮你的未来','学有所成，前程似锦','知识的乐趣在于分享','成就更好的自己'],
+'生活服务':['贴心服务每一天','让生活更轻松','懂你所需，如你所愿','便捷就在身边','温暖每一个家','为美好生活助力']};
+const styleMap={'简约大气':'','情感走心':'，因为你在意','个性酷炫':'，就这么不一样','专业权威':'，专业之选','诙谐幽默':'，谁用谁知道'};
+document.getElementById('genBtn').addEventListener('click',()=>{
+const brand=document.getElementById('brand').value.trim()||'「本品牌」';const ind=document.getElementById('ind').value;const style=document.getElementById('style').value;const core=document.getElementById('core').value.trim();
+const base=pools[ind]||pools['餐饮食品'];
+const idx=[];const picked=[];const tmp=[...base];while(tmp.length&&picked.length<5){picked.push(tmp.splice(Math.floor(Math.random()*tmp.length),1)[0]);}
+let coreLine=core?('核心主张：'+core+'\n\n'):'';
+let out='【'+brand+' · '+style+'】\n\n'+coreLine;
+picked.forEach((s,i)=>{out+=(i+1)+'. '+brand.slice(0,8)+'，'+s+styleMap[style]+'\n';});
+out+='\n💡 小贴士：好的Slogan读起来上口、寓意正面，可以多念几遍选最顺口的。';
+document.getElementById('resultArea').classList.add('active');
+document.getElementById('out').textContent=out;
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 生日祝福 | AgentGongju.com</title>
+<meta name="description" content="AI生日祝福语生成器，给朋友家人写一条走心又特别的生日祝福">
+<meta name="keywords" content="生日祝福,祝福语生成,生日快乐,贺卡文案">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:80px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;min-height:60px;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🎂 AI 生日祝福</h1><p>为你在乎的人，写一条走心又有特色的生日祝福</p></div>
+
+<div class="card"><label>🎈 祝福对象</label>
+<input type="text" id="person" placeholder="例如：妈妈 / 最好的闺蜜 / 男朋友">
+<div class="param-row">
+<div><label>祝福风格</label><select id="style"><option>温馨走心</option><option>幽默有趣</option><option>文艺浪漫</option><option>正式得体</option><option>简短明了</option></select></div>
+<div><label>送哪些祝福</label><select id="wish"><option>健康快乐</option><option>暴富暴瘦</option><option>爱情甜蜜</option><option>事业有成</option><option>好运连连</option></select></div></div>
+<button class="btn-gen" id="genBtn">🎁 生成祝福</button></div>
+<div class="result-area" id="resultArea"><div class="card"><div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 生日祝福已生成</div><div class="result-box" id="out"></div><button class="copy-btn" onclick="copyResult()">📋 复制</button></div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function copyResult(){navigator.clipboard.writeText(document.getElementById('out').textContent).then(()=>alert('✅ 已复制！'))}
+document.getElementById('genBtn').addEventListener('click',()=>{
+const person=document.getElementById('person').value.trim()||'亲爱的你';const style=document.getElementById('style').value;const wish=document.getElementById('wish').value;
+const lists={
+'温馨走心':['又长大一岁啦，生日快乐～愿你眼里有光，心中有爱，被这个世界温柔以待。','希望你岁岁平安，把日子过成诗，生日快乐，永远做最开心的自己。','感恩遇见，愿你的每一个明天都比今天更值得期待。'],
+'幽默有趣':['恭喜你又向“岁数自由”迈进了一步！蛋糕多吃，烦恼少想，生日大吉！','祝你不止生日这一天，而是天天都有人请吃饭（并替你买单）！','新的一岁，愿你体重不上涨、快乐不设限、头发不走丢！'],
+'文艺浪漫':['愿时光善待你，也愿你把光阴过成星辰大海。生日快乐。','从遇见你的那天起，四季都有了温度。祝你生日快乐。','愿所有的温柔与浪漫，都恰逢其时地来到你身边。'],
+'正式得体':['值此生日之际，谨致以最诚挚的祝福，祝你身体健康、万事胜意。','时光荏苒，愿你在新的年岁里事业顺遂、家庭美满、幸福安康。'],
+'简短明了':['生日快乐，天天开心！','岁岁常欢愉，年年皆胜意。','祝新的年岁，平安喜乐，心想事成！']};
+const wishmap={'健康快乐':'愿你无病无灾，笑口常开','暴富暴瘦':'愿你钱包鼓鼓、身材棒棒','爱情甜蜜':'愿你被人疼爱，甜甜蜜蜜','事业有成':'愿你步步高升、前程似锦','好运连连':'愿你好运常伴，惊喜不断'};
+const list=lists[style]||lists['温馨走心'];
+const msg=list[Math.floor(Math.random()*list.length)];
+let out='🎂 致'+person+'：\n\n'+msg+'\n\n再者，'+wishmap[wish]+'～\n\n—— 来自惦记着你的朋友 · 生日快乐！';
+document.getElementById('resultArea').classList.add('active');
+document.getElementById('out').textContent=out;
+});
+</script>
+</body>
+</html>

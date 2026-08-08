@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>记忆卡片生成器 | AgentGongju.com</title>
+<meta name="description" content="记忆卡片生成器，一键将知识点、单词、公式转为正反两面的记忆卡片，配合艾宾浩斯记忆法助力高效背诵与复习">
+<meta name="keywords" content="记忆卡片,学习卡片,单词卡,知识点背诵,艾宾浩斯,复习方法,抽认卡">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:70px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.8;white-space:pre-wrap;margin-bottom:12px;font-size:.92rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{color:#94a3b8;font-size:.8rem;line-height:1.8;margin-top:6px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🎴 记忆卡片生成器</h1><p>把知识点变成正反卡片，背得更牢</p></div>
+
+<div class="card">
+<label>📚 内容类型</label>
+<select id="type">
+<option value="单词">英语单词</option>
+<option value="公式">计算公式/定理</option>
+<option value="概念">学科概念/名词</option>
+<option value="事件">历史事件/事实</option>
+</select>
+<label>📝 输入要记忆的内容（每行一条）</label>
+<textarea id="content" placeholder="例如（单词：apple/苹果）：&#10;apple 苹果&#10;banana 香蕉&#10;orange 橙子&#10;或概念形式：光合作用 / 植物利用光能合成有机物"></textarea>
+<div class="param-row">
+<div><label>🎨 卡片排序</label>
+<select id="order">
+<option value="随机">随机打乱</option>
+<option value="顺序">保持顺序</option>
+</select></div>
+<div><label>📌 生成方案</label>
+<select id="plan">
+<option value="卡片">正反卡片列表</option>
+<option value="艾宾浩斯">附艾宾浩斯复习计划</option>
+</select></div>
+</div>
+<button class="btn-gen" id="genBtn">🃏 生成记忆卡片</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🃏 你的记忆卡片</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制卡片</button>
+<div class="tip">💡 提示：建议配合「正面→反面→正面」的主动回忆法，记忆效果远好于反复阅读。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const FRONT={'单词':'正面（单词）','公式':'正面（公式/定理）','概念':'正面（概念/名词）','事件':'正面（事件/名称）'};
+const BACK={'单词':'反面（释义）','公式':'反面（公式/推导要点）','概念':'反面（定义说明）','事件':'反面（时间/要点）'};
+function shuffle(a){let r=[...a];for(let i=r.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[r[i],r[j]]=[r[j],r[i]];}return r;}
+document.getElementById('genBtn').addEventListener('click',()=>{
+const type=document.getElementById('type').value;
+const content=document.getElementById('content').value.trim();
+const order=document.getElementById('order').value;
+const plan=document.getElementById('plan').value;
+if(!content){alert('请输入要记忆的内容');return;}
+let items=content.split(/\n+/).map(l=>l.trim()).filter(Boolean);
+if(order==='随机')items=shuffle(items);
+if(type==='事件'&&items.length===1&&items[0].includes('/')){/* handled generically */ }
+let out=`【${type}·记忆卡片】共 ${items.length} 条\n${plan==='卡片'?'':'（含艾宾浩斯复习打卡计划）'}\n\n`;
+items.forEach((it,i)=>{
+let front=it,back=it;
+if(type==='单词'&&it.split('/').length===2){front=it.split('/')[0].trim();back=it.split('/')[1].trim();}
+out+=`◆ 卡片 ${i+1}\n${FRONT[type]}：${front}\n${BACK[type]}：${back}\n\n`;
+});
+if(plan==='艾宾浩斯'){
+out+='━━━━━ 艾宾浩斯复习计划 ━━━━━\n'
++'· 今日：初次记忆\n'
++'· 第1天、第2天、第4天、第7天：各复习一次（短期巩固）\n'
++'· 第15天、第30天：再次复习（长期巩固）\n'
++'· 每次复习先从「无法秒答」的卡片开始，最有效！\n';
+}
+out+='\n💡 建议：卡片越精简越好，一次一个记忆点。';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 卡片已复制！'))}
+</script>
+</body>
+</html>

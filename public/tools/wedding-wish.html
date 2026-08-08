@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 婚礼致辞与祝福 | AgentGongju.com</title>
+<meta name="description" content="输入与新人关系，AI生成婚礼致辞、红包祝福语、朋友圈文案，词藻真诚动人，让祝福更走心">
+<meta name="keywords" content="婚礼,致辞,祝福语,红包,文案,结婚">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;margin-bottom:12px;min-height:60px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.note{font-size:.8rem;color:#64748b;margin-top:10px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>💒 AI 婚礼致辞与祝福</h1><p>把最真诚的祝福，说得恰到好处</p></div>
+
+<div class="card">
+<label>🙋 你和新人的关系</label>
+<select id="relation">
+<option value="闺蜜">👯 闺蜜/死党</option>
+<option value="兄弟">🤝 好兄弟</option>
+<option value="同学">🎓 同学</option>
+<option value="同事">💼 同事</option>
+<option value="亲属">👨‍👩‍👧 亲戚</option>
+<option value="长辈">👴 长辈/父母</option>
+<option value="伴郎伴娘">🤵 伴郎/伴娘</option>
+</select>
+<label>📌 祝福内容类型</label>
+<select id="type">
+<option value="致辞">🎤 婚礼致辞（上台讲）</option>
+<option value="红包">🧧 红包祝福语</option>
+<option value="朋友圈">📱 朋友圈/微信文案</option>
+</select>
+<button class="btn-gen" id="genBtn">💍 生成祝福</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:16px">✨ 送给新人的祝福</div>
+<div class="result-box" id="resultBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制祝福</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function rand(a){return a[Math.floor(Math.random()*a.length)]}
+document.getElementById('genBtn').addEventListener('click',()=>{
+const rel=document.getElementById('relation').value;
+const type=document.getElementById('type').value;
+const box=document.getElementById('resultBox');
+let out='';
+const couple=rel;
+if(type==='致辞'){
+const rings=['从今天起，愿你们不止有爱情，还有并肩同行的勇气','愿你们把每一个平凡的日子，都过成相爱的模样','婚姻是新的起点，愿你们既能相濡以沫，也能各自精彩'];
+const opens={闺蜜:'亲爱的姐妹，终于等到你穿上婚纱的这一天，',兄弟:'兄弟，你这辈子最帅的一刻就是今天，',同学:'作为你的老同学，看着你们一路走来，',同事:'作为你的同事兼好友，能见证这一刻，',亲属:'作为家人，看到你们走到一起，',长辈:'看着孩子们长大成家，心里满是欣慰，',伴郎伴娘:'站在你身边见证这幸福时刻，我真的很开心，'};
+out=opens[rel]+'\n\n'+'今天你/你们是这个世界上最好看的人。感谢命运让你们相遇，也感谢这些年你们彼此的选择。\n\n「'+rand(rings)+'。」\n\n愿你们的爱经得起岁月，也经得起柴米油盐。新婚快乐，百年好合！\n\n—— 永远祝福你们的'+(rel==='长辈'?'家人':rel==='亲属'?'家人':rel==='伴郎伴娘'?'伙伴':rel==='闺蜜'?'姐妹':rel==='兄弟'?'哥们':rel==='同学'?'老同学':'同事和好友');
+}
+else if(type==='红包'){
+const msgs=['百年好合，早生贵子','新婚燕尔，永结同心','愿你俩心心相印，共度此生','两情相悦，白头偕老','琴瑟和鸣，天作之合','喜结良缘，幸福美满','执子之手，与子偕老','佳偶天成，缘定三生'];
+out='🧧 '+rand(msgs)+'\n\n祝'+couple+'新婚快乐！一点心意，不成敬意，愿你们的小日子甜甜蜜蜜，长长久久 💕';
+}
+else{
+const pyq=['今天见证了一场爱情最好的样子，羡慕又感动💒','官宣！见证爱情，也见证了我们多年的友谊','你们把日子过成了偶像剧，祝圆圆满满','从校服到婚纱，从青涩到白头，看得我眼眶湿润'];
+out=rand(pyq)+'\n\n新婚快乐，愿我们都被岁月温柔以待 ❤️\n（配婚礼现场照片）';
+}
+box.innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText('【婚礼祝福】\n'+document.getElementById('resultBox').innerText).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

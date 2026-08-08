@@ -37,23 +37,37 @@ audio{width:100%;margin-top:12px}
 <select id="voice"><option>标准女声</option><option>标准男声</option><option>温柔女声</option><option>磁性男声</option><option>可爱童声</option><option>新闻播音</option></select></div>
 <div><label style="color:#94a3b8;font-size:0.85rem;margin-bottom:4px">⏱ 语速</label>
 <select id="speed"><option value="0.8">慢速</option><option value="1.0" selected>正常</option><option value="1.2">稍快</option><option value="1.5">快速</option></select></div></div></div>
-<button class="btn-generate" id="generateBtn">🎙️ 生成配音</button>
+<button class="btn-generate" id="generateBtn">🔊 立即朗读</button>
 <div class="player-area card" id="playerArea">
-<div style="color:#22c55e;font-weight:600;margin-bottom:8px">✅ 配音已生成</div>
-<audio id="audioPlayer" controls></audio>
-<p style="color:#94a3b8;font-size:0.85rem;margin-top:8px">右键音频选择"另存为"即可下载</p></div></div>
+<div style="color:#22c55e;font-weight:600;margin-bottom:8px">✅ 正在朗读...</div>
+<p style="color:#94a3b8;font-size:0.85rem;margin-top:8px">使用浏览器本地语音引擎，无需上传，隐私安全。可切换右上角声音选项重试。</p></div></div>
 <footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
 <script>
-document.getElementById('generateBtn').addEventListener('click', async ()=>{
+function pickVoice(){
+  const voices=speechSynthesis.getVoices();
+  const zh=voices.filter(v=>/zh|cmn|Chinese/i.test(v.lang));
+  const sel=document.getElementById('voice').value;
+  let want='female';
+  if(sel.includes('男'))want='male';
+  if(sel.includes('童'))want='child';
+  const pick=zh.find(v=>want==='male'?/male|男|Ting-Ting/i.test(v.name):want==='child'?/child|Xiao/i.test(v.name):/female|女|Ting-Ting|Yaoyao|Xiaoxiao/i.test(v.name))||zh[0]||voices[0];
+  return pick||null;
+}
+document.getElementById('generateBtn').addEventListener('click', ()=>{
 const text=document.getElementById('textInput').value.trim();if(!text){alert('请输入文字内容！');return}
-const btn=document.getElementById('generateBtn');btn.disabled=true;btn.textContent='⏳ 生成中...';
-try{
-const res=await fetch('/api/tts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text,voice:document.getElementById('voice').value,speed:parseFloat(document.getElementById('speed').value)})});
-const data=await res.json();
-if(data.success&&data.audio_url){document.getElementById('playerArea').classList.add('active');document.getElementById('audioPlayer').src=data.audio_url;document.getElementById('audioPlayer').play();}
-else alert('生成失败: '+(data.error||'请重试'));
-}catch(err){alert('网络错误: '+err.message);}
-finally{btn.disabled=false;btn.textContent='🎙️ 生成配音';}});
+speechSynthesis.cancel();
+const u=new SpeechSynthesisUtterance(text);
+u.lang='zh-CN';u.rate=parseFloat(document.getElementById('speed').value);
+const v=pickVoice();if(v)u.voice=v;
+document.getElementById('playerArea').classList.add('active');
+const lbl=document.getElementById('playerArea').querySelector('div');
+lbl.textContent='🔊 正在朗读...';
+u.onend=()=>{lbl.textContent='✅ 朗读完成';
+setTimeout(()=>{document.getElementById('playerArea').classList.remove('active')},2500)};
+u.onerror=()=>{lbl.textContent='⚠️ 朗读失败，请重试'};
+speechSynthesis.speak(u);
+});
+if('speechSynthesis' in window)speechSynthesis.getVoices();
 </script>
 </body>
 </html>

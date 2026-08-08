@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 招聘JD生成 | AgentGongju.com</title>
+<meta name="description" content="AI招聘JD生成器，输入岗位信息自动生成专业规范的招聘职位描述">
+<meta name="keywords" content="招聘JD,职位描述,招聘文案,岗位JD,HR工具">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:80px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.9;white-space:pre-wrap;min-height:60px;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+h4{color:#a5b4fc;margin:8px 0 6px}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>💼 AI 招聘JD生成</h1><p>输入岗位信息，自动生成专业规范的职位描述</p></div>
+
+<div class="card"><label>🏷️ 职位名称</label>
+<input type="text" id="job" placeholder="例如：高级前端开发工程师">
+<label>📝 主要职责 / 关键词（用逗号分隔，可选）</label>
+<textarea id="duties" placeholder="例如：负责核心业务前端开发, 优化页面性能, 参与技术选型"></textarea>
+<div class="param-row" style="margin-top:12px"><div><label>行业/方向</label><select id="industry"><option value="互联网">互联网</option><option value="电商">电商</option><option value="金融">金融</option><option value="教育">教育</option><option value="制造">智能制造</option></select></div><div><label>经验要求</label><select id="exp"><option value="3-5年">3-5年</option><option value="1-3年">1-3年</option><option value="5年以上">5年以上</option><option value="应届">应届生</option></select></div></div>
+<label style="margin-top:12px">薪资范围（可选）</label>
+<input type="text" id="salary" placeholder="例如：15-25K·15薪">
+<button class="btn-gen" id="genBtn">📄 生成JD</button></div>
+<div class="result-area" id="resultArea"><div class="card"><div id="out"></div><button class="copy-btn" onclick="copyResult()">📋 复制JD</button></div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function copyResult(){navigator.clipboard.writeText(document.getElementById('out').textContent).then(()=>alert('✅ 已复制！'))}
+document.getElementById('genBtn').addEventListener('click',()=>{
+const job=document.getElementById('job').value.trim();if(!job){alert('请输入职位名称');return}
+const duties=document.getElementById('duties').value.split(/[,，、]/).map(s=>s.trim()).filter(Boolean);
+const ind=document.getElementById('industry').value;const exp=document.getElementById('exp').value;const sal=document.getElementById('salary').value.trim();
+const dutyLine=duties.length?duties.map((d,i)=>'1、'+d).join('\n'):'1、负责公司核心业务系统的设计与开发\n2、参与产品需求评审，推进技术方案落地\n3、持续优化代码质量与系统性能';
+const needs=['本科及以上学历，计算机相关专业优先','扎实的计算机基础与良好的编码习惯','具备良好的团队协作与沟通能力','有责任心，能独立解决技术难题','对新技术保持热情，乐于学习分享'];
+const wel=['六险一金、带薪年假','弹性工作、节日福利','定期团建、免费下午茶','完善的晋升与培训体系'];
+const salLine=sal?('薪资范围：'+sal+'\n'):'';
+const out='【职位描述】\n\n【职位名称】'+job+'（'+exp+'）\n所属行业：'+ind+' ｜ '+salLine+'\n\n【岗位职责】\n'+dutyLine+'\n\n【任职要求】\n'+needs.map((n,i)=>(i+1)+'、'+n).join('\n')+'\n\n【我们提供】\n'+wel.map((w,i)=>(i+1)+'、'+w).join('\n')+'\n\n我们期待你的加入，一起用技术创造价值！';
+document.getElementById('resultArea').classList.add('active');
+document.getElementById('out').innerHTML='<div class="result-box">'+out+'</div>';
+});
+</script>
+</body>
+</html>

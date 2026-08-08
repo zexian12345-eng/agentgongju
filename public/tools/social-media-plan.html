@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 社交媒体内容计划 | AgentGongju.com</title>
+<meta name="description" content="输入账号领域与目标，AI生成长达一周的社交媒体内容选题与排期，覆盖标题、形式与发布时间建议">
+<meta name="keywords" content="社交媒体,运营,内容,选题,排期,小红书,抖音,公众号">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:70px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.days{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.day{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:16px}
+.day h4{color:#a5b4fc;margin-bottom:10px;font-size:.95rem;display:flex;align-items:center;gap:8px}
+.p-item{font-size:.88rem;color:#cbd5e1;margin-bottom:8px;line-height:1.6}
+.p-item b{color:#e2e8f0}
+.p-time{color:#a855f7;font-size:.8rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row,.days{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📱 AI 社交媒体内容计划</h1><p>一周选题排期，运营不再发愁</p></div>
+
+<div class="card">
+<label>🎯 账号定位/领域</label>
+<textarea id="niche" placeholder="例如：美食探店 或 职场成长干货 或 母婴育儿经验"></textarea>
+<div class="param-row">
+<div><label>📱 主要平台</label>
+<select id="platform">
+<option value="小红书">📕 小红书</option>
+<option value="抖音">🎵 抖音</option>
+<option value="公众号">💬 微信公众号</option>
+<option value="微博">🐦 微博</option>
+<option value="B站">📺 B站</option>
+</select></div>
+<div><label>🎯 内容目标</label>
+<select id="goal">
+<option value="涨粉">🚀 涨粉引流</option>
+<option value="变现">💰 转化变现</option>
+<option value="品牌">🏆 品牌曝光</option>
+<option value="互动">💬 互动涨活跃</option>
+</select></div>
+</div>
+<button class="btn-gen" id="genBtn">🚀 生成计划</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:16px">✅ 一周内容排期</div>
+<div class="days" id="planBox"></div>
+<div style="margin-top:16px"><button class="copy-btn" onclick="copyResult()">📋 复制计划</button></div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const titles=[
+'top10『{n}』避坑指南，新手必看！','第一次尝试{h}的完整记录，太惊喜了😍','别再踩坑了！{h}的3个常见误区','为什么大家都在做{h}？真相揭秘','我整理了{h}的入门清单，建议收藏','{h}实战分享：从0到1全流程','这些{h}细节，90%的人都忽略了','蹲了很久的{h}干货，今天全给你',
+'干货预警！{h}进阶技巧大全','被问爆的{h}问题，一次讲清楚','亲测有效的{h}小妙招，快码住','{h}避雷合集，替你踩过的坑'];
+const formats=['图文笔记（首图+文字）','短视频（15~30秒）','竖版图文教程','清单合集图','口播讲解视频','图文+表情包','带话题短文案','攻略长图文'];
+const times=['早上 8:00','中午 12:00','下午 18:00','晚上 20:30','晚上 22:00'];
+const goalTips={
+'涨粉':['蹭热门话题','多平台分发','引导关注福利'],'变现':['种草带货','真实测评','突出性价比'],
+'品牌':['讲品牌故事','行业观点输出'],'互动':['发起投票','评论区提问','反常识观点']};
+function rand(a){return a[Math.floor(Math.random()*a.length)]}
+document.getElementById('genBtn').addEventListener('click',()=>{
+const niche=document.getElementById('niche').value.trim()||'你的领域';
+const platform=document.getElementById('platform').value;
+const goal=document.getElementById('goal').value;
+const days=['周一','周二','周三','周四','周五','周六','周日'];
+const box=document.getElementById('planBox');box.innerHTML='';
+const emojis=['✨','🔥','💡','📌','🎯','🧷'];
+days.forEach((d,i)=>{
+const title=rand(titles).replace('{n}',niche).replace('{h}',niche);
+const day=document.createElement('div');day.className='day';
+day.innerHTML=`<h4>${emojis[i%6]} ${d}</h4>
+<div class="p-item">📝 标题：<b>${title}</b></div>
+<div class="p-item">🎬 形式：${rand(formats)}</div>
+<div class="p-item">📌 技巧：${rand(goalTips[goal])}</div>
+<div class="p-item">🕒 发布：<span class="p-time">${rand(times)}（${platform}）</span></div>`;
+box.appendChild(day);
+});
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText('【AI 社媒内容计划】\n'+document.getElementById('planBox').innerText.replace(/\n{3,}/g,'\n')).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

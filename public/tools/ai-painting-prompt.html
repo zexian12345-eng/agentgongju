@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 绘画提示词生成器 | AgentGongju.com</title>
+<meta name="description" content="AI绘画提示词生成器，一键生成专业级绘画Prompt，支持多种风格与画质参数，适用于Midjourney、Stable Diffusion等AI绘画工具">
+<meta name="keywords" content="AI绘画,提示词,prompt,Midjourney,Stable Diffusion,文生图">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:70px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.8;white-space:pre-wrap;margin-bottom:12px;font-size:.92rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{color:#94a3b8;font-size:.8rem;line-height:1.8;margin-top:6px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🎨 AI 绘画提示词生成器</h1><p>一键生成专业级绘图 Prompt，让画面精准落地</p></div>
+
+<div class="card">
+<label>🖼️ 画面主体（描述你想画什么）</label>
+<textarea id="subject" placeholder="例如：夕阳下的江南水乡古镇，青瓦白墙，一位撑伞的旗袍女子走过石桥"></textarea>
+<div class="param-row">
+<div><label>🎨 绘画风格</label>
+<select id="style">
+<option value="日系动漫">🌸 日系动漫</option>
+<option value="国风水墨">🖌️ 国风水墨</option>
+<option value="写实照片">📷 写实摄影</option>
+<option value="赛博朋克">🌆 赛博朋克</option>
+<option value="油画">🖼️ 经典油画</option>
+<option value="扁平插画">🧩 扁平插画</option>
+<option value="3D渲染">🎮 3D 渲染</option>
+<option value="像素风">👾 像素风格</option>
+</select></div>
+<div><label>🌤️ 光线氛围</label>
+<select id="light">
+<option value="黄昏暖光">🌅 黄昏暖光</option>
+<option value="清晨柔光">🌄 清晨柔光</option>
+<option value="霓虹夜景">💡 霓虹夜景</option>
+<option value="柔美月光">🌙 柔美月光</option>
+<option value="电影感自然光">🎬 电影感自然光</option>
+<option value="梦幻散景">✨ 梦幻散景</option>
+</select></div>
+</div>
+<div class="param-row">
+<div><label>⚙️ 画质等级</label>
+<select id="quality">
+<option value="8k, ultra detailed, hyper realistic, masterpire">顶级画质 8K</option>
+<option value="high detail, sharp focus">高清细节</option>
+<option value="clean, minimal, soft">简约柔和</option>
+</select></div>
+<div><label>📐 构图比例</label>
+<select id="ratio">
+<option value="--ar 16:9">宽幅 16:9</option>
+<option value="--ar 1:1">方形 1:1</option>
+<option value="--ar 3:4">竖版 3:4</option>
+<option value="--ar 9:16">竖屏 9:16</option>
+</select></div>
+</div>
+<div class="param-row">
+<div><label>🔍 细节补充（可选）</label>
+<input type="text" id="extra" placeholder="例如：薄雾，水面倒影，花瓣飘落"></div>
+<div><label>🧭 镜头效果</label>
+<select id="camera">
+<option value="wide angle">广角</option>
+<option value="close-up">特写</option>
+<option value="macro">微距</option>
+<option value="eye level">平视</option>
+<option value="low angle">仰角</option>
+<option value="depth of field">浅景深</option>
+</select></div>
+</div>
+<button class="btn-gen" id="genBtn">✨ 生成提示词</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🪄 你的绘画提示词</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制提示词</button>
+<div class="tip">💡 提示：将生成的英文 Prompt 直接粘贴到 Midjourney / Stable Diffusion 即可使用，也可在翻译后作为中文关键词输入国内绘画工具。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const stylePrompt={
+'日系动漫':'anime style, cel shading, vibrant, studio ghibli inspired',
+'国风水墨':'traditional Chinese ink painting, shuimo, flowing brushwork, paper texture',
+'写实照片':'photorealistic, DSLR photo, 85mm lens, natural skin texture',
+'赛博朋克':'cyberpunk, neon city, holographic elements, moody atmosphere',
+'油画':'oil painting, thick brushstrokes, impressionist, canvas texture',
+'扁平插画':'flat illustration, minimalist, geometric shapes, clean lines',
+'3D渲染':'3D render, octane render, pbr, soft global illumination',
+'像素风':'pixel art, retro 16-bit, dithering, video game sprite'};
+const lightPrompt={
+'黄昏暖光':'golden hour, warm sunset glow, long shadows',
+'清晨柔光':'soft morning light, gentle haze, refreshing atmosphere',
+'霓虹夜景':'neon lights, night scene, colorful reflections',
+'柔美月光':'soft moonlight, silvery glow, ethereal atmosphere',
+'电影感自然光':'cinematic lighting, natural light, high contrast, film grain',
+'梦幻散景':'dreamy bokeh, sparkling light particles, soft focus'};
+const cameraPrompt={
+'wide angle':'wide-angle lens, expansive composition',
+'close-up':'close-up shot, fine details',
+'macro':'macro photography, extreme detail',
+'eye level':'eye-level view, natural perspective',
+'low angle':'low-angle shot, dramatic perspective',
+'depth of field':'shallow depth of field, blurred background'};
+document.getElementById('genBtn').addEventListener('click',()=>{
+const sub=document.getElementById('subject').value.trim();
+if(!sub){alert('请先描述你想画的主体内容');return;}
+const style=document.getElementById('style').value;
+const light=document.getElementById('light').value;
+const qual=document.getElementById('quality').value;
+const ratio=document.getElementById('ratio').value;
+const extra=document.getElementById('extra').value.trim();
+const cam=document.getElementById('camera').value;
+const zh=`【中文参考】${sub}，${stylePrompt[style].split(',')[0]}风格，${lightPrompt[light].split(',')[0]}.`;
+const en=[`Cinematic depiction of ${sub}`,stylePrompt[style],lightPrompt[light],cameraPrompt[cam]].join(', ');
+let final=qual;
+if(extra)final+=(', ')+extra;
+final+=` ${ratio}`;
+document.getElementById('outputBox').innerText='=== 中文描述 ===\n'+zh+'\n\n=== 英文 Prompt（通用） ===\n'+en+', '+final;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 提示词已复制！'))}
+</script>
+</body>
+</html>

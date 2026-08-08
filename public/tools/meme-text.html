@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 表情包文字生成 | AgentGongju.com</title>
+<meta name="description" content="免费生成超全朋友圈/聊天表情包配文字案，渣到没朋友">
+<meta name="keywords" content="表情包,配文,朋友圈文案,聊天斗图,AI文案">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:100px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.btn-gen:disabled{opacity:.5;cursor:not-allowed}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;min-height:60px;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🤪 AI 表情包配文</h1><p>斗图必备，一键生成沙雕表情包文案</p></div>
+
+<div class="card"><label>😎 配文风格</label>
+<select id="style"><option value="沙雕">沙雕搞笑</option><option value="阴阳怪气">阴阳怪气</option><option value="自嘲">自嘲摆烂</option><option value="正能量">正能量鸡汤</option><option value="舔狗">舔狗语录</option></select></div>
+<div class="card"><label>🗣 想表达的意思（可选）</label>
+<input type="text" id="kw" placeholder="如：我不想上班、周末到了">
+<button class="btn-gen" id="genBtn">🤪 生成配文</button></div>
+<div class="result-area" id="resultArea"><div class="card"><div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 表情包配文</div>
+<div class="result-box" id="result"></div><button class="copy-btn" onclick="copyResult()">📋 复制</button></div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const repo={
+'沙雕':['喂，不是吧不是吧，这也太顶了吧','笑死，根本不慌','真的会谢，栓Q了','我的沉默震耳欲聋','Emm...你没事吧？','直接一个大动作','dbq打扰了，我这就滚','一把子支持了','这是碳基生物能想出来的？'],
+'阴阳怪气':['哇哦，你好棒棒哦','也不是不行，就是挺尸的','您可真会说话呢','懂的都懂，不懂的说了也不懂','就挺离谱的','哦，是吗？那真是太好了呢','您开心就好','毕竟宁配吗？','我可不敢惹您'],
+'自嘲':['生而为人，我很抱歉（摆烂版）','麻了，毁灭吧','今天的我也是人机分离的一天','打工人，打工魂，打工人是——诶，不想了','努力不一定成功，但不努力一定很舒服','躺平并快乐着','我又来人间凑数了','啊对对对，都是我菜'],
+'正能量':['今天也要元气满满鸭！','冲鸭，未来可期！','格局打开','别急，好戏在后头','每天进步一点点','你是最胖的！啊不，最棒的！','保持热爱，奔赴山海','一切都会好起来的！'],
+'舔狗':['宝，我今天输液了，输的是想你的夜','宝，我今天吃饺子没蘸醋，因为想你有点酸','宝，在吗？在的话回我，不在的话我等你','今天的风好大，把我的心动都吹向你','宝，别打电话了，我在想你','舔狗不得 house，但我心甘情愿']};
+document.getElementById('genBtn').addEventListener('click',()=>{
+const s=document.getElementById('style').value,kw=document.getElementById('kw').value.trim();
+const arr=repo[s];let out='【表情包配文 · '+s+'】\n\n';
+let chosen=arr[Math.floor(Math.random()*arr.length)];
+if(kw)out+='🗣 想表达：'+kw+'\n\n';
+out+='✨ '+chosen+'  😂\n\n';
+// 附加一个备选
+let second=arr[Math.floor(Math.random()*arr.length)];
+while(second===chosen)second=arr[Math.floor(Math.random()*arr.length)];
+out+='🔁 备选：'+second;
+document.getElementById('resultArea').classList.add('active');document.getElementById('result').textContent=out;});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('result').textContent).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

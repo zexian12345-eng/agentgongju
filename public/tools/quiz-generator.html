@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>智能试卷出题机 | AgentGongju.com</title>
+<meta name="description" content="智能试卷出题机，一键生成随堂测验、单元测试、练习题与答案解析，支持多学科多难度，方便老师备课与家长辅导">
+<meta name="keywords" content="试卷生成,出题,在线试题,练习题,随堂测验,单元测试,题库">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:70px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.8;white-space:pre-wrap;margin-bottom:12px;font-size:.92rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{color:#94a3b8;font-size:.8rem;line-height:1.8;margin-top:6px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📝 智能试卷出题机</h1><p>老师备课、家长辅导的省力助手</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>📚 学科</label>
+<select id="subject">
+<option value="语文">语文</option>
+<option value="数学">数学</option>
+<option value="英语">英语</option>
+<option value="历史">历史</option>
+<option value="地理">地理</option>
+<option value="综合常识">综合常识</option>
+</select></div>
+<div><label>🎓 适用年段</label>
+<select id="level">
+<option value="小学">小学</option>
+<option value="初中">初中</option>
+<option value="高中">高中</option>
+</select></div>
+</div>
+<div class="param-row">
+<div><label>📶 题目难度</label>
+<select id="diff">
+<option value="基础">基础巩固</option>
+<option value="中等">中等提高</option>
+<option value="拔高">拔高冲刺</option>
+</select></div>
+<div><label>🗂️ 出题数量</label>
+<select id="num">
+<option value="5">5 题</option>
+<option value="8">8 题</option>
+<option value="10">10 题</option>
+</select></div>
+</div>
+<label>🧠 知识点/范围（可选）</label>
+<input type="text" id="topic" placeholder="例如：勾股定理、文言虚词、过去时态、三国时期">
+<div class="param-row">
+<div><label>✅ 附带答案解析</label>
+<select id="ans">
+<option value="yes">是，附详解</option>
+<option value="no">否，仅题目</option>
+</select></div>
+<div><label>😊 题型偏好</label>
+<select id="qtype">
+<option value="混合">混合题型</option>
+<option value="选择">选择题</option>
+<option value="填空">填空题</option>
+<option value="简答">简答题</option>
+</select></div>
+</div>
+<button class="btn-gen" id="genBtn">🎯 生成试卷</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">📄 生成的试卷</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制试卷</button>
+<div class="tip">💡 提示：题目为 AI 生成示例，建议结合教材进度核对后使用，也可作为练习与备课参考。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const BANK={
+'语文':['《静夜思》的作者是？(李白·杜甫·王维)','“曲径通幽处”的下一句是？','下列哪个是比喻句？','“己所不欲”下一句是？','下列成语书写正确的是？','请写出一个描写春天的诗句'],
+'数学':['一个三角形内角和是？','若 a=3，则 2a+5=?','圆的周长公式是？','下列哪个是质数？(9·13·15)','解方程：x+7=12，x=?','一个数乘以 0.5 相当于？'],
+'英语':['“thank you”的中文意思是？','下列哪个是名词？(run·book·fast)','is/am/are 中，I 搭配哪个？','“apple”的复数形式是？','下列哪句是问号句？','翻译：我是一名学生'],
+'历史':['秦朝统一六国的时间是？','“五四运动”发生于哪一年？','下列哪项属于“四大发明”？','唐朝的开国皇帝是？','“丝绸之路”的起点是？','中国历史上第一个统一王朝是？'],
+'地理':['中国最长的河流是？','地球自转的方向是？','下列哪个是省级行政区？(广州·北京·深圳)','赤道附近的气候特点是？','“五岳”中的东岳是？','气压随海拔升高而如何变化？'],
+'综合常识':['一天有（ ）小时。','下列哪个是可再生能源？(煤炭·风能·石油)','人体最大的器官是？','“四大名著”不包括？','水的化学式是？','光在真空中的传播速度约？']};
+const ANSMAP={
+'语文':['李白','禅房花木深','示例：月亮像一个大圆盘','勿施于人','示例：川流不息','示例：春眠不觉晓，处处闻啼鸟'],
+'数学':['180°','11','C=2πr','13','5','相当于除以 2'],
+'英语':['谢谢你','book','am','apples','示例：How are you?','I am a student.'],
+'历史':['公元前221年','1919年','造纸术','李渊','长安','秦朝'],
+'地理':['长江','自西向东','北京','终年高温多雨','泰山','降低'],
+'综合常识':['24','风能','皮肤','示例：聊斋志异','H₂O','约 30万千米/秒']};
+function pick(a){return a[Math.floor(Math.random()*a.length)];}
+document.getElementById('genBtn').addEventListener('click',()=>{
+const subject=document.getElementById('subject').value;
+const level=document.getElementById('level').value;
+const diff=document.getElementById('diff').value;
+const num=parseInt(document.getElementById('num').value);
+const topic=document.getElementById('topic').value.trim();
+const withAns=document.getElementById('ans').value==='yes';
+const qtype=document.getElementById('qtype').value;
+const pool=BANK[subject];
+const answers=ANSMAP[subject];
+let used=[];
+const selected=[];
+for(let i=0;i<num;i++){let idx=Math.floor(Math.random()*pool.length);while(used.includes(idx)){idx=Math.floor(Math.random()*pool.length);}used.push(idx);selected.push({q:pool[idx],a:answers[Math.min(answers.length-1,idx)]});}
+let out=`【${subject} · ${level} · ${diff} 】出题试卷\n${topic?'知识点范围：'+topic+'\n':''}${qtype==='混合'?'题型：混合（选择/填空/简答）\n':'题型：'+qtype+'\n'}━━━━━━━━━━━━━━\n\n`;
+selected.forEach((s,i)=>{
+const no=i+1;
+let q='';
+if(qtype==='选择'||(qtype==='混合'&&i%3===0)){q=`第${no}题（选择题）：${s.q.replace(/[()（]/g,'（').replace(/[)）]/g,'）')}\n   A. 选项一　B. 选项二　C. 选项三　D. 选项四`;}
+else if(qtype==='填空'||(qtype==='混合'&&i%3===1)){q=`第${no}题（填空题）：${s.q.replace('？','______？')}`;}
+else{q=`第${no}题（简答题）：${s.q}`;}
+out+=q+'\n';
+if(withAns)out+='【答案】'+s.a+'\n';
+out+='\n';
+});
+out+='━━━━━━━━━━━━━━\n· 本试卷由 AI 自动生成，'.replace('·','');
+out+='请核对知识点后使用 ·';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 试卷已复制！'))}
+</script>
+</body>
+</html>

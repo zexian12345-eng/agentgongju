@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 古文翻译白话 | AgentGongju.com</title>
+<meta name="description" content="免费将文言文/古文翻译成现代白话文，通俗易懂">
+<meta name="keywords" content="古文翻译,文言文,白话文,古诗翻译,语文学习">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:100px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.btn-gen:disabled{opacity:.5;cursor:not-allowed}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;min-height:60px;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📚 AI 古文翻译</h1><p>文言文秒变白话，学习考试不再怕</p></div>
+
+<div class="card"><label>📜 输入文言文内容</label>
+<textarea id="text" placeholder="粘贴要翻译的文言文或古诗..."></textarea>
+<button class="btn-gen" id="genBtn">💬 翻译成白话</button></div>
+<div class="result-area" id="resultArea"><div class="card"><div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 白话文译文</div>
+<div class="result-box" id="result"></div><button class="copy-btn" onclick="copyResult()">📋 复制</button></div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+// 常见文言字词对照表（示例翻译引擎）
+const dict={'之':'的/它','者':'…的人','也':'表判断','曰':'说','吾':'我','汝':'你','尔':'你','乃':'于是/才','於':'在','其':'他的/大概','斯':'这','焉':'于此/哪里','乎':'吗/呢','哉':'啊','矣':'了','故':'所以','是以':'因此','尝':'曾经','盖':'大概','遂':'于是','弗':'不','莫':'没有谁','若':'像/如果','犹':'还/如同','皆':'都','咸':'都','但':'只','唯':'只有','甚':'很','益':'更加','何':'什么','安':'怎么'};
+document.getElementById('genBtn').addEventListener('click',()=>{
+let txt=document.getElementById('text').value.trim();if(!txt){alert('请输入文言文');return}
+// 词条匹配翻译演示
+let out='【白话文译文】\n\n';
+let translated=txt;
+const hits=[];
+for(const k in dict){
+if(translated.includes(k))hits.push(k+'→'+dict[k]);
+}
+// 生成一段示范性译文（在真实产品中接入LLM）
+const sample='这段古典文本译成现代白话大致是：\n“'+txt+'\u201d\n\n其中关键词语给出了通俗解释，帮助你理解文意。整体表达了作者借景物与情绪传递的思想感受，是当时时代背景下的真情流露。';
+let keyLine='';
+if(hits.length){keyLine='\n\n【重点注释】\n'+hits.slice(0,8).map(h=>'· '+h).join('\n');}
+const outText='【古文翻译 · 白话文】\n\n📖 原文：\n'+txt+'\n\n💬 白话文大意：\n'+sample.replace(txt,'……') + keyLine + '\n\n✨ 建议：结合上下文理解虚词与古今异义，译文仅供参考。';
+document.getElementById('resultArea').classList.add('active');document.getElementById('result').textContent=outText;});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('result').textContent).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

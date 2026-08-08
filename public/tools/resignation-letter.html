@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 辞职信生成 | AgentGongju.com</title>
+<meta name="description" content="免费生成得体专业的辞职信，体面离职不伤感情">
+<meta name="keywords" content="辞职信,离职,辞职报告,离职申请,职场">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:100px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.btn-gen:disabled{opacity:.5;cursor:not-allowed}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;min-height:60px;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📄 AI 辞职信生成</h1><p>体面辞职，得体表达，好聚好散</p></div>
+
+<div class="card"><div class="param-row"><div><label>👔 你的姓名</label>
+<input type="text" id="name" placeholder="张三"></div>
+<div><label>🏢 公司/部门</label>
+<input type="text" id="dept" placeholder="XX公司 市场部"></div></div>
+<div class="param-row"><div><label>🧑‍💼 上级称呼</label>
+<input type="text" id="boss" placeholder="王经理"></div>
+<div><label>📅 离职日期</label>
+<input type="text" id="date" placeholder="2026年9月1日"></div></div></div>
+<div class="card"><label>📝 离职原因（可多写几点）</label>
+<textarea id="reason" placeholder="如：个人职业规划、家庭原因、寻求更好的发展..."></textarea>
+<button class="btn-gen" id="genBtn">📄 生成辞职信</button></div>
+<div class="result-area" id="resultArea"><div class="card"><div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 辞职信</div>
+<div class="result-box" id="result"></div><button class="copy-btn" onclick="copyResult()">📋 复制</button></div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+document.getElementById('genBtn').addEventListener('click',()=>{
+const name=document.getElementById('name').value.trim()||'XXX',dept=document.getElementById('dept').value.trim()||'XX公司',boss=document.getElementById('boss').value.trim()||'领导',date=document.getElementById('date').value.trim()||'____年__月__日';
+let reason=document.getElementById('reason').value.trim();
+if(!reason)reason='出于个人职业规划与发展方向的考虑';
+const today=new Date();const todayStr=today.getFullYear()+'年'+(today.getMonth()+1)+'月'+today.getDate()+'日';
+const pastTense=`在职期间，承蒙您的信任与指导，让我在专业能力和为人处世方面都收获良多，公司的工作氛围与团队协作让我受益终身。`;
+const out=`辞职信\n\n尊敬的${boss}：\n\n您好！\n\n首先，非常感谢您和公司这些年对我的培养与关照。经过慎重考虑，我因${reason}，向您正式提出辞职申请，并希望于${date}正式办理离职交接。\n\n${pastTense}\n\n在离职前的这段时间，我会认真做好工作交接，整理好相关文档和资料，确保不影响部门的正常运转，也愿意以最快的方式配合完成交接事项。\n\n再次感谢公司给予我的平台与机会，祝公司蒸蒸日上，也祝您和同事们工作顺利、万事顺遂！\n\n此致\n敬礼！\n\n申请人：${name}\n${todayStr}`;
+document.getElementById('resultArea').classList.add('active');document.getElementById('result').textContent=out;});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('result').textContent).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>
