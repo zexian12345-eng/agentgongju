@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>高考志愿填报模拟 | AgentGongju.com</title>
+<meta name="description" content="输入高考分数、科目组合和地区，结合往年趋势推荐可冲刺、稳妥、保底的目标院校方向">
+<meta name="keywords" content="高考,志愿填报,大学,专业,分数,选科,新高考">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:760px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;min-height:60px;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.badge{display:inline-block;padding:3px 12px;border-radius:16px;font-size:.78rem;margin-bottom:6px}
+.badge.chong{background:rgba(245,158,11,.15);color:#fbbf24}
+.badge.wen{background:rgba(99,102,241,.15);color:#a5b4fc}
+.badge.bao{background:rgba(34,197,94,.15);color:#22c55e}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🎓 高考志愿填报模拟</h1><p>用分数与选科，帮你找冲刺/稳妥/保底三大梯度方向</p></div>
+
+<div class="card"><div class="param-row">
+<div><label>🎯 你的高考分数</label><input type="number" id="score" placeholder="例如：620"></div>
+<div><label>📚 首选科目/文理</label><select id="subject"><option value="物理" selected>物理组</option><option value="历史">历史组</option></select></div>
+</div>
+<div class="param-row">
+<div><label>📍 目标地区</label><select id="region"><option value="全国" selected>全国均可</option><option value="北京">北京</option><option value="上海">上海</option><option value="广东">广东</option><option value="江浙">江浙</option><option value="川渝">川渝</option></select></div>
+<div><label>💼 偏好方向</label><select id="major"><option value="综合" selected>综合/不限</option><option value="理工">理工科</option><option value="经管">经管商科</option><option value="医学">医学</option><option value="师范">师范教育</option><option value="艺术">艺术传媒</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">🎯 智能推荐</button>
+<p style="color:#475569;font-size:.78rem;margin-top:10px">⚠️ 本工具为参考模拟，实际填报请以各省考试院官方数据为准</p></div>
+
+<div class="result-area" id="resultArea"><div class="card"><div id="tiers"></div><div class="result-box" id="result"></div><button class="copy-btn" onclick="copyResult()">📋 复制</button></div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const schoolByLevel={680:['清华大学','北京大学','上海交通大学'],650:['浙江大学','复旦大学','南京大学'],620:['武汉大学','华中科技大学','中山大学'],590:['四川大学','厦门大学','天津大学'],560:['重庆大学','湖南大学','电子科技大学'],530:['北京交通大学','华东理工大学','苏州大学'],500:['郑州大学','南昌大学','湖南师大'],470:['昆明理工','广西大学','贵州大学'],440:['地方一本类院校','省属重点高校'],410:['二本批次优质院校'],380:['公办二本'],350:['应用型本科院校']};
+const majors={理工:['计算机科学与技术','软件工程','自动化','电子信息工程','机械工程'],经管:['金融学','会计学','国际经济与贸易','工商管理','经济学'],医学:['临床医学','口腔医学','药学','护理学','预防医学'],师范:['汉语言文学','数学与应用数学','教育学','英语','小学教育'],艺术:['播音主持','视觉传达','动画','数字媒体','广播电视编导'],综合:['人工智能','数据科学','法学','新闻传播','电子商务']};
+function findSchools(s){let ks=Object.keys(schoolByLevel).map(Number);let best=null;for(let k of ks){if(s>=k)best=k;}return schoolByLevel[best]||['优质省属高校'];}
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('高考志愿填报模拟 | AgentGongju.com'))return;
+let score=parseInt(document.getElementById('score').value);
+if(!score||score<100||score>750){alert('请输入有效的高考分数');return;}
+let subject=document.getElementById('subject').value;let region=document.getElementById('region').value;let major=document.getElementById('major').value;
+let chongL=Math.min(750,score+12),wenL=score,baoL=Math.max(50,score-15);
+let mk=majors[major];
+let mkStr=mk.slice(0,3).join('、');
+let html='';
+html+=tier('chong','🚀 冲刺（+8~15分）',findSchools(chongL),mkStr)+tier('wen','🎯 稳妥（±5分）',findSchools(wenL),mkStr)+tier('bao','🛡️ 保底（-10~20分）',findSchools(baoL),mkStr);
+document.getElementById('tiers').innerHTML=html;
+document.getElementById('result').textContent='【填报策略说明】\n▸ 你对「'+region+'」地区有倾向，'+(region==='全国'?'可全国范围内广泛选择。':'建议在该地区及其周边梯队匹配。')+'\n▸ 选科/科目方向为「'+subject+'组」，报考专业应与之匹配。\n▸ 建议梯度：冲刺2-3个、稳妥4-5个、保底2-3个，形成合理落空保护。\n\n【注意事项】\n1. 以上学校为分数区间参考，具体以历年录取线和位次为准。\n2. 热门专业分数通常更高，建议在多档位之间合理取舍。\n3. 遵循“冲稳保”原则填报，避免全部冲高导致滑档。';
+document.getElementById('resultArea').classList.add('active');
+});
+function tier(cls,title,schools,maj){let rows=schools.slice(0,3).map(s=>s).join('、');return '<div style="margin-bottom:16px"><span class="badge '+cls+'">'+title+'</span><div style="color:#e2e8f0;font-size:1rem;line-height:1.8">'+rows+'</div><div style="color:#64748b;font-size:.8rem">可参考专业：'+maj+'</div></div>';}
+function copyResult(){let t='';document.querySelectorAll('#tiers div').forEach(d=>{let b=d.querySelector('.badge');if(b)t+=b.textContent+' ';if(d.style.color==='rgb(226, 232, 240)')t+=d.textContent;t+='\n';});t+=document.getElementById('result').textContent;navigator.clipboard.writeText(t).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

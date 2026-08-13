@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>祝福语录生成 | AgentGongju.com</title>
+<meta name="description" content="AI祝福语生成器，生日、节日、结婚、升学等场景一键生成走心祝福短句">
+<meta name="keywords" content="祝福语,祝福句子,生日祝福,节日祝福,寄语">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.btn-gen:disabled{opacity:.5;cursor:not-allowed}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.result-items{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:600px){.result-items{grid-template-columns:1fr}}
+.result-item{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:16px;cursor:pointer;transition:all .2s}
+.result-item:hover{border-color:#6366f1;background:rgba(99,102,241,0.08)}
+.result-item p{color:#e2e8f0;line-height:1.7}
+.tip{color:#64748b;font-size:.78rem;margin-top:8px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem;margin-top:14px}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>💌 祝福语录生成</h1><p>为各种场景一键生成暖心走心的祝福短句，点击即复制</p></div>
+
+<div class="card"><label>🎉 对应对象 / 称呼</label>
+<input type="text" id="who" placeholder="例如：闺蜜 / 亲爱的 / 张老师 / 老妈">
+<div class="param-row">
+<div><label>祝福场景</label><select id="scene"><option value="生日">生日</option><option value="新年">新年</option><option value="结婚">结婚</option><option value="升学/毕业">升学/毕业</option><option value="开工">开工</option><option value="节日">节日</option></select></div>
+<div><label>祝福风格</label><select id="style"><option value="温馨走心">温馨走心</option><option value="幽默俏皮">幽默俏皮</option><option value="文艺诗意">文艺诗意</option><option value="简洁大气">简洁大气</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">✨ 生成祝福</button></div>
+
+<div class="result-area" id="resultArea"><div class="card"><div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 已生成祝福（点击卡片复制）</div>
+<div class="result-items" id="out"></div>
+<button class="copy-btn" onclick="copyAll()">📋 复制全部</button></div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function copyAll(){let t='';document.querySelectorAll('#out .result-item').forEach(el=>t+=el.querySelector('p').textContent+'\n');navigator.clipboard.writeText(t.trim()).then(()=>alert('✅ 已复制'))}
+const POOL={
+'生日':{'温馨走心':['愿你被这世界温柔以待，所有的美好都如期而至。','新的一岁，愿你眼里有光，心中有暖，所愿皆所得。','愿你的每一个愿望，都像今天一样，闪闪发光。'],'幽默俏皮':['蛋糕负责甜，我负责祝你快乐，咱们分工合作！','又老了一岁？没关系，你依旧是我心中最靓的仔！','祝你生日大吉，发财被爱，好运常在！'],'文艺诗意':['愿你如皓月，清辉常照；愿你如星辰，永远闪亮。','一岁一礼，一寸欢喜，愿你万事顺遂。'],'简洁大气':['生日快乐，平安喜乐，万事顺意。']},
+'新年':{'温馨走心':['愿你新年胜旧年，欢愉且胜意，万事皆可期。','新岁启封，愿你所行皆坦途，所愿皆成真。'],'幽默俏皮':['祝你新年：钱多事少离家近，位高权重责任轻！','新的一年，愿你身材和钱包都越来越鼓！'],'文艺诗意':['岁序更替，华章日新，愿君岁岁常欢愉。'],'简洁大气':['新年快乐，阖家安康，万事如意。']},
+'结婚':{'温馨走心':['愿你们的爱情，如陈年美酒，越久越香。','祝两位新人，琴瑟和鸣，白头偕老。'],'幽默俏皮':['恭喜成功脱单，愿早日发糖给我！','这是官方认证的甜蜜CP，祝长长久久！'],'文艺诗意':['愿有岁月可回首，且以深情共白头。','执子之手，与子偕老，此生共度。'],'简洁大气':['新婚快乐，百年好合，永结同心。']},
+'升学/毕业':{'温馨走心':['愿你前程似锦，奔赴下一场山海。','毕业快乐，愿你在更广阔的天地闪闪发光。'],'幽默俏皮':['恭喜解锁新地图，快去开启学霸人生吧！','从此江湖路远，愿你不改少年模样！'],'文艺诗意':['长风破浪会有时，直挂云帆济沧海。'],'简洁大气':['金榜题名，未来可期。']},
+'开工':{'温馨走心':['开工大吉，愿新的一年事业蒸蒸日上。','新的开始，愿努力都被看见，付出都有回报。'],'幽默俏皮':['开工啦！愿你今年钱包鼓鼓，发际线保住！','假期归零，满血复活，冲鸭！'],'文艺诗意':['春风得意马蹄疾，正是扬帆起航时。'],'简洁大气':['开工大吉，大红大紫。']},
+'节日':{'温馨走心':['愿你在此佳节，与美好不期而遇。','佳节快乐，愿团圆与温暖常伴你左右。'],'幽默俏皮':['节日快乐鸭！记得吃好喝好，快乐加倍！'],'文艺诗意':['花好月圆人长久，此情长伴岁岁同。'],'简洁大气':['节日快乐，幸福安康。']}};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('祝福语录生成 | AgentGongju.com'))return;
+const who=document.getElementById('who').value.trim();
+const scene=document.getElementById('scene').value;
+const style=document.getElementById('style').value;
+const arr=POOL[scene][style];
+const reshuffled=arr.slice().sort(()=>Math.random()-0.5);
+let html='';
+reshuffled.forEach((s,i)=>{
+  const prefix=who?who+'，':'';
+  html+='<div class="result-item" onclick="navigator.clipboard.writeText(\''+(prefix+s).replace(/'/g,'')+'\').then(()=>alert(\'已复制\'))"><p>'+prefix+s+'</p><div class="tip">👆 点击复制</div></div>';
+});
+document.getElementById('resultArea').classList.add('active');
+document.getElementById('out').innerHTML=html;
+});
+</script>
+</body>
+</html>

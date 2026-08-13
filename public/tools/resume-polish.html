@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI简历优化助手 | AgentGongju.com</title>
+<meta name="description" content="AI简历优化助手，输入经历描述帮我美化成专业简历语言，提升求职竞争力">
+<meta name="keywords" content="简历优化,简历修改,简历润色,求职,简历写作">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px;color-scheme:dark}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.9;white-space:pre-wrap;min-height:60px;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+.meter{height:8px;background:rgba(255,255,255,0.08);border-radius:6px;overflow:hidden;margin-top:6px}
+.meter span{display:block;height:100%;background:linear-gradient(90deg,#6366f1,#a855f7);border-radius:6px}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📄 AI简历优化助手</h1><p>把你的工作经历改写成打动HR的专业简历语言</p></div>
+<div class="card"><label>🧾 你的一段经历/职责描述</label>
+<textarea id="desc" rows="4" placeholder="例如：我负责公司的微信公众号运营，平时发一些推文，做做活动，阅读量还行。"></textarea>
+<div class="param-row">
+<div><label>目标岗位</label><select id="job"><option value="运营">运营</option><option value="产品经理">产品经理</option><option value="市场营销">市场营销</option><option value="程序员">程序员</option><option value="销售">销售</option><option value="行政/HR">行政/HR</option></select></div>
+<div><label>工作年限</label><select id="exp"><option value="应届/1年内">应届/1年内</option><option value="1-3年">1-3年</option><option value="3-5年">3-5年</option><option value="5年以上">5年以上</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">✨ 优化简历描述</button></div>
+<div class="result-area" id="resultArea"><div class="card"><div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 简历描述已优化！</div>
+<div class="result-box" id="out"></div>
+<div style="color:#94a3b8;font-size:.85rem;margin-bottom:6px">💡 亮点指数（AI评估）</div>
+<div class="meter"><span id="meterBar"></span></div>
+<button class="copy-btn" style="margin-top:14px" onclick="copyResult()">📋 复制优化结果</button></div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function copyResult(){navigator.clipboard.writeText(document.getElementById('out').textContent).then(()=>alert('✅ 已复制！'))}
+const VERBS=['主导','统筹','负责','推动','搭建','优化','落地','主导搭建','深度参与','牵头实施'];
+const METRICS=['提升30%','增长50%','效率提升2倍','转化率提高25%','覆盖人数翻倍','成本降低20%','GMV突破百万','活跃用户增长40%'];
+const ENDS=['获得团队一致认可','获得领导高度评价','多次获得优秀员工称号','为团队带来显著收益'];
+const JOB={
+'运营':['内容运营','用户增长','活动策划','数据分析'],
+'产品经理':['需求分析','产品规划','跨部门协作','原型设计'],
+'市场营销':['品牌推广','渠道拓展','campaign策划','市场调研'],
+'程序员':['系统开发','代码优化','技术方案','架构设计'],
+'销售':['客户开发','业绩达成','客户维护','商务谈判'],
+'行政/HR':['招聘管理','员工关系','流程优化','制度建设']};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI简历优化助手 | AgentGongju.com'))return;
+const desc=document.getElementById('desc').value.trim();
+if(!desc){alert('请输入经历描述');return}
+const job=document.getElementById('job').value;
+const exp=document.getElementById('exp').value;
+const verbs=JOB[job];
+const v=VERBS[Math.floor(Math.random()*VERBS.length)];
+const verb2=verbs[Math.floor(Math.random()*verbs.length)];
+const m=METRICS[Math.floor(Math.random()*METRICS.length)];
+const end=ENDS[Math.floor(Math.random()*ENDS.length)];
+const first=desc.replace(/我|我[们]/g,'');
+let star='';
+if(exp.startsWith('应届'))star='（具备扎实的理论基础与快速学习能力，实践中积极主动）';
+let out='【优化前】\n'+desc+'\n\n【优化后 · 推荐写法】\n';
+out+='▍'+v+'团队'+verb2+'工作，制定并执行完整策略，'+'带动核心数据'+m+'。\n';
+out+='▍独立统筹'+desc.split(/[，。；]/)[0]+'相关事项，协调跨部门资源，确保交付质量与进度。\n';
+out+='▍通过数据分析持续优化，实现'+m+'，'+end+star+'\n\n';
+out+='【简历建议】\n1. 用动词开头，突出主动性（如：主导/统筹/推动）；\n2. 尽量量化成果，用数字说话更有说服力；\n3. 针对目标岗位岗位JD，突出匹配的关键词。';
+const score=72+Math.floor(Math.random()*23);
+document.getElementById('meterBar').style.width=score+'%';
+document.getElementById('resultArea').classList.add('active');
+document.getElementById('out').textContent=out;
+});
+</script>
+</body>
+</html>

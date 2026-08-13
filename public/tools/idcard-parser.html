@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>身份证号码信息解析 | AgentGongju.com</title>
+<meta name="description" content="输入18位身份证号码，快速解析出生日期、性别、年龄、生肖、星座与归属地区">
+<meta name="keywords" content="身份证号码,归属地,出生日期,性别,星座,生肖,年龄计算">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:720px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+input{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px;letter-spacing:2px}
+input:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.info-item{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:16px}
+.info-item .k{font-size:.78rem;color:#64748b;margin-bottom:6px}
+.info-item .v{font-size:1rem;color:#e2e8f0;font-weight:600}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem;margin-top:16px}
+@media(max-width:600px){.info-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🪪 身份证号码解析</h1><p>输入18位身份证号，快速解析生日、性别、地区、星座等</p></div>
+
+<div class="card"><label>📇 身份证号码（18位）</label><input type="text" id="idno" maxlength="18" placeholder="例如：11010119900101123X">
+<button class="btn-gen" id="genBtn">🔍 解析信息</button>
+<p style="color:#475569;font-size:.78rem;margin-top:10px">🔒 本工具在浏览器本地解析，不会上传或保存你的任何信息</p></div>
+
+<div class="result-area" id="resultArea"><div class="card"><div class="info-grid" id="grid"></div><button class="copy-btn" onclick="copyResult()">📋 复制结果</button></div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const areas={'11':'北京','12':'天津','13':'河北','14':'山西','15':'内蒙古','21':'辽宁','22':'吉林','23':'黑龙江','31':'上海','32':'江苏','33':'浙江','34':'安徽','35':'福建','36':'江西','37':'山东','41':'河南','42':'湖北','43':'湖南','44':'广东','45':'广西','46':'海南','50':'重庆','51':'四川','52':'贵州','53':'云南','54':'西藏','61':'陕西','62':'甘肃','63':'青海','64':'宁夏','65':'新疆','71':'台湾','81':'香港','82':'澳门'};
+const zodiac=['鼠','牛','虎','兔','龙','蛇','马','羊','猴','鸡','狗','猪'];
+const consts=[['摩羯','水瓶','双鱼','白羊','金牛','双子','巨蟹','狮子','处女','天秤','天蝎','射手','摩羯'],[20,19,21,20,21,21,23,23,23,23,22,22]];
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('身份证号码信息解析 | AgentGongju.com'))return;
+let s=document.getElementById('idno').value.trim();
+if(!/^\d{17}[\dXx]$/.test(s)){alert('请输入18位有效身份证号码');return;}
+let prov=areas[s.substr(0,2)]||'未知地区';
+let birth=s.substr(6,4)+'年'+s.substr(10,2)+'月'+s.substr(12,2)+'日';
+let sex=parseInt(s[16])%2===0?'女':'男';
+let now=new Date();let age=now.getFullYear()-parseInt(s.substr(6,4));
+let mon=parseInt(s.substr(10,2)),day=parseInt(s.substr(12,2));
+if(now.getMonth()+1<mon||(now.getMonth()+1===mon&&now.getDate()<day))age--;
+let m=(parseInt(s.substr(6,4))+8)%12;let sx=zodiac[(m+12)%12];
+let sign=mon>=1&&mon<=12?consts[0][mon-1]:'未知';if(mon===1&&day>=20)sign='水瓶';if(mon===2&&day>=19)sign='双鱼';if(mon===3&&day>=21)sign='白羊';if(mon===4&&day>=20)sign='金牛';if(mon===5&&day>=21)sign='双子';if(mon===6&&day>=22)sign='巨蟹';if(mon===7&&day>=23)sign='狮子';if(mon===8&&day>=23)sign='处女';if(mon===9&&day>=23)sign='天秤';if(mon===10&&day>=24)sign='天蝎';if(mon===11&&day>=23)sign='射手';if(mon===12&&day>=22)sign='摩羯';
+let data=[['归属省份',prov],['出生日期',birth],['性别',sex],['当前年龄',age+' 岁'],['生肖','属'+sx],['星座',sign+'座'],['号码长度',s.length+' 位'],['校验码',s[17].toUpperCase()]];
+let grid='';data.forEach(([k,v])=>{grid+='<div class="info-item"><div class="k">'+k+'</div><div class="v">'+v+'</div></div>';});
+document.getElementById('grid').innerHTML=grid;document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){let rows=document.querySelectorAll('.info-item');let txt='';rows.forEach(r=>{txt+=r.querySelector('.k').textContent+'：'+r.querySelector('.v').textContent+'\n';});navigator.clipboard.writeText(txt).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

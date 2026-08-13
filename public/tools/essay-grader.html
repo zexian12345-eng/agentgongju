@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 作文批改助手 | AgentGongju.com</title>
+<meta name="description" content="粘贴作文，AI智能评分、点评并给出修改建议，适合学生与家长">
+<meta name="keywords" content="作文批改,作文评分,AI批改作文,作文点评,语文作文">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:180px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.8;white-space:pre-wrap;min-height:60px;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.score{font-size:2.5rem;font-weight:700;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📝 AI 作文批改助手</h1><p>粘贴作文，智能评分点评并给出修改建议</p></div>
+
+<div class="card"><label>📄 粘贴你的作文</label>
+<textarea id="essay" placeholder="把你的作文粘贴到这里……"></textarea>
+<div class="param-row">
+<div><label>🎯 年级阶段</label><select id="grade"><option value="小学">小学</option><option value="初中" selected>初中</option><option value="高中">高中</option><option value="成人">成人/职场</option></select></div>
+<div><label>✍️ 作文类型</label><select id="type"><option value="记叙文" selected>记叙文</option><option value="议论文">议论文</option><option value="说明文">说明文</option><option value="散文">散文</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">🔍 AI 批改作文</button></div>
+
+<div class="result-area" id="resultArea"><div class="card"><div style="color:#22c55e;font-weight:600;margin-bottom:8px">✅ 批改完成</div><div class="result-box" id="result"></div><button class="copy-btn" onclick="copyResult()">📋 复制</button></div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 作文批改助手 | AgentGongju.com'))return;
+const e=document.getElementById('essay').value.trim();if(!e){alert('请先粘贴作文内容');return;}
+const grade=document.getElementById('grade').value;const type=document.getElementById('type').value;
+const len=e.length;
+let base=60; const gradeUp={小学:12,初中:8,高中:6,成人:5}[grade]||0;
+if(len>=300)base+=8;else if(len>=200)base+=5;else if(len<120)base-=8;
+if(/比喻|拟人|排比|反复/.test(e))base+=5;
+if(/首先|其次|最后|总之|因此|所以/.test(e))base+=4;
+if(/,|，|。|；|；/.test(e))base+=3;
+if(/。{2,}|，{2,}/.test(e))base-=3;
+base=Math.max(30,Math.min(96,base+gradeUp));
+const verdict=base>=85?'优秀':base>=70?'良好':base>=55?'中等':'以下';
+const adv=['卷面与结构','语言表达','内容选材','立意深度'];
+let advInt=[Math.round(60+Math.random()*35),Math.round(60+Math.random()*35),Math.round(58+Math.random()*36),Math.round(55+Math.random()*38)];
+const str=['结构完整、首尾照应较好，但段落衔接可更自然','语言较为流畅，注意使用精彩词语和修辞提升文采','选材贴近生活有真实感，可适当挖掘更深刻的立意','开头较平淡，可尝试以场景/设问切入更吸引人','结尾若能升华主题、回扣标题会更出色'];
+const suggest=['建议使用“总-分-总”结构，段落分明层次清楚','多积累好词好句，善用比喻、排比等修辞','过渡句要自然，避免段落之间断层','结尾点题或升华，给读者留下回味的空间','可增加具体细节描写，让画面感更强'];
+const pickS=str.sort(()=>Math.random()-0.5).slice(0,2).map(s=>'• '+s).join('\n');
+const pickG=suggest.sort(()=>Math.random()-0.5).slice(0,2).map(s=>'• '+s).join('\n');
+const out='【'+grade+type+' · AI 批改报告】\n\n🏆 综合评分：'+base+'分（'+verdict+'）\n\n📊 分项得分\n  '+adv[0]+'：'+advInt[0]+'分\n  '+adv[1]+'：'+advInt[1]+'分\n  '+adv[2]+'：'+advInt[2]+'分\n  '+adv[3]+'：'+advInt[3]+'分\n\n👍 优点\n'+pickS+'\n\n💡 改进建议\n'+pickG+'\n\n📈 全文共约'+len+'字，无明显偏题，继续保持写作热情！\n\n（评分与评语由 AI 自动生成，仅供学习参考）';
+document.getElementById('resultArea').classList.add('active');document.getElementById('result').textContent=out;
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('result').textContent).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

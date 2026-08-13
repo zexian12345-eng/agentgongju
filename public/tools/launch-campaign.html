@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>新品上市方案 | AgentGongju.com</title>
+<meta name="description" content="AI新品上市Campaign策划工具，自动生成定位、slogan、传播节奏与渠道策略">
+<meta name="keywords" content="新品上市,campaign,营销策划,产品发布,传播方案">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:70px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.btn-gen:disabled{opacity:.5;cursor:not-allowed}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.sec{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:16px;margin-bottom:12px}
+.sec h4{color:#a5b4fc;margin-bottom:8px}
+.sec p{color:#e2e8f0;line-height:1.8}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🚀 新品上市方案</h1><p>一句话描述产品，自动生成完整上市传播策划案</p></div>
+
+<div class="card"><label>📦 产品一句话介绍</label>
+<textarea id="prod" placeholder="例如：一款能自动续写文案的AI写作助手App，主打提效省钱"></textarea>
+<div class="param-row">
+<div><label>行业</label><select id="industry"><option value="科技/互联网">科技/互联网</option><option value="消费/快消">消费/快消</option><option value="美妆/时尚">美妆/时尚</option><option value="食品饮料">食品饮料</option><option value="教育">教育</option></select></div>
+<div><label>目标人群</label><select id="aud"><option value="年轻白领">年轻白领</option><option value="Z世代">Z世代</option><option value="家长群体">家长群体</option><option value="大众消费者">大众消费者</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">📣 生成上市方案</button></div>
+
+<div class="result-area" id="resultArea"><div class="card"><div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 上市传播方案已生成</div>
+<div id="out"></div>
+<button class="copy-btn" onclick="copyAll()">📋 复制方案</button></div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function copyAll(){let t='';document.querySelectorAll('#out .sec').forEach(el=>t+=el.innerText+'\n');navigator.clipboard.writeText(t.trim()).then(()=>alert('✅ 已复制'))}
+const CHANNELS={
+'年轻白领':['小红书种草','职场社群','短视频达人'],'Z世代':['抖音挑战赛','B站UP主','小红书笔记'],'家长群体':['家长社群','公众号软文','线下体验'],'大众消费者':['电商直播','电视&信息流','社交裂变']};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('新品上市方案 | AgentGongju.com'))return;
+const prod=document.getElementById('prod').value.trim();if(!prod){alert('请输入产品介绍');return}
+const ind=document.getElementById('industry').value;
+const aud=document.getElementById('aud').value;
+const ch=CHANNELS[aud];
+const short=prod.slice(0,15);
+let html='';
+html+='<div class="sec"><h4>🎯 核心定位</h4><p>围绕「'+short+'」打造差异化卖点，聚焦'+aud+'的核心痛点，通过强记忆点的价值主张抢占心智。</p></div>';
+html+='<div class="sec"><h4>📢 传播主Slogan</h4><p>「'+short+'，让每一分投入都有回报」／「重新定义，'+short+'的新选择」</p></div>';
+html+='<div class="sec"><h4>📅 上市节奏（3阶段）</h4><p>预热期(第1周)：悬念海报+媒体预热\n爆发期(第2周)：线上发布会+达人开箱种草\n延续期(第3-4周)：口碑战役+裂变活动持续放量</p></div>';
+html+='<div class="sec"><h4>📣 核心渠道（'+aud+'）</h4><p>'+ch.join(' · ')+'，配合电商平台承接转化。</p></div>';
+html+='<div class="sec"><h4>📊 KPI建议</h4><p>上市首月GMV、品牌搜索量提升、种草笔记互动量、新客获取成本(CAC)。建议首周快速验证卖点，滚动优化。</p></div>';
+document.getElementById('resultArea').classList.add('active');
+document.getElementById('out').innerHTML=html;
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>智能组卷出题 | AgentGongju.com</title>
+<meta name="description" content="AI智能组卷工具，按知识点和题型批量生成考试题目，老师备课出卷利器">
+<meta name="keywords" content="组卷,出题,考试题,试卷生成,题库">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:60px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.btn-gen:disabled{opacity:.5;cursor:not-allowed}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.q-item{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:16px;margin-bottom:12px}
+.q-item h4{color:#a5b4fc;margin-bottom:6px;font-weight:600}
+.q-item p{color:#e2e8f0;line-height:1.7}
+.q-item .ans{color:#22c55e;font-size:.88rem;margin-top:8px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📝 智能组卷出题</h1><p>教给AI课程与知识点，自动生成带答案的练习题</p></div>
+
+<div class="card"><label>📚 科目 / 课程内容简述</label>
+<textarea id="subject" placeholder="例如：小学五年级数学，本学期讲了分数加减法、小数乘法、简易方程"></textarea>
+<div class="param-row">
+<div><label>题目数量</label><input type="number" id="num" value="8" min="4" max="15"></div>
+<div><label>难度</label><select id="level"><option value="基础">基础</option><option value="中等">中等</option><option value="拔高">拔高</option></select></div>
+</div>
+<div><label>题型</label><div style="font-size:.8rem;color:#94a3b8;margin-bottom:6px" id="typeHint">默认生成选择题+简答题</div>
+<div class="param-row">
+<div><label>选择题个数</label><input type="number" id="choice" value="4" min="0" max="10"></div>
+<div><label>简答题个数</label><input type="number" id="short" value="4" min="0" max="10"></div>
+</div>
+<button class="btn-gen" id="genBtn">⚡ 生成题目</button></div>
+
+<div class="result-area" id="resultArea"><div class="card"><div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 试卷已生成</div>
+<div id="out"></div>
+<button class="copy-btn" onclick="copyAll()">📋 复制整卷</button><button class="copy-btn" onclick="copyAns()">📋 复制答案</button></div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+let allQ=[],allA=[];
+const CHOICE_STEMS=['下列关于该知识点的表述，正确的是','下列说法中，错误的一项是','关于这个知识点，下列说法不正确的是','以下哪个选项的叙述最准确'];
+const WRONG_HINTS=['概念辨析需注意区分','审题要看清设问方式','回归教材夯实基础','理解核心定义后再作答'];
+function copyAll(){let t='';allQ.forEach((q,i)=>t+=(i+1)+'. '+q+'\n\n');navigator.clipboard.writeText(t.trim()).then(()=>alert('✅ 题目已复制'))}
+function copyAns(){let t='答案：\n';allA.forEach((a,i)=>t+=(i+1)+'. '+a+'\n');navigator.clipboard.writeText(t.trim()).then(()=>alert('✅ 答案已复制'))}
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('智能组卷出题 | AgentGongju.com'))return;
+const subject=document.getElementById('subject').value.trim();if(!subject){alert('请填写科目与知识点');return}
+const level=document.getElementById('level').value;
+const nc=parseInt(document.getElementById('choice').value)||0;
+const ns=parseInt(document.getElementById('short').value)||0;
+let html='';allQ=[];allA=[];
+const kw=subject.length>12?subject.slice(0,12)+'…':subject;
+for(let i=0;i<nc;i++){
+  const stem=CHOICE_STEMS[i%CHOICE_STEMS.length];
+  const d=level==='基础'?'基础概念':level==='中等'?'综合运用':'拓展探究';
+  const q='选择题（'+d+'）'+stem+'关于「'+kw+'」的表述：A. 概念本身的核心定义 B. 与易混淆点的区别 C. 在现实中的应用与联系 D. 以上某个选项设置干扰项';
+  const a='（模拟参考答案）正确答案：'+String.fromCharCode(65+Math.floor(Math.random()*4))+'。解析：'+WRONG_HINTS[i%WRONG_HINTS.length]+'，请以教材和课堂讲解为准。';
+  html+='<div class="q-item"><h4>第 '+(i+1)+' 题 · 选择</h4><p>'+q+'</p><p class="ans">✅ '+a+'</p></div>';
+  allQ.push(q);allA.push(a);
+}
+for(let j=0;j<ns;j++){
+  const d=level==='基础'?'概念复述':level==='中等'?'应用分析':'综合论述';
+  const q='简答题（'+d+'）：请结合所学的「'+kw+'」相关知识，'+(j%2?'说明它在实际场景中如何应用，并给出一个具体例子。':'阐述它的关键要点，并进行条理清晰地归纳总结。');
+  const a='（模拟参考答案）答题要点：1.准确回忆核心定义；2.分点论述清楚逻辑；3.结合例子支撑观点；4.结尾总结。建议围绕课堂笔记展开详细作答。';
+  html+='<div class="q-item"><h4>第 '+(nc+j+1)+' 题 · 简答</h4><p>'+q+'</p><p class="ans">✅ '+a+'</p></div>';
+  allQ.push(q);allA.push(a);
+}
+document.getElementById('resultArea').classList.add('active');
+document.getElementById('out').innerHTML=html;
+});
+</script>
+</body>
+</html>

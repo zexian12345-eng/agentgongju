@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>小狗/小猫心情签 | AgentGongju.com</title>
+<meta name="description" content="以毛孩子视角生成一段今日心情日记+主人提醒，网友直呼太真实">
+<meta name="keywords" content="宠物,猫,狗,毛孩子,心情,拟人,宠物日记,铲屎官">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:680px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.emoji{font-size:3.2rem;text-align:center;margin:10px 0}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2.1;white-space:pre-wrap;min-height:60px;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🐾 宠物今日心情签</h1><p>以我家毛孩子的口吻，写篇今日心情（主人快看！）</p></div>
+
+<div class="card"><div class="param-row">
+<div><label>🐕 宠物种类</label><select id="pet"><option value="狗" selected>🐶 狗狗</option><option value="猫">🐱 猫咪</option><option value="兔">🐰 兔兔</option></select></div>
+<div><label>🏷️ 它的名字</label><input type="text" id="name" placeholder="例如：奶黄 / 团子"></div>
+</div>
+<label>😀 今天的心情</label><select id="mood"><option value="开心" selected>开心撒欢</option><option value="傲娇">高冷傲娇</option><option value="思念">想你想你</option><option value="拆家">拆家日常</option><option value="求抱">求摸摸抱抱</option></select>
+<button class="btn-gen" id="genBtn">🐾 生成心情签</button></div>
+
+<div class="result-area" id="resultArea"><div class="card"><div class="emoji" id="emoji"></div><div class="result-box" id="result"></div><button class="copy-btn" onclick="copyResult()">📋 复制</button></div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const pets={
+狗:{emoji:'🐶',titles:['今日汪星人开心日报','来自你的第一只跟宠'],dings:['今天转了三圈尾巴','倒腾了半袋冻干','在门口等了一天','追了五只麻雀但都飞走啦']},
+猫:{emoji:'🐱',titles:['今日喵星人高冷通告','铲屎官请看这份心情'],dings:['巡视了整个领地','高贵地踩过你的键盘','晒了三次太阳','在纸箱里睡了四觉']},
+兔:{emoji:'🐰',titles:['今日兔兔元气签','蹦蹦跳跳的心情报告'],dings:['啃了半根胡萝卜','竖着耳朵听了很久','蹦了三圈','偷偷看了你八百回']}};
+const moods={开心:['今天超级开心！玩具、零食、还有你，全都满分！','快乐的要飞起来了，记得陪我玩！'],傲娇:['哼，今天勉强给你摸摸，不代表我原谅你早上不陪我。','本大人懒得说太多，罐罐是必须的。'],思念:['你一出门我就趴在门口想你了，你到底什么时候回？','想你的一天，连影子都在门口徘徊。'],拆家:['今天那坨纸是我叼的，那沙发也是我挠的……但它太好玩了嘛！','本宝宝又探索了新领域，很充实，你懂的。'],求抱:['求抱抱求摸摸，今天需要一个漫长的贴贴！','我困了，但想先跟你贴贴再睡。']};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('宠物今日心情签 | AgentGongju.com'))return;
+let pet=document.getElementById('pet').value;let name=document.getElementById('name').value.trim()||'小可爱';
+let mood=document.getElementById('mood').value;let p=pets[pet];let mo=moods[mood];
+document.getElementById('emoji').textContent=p.emoji;
+let d=p.dings[Math.floor(Math.random()*p.dings.length)];
+document.getElementById('result').textContent='【'+p.titles[Math.floor(Math.random()*p.titles.length)]+'】\n\n嗨主人，我是'+name+'～\n'+d+'。'+mo[0]+'\n\n'+mo[1]+'\n\n—— 爱你的'+name+' '+p.emoji;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('result').textContent).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

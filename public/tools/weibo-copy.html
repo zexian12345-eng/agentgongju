@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 微博文案生成 | AgentGongju.com</title>
+<meta name="description" content="AI微博文案生成器，输入想表达的核心内容，自动生成自带话题梗、有网感、易转发的微博文案，支持搞笑、走心、种草、吐槽多种风格">
+<meta name="keywords" content="AI微博文案,微博,文案生成,网络热梗,社交文案">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:80px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;margin-bottom:12px;font-size:.92rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🐦 AI 微博文案生成</h1><p>一句话想法 → 有网感、带话题的微博文案</p></div>
+
+<div class="card">
+<label>✨ 你想表达的核心内容</label>
+<textarea id="idea" placeholder="例如：周五终于下班啦，准备去吃顿好的犒劳自己，顺便安利一家超好吃的火锅店"></textarea>
+<div class="param-row">
+<div><label>🎭 文案风格</label>
+<select id="style">
+<option value="搞笑" selected>😂 搞笑吐槽</option>
+<option value="走心">💗 走心共鸣</option>
+<option value="种草">🛍️ 好物种草</option>
+<option value="生活">☕ 日常分享</option>
+<option value="励志">🔥 励志鸡血</option>
+</select></div>
+<div><label>📏 条数</label>
+<select id="num">
+<option value="1">1条</option>
+<option value="3" selected>3条</option>
+<option value="5">5条</option>
+</select></div>
+</div>
+<button class="btn-gen" id="genBtn">✨ 生成微博文案</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🐦 你的微博文案</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制文案</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const tags=['#打工人日常#','#快乐周五#','#干饭人干饭魂#','#今日份快乐#','#我的生活碎片#','#这波属实顶#','#分享欲#','#生活要有仪式感#','#周末去哪儿#','#治愈系#'];
+const openers=['说真的，','家人们谁懂啊，','没人告诉我，','怎么说呢，','今天必须记录一下，','突然觉得，'];
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 文案已复制！'))}
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 微博文案生成 | AgentGongju.com'))return;
+const idea=document.getElementById('idea').value.trim();
+if(!idea){alert('请先填写核心内容');return;}
+const style=document.getElementById('style').value;
+const n=parseInt(document.getElementById('num').value);
+const op={
+'搞笑':[
+`${openers[Math.floor(Math.random()*openers.length)]}${idea}。怎么说呢，快乐就这么简单，钱包懵了，人爽了hhh。`,
+`救命！${idea}，当代打工人最后的倔强就是：班可以加，但快乐必须加倍！`,
+`把${idea}这件事，刻进本周高光时刻，建议老板给发个"快乐奖"。`],
+'走心':[
+`其实 ${idea}。成年人的快乐越来越贵，但好在还有这些能治愈我的瞬间。`,
+`静下来想想，${idea}。生活不就是这样，边赶路边捡小确幸。`,
+`把${idea}写进今天的日记。愿我们都在平凡日子里，找到属于自己的光。`],
+'种草':[
+`姐妹们按头安利！${idea}，亲测不踩雷，闭眼冲就完事了！`,
+`发现一个宝藏！${idea}。真的，用过才知道什么叫"值回票价"。`,
+`忍不住分享：${idea}。就冲这体验，必须再刷一百次！`],
+'生活':[
+`记一笔今日小确幸：${idea}。果然生活需要一点新鲜感。`,
+`忙里偷闲的快乐，大概就是 ${idea}。仪式感拉满的一天。`,
+`今天做了一件有意思的事：${idea}。平平无奇的一天也有了闪光点。`],
+'励志':[
+`别总在等待中消耗热情，${idea}正是开始的最好时机。冲就对了！`,
+`越是怕，越要去做。${idea}，跨出去那一步你就赢了。`,
+`把期待变成行动：${idea}。你只管努力，结果自有答案。`]};
+let out=`🐦 微博文案（${style}风格 x${n}）\n\n`;
+for(let i=0;i<n;i++){
+const pool=op[style];
+out+=`【方案${i+1}】\n${pool[i%pool.length]}\n`;
+const t=tags.slice();t.sort(()=>Math.random()-0.5);
+out+=`${t.slice(0,3).join(' ')}\n\n`;
+}
+out+=`💡 建议再配1-2张配图或表情包，互动率更高哦～`;
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+</script>
+</body>
+</html>

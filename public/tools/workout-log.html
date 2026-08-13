@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>运动打卡日志 | AgentGongju.com</title>
+<meta name="description" content="AI运动打卡日志工具，自动生成今日训练计划、记录运动数据并给出健身建议">
+<meta name="keywords" content="运动打卡,健身日志,训练计划,运动记录,健身">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.btn-gen:disabled{opacity:.5;cursor:not-allowed}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.workout{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:14px;padding:20px;line-height:1.8}
+.workout .title{color:#a5b4fc;font-weight:700;margin-bottom:10px}
+.ex-item{display:flex;justify-content:space-between;background:rgba(255,255,255,0.04);border-radius:8px;padding:10px 14px;margin:6px 0;color:#e2e8f0}
+.ex-item .name{font-weight:500}
+.ex-item .detail{color:#94a3b8;font-size:.85rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem;margin-top:14px}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+@media(max-width:600px){.stat-row{grid-template-columns:1fr 1fr}}
+.stat{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:14px;text-align:center}
+.stat .v{font-size:1.4rem;font-weight:700;color:#a5b4fc}
+.stat .l{color:#94a3b8;font-size:.78rem;margin-top:4px}
+.stopwatch{text-align:center;font-size:2.5rem;font-weight:700;letter-spacing:2px;font-variant-numeric:tabular-nums;margin:10px 0;color:#e2e8f0}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>💪 运动打卡日志</h1><p>自动生成今日训练计划，内置计时器帮你记录每次运动</p></div>
+
+<div class="card"><label>🏁 今日运动目标</label>
+<select id="goal"><option value="减脂">🔥 减脂</option><option value="增肌">💪 增肌</option><option value="塑形">🧘 塑形</option><option value="体能耐力">🏃 体能耐力</option></select>
+<div class="param-row">
+<div><label>运动水平</label><select id="level"><option value="新手">新手</option><option value="进阶">进阶</option><option value="高手">高手</option></select></div>
+<div><label>可用时长(分钟)</label><input type="number" id="minutes" value="40" min="10" max="120"></div>
+</div>
+<button class="btn-gen" id="genBtn">🏋️ 生成训练计划</button></div>
+
+<div class="result-area" id="resultArea"><div class="card">
+<div class="workout" id="out"></div>
+<div class="stopwatch" id="timer">00:00</div>
+<div class="param-row" style="margin-top:8px">
+<button class="btn-gen" id="startBtn" style="font-size:.9rem">▶️ 开始计时</button>
+<button class="btn-gen" id="resetBtn" style="font-size:.9rem;background:linear-gradient(135deg,#374151,#4b5563)">🔄 重置</button>
+</div>
+<div style="text-align:center;margin-top:10px;color:#64748b;font-size:.8rem">记录你的坚持，每次进步都算数</div>
+<button class="copy-btn" onclick="copyResult()">📋 复制今日计划</button></div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function copyResult(){navigator.clipboard.writeText(document.getElementById('out').innerText).then(()=>alert('✅ 已复制！'))}
+const PLANS={
+'减脂':['深蹲 3组×15次','开合跳 3组×30秒','登山跑 3组×40秒','平板支撑 3组×45秒','波比跳 2组×12次'],
+'增肌':['杠铃卧推 4组×10次','哑铃弯举 4组×12次','坐姿划船 4组×12次','肩上推举 3组×10次','引体向上 3组×8次'],
+'塑形':['瑜伽拜日式 3组','臀桥 3组×15次','侧平板支撑 2组×40秒','超人式 3组×12次','拉伸放松 10分钟'],
+'体能耐力':['慢跑 20分钟','高抬腿 3组×30秒','跳绳 3组×1分钟','间歇跑 4组×200米','深呼吸放松']};
+const LEVEL_ADJ={新手:'建议循序渐进，组间休息充足',进阶:'可适当增加负重并压缩休息时间',高手:'可挑战更大强度与超级组组合'};
+let timerInt=null,secs=0,run=false;
+document.getElementById('startBtn').addEventListener('click',()=>{
+if(!run){run=true;document.getElementById('startBtn').textContent='⏸ 暂停';timerInt=setInterval(()=>{secs++;const m=String(Math.floor(secs/60)).padStart(2,'0');const s=String(secs%60).padStart(2,'0');document.getElementById('timer').textContent=m+':'+s;},1000);}
+else{run=false;clearInterval(timerInt);document.getElementById('startBtn').textContent='▶️ 继续';}
+});
+document.getElementById('resetBtn').addEventListener('click',()=>{run=false;clearInterval(timerInt);secs=0;document.getElementById('timer').textContent='00:00';document.getElementById('startBtn').textContent='▶️ 开始计时';});
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('运动打卡日志 | AgentGongju.com'))return;
+const goal=document.getElementById('goal').value;
+const level=document.getElementById('level').value;
+const mins=parseInt(document.getElementById('minutes').value)||40;
+let exs=PLANS[goal];
+let html='<div class="title">🏆 今日'+goal.replace('🔥','').replace('💪','').replace('🧘','').replace('🏃','').trim()+'训练计划 · 约'+mins+'分钟</div>';
+exs.forEach((e,i)=>{
+  html+='<div class="ex-item"><span class="name">'+(i+1)+'. '+e.split(' ')[0]+'</span><span class="detail">'+e.split(' ').slice(1).join(' ')+'</span></div>';
+});
+html+='<div style="margin-top:12px;color:#94a3b8;font-size:.85rem">📌 '+LEVEL_ADJ[level]+'。训练前记得充分热身，组间休息30-60秒。</div>';
+document.getElementById('out').innerHTML=html;
+document.getElementById('resultArea').classList.add('active');
+});
+</script>
+</body>
+</html>

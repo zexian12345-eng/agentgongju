@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI商务邮件助手 | AgentGongju.com</title>
+<meta name="description" content="AI商务邮件助手，输入要点一键生成专业得体的中英文商务邮件，适用于沟通、合作、请假、跟进等场景">
+<meta name="keywords" content="商务邮件,邮件生成,工作邮件,邮件模板,英文邮件">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px;color-scheme:dark}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.9;white-space:pre-wrap;min-height:60px;margin-bottom:12px}
+.copy-btn{display:inline-block;margin:6px 8px 0 0;padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>✉️ AI商务邮件助手</h1><p>输入要点，一键生成专业得体的商务邮件，附中英文双语版本</p></div>
+<div class="card"><label>📝 邮件主题/业务场景</label>
+<input type="text" id="subject" placeholder="例如：供应商付款周期延长申请">
+<div class="param-row">
+<div><label>邮件用途</label><select id="purpose"><option value="合作沟通">合作沟通</option><option value="项目跟进">项目跟进</option><option value="请假申请">请假申请</option><option value="感谢致意">感谢致意</option><option value="商务报价">商务报价</option></select></div>
+<div><label>收件人称呼</label><select id="addr"><option value="尊敬的XX总">尊敬的XX总</option><option value="尊敬的XX经理">尊敬的XX经理</option><option value="各位同事">各位同事</option><option value="尊敬的客户">尊敬的客户</option></select></div>
+</div>
+<div><label>邮件要点（简短描述你要表达的核心内容）</label>
+<textarea id="points" rows="3" placeholder="例如：由于原材料价格上涨，申请将现有订单的付款周期从30天延长至60天，以缓解资金压力。"></textarea>
+<button class="btn-gen" id="genBtn">📧 生成邮件</button></div>
+<div class="result-area" id="resultArea"><div class="card"><div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 邮件已生成！</div>
+<div class="result-box" id="cnMail"></div>
+<div style="color:#94a3b8;font-size:.85rem;margin:-6px 0 10px">以下是英文版本：</div>
+<div class="result-box" id="enMail"></div>
+<button class="copy-btn" onclick="copyCn()">📋 复制中文邮件</button><button class="copy-btn" onclick="copyEn()">📋 复制英文邮件</button></div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function copyCn(){navigator.clipboard.writeText(document.getElementById('cnMail').textContent).then(()=>alert('✅ 中文邮件已复制！'))}
+function copyEn(){navigator.clipboard.writeText(document.getElementById('enMail').textContent).then(()=>alert('✅ 英文邮件已复制！'))}
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI商务邮件助手 | AgentGongju.com'))return;
+const subject=document.getElementById('subject').value.trim();
+const points=document.getElementById('points').value.trim();
+if(!subject&&!points){alert('请填写邮件主题或要点');return}
+const purpose=document.getElementById('purpose').value;
+const addr=document.getElementById('addr').value;
+const date=new Date();const today=(date.getMonth()+1)+'月'+date.getDate()+'日';
+const intro={
+'合作沟通':'首先，感谢贵方一直以来对我们的信任与支持。来信特此就双方合作事宜与您诚挚沟通：',
+'项目跟进':'特此就来函所述项目进展相关事宜与您同步沟通：',
+'请假申请':'因个人事务需请假，特此向您说明相关安排：',
+'感谢致意':'谨以此函向您及贵团队表达诚挚的感谢与敬意。',
+'商务报价':'感谢您的垂询，现就相关商务合作方案为您提供如下说明：'}[purpose];
+const closing={
+'合作沟通':'期待您的宝贵意见，希望能与贵方深化合作，共创共赢。',
+'项目跟进':'以上进展请您知悉，后续如有问题我将及时同步。',
+'请假申请':'请假期间工作已妥善交接，若有急事可随时联系我，感谢理解与支持。',
+'感谢致意':'期待未来有更多合作机会，再次向您表示感谢！',
+'商务报价':'如您有进一步的需求，欢迎随时与我沟通，期待您的反馈。'}[purpose];
+const body=points||subject;
+let cn='【主题】关于'+subject+'的申请/沟通\n\n'+addr+'：\n\n　您好！\n\n'+intro+'\n\n　'+body+'。\n\n'+closing+'\n\n　顺祝商祺！\n\n';
+cn+='　此致\n　敬礼\n\n'+('某某　敬上')+'\n　'+today;
+const subEn=subject||'Business Communication';
+let en='Subject: Regarding '+subEn+'\n\nDear Sir/Madam,\n\nGreetings!\n\n'+intro+'\n\nI would like to share the following details with you: '+body+'. Please kindly review.\n\n'+closing+'\n\nBest regards,\n[Your Name]\n'+today;
+document.getElementById('cnMail').textContent=cn;
+document.getElementById('enMail').textContent=en;
+document.getElementById('resultArea').classList.add('active');
+});
+</script>
+</body>
+</html>

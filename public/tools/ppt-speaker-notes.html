@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PPT 演讲备注生成 | AgentGongju.com</title>
+<meta name="description" content="PPT演讲备注生成器，输入要点自动生成流利的演讲口播稿，脱稿演讲超轻松">
+<meta name="keywords" content="PPT演讲,演讲备注,演讲词,脱稿演讲">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:80px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.btn-gen:disabled{opacity:.5;cursor:not-allowed}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.9;white-space:pre-wrap;min-height:60px;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🎤 PPT 演讲备注生成</h1><p>输入讲稿要点，自动生成自然流畅的演讲口播稿</p></div>
+
+<div class="card"><label>📝 演讲要点（每行一个要点）</label>
+<textarea id="points" placeholder="例如：&#10;产品最大的优势是省时&#10;客户使用后效率提升了30%&#10;现在购买有新人优惠"></textarea>
+<div class="param-row">
+<div><label>演讲时长</label><select id="duration"><option value="短(1-3分钟)">短（1-3分钟）</option><option value="中(3-5分钟)">中（3-5分钟）</option><option value="长(5分钟以上)">长（5分钟以上）</option></select></div>
+<div><label>语气风格</label><select id="tone"><option value="正式专业">正式专业</option><option value="亲切自然">亲切自然</option><option value="热情感染力">热情感染力</option><option value="严谨理性">严谨理性</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">🎤 生成演讲备注</button></div>
+
+<div class="result-area" id="resultArea"><div class="card"><div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 演讲备注已生成</div>
+<div class="result-box" id="out"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制讲稿</button></div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function copyResult(){navigator.clipboard.writeText(document.getElementById('out').textContent).then(()=>alert('✅ 已复制！'))}
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('PPT 演讲备注生成 | AgentGongju.com'))return;
+const points=document.getElementById('points').value.trim().split('\n').map(s=>s.trim()).filter(Boolean);
+if(!points.length){alert('请输入演讲要点');return}
+const tone=document.getElementById('tone').value;
+const openings={
+'正式专业':['各位好，感谢大家抽出时间来听我今天的分享。接下来，我想围绕几个重点和大家做交流。','尊敬的各位，大家好。很高兴能有这个机会，和大家做一个简明扼要的分享。'],
+'亲切自然':['哈喽大家好，很高兴见到大家！今天我们轻松聊一聊这几个点。','大家好呀，今天想跟大家分享几个我自己特别有感触的内容。'],
+'热情感染力':['各位朋友们！今天真的特别激动想跟你们分享这个，我觉得你们一定会喜欢！','大家好！接下来这几分钟，我想带给大家一些非常棒的干货！'],
+'严谨理性':['各位，基于几组数据和事实，我想阐述以下几个观点。','大家好，今天我将从客观事实出发，论证接下来这几个要点。']};
+const closings={
+'正式专业':['最后，非常感谢大家的聆听，如果各位有任何问题，欢迎会后交流，谢谢大家。','以上就是今天的全部内容，感谢各位，谢谢。'],
+'亲切自然':['好啦，今天就说这么多，谢谢大家听我唠嗑，有问题随时找我哦！','今天就聊到这儿，祝大家工作顺利，我们下次见！'],
+'热情感染力':['我相信大家听完一定也心动了！快去行动起来吧！谢谢大家！','这就是我想传达的全部热情！谢谢你们，我们一起加油！'],
+'严谨理性':['以上观点均有数据支撑，供各位参考。我的分享到此结束，谢谢。','综上所述，结论清晰。感谢各位的耐心聆听，谢谢。']};
+const o=openings[tone][Math.floor(Math.random()*openings[tone].length)];
+const c=closings[tone][Math.floor(Math.random()*closings[tone].length)];
+let body='';
+points.forEach((p,i)=>{
+  const num=i===0?'首先':i===points.length-1?'最后':'其次';
+  if(i===0)body+='我先谈谈第一点。'+p+'。具体来说，这一点对我们的意义非常重大，直接关系到整体目标的达成。\n\n';
+  else if(i===points.length-1)body+=num+'，也是最重要的一点，'+(p.replace(/[。.]$/,''))+'。这往往是我们最关心的落脚点，也是行动的关键。\n\n';
+  else body+=num+'，'+p+'。这一点与前面提到的内容相辅相成，环环相扣。\n\n';
+});
+const script=o+'\n\n'+body+c;
+document.getElementById('resultArea').classList.add('active');
+document.getElementById('out').textContent=script;
+});
+</script>
+</body>
+</html>

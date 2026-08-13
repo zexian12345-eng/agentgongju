@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 冷笑话生成器 | AgentGongju.com</title>
+<meta name="description" content="一键生成清奇冷笑话，专治不开心，聚会暖场必备">
+<meta name="keywords" content="冷笑话,冷知识,笑话生成,段子,开心">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:720px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+.tags{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+.tag{padding:8px 18px;border:1px solid rgba(255,255,255,0.12);border-radius:20px;color:#94a3b8;font-size:.88rem;cursor:pointer;transition:all .2s}
+.tag:hover{border-color:#6366f1;color:#fff}
+.tag.sel{background:linear-gradient(135deg,#6366f1,#a855f7);border-color:transparent;color:#fff}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-box{display:none;margin-top:20px;background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:26px;color:#e2e8f0;line-height:1.9;min-height:60px;text-align:center;font-size:1.05rem}
+.result-box.active{display:block;animation:fade .4s}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.copy-btn{margin-top:16px;padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.center{text-align:center}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>😄 AI 冷笑话生成器</h1><p>一键生成清奇冷笑话，专治不开心</p></div>
+
+<div class="card"><label>🎯 选个风格，开笑！</label>
+<div class="tags" id="tags">
+<span class="tag sel" data="谐音梗">🎵 谐音梗</span>
+<span class="tag" data="生活吐槽">🥤 生活吐槽</span>
+<span class="tag" data="动物脑洞">🐶 动物脑洞</span>
+<span class="tag" data="程序员">💻 程序员</span>
+<span class="tag" data="童言无忌">🧒 童言无忌</span>
+</div>
+<button class="btn-gen" id="genBtn">😄 再来一个</button>
+<div class="center">
+<div class="result-box" id="result"></div>
+<br><button class="copy-btn" id="copyBtn" style="display:none" onclick="copyResult()">📋 复制这段</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+let cur='谐音梗';
+document.querySelectorAll('.tag').forEach(t=>t.onclick=()=>{document.querySelectorAll('.tag').forEach(x=>x.classList.remove('sel'));t.classList.add('sel');cur=t.getAttribute('data');});
+const jokes={
+'谐音梗':['为什么数学书总是很忧郁？因为它有很多问题。','你愿意做我的太阳能电池吗？我一看到你就充满了电。','你知道企鹅为什么住南极吗？因为北极被熊 "冰" 霸了。# 谐音梗','我买了一个很贵的保温杯，回家发现它不保暖，原来是我的心凉了。','为什么吃了感冒药会觉得困？因为它是 "睡" 药，不是 "醒" 药。'],
+'生活吐槽':['今天决定早睡早起，结果睡是睡了，起倒是没起来。','我现在码字打工人三件套：保温杯、枸杞、黑眼圈。','我的钱不是大风刮来的，但确实是被大风刮走的。','说好一起胖的，你偷偷瘦了，这友谊没得做。','当代人的一天：白天困成狗，晚上精神得像夜猫子。'],
+'动物脑洞':['为什么猫总是喜欢坐在键盘上？因为它在给主人 "发明" 代码。','鱼说：我也有压力，水底下太 "深" 了。','乌龟问兔子：你为什么跑那么快？兔子说：赶着回家给龟儿子写作业。','小鸟对电线杆说：咱俩这关系咋形容？电线杆说：就叫 "搭伙" 过日子吧。','长颈鹿为什么脖子长？因为低头久了容易得颈椎病。'],
+'程序员':['程序员最怕的三个字不是 "我爱你"，而是 "改需求"。','问：为什么程序员分不清万圣节和圣诞节？答：因为 Oct 31 == Dec 25。','程序员去相亲，自我介绍：我精通各种语言。对方：哦，翻译？','代码写多了，做梦都在找 bug。','改别人代码一时爽，一直改别人代码一直爽——直到被拉黑。'],
+'童言无忌':['小朋友问妈妈：为什么大人总说 "小孩子不要说话"？妈妈说：因为大人的话比较 "值钱"。','老师问：太阳为什么这么亮？小明答：因为它在 "上班" 啊。','女儿指着月亮说：那是谁的灯笼？妈妈说：是宇宙挂在天上的夜灯。','小朋友问爸爸：你为什么叫爸爸？爸爸：这叫 "职称"。']};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 冷笑话生成器 | AgentGongju.com'))return;
+const pool=jokes[cur]||jokes['谐音梗'];
+const j=pool[Math.floor(Math.random()*pool.length)];
+const box=document.getElementById('result');box.classList.add('active');box.textContent='🤣 '+j;
+document.getElementById('copyBtn').style.display='inline-block';
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('result').textContent).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

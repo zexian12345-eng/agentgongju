@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 古诗今译 | AgentGongju.com</title>
+<meta name="description" content="AI古诗今译，输入任意古诗文名句，自动生成白话译文、逐句解析、意象赏析与名句解读，学生作业、文学赏析、发朋友圈都实用">
+<meta name="keywords" content="AI古诗翻译,古诗今译,古文翻译,诗词赏析,语文学习工具">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:90px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;margin-bottom:12px;font-size:.92rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🏮 AI 古诗今译</h1><p>秒懂古诗词，译文赏析一键搞定</p></div>
+
+<div class="card">
+<label>📜 输入古诗文（全句或名句，也可从下方精选快速选择）</label>
+<textarea id="poem" placeholder="例如：举头望明月，低头思故乡。若想翻译其他古诗，直接输入即可，我们来解析常见名句。"></textarea>
+<div class="param-row">
+<div><label>✨ 精选名句（点击填充）</label>
+<select id="pick" onchange="fillPick()">
+<option value="举头望明月，低头思故乡。">举头望明月，低头思故乡</option>
+<option value="床前明月光，疑是地上霜。">床前明月光，疑是地上霜</option>
+<option value="春眠不觉晓，处处闻啼鸟。">春眠不觉晓，处处闻啼鸟</option>
+<option value="白日依山尽，黄河入海流。">白日依山尽，黄河入海流</option>
+<option value="会当凌绝顶，一览众山小。">会当凌绝顶，一览众山小</option>
+<option value="海内存知己，天涯若比邻。">海内存知己，天涯若比邻</option>
+<option value="人生自古谁无死，留取丹心照汗青。">人生自古谁无死，留取丹心照汗青</option>
+<option value="山重水复疑无路，柳暗花明又一村。">山重水复疑无路，柳暗花明又一村</option>
+<option value="问君能有几多愁，恰似一江春水向东流。">问君能有几多愁，恰似一江春水向东流</option>
+</select></div>
+<div><label>📐 解析深度</label>
+<select id="depth">
+<option value="标准" selected>标准版</option>
+<option value="详细">详细赏析</option>
+<option value="简要">简要朗读版</option>
+</select></div>
+</div>
+<button class="btn-gen" id="genBtn" onclick="confirm()">✨ 生成解析</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🏮 白话译文与赏析</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制解析</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const known={
+'举头望明月，低头思故乡。':{author:'唐·李白《静夜思》',trans:'抬起头仰望那轮明月，低下头不禁思念起远方的故乡。',nots:'以"举头""低头"两个连贯动作，把月夜与乡愁自然勾连，朴素而动人。',img:'月光、静夜、游子'},
+'床前明月光，疑是地上霜。':{author:'唐·李白《静夜思》',trans:'床前洒落一片皎洁的月光，起初还以为是地上铺了一层白霜。',nots:'将月光比作霜，写出秋夜的清冷，也暗示游子的孤寂。',img:'月色、寒霜、孤床'},
+'春眠不觉晓，处处闻啼鸟。':{author:'唐·孟浩然《春晓》',trans:'春夜酣睡，不知不觉天就亮了，醒来处处可闻鸟儿的啼鸣。',nots:'以"不觉晓"的慵懒，反衬春光的宜人与生活的闲适。',img:'春晨、鸟鸣、酣眠'},
+'白日依山尽，黄河入海流。':{author:'唐·王之涣《登鹳雀楼》',trans:'太阳依傍着群山渐渐沉落，黄河水滚滚奔腾流向大海。',nots:'写眼前壮阔之景，气势雄浑，为后文"更上一层楼"蓄势。',img:'落日、群山、黄河'},
+'会当凌绝顶，一览众山小。':{author:'唐·杜甫《望岳》',trans:'我一定要登上泰山的最高峰，俯瞰群山尽显渺小。',nots:'抒发俯视一切的豪情，表达了积极进取、不畏困难的志向。',img:'泰山、绝顶、凌云'},
+'海内存知己，天涯若比邻。':{author:'唐·王勃《送杜少府之任蜀州》',trans:'四海之内都有知心好友，即使远隔天涯也如同近邻一般。',nots:'以开阔胸襟消解离别的愁绪，成为千古传诵的离别名句。',img:'知己、天涯、明月'},
+'人生自古谁无死，留取丹心照汗青。':{author:'宋·文天祥《过零丁洋》',trans:'自古以来谁人没有一死，只愿留下一颗赤诚之心，映照史册。',nots:'以死明志，浩然正气充塞天地，尽显民族气节。',img:'丹心、史册、华夏'},
+'山重水复疑无路，柳暗花明又一村。':{author:'宋·陆游《游山西村》',trans:'山峦重叠、水流曲折，正疑无路可走时，柳暗花明处又现一村。',nots:'写景中寓哲理：困顿之后往往豁然开朗，给人希望与力量。',img:'山水、柳暗、花明'},
+'问君能有几多愁，恰似一江春水向东流。':{author:'五代·李煜《虞美人》',trans:'要问我心中有多少忧愁？那正像一江春水，滚滚向东奔流。',nots:'以"一江春水"喻愁，愁思之深之广、之绵延不绝，尽在眼前。',img:'春水、愁思、东流'}};
+function fillPick(){document.getElementById('poem').value=document.getElementById('pick').value;}
+function confirm(){document.getElementById('genBtn').click();}
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 解析已复制！'))}
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 古诗今译 | AgentGongju.com'))return;
+const p=document.getElementById('poem').value.trim();
+if(!p){alert('请选择或输入古诗文');return;}
+const depth=document.getElementById('depth').value;
+const info=known[p];
+if(!info){document.getElementById('outputBox').innerText='抱歉，暂未收录该诗句。请从精选名句中选择，或尝试输入更完整的诗句。';document.getElementById('resultArea').classList.add('active');return;}
+let out=`🏮 《${p.trim().replace(/[。，]/g,'')}》\n出处：${info.author}\n\n`;
+out+=`🌾 白话译文\n${info.trans}\n\n`;
+if(depth!=='简要'){
+out+=`🔍 赏析解读\n${info.nots}\n\n`;
+out+=`🎨 意象意境\n${info.img}\n`;
+out+=`\n💡 名句点睛\n这句诗之所以流传千古，在于它以极简笔墨道出极深的情思与哲理，语言朴素而余味悠长，适合品读，也适合作为朋友圈文案。`;
+}else{
+out+=`📖 朗读提示\n语速放慢，重读"明月""千里""愁"等关键词，读出悠远绵长之感。`;
+}
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+window.onload=function(){fillPick();};
+</script>
+</body>
+</html>

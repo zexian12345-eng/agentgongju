@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 减脂计划生成 | AgentGongju.com</title>
+<meta name="description" content="AI减脂计划，输入体重、目标与运动习惯，自动生成科学合理的减脂饮食+运动计划，含每日热量建议、三餐搭配、训练安排，健康瘦身不走弯路">
+<meta name="keywords" content="AI减脂,减脂计划,减肥计划,健康饮食,运动计划,健身工具">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus{ border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;margin-bottom:12px;font-size:.92rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{font-size:.78rem;color:#64748b;margin-top:6px}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🔥 AI 减脂计划生成</h1><p>科学饮食+运动，给你一份可执行的瘦身方案</p></div>
+
+<div class="card">
+<label>📐 你的基础信息</label>
+<div class="param-row">
+<div><label>⚖️ 当前体重(kg)</label><input type="number" id="weight" min="30" max="200" placeholder="如 70" /></div>
+<div><label>📏 身高(cm)</label><input type="number" id="height" min="120" max="230" placeholder="如 170" /></div>
+</div>
+<div class="param-row">
+<div><label>⏱️ 目标（减脂周期）</label>
+<select id="goal">
+<option value="轻松" selected>😌 轻松减脂（每周0.3-0.5kg）</option>
+<option value="标准">💪 标准减脂（每周0.5-0.8kg）</option>
+<option value="严格">🔥 严格减脂（每周0.8-1kg）</option>
+</select></div>
+<div><label>🏃 每周运动天数</label>
+<select id="habit">
+<option value="0">😴 几乎不运动</option>
+<option value="2" selected>2-3天</option>
+<option value="4">4-5天</option>
+<option value="6">6-7天</option>
+</select></div>
+</div>
+<label>📝 需忌口 / 特殊说明（可选）</label>
+<input type="text" id="note" placeholder="如：不吃辣、乳糖不耐、上班族没空做饭" />
+<button class="btn-gen" id="genBtn">🔥 生成减脂计划</button>
+<p class="tip">⚠️ 本计划仅供参考，特殊体质请遵医嘱。</p>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🔥 你的减脂计划</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制计划</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 计划已复制！'))}
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 减脂计划生成 | AgentGongju.com'))return;
+const w=parseFloat(document.getElementById('weight').value);
+const h=parseFloat(document.getElementById('height').value);
+if(!w||!h){alert('请填写体重与身高');return;}
+const goal=document.getElementById('goal').value;
+const habit=document.getElementById('habit').value;
+const note=document.getElementById('note').value.trim();
+const act=habit==='0'?1.2:habit==='2'?1.375:habit==='4'?1.55:1.725;
+const bmr=Math.round(10*w+6.25*h-5*30+5);
+const tdee=Math.round(bmr*act);
+const deficit=goal==='轻松'?300:goal==='标准'?500:700;
+const cal=Math.max(1200,tdee-deficit);
+const protein=Math.round(w*(habit==='0'?1.2:1.6));
+const fat=Math.round(cal*0.25/9);
+const carb=Math.round((cal-protein*4-fat*9)/4);
+const noteTxt=note?`（注意：${note}，请作相应调整）`:'';
+let out=`🔥 个人减脂计划\n\n`;
+out+=`◎ 身体数据\nBMI：${(w/(h/100)/(h/100)).toFixed(1)}　基础代谢：${bmr}kcal　每日总消耗：约${tdee}kcal\n\n`;
+out+=`◎ 每日热量目标\n建议摄入：约 ${cal} kcal/天\n三大营养素：蛋白质 ${protein}g / 脂肪 ${fat}g / 碳水 ${carb}g\n\n`;
+out+=`◎ 三餐建议${noteTxt}\n`;
+out+=`早餐（约30%）：全麦面包/燕麦 + 鸡蛋1-2个 + 牛奶/豆浆 + 少量水果\n`;
+out+=`午餐（约40%）：杂粮饭1拳 + 优质蛋白（鸡胸/鱼虾/瘦牛肉）手掌大小 + 蔬菜不限量\n`;
+out+=`加餐（可选）：一小把坚果 / 一份酸奶（下午4点）\n`;
+out+=`晚餐（约30%）：蔬菜为主 + 蛋白 + 少量主食（尽量18点前吃完）\n\n`;
+out+=`◎ 每周运动安排（${habit==='0'?'建议从一周3次轻量开始':habit+'天/周'}）\n`;
+const plan=habit==='0'?['周一：快走30分钟','周三：低强度有氧/散步','周六：全身拉伸+散步']:
+habit==='2'?['周一：力量训练（腿/臀）','周三：有氧40分钟或跑步','周五：力量+核心']:
+habit==='4'?['周一：力量（胸+三头）','周二：有氧40分钟','周四：力量（背+二头）','周五：HIIT/高强度间歇','周日：拉伸放松']:
+['周一~周五：轮流力量+有氧','周六：长时低强度有氧','周日：彻底休息与拉伸'];
+plan.forEach(x=>out+=`· ${x}\n`);
+out+=`\n◎ 关键饮食原则\n1. 多喝水（每天2000ml+），避免含糖饮料。\n2. 少油少盐，多用蒸煮烤代替油炸。\n3. 保证睡眠7小时，睡眠不足会影响减脂。\n4. 每减4-6周可安排1周"维持期"调整身体。\n\n`;
+out+=`◎ 目标预估\n按此方案，预计每月可减 2.4-4 kg，3个月可见明显变化。请每周固定时间称重记录，坚持比强度更重要！${note?'（已考虑你的特殊说明）':''}`;
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI绘画提示词生成器 | AgentGongju.com</title>
+<meta name="description" content="AI绘画提示词生成器，生成高质量英文绘画提示词，支持写实、二次元、赛博朋克等多种风格">
+<meta name="keywords" content="AI绘画,prompt,提示词,Midjourney,Stable Diffusion">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px;color-scheme:dark}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.btn-gen:disabled{opacity:.5;cursor:not-allowed}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.9;white-space:pre-wrap;min-height:60px;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🎨 AI绘画提示词生成器</h1><p>输入画面描述，自动生成高质量中文/英文绘画提示词</p></div>
+<div class="card"><label>🎯 画面描述</label>
+<textarea id="desc" rows="3" placeholder="例如：一位穿着汉服的少女站在樱花树下，夜晚的月光洒落"></textarea>
+<div class="param-row">
+<div><label>绘画风格</label><select id="style"><option value="写实风格 realistic">写实风格</option><option value="二次元动漫 anime">二次元动漫</option><option value="赛博朋克 cyberpunk">赛博朋克</option><option value="水墨国风 ink wash">水墨国风</option><option value="3D渲染 3d render">3D渲染</option><option value="油画 oil painting">油画</option><option value="像素风 pixel art">像素风</option><option value="超现实 surreal">超现实</option></select></div>
+<div><label>画面比例</label><select id="ratio"><option value="1:1">1:1 方形</option><option value="16:9">16:9 横幅</option><option value="9:16">9:16 竖幅</option><option value="4:3">4:3 经典</option></select></div>
+</div>
+<div class="param-row">
+<div><label>光线氛围</label><select id="light"><option value="dramatic lighting, golden hour">黄金时刻</option><option value="soft natural light">柔和自然光</option><option value="neon lights, atmosphere">霓虹氛围</option><option value="moonlight, ethereal">月光梦幻</option><option value="studio lighting">影棚打光</option></select></div>
+<div><label>额外风格词</label><select id="extra"><option value="high detail, 8k, masterpiece">超高清细节</option><option value="cinematic, film grain">电影质感</option><option value="minimalist, clean">极简干净</option><option value="vibrant colors, colorful">色彩鲜艳</option><option value="bokeh, depth of field">虚化景深</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">✨ 生成提示词</button>
+<span style="color:#64748b;font-size:.8rem">提示：生成的提示词可直接用于 Midjourney / Stable Diffusion 等工具</span></div>
+<div class="result-area" id="resultArea"><div class="card"><div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 提示词已生成！</div>
+<div class="result-box" id="enOut"></div>
+<div class="result-box" id="cnOut"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制英文提示词</button></div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function copyResult(){navigator.clipboard.writeText(document.getElementById('enOut').textContent).then(()=>alert('✅ 已复制！'))}
+const QUALITY=['ultra-detailed, sharp focus','award winning, breathtaking','intricate details, vibrant','hyper-realistic, crisp'];
+const NEG='low quality, blurry, watermark, signature, deformed';
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI绘画提示词生成器 | AgentGongju.com'))return;
+const desc=document.getElementById('desc').value.trim();
+if(!desc){alert('请输入画面描述');return}
+const st=document.getElementById('style').value, ra=document.getElementById('ratio').value;
+const li=document.getElementById('light').value, ex=document.getElementById('extra').value;
+const q=QUALITY[Math.floor(Math.random()*QUALITY.length)];
+const en=`${desc}, ${st.split(' ')[0]} style, ${li}, ${ex}, ${q} --ar ${ra} --v 6.0`;
+const cn=`【中文提示词】\n${desc}\n风格：${st.substring(0,4)}\n光线：${li.split(',')[0]}，氛围感强\n画质：${ex.split(',')[0]}，细节丰富\n构图：主体突出，${ra}画面比例，留白得当\n\n提示：可结合负面提示词排除水印、模糊等干扰`;
+document.getElementById('resultArea').classList.add('active');
+document.getElementById('enOut').textContent='【English Prompt】\n'+en+'\n\nNegative Prompt:\n'+NEG;
+document.getElementById('cnOut').textContent=cn;
+});
+</script>
+</body>
+</html>

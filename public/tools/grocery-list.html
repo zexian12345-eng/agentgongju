@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 购物清单生成器 | AgentGongju.com</title>
+<meta name="description" content="根据家庭需求智能生成超市采购清单，买菜购物不遗漏">
+<meta name="keywords" content="购物清单,采购清单,买菜清单,超市购物,好物采购">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:20px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.9;white-space:pre-wrap;min-height:60px;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.chip{padding:8px 16px;border-radius:20px;background:rgba(99,102,241,0.12);color:#a5b4fc;font-size:.88rem;cursor:pointer;border:1px solid transparent}
+.chip.sel{border-color:#6366f1;color:#fff}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🛒 AI 购物清单生成器</h1><p>去超市前列一份清单，从此不乱买不遗漏</p></div>
+
+<div class="card"><label>🏠 家庭情况</label>
+<div class="param-row">
+<div><label>👥 几口人</label><input type="number" id="p" value="2" min="1" max="8"></div>
+<div><label>📆 采购周期（天）</label><select id="days"><option value="3">隔两天买一次</option><option value="7" selected>每周采购一次</option><option value="14">半个月采购一次</option></select></div>
+</div>
+<label>✅ 需要补充的类别（可多选）</label>
+<div class="chips" id="chips">
+<span class="chip sel" data="蔬菜水果">🥬 蔬菜水果</span>
+<span class="chip sel" data="肉禽蛋奶">🥩 肉禽蛋奶</span>
+<span class="chip sel" data="米面粮油">🍚 米面粮油</span>
+<span class="chip" data="调味干货">🧂 调味干货</span>
+<span class="chip" data="零食饮料">🥤 零食饮料</span>
+<span class="chip" data="清洁日化">🧴 清洁日化</span>
+</div>
+<button class="btn-gen" id="genBtn">🛒 生成购物清单</button></div>
+
+<div class="result-area" id="resultArea"><div class="card"><div style="color:#22c55e;font-weight:600;margin-bottom:8px">✅ 清单已生成</div><div class="result-box" id="result"></div><button class="copy-btn" onclick="copyResult()">📋 复制清单</button></div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+let sel=new Set(['蔬菜水果','肉禽蛋奶','米面粮油']);
+document.querySelectorAll('.chip').forEach(c=>c.onclick=()=>{if(c.classList.contains('sel')){c.classList.remove('sel');sel.delete(c.getAttribute('data'));}else{c.classList.add('sel');sel.add(c.getAttribute('data'));}});
+const CAT={
+'蔬菜水果':['西红柿 1kg','黄瓜 2根','青菜 1把','土豆 1kg','苹果 1袋','香蕉 1串'],
+'肉禽蛋奶':['鸡蛋 1板','里脊肉 500g','鸡腿 4只','鲜牛奶 2盒','五花肉 400g'],
+'米面粮油':['大米 5kg','面条 2把','食用油 1桶','面粉 2kg','饺子皮 1包'],
+'调味干货':['生抽 1瓶','盐 1袋','干木耳 1袋','花椒八角 1份','蚝油 1瓶'],
+'零食饮料':['矿泉水 1箱','酸奶 4杯','饼干 1盒','坚果 1袋','橘子 1袋'],
+'清洁日化':['洗洁精 1瓶','洗衣液 1桶','抽纸 4包','垃圾袋 1卷','洗手液 1瓶']
+};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 购物清单生成器 | AgentGongju.com'))return;
+if(sel.size===0){alert('请至少选择一类');return;}
+const people=document.getElementById('p').value||2;const days=document.getElementById('days').value;
+const mult=Math.max(1,Math.ceil(parseInt(days)*people/7));
+let out='🛒 采购清单（'+sel.size+'类 · '+people+'口人 · '+days+'天用量）\n\n';
+sel.forEach(cat=>{
+out+='—— '+cat+' ——\n';
+(CAT[cat]||[]).forEach(item=>{out+='  ☐ '+item.replace(/(\s\d+)/,'$1')+'\n';});
+out+='\n';
+});
+out+='💡 小贴士\n  • 到店先买生鲜，再逛干货，最后买日化\n  • 临期促销先看保质期，避免囤多浪费\n  • 建议带上环保购物袋\n\n（清单由 AI 智能生成，可按需增减）';
+document.getElementById('resultArea').classList.add('active');document.getElementById('result').textContent=out;
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('result').textContent).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

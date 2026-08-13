@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 趣味心理测试 | AgentGongju.com</title>
+<meta name="description" content="AI趣味心理测试，选择题目场景进行测试，即时揭晓你的性格特质与趣味解析，好玩走心，适合自测和分享到朋友圈">
+<meta name="keywords" content="AI心理测试,趣味测试,性格测试,心理测验,娱乐工具">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus{ border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;margin-bottom:12px;font-size:.92rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.opt{display:block;padding:12px 16px;margin:8px 0;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:10px;cursor:pointer;color:#cbd5e1;transition:all .2s}
+.opt:hover{background:rgba(99,102,241,0.12);border-color:#6366f1;color:#fff}
+.opt.sel{background:linear-gradient(135deg,rgba(99,102,241,0.3),rgba(168,85,247,0.3));border-color:#a855f7;color:#fff}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🔮 AI 趣味心理测试</h1><p>做几道题，看穿你的性格底色</p></div>
+
+<div class="card">
+<label>🎯 选择测试主题</label>
+<select id="choice">
+<option value="0" selected>🌊 你第一眼看到什么？测隐藏性格</option>
+<option value="1">🦁 选一种动物，测你的能量来源</option>
+<option value="2">🏠 选一座房子，测你的生活状态</option>
+<option value="3">🍰 选口味的蛋糕，测你最近的运势</option>
+</select>
+<div id="qArea"></div>
+<button class="btn-gen" id="genBtn" style="margin-top:8px">🔮 揭晓答案</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🔮 测试结果</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制分享</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const tests=[
+{title:'🌊 第一眼看到什么？',opts:['🌌 星空大海','🏔️ 连绵群山','🌉 一座桥','🌺 一朵花'],
+res:['星空大海型：你心思细腻、向往自由，外表平静内心浪漫。你善于观察他人情绪，是朋友眼中最懂安慰的人。别人常惊叹你总能在纷扰里保持清醒。',
+'连绵群山型：你踏实稳重、目标明确，习惯把每一步都走扎实。你给人可靠的安全感，是团队/家庭里的"定海神针"，但不妨偶尔放松脚步。',
+'一座桥型：你是天生的连接者，擅长沟通与调和。身边人都因你而变得亲近，你有凝聚人心的超能力，别低估这份温柔的力量。',
+'一朵花型：你有极高的审美与感知力，热爱生活中的小美好。你敏感而真诚，能把平淡日子过出诗意，要好好珍惜这份"小确幸雷达"。']},
+{title:'🦁 选一种动物，测你的能量来源',opts:['🦁 狮子','🐬 海豚','🦊 狐狸','🐢 乌龟'],
+res:['狮子型：你的能量来自"被需要"与"被认可"。你天生有领导力，站上舞台就发光。记住：真正的强大，是既能带领别人，也懂照顾自己。',
+'海豚型：你靠"关系与欢乐"充电。朋友越热闹你越有精神，你温暖开朗、人缘极好。但要留些独处时间，别让热闹消耗过度。',
+'狐狸型：你的能量来自"好奇心"与"洞察力"。你机敏灵活，总能找到聪明的办法。你的创意和远见，往往是破解难题的关键。',
+'乌龟型：你靠"安全感与节奏感"充电。你稳扎稳打、爆发力惊人，越是关键时刻越冷静。请相信自己的节奏，慢一点也没关系。']},
+{title:'🏠 选一座房子，测你的生活状态',opts:['🏡 温馨小院','🏰 童话城堡','🏙️ 高层公寓','🏕️ 森林木屋'],
+res:['温馨小院型：你内心渴望安定与陪伴，重视家庭和亲密关系。你的生活状态是"温暖治愈"，适合在自己的节奏里慢慢经营。',
+'童话城堡型：你内心住着一个浪漫的理想主义者，敢想敢做梦。生活状态偏"追梦进行时"，记得把大目标拆成可落地的日常。',
+'高层公寓型：你好强上进，追求效率与成长，正处于"事业打拼期"。别让野心压过生活，偶尔给紧绷的神经放个假。',
+'森林木屋型：你享受独处与自然，追求精神上的富足。你的生活状态是"向内生长"，这份清醒难得，但也要记得与外界保持连接。']},
+{title:'🍰 选口味的蛋糕，测你最近运势',opts:['🍫 巧克力','🍰 草莓','🍋 柠檬','🧀 芝士'],
+res:['巧克力型：你近期"贵人运"up=，真诚会带来好机缘。感情上容易升温，工作上可能有意外惊喜。适合主动出击、把握机会。',
+'草莓型：你近期心情甜美放松，"好运"正在路上。你的亲和力会吸引更多人靠近你，适合拓展社交、谈合作。',
+'柠檬型：你近期需要一点"清凉提神"，运势平稳中带波动。适合低调积累、先处理好眼前事，谨慎会让你避开小坑。',
+'芝士型：你近期"财运旺"，付出终于要被看见。事业上有望迎来小丰收，记得大胆争取、及时兑现自己的价值。']}];
+let sel=null;
+function render(focus){
+const t=tests[focus];
+let html=`<div style="color:#e2e8f0;font-weight:600;margin:16px 0 8px">${t.title}</div>`;
+t.opts.forEach((o,i)=>{
+html+=`<label class="opt" id="opt${i}"><input type="radio" name="q" value="${i}" style="display:none">${o}</label>`;
+});
+document.getElementById('qArea').innerHTML=html;
+document.querySelectorAll('.opt').forEach((el,idx)=>{
+el.addEventListener('click',()=>{
+sel=idx;
+document.querySelectorAll('.opt').forEach(x=>x.classList.remove('sel'));
+el.classList.add('sel');
+});
+});
+}
+render(0);
+document.getElementById('choice').addEventListener('change',e=>{sel=null;render(parseInt(e.target.value));});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 已复制！'))}
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 趣味心理测试 | AgentGongju.com'))return;
+if(sel===null){alert('请先选择一个选项哦');return;}
+const qi=parseInt(document.getElementById('choice').value);
+const t=tests[qi];
+let out=`🔮 趣味心理测试\n题目：${t.title}\n你的选择：${t.opts[sel]}\n\n✨ 结果解析\n${t.res[sel]}\n\n💡 温馨提示\n本测试仅供参考与娱乐，结果只代表一种视角。此刻的你就是最好的你。\n\n#心理测试 #趣味测试 #我的性格底色`;
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+</script>
+</body>
+</html>

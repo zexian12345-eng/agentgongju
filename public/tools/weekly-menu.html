@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>一周菜单规划器 | AgentGongju.com</title>
+<meta name="description" content="给你的一周量身定制营养均衡的菜单计划，做饭不纠结">
+<meta name="keywords" content="一周菜单,营养食谱,菜单规划,做饭计划,健康饮食">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:20px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.8;white-space:pre-wrap;min-height:60px;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.chip{display:inline-block;padding:5px 14px;border-radius:20px;background:rgba(99,102,241,0.12);color:#a5b4fc;font-size:.85rem;margin:4px 4px 4px 0;cursor:pointer;border:1px solid transparent}
+.chip.sel{border-color:#6366f1;color:#fff}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📅 一周菜单规划器</h1><p>告别每天"吃什么"的世纪难题</p></div>
+
+<div class="card"><label>🥗 饮食偏好（可多选）</label>
+<div id="prefs">
+<span class="chip sel" onclick="pf(this)">🥩 荤素均衡</span>
+<span class="chip" onclick="pf(this)">🥦 清淡素食</span>
+<span class="chip" onclick="pf(this)">🌶️ 无辣不欢</span>
+<span class="chip" onclick="pf(this)">🩺 轻食减脂</span>
+<span class="chip" onclick="pf(this)">🍜 偏爱面食</span>
+</div>
+<div class="param-row">
+<div><label>👥 几人份饭</label><input type="number" id="people" value="2" min="1" max="6"></div>
+<div><label>🥣 每周计划几餐正餐（含午晚）</label><select id="meals"><option value="7">每天2餐(午+晚)</option><option value="10" selected>每天2餐+周末加餐</option><option value="5">只规划工作日</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">📅 生成一周菜单</button></div>
+
+<div class="result-area" id="resultArea"><div class="card"><div style="color:#22c55e;font-weight:600;margin-bottom:8px">✅ 一周菜单已生成</div><div class="result-box" id="result"></div><button class="copy-btn" onclick="copyResult()">📋 复制菜单</button></div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+let prefs=['荤素均衡'];
+function pf(el){if(el.classList.contains('sel')){el.classList.remove('sel');prefs=prefs.filter(p=>p!==el.textContent);}else{el.classList.add('sel');prefs.push(el.textContent);}}
+const POOL={
+'荤素均衡':['青椒肉丝','番茄炒蛋','红烧鸡翅','清蒸鲈鱼','木须肉','地三鲜','酱爆鸡丁','家常豆腐','宫保鸡丁','蒜蓉西兰花炒虾'],
+'清淡素食':['清炒时蔬','白灼菜心','凉拌黄瓜','香菇青菜','麻婆豆腐(微辣)','蒸蛋羹','白萝卜炖汤','翡翠豆腐羹','蒜蓉生菜','菌菇汤'],
+'无辣不欢':['麻婆豆腐','辣子鸡','水煮鱼','香辣虾','尖椒炒肉','红油抄手','剁椒鱼头','老干妈炒饭','麻辣香锅','泡椒凤爪'],
+'轻食减脂':['鸡胸肉沙拉','水煮蛋+粗粮','烤红薯+西蓝花','藜麦鸡肉碗','凉拌鸡丝','南瓜浓汤','番茄烩牛腩(少油)','燕麦粥+水果','清蒸鱼+时蔬','牛油果全麦三明治'],
+'偏爱面食':['家常打卤面','油泼面','阳春面','西红柿鸡蛋面','葱油拌面','烩面','担担面','炸酱面','岐山臊子面','阳春鳝丝面']
+};
+const days=['周一','周二','周三','周四','周五','周六','周日'];
+const base=['荤素均衡','清淡素食','无辣不欢','轻食减脂','偏爱面食'];
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('一周菜单规划器 | AgentGongju.com'))return;
+const people=document.getElementById('people').value||2;
+const mealN=parseInt(document.getElementById('meals').value);
+const used=prefs.length?prefs:['荤素均衡'];
+let pool=[];
+used.forEach(p=>{const list=POOL[p]||POOL['荤素均衡'];pool=pool.concat(list);});
+pool=pool.sort(()=>Math.random()-0.5);
+const planDays=mealN>=10?7:5;
+let out='📅 一周菜单计划（'+people+'人份）\n\n';
+out+='🍽️ 饮食原则：'+used.join('、')+'\n\n';
+const slots=Math.ceil(planDays*2);
+let pi=0;
+for(let d=0;d<planDays;d++){
+out+='—— '+days[d]+' ——\n';
+out+='  午餐：'+pick(pool,pi++)+'\n';
+out+='  晚餐：'+pick(pool,pi++)+'\n';
+if(mealN>10&&d>4){out+='  🍰 周末加餐：'+pick(pool,pi++)+'\n';}
+out+='\n';
+}
+out+='💡 小贴士\n'+'  • 食材可按需提前采购，避免浪费\n  • 每天搭配 2 份蔬菜 + 1 份蛋白质更均衡\n  • 周末可多做一道炖菜，工作日热一下省时省力\n\n（菜单由 AI 智能生成，可根据口味自由调整）';
+function pick(p,i){return p[i%p.length];}
+document.getElementById('resultArea').classList.add('active');document.getElementById('result').textContent=out;
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('result').textContent).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

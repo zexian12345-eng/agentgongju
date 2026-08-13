@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>考试倒计时+复习计划 | AgentGongju.com</title>
+<meta name="description" content="输入考试日期自动倒计时，并生成冲刺复习节奏表">
+<meta name="keywords" content="考试倒计时,复习计划,冲刺,备考,高考中考">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:760px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:30px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:20px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,input[type=date],input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.countdown{text-align:center;padding:24px;border:1px solid rgba(99,102,241,0.3);border-radius:16px;background:rgba(99,102,241,0.08);margin-bottom:16px}
+.cd-num{font-size:3.2rem;font-weight:800;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.cd-label{color:#94a3b8;font-size:.9rem;margin-top:4px}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.9;white-space:pre-wrap;min-height:60px;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>⏳ 考试倒计时 + 复习计划</h1><p>明确还有几天，安排好冲刺节奏</p></div>
+
+<div class="card"><div class="param-row">
+<div><label>📌 考试名称</label><input type="text" id="name" value="期末考试"></div>
+<div><label>📅 考试日期</label><input type="date" id="date"></div>
+</div>
+<label>🎯 你的目标</label>
+<select id="goal"><option value="冲刺高分">冲刺高分（冲击 90+）</option><option value="稳妥通过" selected>稳妥通过（及格保底）</option><option value="查漏补缺">查漏补缺（专项突破）</option></select>
+<button class="btn-gen" id="genBtn">⏳ 生成倒计时与计划</button></div>
+
+<div class="result-area" id="resultArea"><div class="card">
+<div class="countdown"><div class="cd-num" id="cdNum">—</div><div class="cd-label" id="cdLabel"></div></div>
+<div class="result-box" id="result"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制复习计划</button>
+</div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('考试倒计时+复习计划 | AgentGongju.com'))return;
+const name=document.getElementById('name').value.trim()||'考试';
+const d=document.getElementById('date').value;if(!d){alert('请选择考试日期');return;}
+const goal=document.getElementById('goal').value;
+const target=new Date(d),now=new Date();target.setHours(0,0,0,0);now.setHours(0,0,0,0);
+let days=Math.round((target-now)/86400000);
+if(days<0)days=0;
+document.getElementById('cdNum').textContent=days+' 天';
+document.getElementById('cdLabel').textContent='距离「'+name+'」还有';
+let plan;
+const w=Math.ceil(days/7);
+if(days<=0){plan='考试已经开始，预祝你一切顺利！';}
+else if(days<=2){plan='🔥 最后冲刺\n  • 只复习错题本与重点公式\n  • 回归课本目录，快速过知识点\n  • 早睡，养足精神\n  • 准备好考试文具与证件';}
+else if(days<=7){
+plan='🎯 短期冲刺激战周（未来 1 周）\n  • 每天 2-3 小时，专攻易错点\n  • 做 2-3 套模拟卷，限时训练\n  • 建立"速记卡"背高频考点\n  • 每天睡前快速回顾当天重点';}
+else{
+plan='📚 '+w+' 周复习规划\n';
+for(let i=1;i<=Math.min(w,5);i++){
+const phase=i===1?'基础夯实':i===w?'考前冲刺':'强化提升';
+plan+='  第'+i+'周（'+phase+'）：先扫知识点 → 再做章节练习 → 标记薄弱点\n';
+}
+plan+='  · 最后 3 天：回归错题，重做典型题\n  · 考试前一天：只过重点，早睡早起';
+}
+plan+='\n\n📌 目标方向：'+goal+'\n\n（计划由 AI 按剩余天数智能生成，可灵活调整）';
+document.getElementById('resultArea').classList.add('active');document.getElementById('result').textContent=plan;
+});
+function copyResult(){const t='【'+document.getElementById('cdNum').textContent+' · '+document.getElementById('cdLabel').textContent+'】\n'+document.getElementById('result').textContent;navigator.clipboard.writeText(t).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

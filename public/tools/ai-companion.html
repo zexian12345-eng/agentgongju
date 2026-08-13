@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI聊天助手 | AgentGongju.com</title>
+<meta name="description" content="AI智能聊天助手，输入你想说的话，AI以不同人设风格回应你，陪你聊天解闷">
+<meta name="keywords" content="AI聊天,智能对话,陪聊,树洞,情感倾诉">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:760px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:30px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:24px;margin-bottom:20px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px;color-scheme:dark}
+.chat-box{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:18px;height:340px;overflow-y:auto;display:flex;flex-direction:column;gap:12px;margin-bottom:14px}
+.msg{max-width:80%;padding:10px 14px;border-radius:12px;font-size:.9rem;line-height:1.7;white-space:pre-wrap}
+.msg.ai{background:rgba(99,102,241,0.18);color:#e2e8f0;align-self:flex-start;border-top-left-radius:2px}
+.msg.user{background:linear-gradient(135deg,#6366f1,#a855f7);color:white;align-self:flex-end;border-top-right-radius:2px}
+.input-row{display:flex;gap:10px}
+.input-row input{flex:1;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:.9rem;outline:none;font-family:inherit;color-scheme:dark}
+.input-row input:focus{border-color:#6366f1}
+.send-btn{padding:12px 22px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:10px;color:white;font-weight:600;cursor:pointer;white-space:nowrap}
+.reset-btn{display:block;width:100%;margin-top:8px;padding:10px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#94a3b8;cursor:pointer}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🤖 AI智能聊天助手</h1><p>选择你喜欢的人设，和AI畅聊解闷、倾诉烦恼</p></div>
+<div class="card"><label>🎭 选择AI人设</label><select id="persona">
+<option value="知心好友">💛 知心好友</option>
+<option value="幽默段子手">😂 幽默段子手</option>
+<option value="温柔树洞">🌳 温柔树洞</option>
+<option value="职场导师">💼 职场导师</option>
+<option value="元气少女">🌸 元气少女</option>
+<option value="哲学大师">🧠 哲学大师</option>
+</select>
+<div class="chat-box" id="chat"></div>
+<div class="input-row"><input type="text" id="inp" placeholder="输入你想说的话，回车发送…" onkeydown="if(event.key==='Enter')send()"><button class="send-btn" onclick="send()">发送</button></div>
+<button class="reset-btn" onclick="resetChat()">🔄 重新开始对话</button></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const PERSONAS={
+'知心好友':['（认真听完）我懂你的感受，不管发生什么我都站你这边。','慢慢聊，我在听呢。','有时候说出来就已经好了一半了，你做得很好。','不管怎样，记得先照顾好自己，然后我们再想办法。'],
+'幽默段子手':['哈哈哈哈，你这个说法绝了！','（憋笑）我知道你很想严肃，但真的太好笑了。','生活不就是这样嘛，边笑边过。','笑一笑十年少，看你也变年轻啦！'],
+'温柔树洞':['（轻声）你的心事我都收下了，安心交给这里吧。','没关系，慢慢说，时间还很多。','抱抱你，你辛苦了。','有些情绪说出来就轻了，我在听。'],
+'职场导师':['这个问题关键是要先理清目标和优先级。','先别急着动手，把思路想清楚再执行会更高效。','在职场上，学会向上管理同样重要，点赞你的主动。','建议你把问题拆解成三步，一步一步来就不慌了。'],
+'元气少女':['哇！听到你说这个我也超开心的！','加油加油加油！你一定可以的！（握拳）','嘿嘿，今天的你也要元气满满哦！','放心啦，有我在，什么问题都不是问题！'],
+'哲学大师':['万物皆可思考，你问出了很好的问题。','也许答案不在于得到，而在于寻找的过程。','向内求索，方能见真我。']};
+const OPENERS={
+'知心好友':'嗨～我在这儿呢，最近过得怎么样？',
+'幽默段子手':'嘿朋友！今天有啥乐子吗？来唠两句！',
+'温柔树洞':'（安静地等待着）想说什么都可以，我听着呢。',
+'职场导师':'你好，有什么工作上的困扰想聊聊吗？',
+'元气少女':'嗨嗨！今天也要元气满满哦！找我聊什么呀？',
+'哲学大师':'欢迎，你心中是否也有未解之惑？'};
+function addMsg(text,who){
+const box=document.getElementById('chat');
+const div=document.createElement('div');
+div.className='msg '+who;
+div.textContent=text;
+box.appendChild(div);
+box.scrollTop=box.scrollHeight;
+}
+function resetChat(){
+document.getElementById('chat').innerHTML='';
+const p=document.getElementById('persona').value;
+addMsg(OPENERS[p],'ai');
+}
+function send(){
+if(!Paywall.countUse('AI智能聊天助手 | AgentGongju.com'))return;
+const inp=document.getElementById('inp');
+const text=inp.value.trim();
+if(!text)return;
+addMsg(text,'user');
+inp.value='';
+const p=document.getElementById('persona').value;
+const pool=PERSONAS[p];
+let reply=pool[Math.floor(Math.random()*pool.length)];
+if(text.includes('?')||text.endsWith('吗'))reply=reply+'（关于你说的这个话题，我也可以再展开聊聊～）';
+if(text.length>40)reply+='\n（你说了好多内容，我慢慢消化，咱们继续聊～）';
+setTimeout(()=>{addMsg(reply,'ai');},400);
+}
+resetChat();
+</script>
+</body>
+</html>

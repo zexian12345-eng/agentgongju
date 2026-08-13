@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>读书打卡 + 金句摘录 | AgentGongju.com</title>
+<meta name="description" content="记录每日读书打卡，生成专属阅读进度与读书笔记金句">
+<meta name="keywords" content="读书打卡,读书笔记,阅读记录,金句摘录,读后感">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:760px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:30px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:20px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+input[type=text],input[type=number],textarea{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:80px;resize:vertical}
+input:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-box{display:none;margin-top:20px;background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.9;white-space:pre-wrap;min-height:60px}
+.result-box.active{display:block;animation:fade .4s}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+.copy-btn{margin-top:14px;padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📖 读书打卡 + 金句摘录</h1><p>记录今天读的书，生成专属阅读笔记</p></div>
+
+<div class="card"><label>📚 书名</label>
+<input type="text" id="book" placeholder="例如：三体">
+<div class="param-row">
+<div><label>👣 今天读了（页）</label><input type="number" id="pages" value="30" min="1"></div>
+<div><label>📌 阅读累计天数</label><input type="number" id="days" value="5" min="0"></div>
+</div>
+<label>💬 今天打动你的一句话（抄一句）</label>
+<input type="text" id="quote" placeholder="例如：给岁月以文明，而不是给文明以岁月。">
+<label>✍️ 简单写上你的感想（可选）</label>
+<textarea id="feel" placeholder="今天读完这一段，让我印象最深的是……"></textarea>
+<button class="btn-gen" id="genBtn">📖 生成打卡笔记</button>
+<div class="result-box" id="result"></div>
+<br><button class="copy-btn" id="copyBtn" style="display:none" onclick="copyResult()">📋 复制笔记</button>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('读书打卡 + 金句摘录 | AgentGongju.com'))return;
+const book=document.getElementById('book').value.trim()||'这本书';
+const pages=document.getElementById('pages').value||0;
+const days=document.getElementById('days').value||0;
+const quote=document.getElementById('quote').value.trim();
+const feel=document.getElementById('feel').value.trim();
+const d=new Date();const today=(d.getMonth()+1)+'月'+d.getDate()+'日';
+let out='📖 阅读打卡 · '+today+'\n\n';
+out+='📚 在读：《'+book+'》\n';
+out+='✅ 今日阅读：'+pages+' 页\n';
+out+='👣 累计阅读：'+days+' 天\n\n';
+if(quote)out+='⭐ 今日金句\n  “'+quote+'”\n\n';
+out+='📝 阅读感想\n  '+(feel||'今天继续阅读《'+book+'》，对书中的观点又有了新的理解，很有收获。')+'\n\n';
+out+='💪 坚持是件很酷的事，明天也要继续加油！\n\n';
+out+='（打卡笔记由 AI 整理生成）';
+const box=document.getElementById('result');box.classList.add('active');box.textContent=out;
+document.getElementById('copyBtn').style.display='inline-block';
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('result').textContent).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

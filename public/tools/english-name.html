@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 英文名起名 | AgentGongju.com</title>
+<meta name="description" content="AI英文名起名，输入中文姓名与风格偏好，自动推荐好记、好读、寓意佳的英文名，给出音译契合度与寓意解读，适合求职、留学、海外工作使用">
+<meta name="keywords" content="AI英文名,英文名生成,起英文名,英文取名,留学起名">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus{ border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;margin-bottom:12px;font-size:.92rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🇬🇧 AI 英文名起名</h1><p>为你量身推荐好记、好读、寓意佳的英文名</p></div>
+
+<div class="card">
+<label>👤 你的中文姓名</label>
+<input type="text" id="cname" placeholder="例如：张伟 / Li Wei" />
+<div class="param-row">
+<div><label>👫 性别</label>
+<select id="gender">
+<option value="男">👨 男</option>
+<option value="女">👩 女</option>
+<option value="中性">🌈 中性/不限</option>
+</select></div>
+<div><label>🎨 风格偏好</label>
+<select id="style">
+<option value="通用" selected>通用百搭</option>
+<option value="商务">💼 商务正式</option>
+<option value="现代">✨ 现代新潮</option>
+<option value="文艺">🎭 文艺有范</option>
+<option value="简练">⚡ 简短好记</option>
+</select></div>
+</div>
+<button class="btn-gen" id="genBtn">✨ 生成英文名</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🇬🇧 推荐英文名</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制推荐</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const pool={
+'男':{
+'通用':[['Leo','雄狮，勇敢果决'],['Ethan','坚定可靠'],['Liam','意志坚强'],['Noah','安宁平和'],['Jack','灵活机敏']],
+'商务':[['Alexander','守护者，沉稳专业'],['Charles','稳重成熟'],['Victor','胜利者'],['Edward','富贵守业'],['Marcus','战神，果断干练']],
+'现代':[['Kai','海洋，时尚灵动'],['Leo','开朗阳光'],['Miles','优雅前行'],['Ryan','年轻活力'],['Eric','永远掌权，独立']],
+'文艺':[['Elliot','诗人气质'],['Oliver','橄榄树，平和文雅'],['Felix','幸福幸运'],['Arthur','高贵正直'],['Julian','青春俊朗']],
+'简练':[['Max','最大最强'],['Sam','听见主声，亲切'],['Tom','正直朴实'],['Ray','光芒四射'],['Ben','受祝福者']]},
+'女':{
+'通用':[['Emma','包容博爱'],['Ava','如小鸟般轻灵'],['Sophia','智慧女神'],['Mia','甜美可人'],['Lily','百合花，纯净']],
+'商务':[['Victoria','胜利女神，干练'],['Charlotte','典雅端庄'],['Audrey','高贵坚强'],['Eleanor','光明使者'],['Diana','月亮女神，优雅']],
+'现代':[['Nova','新星，闪耀'],['Zoe','生命活力'],['Chloe','青春翠绿'],['Mia','俏皮可爱'],['Ivy','常青藤，坚韧']],
+'文艺':[['Aurora','极光，梦幻'],['Iris','彩虹女神'],['Clara','光辉明亮'],['Serena','宁静美好'],['Ivy','优雅生息']],
+'简练':[['May','五月，美好'],['Lily','清雅纯真'],['Sue','亲切友善'],['Ann','恩典优雅'],['Eve','生命之源']]},
+'中性':{
+'通用':[['Alex','守护者，中性百搭'],['Jordan','潮流中性'],['Robin','知更鸟，灵动'],['Casey','勇敢机敏'],['Morgan','大海光华']],
+'商务':[['Taylor','裁缝，专业'],['Robin','稳健友好'],['Casey','果断干练'],['Quinn','智慧泉源'],['Avery','精灵睿智']],
+'现代':[['Riley','勇敢活力'],['Hayden','山谷之火'],['Avery','敏捷睿智'],['Eden','乐园，清新'],['Logan','小丘，硬朗']],
+'文艺':[['Wren','鹪鹩，机灵'],['Sage','圣贤，智慧'],['Rowan','红杉，沉稳'],['Sloane','战士之魄'],['Ellis','仁爱之丘']],
+'简练':[['Lee','幽静草地'],['Sam','平和亲切'],['Kay','欢快轻盈'],['Drew','勇者'],['Max','巅峰']]}};
+const styleHint={'通用':'平和大气，易读易记','商务':'正式稳重，适合职场','现代':'新潮时尚，彰显个性','文艺':'优雅文艺，格调出众','简练':'简短有力，朗朗上口'};
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 已复制！'))}
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 英文名起名 | AgentGongju.com'))return;
+const cname=document.getElementById('cname').value.trim();
+if(!cname){alert('请先输入中文姓名');return;}
+const g=document.getElementById('gender').value;
+const st=document.getElementById('style').value;
+const list=pool[g][st];
+let out=`🇬🇧 为「${cname}」推荐的英文名\n风格：${st}（${styleHint[st]}）\n\n`;
+list.sort(()=>Math.random()-0.5).slice(0,5).forEach((n,i)=>{
+out+=`${i+1}. ${n[0]}\n   · 寓意：${n[1]}\n   · 与「${cname}」联动：好念好写，在求职与社交场合大方得体、不易混淆。\n\n`;
+});
+out+=`💡 小贴士：正式场合建议用「名+姓」全称书写，如「${list[0][0]} ${cname}」。`;
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+</script>
+</body>
+</html>

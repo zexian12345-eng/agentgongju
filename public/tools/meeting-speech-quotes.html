@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>会议发言金句生成 | AgentGongju.com</title>
+<meta name="description" content="开会发言不知道怎么说？一键生成大方得体的会议发言与金句">
+<meta name="keywords" content="会议发言,发言金句,职场讲话,主持人词,会议总结">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:760px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:20px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:90px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.9;white-space:pre-wrap;min-height:60px;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.quotes{display:flex;flex-direction:column;gap:10px;margin-top:16px}
+.q{display:flex;justify-content:space-between;align-items:center;padding:13px 16px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:10px;font-size:.92rem}
+.q .t{color:#a5b4fc;font-size:.8rem;cursor:pointer;border:1px solid rgba(99,102,241,0.3);border-radius:6px;padding:3px 10px}
+.q .t:hover{background:rgba(99,102,241,0.2)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🎤 会议发言金句生成</h1><p>会前准备几句，临场发言不慌张</p></div>
+
+<div class="card"><div class="param-row">
+<div><label>🚧 发言场景</label><select id="scene"><option value="周会汇报" selected>周会汇报</option><option value="项目启动会">项目启动会</option><option value="总结表彰">总结表彰</option><option value="年终总结">年终总结</option><option value="即兴发言">即兴发言</option></select></div>
+<div><label>👤 你的身份</label><select id="role"><option value="团队成员" selected>团队成员</option><option value="项目负责人">项目负责人</option><option value="部门经理">部门经理</option></select></div>
+</div>
+<label>📝 简单说说你的工作或观点（可选）</label>
+<textarea id="topic" placeholder="例如：这个月我们重点推进了 XX 项目……"></textarea>
+<button class="btn-gen" id="genBtn">🎤 生成发言稿 + 金句</button></div>
+
+<div class="result-area" id="resultArea"><div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:8px">✅ 发言稿已生成</div>
+<div class="result-box" id="result"></div>
+<div style="color:#a5b4fc;font-weight:600;margin:8px 0">✨ 配套金句（点击复制）</div>
+<div class="quotes" id="quotes"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制全部</button>
+</div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const OPEN={周会汇报:'各位，我来简单汇报下本周的工作。',项目启动会:'关于这个项目，我谈三点看法。',总结表彰:'感谢大家的辛苦付出，我代表团队说两句。',年终总结:'回望这一年，感慨良多。',即兴发言:'既然大家给了我机会，我就简单说几句。'};
+const CLOSE={周会汇报:'以上就是我的汇报，谢谢大家。',项目启动会:'希望大家齐心协力，把这个项目做成样板。',总结表彰:'荣誉属于每一位奋斗的伙伴。',年终总结:'愿明年我们再创佳绩。',即兴发言:'我的话讲完了，感谢聆听。'};
+const MID={周会汇报:'本周（结合工作的重点）进展顺利，任务基本按计划推进。',项目启动会:'目标明确、分工清晰，我们完全有信心按时交付。',总结表彰:'这份成绩的背后，是每个人日复一日的坚持。',年终总结:'过程有起有伏，但方向始终坚定。',即兴发言:'想到什么说什么，重在真实和真诚。'};
+const QUOTES=['行稳致远，进而有为。','功崇惟志，业广惟勤。','不积跬步，无以至千里。','同心同德，其利断金。','谋定而后动，知止而有得。','为之则难者亦易矣。','脚下有泥，心中有光。','凡心所向，素履以往。'];
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('会议发言金句生成 | AgentGongju.com'))return;
+const scene=document.getElementById('scene').value;const role=document.getElementById('role').value;
+const topic=document.getElementById('topic').value.trim();
+const topicLine=topic?('\n\n【想说的内容】'+topic):'';
+const out='【'+scene+' · '+role+' 开场白】\n\n'+OPEN[scene]+'\n\n'+MID[scene]+topicLine+'\n\n（中间可结合具体数据展开）\n\n'+CLOSE[scene]+'\n\n（全文约需 '+Math.max(30,80+Math.random()*40)+' 秒讲完，语速适中）';
+document.getElementById('resultArea').classList.add('active');document.getElementById('result').textContent=out;
+const qb=document.getElementById('quotes');qb.innerHTML='';
+QUOTES.sort(()=>Math.random()-0.5).slice(0,4).forEach(q=>{
+const d=document.createElement('div');d.className='q';
+d.innerHTML='<span>“'+q+'”</span><span class="t">复制</span>';
+d.querySelector('.t').onclick=()=>{navigator.clipboard.writeText(q).then(()=>alert('✅ 已复制金句'));};
+qb.appendChild(d);
+});
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('result').textContent).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

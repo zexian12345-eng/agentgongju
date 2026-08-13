@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>游戏网名生成器 | AgentGongju.com</title>
+<meta name="description" content="一键生成高端霸气、文艺清新、沙雕搞笑游戏昵称ID">
+<meta name="keywords" content="游戏昵称,游戏网名,ID 昵称,霸气网名,名字生成">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:720px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:30px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:20px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+.tags{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px}
+.tag{padding:9px 18px;border:1px solid rgba(255,255,255,0.12);border-radius:20px;color:#94a3b8;font-size:.9rem;cursor:pointer;transition:all .2s}
+.tag:hover{border-color:#6366f1;color:#fff}
+.tag.sel{background:linear-gradient(135deg,#6366f1,#a855f7);border-color:transparent;color:#fff}
+.gen-row{display:flex;gap:10px;margin-bottom:20px}
+.btn-gen{flex:1;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.02rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+input[type=number]{width:120px;padding:12px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;text-align:center;font-size:.9rem;outline:none}
+.names{display:flex;flex-direction:column;gap:10px}
+.name{display:flex;justify-content:space-between;align-items:center;padding:13px 16px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:10px;transition:border-color .2s}
+.name:hover{border-color:#6366f1}
+.name .n{color:#fff;font-size:1.05rem;font-weight:500}
+.name .c{color:#a5b4fc;font-size:.8rem;cursor:pointer;padding:4px 10px;border:1px solid rgba(99,102,241,0.3);border-radius:6px}
+.name .c:hover{background:rgba(99,102,241,0.2)}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🎮 游戏网名生成器</h1><p>告别"路人甲"，起个有排面的游戏ID</p></div>
+
+<div class="card"><label>🎯 选择风格</label>
+<div class="tags" id="tags">
+<span class="tag sel" data="霸气">🔥 霸气</span>
+<span class="tag" data="文艺">🍃 文艺</span>
+<span class="tag" data="沙雕">😂 沙雕</span>
+<span class="tag" data="二次元">✨ 二次元</span>
+<span class="tag" data="霸总">🕶️ 霸总</span>
+</div>
+<div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+<label style="margin:0">生成数量</label><input type="number" id="cnt" value="6" min="3" max="12">
+</div>
+<button class="btn-gen" id="genBtn">🎮 生成网名</button></div>
+<div class="names" id="names"></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+let style='霸气';
+document.querySelectorAll('.tag').forEach(t=>t.onclick=()=>{document.querySelectorAll('.tag').forEach(x=>x.classList.remove('sel'));t.classList.add('sel');style=t.getAttribute('data');});
+const P={
+'霸气':['战神','傲天','狂蟒','屠龙','战狼','雷电','无双','苍穹','霸刀','无影','王者','凌风','绝杀','暗夜','主宰'],
+'文艺':['清风','素年','南风','听雨','浮生','晚霞','半夏','初雪','青栀','云麓','微澜','拾光','薄荷','顾安','长歌'],
+'沙雕':['菜到抠脚','手残玩家','划水达人','键盘侠本侠','躺赢第一','送头先锋','抠脚大汉','柠檬精本精','团灭发动机','我的队友呢','咸鱼翻身','摸鱼大师','干饭冠军','鸽王本王','睡不醒的猫'],
+'二次元':['魔法少女','绯红之刃','月光骑士','星尘旅人','虚渊骑士','樱花下的猫','次元访客','银翼之翼','幻影刺客','灵剑少年','梦境守卫','红瞳少女','疾风剑士','星轨侦探','彼岸花开'],
+'霸总':['霸道总裁','冷面战神','行不改名','南安集团','战无不胜','华尔街之狼','集团继承人','只手遮天','商界奇才','天选打工人','风头无两','人生赢家','大佬本佬','气场两米八','主角光环']
+};
+function rand(a){return a[Math.floor(Math.random()*a.length)];}
+function genOne(){
+const list=P[style];
+const r1=rand(list),r2=rand(list);
+let base=r1+ (Math.random()<0.5?r2:'');
+const suff=['', '', '不解释','666','王者','大神','丶','的传说','而已','本尊'][Math.floor(Math.random()*10)];
+return base+suff;
+}
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('游戏网名生成器 | AgentGongju.com'))return;
+const cnt=parseInt(document.getElementById('cnt').value)||6;
+const box=document.getElementById('names');box.innerHTML='';
+const out=[];
+for(let i=0;i<cnt;i++){out.push(genOne());}
+out.forEach(nm=>{
+const d=document.createElement('div');d.className='name';
+d.innerHTML='<span class="n">'+nm+'</span><span class="c" onclick="copyName(this)">复制</span>';
+d.querySelector('.n').textContent=nm;d.querySelector('.c').onclick=()=>{copySingle(nm);};
+box.appendChild(d);
+});
+});
+function copySingle(nm){navigator.clipboard.writeText(nm).then(()=>alert('✅ 已复制：'+nm));}
+</script>
+</body>
+</html>

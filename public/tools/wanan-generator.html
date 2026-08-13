@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>晚安暖心话生成 | AgentGongju.com</title>
+<meta name="description" content="输入想对TA说的小心思，生成一句温柔治愈的晚安文案">
+<meta name="keywords" content="晚安,晚安语录,暖心话,朋友圈文案,睡前,情话">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:680px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.wanan{font-size:1.5rem;font-weight:700;text-align:center;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin:18px 0;line-height:1.9;font-family:"KaiTi","STKaiti",serif}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#cbd5e1;line-height:2;white-space:pre-wrap;min-height:60px;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🌙 晚安暖心话生成</h1><p>写给熬夜的自己和想念的TA，一句晚安暖到心尖</p></div>
+
+<div class="card"><div class="param-row">
+<div><label>💌 写给谁</label><input type="text" id="who" placeholder="例如：宝贝 / 闺蜜 / 自己"></div>
+<div><label>🎭 风格</label><select id="style"><option value="温柔" selected>温柔治愈</option><option value="俏皮">俏皮可爱</option><option value="文艺">文艺诗意</option><option value="鼓励">鼓励充电</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">🌙 生成晚安语</button></div>
+
+<div class="result-area" id="resultArea"><div class="card"><div class="wanan" id="wanan"></div><div class="result-box" id="result"></div><button class="copy-btn" onclick="copyResult()">📋 复制</button></div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const data={温柔:['今天的烦恼都留在今天吧，愿你的梦里是温柔的月色。','把全世界的好运都借给你，愿你一夜好眠，醒来都是好消息。','晚安，愿你被这个世界，温柔以待。'],俏皮:['灯已关，被子盖好，快去梦里找我玩了！','明天还要元气满满，本宝宝先充个电去啦，晚安！','睡前别数羊了，数我的名字，保管睡得香。'],文艺:['山高月小，伴你入眠','把今天的星光装进口袋，明朝带你去远方','万物皆睡，唯有想念醒着守护你'],鼓励:['好好休息，明天又是新的起跑线','累了一天了，把肩膀放下来，睡饱才有力量','晚安，明天的你一定会感谢此刻好好休息的自己']};
+const endings=['🌙 晚安','🌙 好梦','🌟 梦里见','✨ 明天见','🌙 盖上小被子睡觉吧'];
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('晚安暖心话生成 | AgentGongju.com'))return;
+let who=document.getElementById('who').value.trim()+('，'? '':'');
+let whoTxt=who?who:'';
+let style=document.getElementById('style').value;
+let pool=data[style];let line=pool[Math.floor(Math.random()*pool.length)];
+console.log('line=',line);
+document.getElementById('wanan').textContent=(whoTxt?whoTxt+' ':'')+line;
+document.getElementById('result').textContent='适合搭配的收尾：'+endings[Math.floor(Math.random()*endings.length)]+'\n\n小贴士：发给重要的人，记得加上TA的名字，会更走心哦。';
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('wanan').textContent+' '+document.getElementById('result').textContent.split('小贴士')[0]).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

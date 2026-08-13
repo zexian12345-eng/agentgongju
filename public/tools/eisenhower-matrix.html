@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>时间管理四象限 | AgentGongju.com</title>
+<meta name="description" content="艾森豪威尔四象限时间管理工具，把你的任务科学分类，告别瞎忙提升效率">
+<meta name="keywords" content="四象限,时间管理,任务分类,效率工具,艾森豪威尔">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:90px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.btn-gen:disabled{opacity:.5;cursor:not-allowed}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.quadrant{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:18px;margin-bottom:14px}
+.quadrant h4{color:#a5b4fc;margin-bottom:10px}
+.quadrant .task{display:inline-block;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:6px 12px;margin:4px;font-size:.85rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.legend{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;font-size:.78rem;color:#94a3b8}
+.legend div{padding:6px;border-radius:6px;background:rgba(255,255,255,0.03)}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🗂 时间管理四象限</h1><p>按「重要-紧急」维度科学分类你的每一项任务</p></div>
+
+<div class="card"><label>📋 输入任务（每行一个）</label>
+<textarea id="tasks" placeholder="例如：&#10;交季度报告（今天截止）&#10;回复老板紧急邮件&#10;学习新技能&#10;刷手机看短视频&#10;规划下半年目标&#10;处理日常琐事"></textarea>
+<button class="btn-gen" id="genBtn">🧭 智能分类</button></div>
+
+<div class="result-area" id="resultArea"><div class="card"><div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 分类结果</div>
+<div class="legend"><div>📌 重要且紧急 → 立即执行</div><div>📅 重要不紧急 → 计划安排</div><div>⚡ 紧急不重要 → 委托他人</div><div>🗑 不重要不紧急 → 尽量减少</div></div>
+<div id="out"></div>
+<button class="copy-btn" onclick="copyAll()">📋 复制分类表</button></div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function copyAll(){let t='';document.querySelectorAll('#out .quadrant').forEach(el=>{const tasks=[];el.querySelectorAll('.task').forEach(x=>tasks.push(x.textContent));t+='【'+el.querySelector('h4').textContent+'】'+tasks.join('、')+'\n';});navigator.clipboard.writeText(t.trim()).then(()=>alert('✅ 已复制'))}
+function classify(t){
+  const urgentK=['今天','截止','紧急','马上','现在','立刻','急','催','deadline','ddl','投诉','危机'];
+  const impK=['报告','目标','计划','学习','项目','客户','老板','重要','战略','健康','成长','发展','年度','季度'];
+  const delegateK=['快递','取件','跑腿','订餐','琐事','表格','小事','杂事'];
+  const unimpK=['刷','视频','短视频','追剧','打游戏','闲聊','发呆','逛街','无聊'];
+  let u=false,i=false;
+  if(urgentK.some(k=>t.includes(k)))u=true;
+  if(impK.some(k=>t.includes(k)))i=true;
+  if(unimpK.some(k=>t.includes(k))){u=false;i=false;}
+  if(delegateK.some(k=>t.includes(k))&&!impK.some(k=>t.includes(k))){i=false;}
+  if(u&&i)return 0;
+  if(i)return 1;
+  if(u)return 2;
+  return 3;
+}
+const QUAD=['📌 重要且紧急（立即执行）','📅 重要不紧急（计划安排）','⚡ 紧急不重要（委托他人）','🗑 不重要不紧急（尽量删除）'];
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('时间管理四象限 | AgentGongju.com'))return;
+const tasks=document.getElementById('tasks').value.split('\n').map(t=>t.trim()).filter(Boolean);
+if(!tasks.length){alert('请输入任务');return}
+const groups=[[],[],[],[]];
+tasks.forEach(t=>groups[classify(t)].push(t));
+let html='';
+groups.forEach((g,i)=>{
+  html+='<div class="quadrant"><h4>'+QUAD[i]+'</h4>'+(g.length?g.map(x=>'<span class="task">'+x+'</span>').join(''):'<span style="color:#64748b;font-size:.85rem">暂无任务</span>')+'</div>';
+});
+const tip=groups[0].length?'建议：优先处理'+groups[0].length+'项紧急任务，同时警惕被紧急事务绑架。':(groups[1].length?'建议：把精力多投入「重要不紧急」事项，这是成长的核心。':'建议：任务较少，注意平衡工作与生活。');
+html+='<div style="background:rgba(99,102,241,0.1);border:1px solid rgba(99,102,241,0.3);border-radius:10px;padding:14px;color:#a5b4fc">💡 '+tip+'</div>';
+document.getElementById('resultArea').classList.add('active');
+document.getElementById('out').innerHTML=html;
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 品牌故事生成器 | AgentGongju.com</title>
+<meta name="description" content="为你的产品或品牌一键生成有温度的品牌故事文案">
+<meta name="keywords" content="品牌故事,品牌文案,创业故事,品牌推广,文案生成">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:80px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.9;white-space:pre-wrap;min-height:60px;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📖 AI 品牌故事生成器</h1><p>你的品牌，值得一个好故事</p></div>
+
+<div class="card"><label>🏷️ 品牌名称</label><input type="text" id="brand" placeholder="例如：山月茶舍">
+<div class="param-row">
+<div><label>🍪 行业领域</label><select id="ind"><option value="餐饮美食">餐饮美食</option><option value="生活方式">生活方式</option><option value="美妆个护">美妆个护</option><option value="科技互联网">科技互联网</option><option value="服饰时尚" selected>服饰时尚</option><option value="教育文化">教育文化</option></select></div>
+<div><label>📖 故事风格</label><select id="style"><option value="励志创业" selected>励志创业</option><option value="温暖情怀">温暖情怀</option><option value="工匠传承">工匠传承</option><option value="年轻潮流">年轻潮流</option></select></div>
+</div>
+<label>💬 品牌初心（一句话，可选）</label>
+<input type="text" id="dream" placeholder="例如：想让更多人喝到一杯有温度的茶">
+<button class="btn-gen" id="genBtn">📖 生成品牌故事</button></div>
+
+<div class="result-area" id="resultArea"><div class="card"><div style="color:#22c55e;font-weight:600;margin-bottom:8px">✅ 品牌故事已生成</div><div class="result-box" id="result"></div><button class="copy-btn" onclick="copyResult()">📋 复制</button></div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 品牌故事生成器 | AgentGongju.com'))return;
+const brand=document.getElementById('brand').value.trim();if(!brand){alert('请输入品牌名称');return;}
+const ind=document.getElementById('ind').value;const style=document.getElementById('style').value;
+const dream=document.getElementById('dream').value.trim()||('让每个选择'+brand+'的人，都感受到不一样的心意');
+const origin={励志创业:'看似偶然的选择，往往藏着必然的坚持。',温暖情怀:'一切，都源于一个朴素而真诚的念头。',工匠传承:'有些事，值得用一辈子的时间慢慢做。',年轻潮流:'当想法足够酷，世界自会为你让路。'}[style];
+const core={餐饮美食:['灶台上的专注','一口同款的味道','本真的烟火气'],生活方式:['平凡日子里的一点讲究','把日子过成想要的样子','于细微处见真章'],美妆个护:['由内而外的自信','被好好对待的每一寸肌肤','专属你的精致'],科技互联网:['让复杂变得简单','用技术连接美好','为效率插上翅膀'],服饰时尚:['穿出真实的自己','有态度的穿衣哲学','细节里的品味'],教育文化:['点亮求知的火种','让热爱有处安放','知识与温度同行']}[ind];
+const ending={励志创业:'向前每一步，都算数。',温暖情怀:'这份心意，想与你慢慢分享。',工匠传承:'时光会证明，值得的东西都经得起等待。',年轻潮流:'很酷的事，值得被更多人看见。'}[style];
+const out='【'+brand+' · 品牌故事】\n\n'+origin+'\n\n在'+(randomY())+'，一个关于'+ind+'的想法悄悄生根。它没有惊天动地，只有'+(core[0])+'的心意，默默装进了每一件作品里。\n\n'+(dream)+'——'+(core[1])+'构成了'+brand+'最初的底色。\n\n一路走来，我们遇到过'+(style==='励志创业'?'质疑与沉默':'平淡与琐碎')+'，但始终没忘记'+(core[2])+'的本心。因为真正的品牌，从来不在广告里，而在每一个被认真对待的瞬间。\n\n'+brand+'相信：'+(core[1])+'，正是'+(core[2])+'的最好注脚。\n\n'+ending+'\n\n—— '+brand+'（'+ind+'）\n\n（本品牌故事由 AI 自动生成，可自由修改后再使用）';
+function randomY(){return (19+Math.floor(Math.random()*8))+'xx年';}
+document.getElementById('resultArea').classList.add('active');document.getElementById('result').textContent=out;
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('result').textContent).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

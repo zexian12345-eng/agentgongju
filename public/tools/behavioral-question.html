@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>行为面试答题 | AgentGongju.com</title>
+<meta name="description" content="AI行为面试(STAR法则)答题助手，帮你用结构化方法应对面试追问，讲出打动面试官的故事">
+<meta name="keywords" content="行为面试,STAR法则,面试答题,面试话术">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:90px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.btn-gen:disabled{opacity:.5;cursor:not-allowed}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.9;white-space:pre-wrap;min-height:60px;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🎯 行为面试答题</h1><p>用 STAR 法则把经历讲成打动面试官的高分故事</p></div>
+
+<div class="card"><label>💼 面试官追问 / 考察的能力</label>
+<select id="ability"><option value="团队协作">团队协作能力</option><option value="抗压能力">抗压/解决问题的能力</option><option value="领导力">领导力/影响力</option><option value="沟通表达">沟通表达</option><option value="学习能力">快速学习能力</option></select>
+<label>📝 简述你的相关经历（情境/任务）</label>
+<textarea id="exp" placeholder="例如：在上一份工作中，临近上线前一周发现核心功能有重大问题，我负责牵头解决..."></textarea>
+<button class="btn-gen" id="genBtn">🧠 生成STAR回答</button></div>
+
+<div class="result-area" id="resultArea"><div class="card"><div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ STAR 答题框架已生成</div>
+<div class="result-box" id="out"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制回答</button></div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function copyResult(){navigator.clipboard.writeText(document.getElementById('out').textContent).then(()=>alert('✅ 已复制！'))}
+const ACTIONS={
+'团队协作':['我主动召集相关同学开会，统一分工并明确各自职责','我建立了每日同步机制，确保信息对齐、问题不过夜','遇到分歧时我积极居中协调，让团队快速达成共识'],
+'抗压能力':['我第一时间冷静拆解问题，列出了优先级清单','我连续加班攻坚，同时保持与团队的顺畅沟通','我盯紧关键节点，及时向上汇报进展并调配资源'],
+'领导力':['我主动承担责任，把目标拆解成可执行的任务分配给大家','我及时跟进进展、给予支持，调动了团队的积极性','关键时刻我拍板决策，稳定了团队士气'],
+'沟通表达':['我组织多方沟通，把复杂信息用简洁的方式讲清楚','我耐心倾听各方诉求，最终促成了一致方案','我通过图表与数据汇报，让决策更高效'],
+'学习能力':['我快速查阅资料并请教有经验的同事，缩短了上手时间','我用业余时间系统学习了相关知识并学以致用']};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('行为面试答题 | AgentGongju.com'))return;
+const ability=document.getElementById('ability').value;
+const exp=document.getElementById('exp').value.trim();
+const acts=ACTIONS[ability];
+const s=exp?exp:'（请回填你的经历，这里以示例代替）在项目攻坚期遇到突发问题';
+const S='【S 情境】当时的背景是：'+s.slice(0,40)+'……';
+const T='【T 任务】我的任务是在有限时间内，负责推动事情取得'+(ability==='抗压能力'?'圆满解决':'理想结果')+'。';
+let A='【A 行动】我做了三件事：\n1. '+acts[0]+'；\n2. '+acts[1]+'；\n3. '+acts[2]+'。';
+const m=['【R 结果】最终，问题在 deadline 前顺利解决，获得了领导和团队的认可，整体效率提升了约30%。','【R 结果】经过共同努力，最终达成目标，我也因此积累了宝贵经验，获得了团队好评。','【R 结果】结果超出预期，并沉淀了一套可复用的方法论，之后也被推广沿用。'][Math.floor(Math.random()*3)];
+const out='【面试追问：考察「'+ability.replace(/能力/,'')+'」】\n\n'+S+'\n\n'+T+'\n\n'+A+'\n\n'+m+'\n\n💡 小贴士：回答控制在90秒内，按STAR顺序，重点放在「行动」环节。';
+document.getElementById('resultArea').classList.add('active');
+document.getElementById('out').textContent=out;
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>每日学习计划表生成 | AgentGongju.com</title>
+<meta name="description" content="定制你的每日学习时间表，番茄钟思路规划高效的一天">
+<meta name="keywords" content="学习计划,时间表,学习规划,番茄钟,高效学习">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:20px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:90px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.9;white-space:pre-wrap;min-height:60px;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>⏰ 每日学习计划表生成</h1><p>科学安排一天，让每一分钟都高效</p></div>
+
+<div class="card"><label>📖 今天要重点学习的内容（可列2-3项）</label>
+<textarea id="subs" placeholder="例如：\n英语 背50个单词\n高数 完成第三章练习\n复习物理笔记"></textarea>
+<div class="param-row">
+<div><label>🌅 早晨起床时间</label><select id="wake"><option value="6">6:00</option><option value="7" selected>7:00</option><option value="8">8:00</option></select></div>
+<div><label>🌙 晚上休息时间</label><select id="sleep"><option value="22">22:00</option><option value="23" selected>23:00</option><option value="24">24:00</option></select></div>
+</div>
+<label>🎯 一天可投入的学习时长（小时）</label>
+<input type="number" id="hours" value="6" min="1" max="14">
+<label>🍅 是否启用番茄钟（学25分钟歇5分钟）</label>
+<select id="tomato"><option value="1" selected>启用</option><option value="0">不启用</option></select>
+<button class="btn-gen" id="genBtn">⏰ 生成每日计划</button></div>
+
+<div class="result-area" id="resultArea"><div class="card"><div style="color:#22c55e;font-weight:600;margin-bottom:8px">✅ 学习计划已生成</div><div class="result-box" id="result"></div><button class="copy-btn" onclick="copyResult()">📋 复制计划</button></div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('每日学习计划表生成 | AgentGongju.com'))return;
+const raw=document.getElementById('subs').value.trim();if(!raw){alert('请填写学习内容');return;}
+const subs=raw.split(/\n/).filter(x=>x.trim()).slice(0,5);
+const wake=parseInt(document.getElementById('wake').value);const sleep=parseInt(document.getElementById('sleep').value);
+const totalH=parseInt(document.getElementById('hours').value)||6;
+const tomato=document.getElementById('tomato').value==='1';
+const unit=tomato?25:50;
+const sessions=Math.max(2,Math.round(totalH*60/unit));
+const midday=(wake+sleep)/2;
+let h=wake+1;
+let out='⏰ 每日学习计划（'+wake+':00 起床 · '+sleep+':00 休息 · 约'+totalH+'小时）\n\n';
+let used=0;let idx=0;
+function fmt(hm){const hh=Math.floor(hm),mm=Math.round((hm-hh)*60);return String(hh).padStart(2,'0')+':'+String(mm).padStart(2,'0');}
+const feed=tomato?'25分钟专注 + 5分钟休息':'连续学习 50 分钟 + 休息 10 分钟';
+out+='🍅 节奏：'+feed+'\n\n';
+while(h+ (tomato?0.5:0.9) < sleep && used<totalH*60){
+const sub=subs[idx%subs.length];idx++;
+const b=fmt(h);
+h+=unit/60;if(tomato)h+=5/60;
+const e=fmt(h);
+const slot=(sub.split(/\s/)[0]||sub);
+out+='  '+b+' - '+e+'  📚 '+slot+(slot===sub?'':'（'+sub.replace(slot,'').trim()+'）')+'\n';
+used+=unit;
+}
+out+='  '+fmt(midday)+' 🍚 午餐 + 午休 30 分钟\n';
+out+='  '+fmt(sleep-1)+' 😴 睡前复盘今日收获\n\n';
+out+='💡 高效建议\n  • 早晨头脑清醒，优先攻克难点科目\n  • 每完成 4 个番茄钟，休息 15 分钟\n  • 手机放远处，专注更高效\n\n（计划由 AI 智能生成，可按实际情况调整）';
+document.getElementById('resultArea').classList.add('active');document.getElementById('result').textContent=out;
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('result').textContent).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

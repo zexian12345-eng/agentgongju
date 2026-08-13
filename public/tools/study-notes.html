@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 学习笔记整理 | AgentGongju.com</title>
+<meta name="description" content="AI学习笔记整理，粘贴课堂笔记或零散知识点，自动归纳成结构化知识框架、重点总结与思维导图式大纲，复习效率翻倍">
+<meta name="keywords" content="AI学习笔记,笔记整理,知识框架,思维导图,学习工具">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:120px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;margin-bottom:12px;font-size:.92rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📚 AI 学习笔记整理</h1><p>零散笔记 → 结构化知识框架，复习更高效</p></div>
+
+<div class="card">
+<label>📝 粘贴课堂笔记 / 知识点内容</label>
+<textarea id="note" placeholder="例如：市场营销4P理论，产品Product要有差异化，价格Price要考虑成本和竞品，渠道Place要线上线下结合，促销Promotion要做活动。还有消费者行为学的马斯洛需求层次……"></textarea>
+<div class="param-row">
+<div><label>🏷️ 学科领域</label>
+<select id="subject">
+<option value="综合">🌐 综合</option>
+<option value="经管">📊 经管</option>
+<option value="理工">🔬 理工</option>
+<option value="文科">📖 文史</option>
+<option value="编程">💻 编程</option>
+<option value="医学">⚕️ 医学</option>
+</select></div>
+<div><label>📐 输出形式</label>
+<select id="format">
+<option value="框架" selected>知识框架</option>
+<option value="重点">重点速记</option>
+<option value="问答">问答复习</option>
+<option value="思维导图">思维导图大纲</option>
+</select></div>
+</div>
+<button class="btn-gen" id="genBtn">✨ 整理笔记</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">📚 整理后的笔记</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制笔记</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 笔记已复制！'))}
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 学习笔记整理 | AgentGongju.com'))return;
+const note=document.getElementById('note').value.trim();
+if(!note){alert('请先粘贴笔记内容');return;}
+const subject=document.getElementById('subject').value;
+const format=document.getElementById('format').value;
+const sentences=note.split(/[。！？!?；;\n]/).map(s=>s.trim()).filter(s=>s.length>2);
+const groups={};
+sentences.forEach(s=>{
+  const hasNamed=(name)=>{const reg=new RegExp(name);return reg.test(s);};
+  if(s.length>40){(groups['重点概念']=groups['重点概念']||[]).push(s);}
+  else if(hasNamed('定义')){(groups['核心定义']=groups['核心定义']||[]).push(s);}
+  else if(/步骤|首先|其次|然后|流程|如何|方法/.test(s)){(groups['方法与流程']=groups['方法与流程']||[]).push(s);}
+  else if(/例子|例如|比如|案例|场景/.test(s)){(groups['案例举例']=groups['案例举例']||[]).push(s);}
+  else if(/公式|计算|结果|数值/.test(s)){(groups['公式与数据']=groups['公式与数据']||[]).push(s);}
+  else if(/注意|易错|重点|常考|陷阱/.test(s)){(groups['易错提醒']=groups['易错提醒']||[]).push(s);}
+  else{(groups['笔记要点']=groups['笔记要点']||[]).push(s);}
+});
+const order=['核心定义','方法与流程','重点概念','公式与数据','案例举例','易错提醒','笔记要点'];
+let out=`📚 【${subject==='综合'?'综合':subject}领域】学习笔记整理\n\n`;
+if(format==='思维导图'){
+out+=`主题：${subject==='综合'?'综合学习':subject}知识点\n`;
+order.forEach(k=>{
+  if(groups[k]&&groups[k].length){
+    out+=`├─ ${k}\n`;
+    groups[k].forEach(s=>out+=`│   ├─ ${s.slice(0,30)}${s.length>30?'…':''}\n`);
+  }
+});
+out+=(groups['笔记要点']||[]).length?`│   └─ …\n`:'';
+}else{
+order.forEach(k=>{
+  if(groups[k]&&groups[k].length){
+    out+=`◆ ${k}\n`;
+    groups[k].forEach(s=>out+=`  · ${s}\n`);
+    out+=`\n`;
+  }
+});
+if(!order.some(k=>groups[k]&&groups[k].length)){out+='（请提供更完整的笔记内容）\n';}
+}
+if(format==='重点'){
+out+='🎯 复习重点提示\n· 优先掌握核心定义与公式数据。\n· 结合案例练习题巩固方法流程。\n';
+}
+if(format==='问答'){
+out+='\n📋 自我检测问题\n';
+const qs=sentences.slice(0,3);
+qs.forEach((s,i)=>out+=`Q${i+1}. 请用自己的话复述：${s.slice(0,20)}…？\n`);
+out+=`Q${qs.length+1}. 这些要点之间有什么逻辑联系？\n`;
+}
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+</script>
+</body>
+</html>

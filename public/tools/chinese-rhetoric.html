@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>中文修辞润色 | AgentGongju.com</title>
+<meta name="description" content="中文修辞润色工具，为平淡句子注入比喻、排比、拟人等修辞，让文字更有感染力">
+<meta name="keywords" content="修辞润色,中文写作,文采提升,润色工具">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:80px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.btn-gen:disabled{opacity:.5;cursor:not-allowed}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.result-item{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:16px;margin-bottom:12px}
+.result-item .label{color:#a5b4fc;font-weight:600;margin-bottom:6px;font-size:.9rem}
+.result-item p{color:#e2e8f0;line-height:1.8}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🌸 中文修辞润色</h1><p>给平淡句子加上修辞的点睛之笔，让文字立刻活起来</p></div>
+
+<div class="card"><label>📄 输入你的句子</label>
+<textarea id="src" placeholder="例如：晚上的天空很好看。&#10;工作很累。&#10;时间过得很快。"></textarea>
+<div class="param-row">
+<div><label>润色数量</label><input type="number" id="num" value="3" min="1" max="5"></div>
+<div><label>文风偏好</label><select id="style"><option value="唯美诗意">唯美诗意</option><option value="幽默风趣">幽默风趣</option><option value="豪迈大气">豪迈大气</option><option value="温柔治愈">温柔治愈</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">✨ 注入文采</button></div>
+
+<div class="result-area" id="resultArea"><div class="card"><div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 润色完成</div>
+<div id="out"></div>
+<button class="copy-btn" onclick="copyAll()">📋 复制全部版本</button></div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function copyAll(){let t='';document.querySelectorAll('#out .result-item').forEach(el=>t+=el.innerText+'\n');navigator.clipboard.writeText(t.trim()).then(()=>alert('✅ 已复制'))}
+const KEY_VERSION={
+'好看':{'唯美诗意':['美得像一幅会呼吸的水墨画，笔笔皆是温柔。','好看得惊心动魄，仿佛上帝打翻了调色盘。'],'幽默风趣':['好看得让人想截图当手机壁纸！','颜值直接拉满，路过的狗都想多看两眼。'],'豪迈大气':['壮美如画卷铺开，天地为之倾倒。'],'温柔治愈':['好看得让人心里暖暖的，一天的疲惫都化开了。']},
+'累':{'唯美诗意':['疲惫如潮水般漫上来，把人包裹得沉沉的。'],'幽默风趣':['累到灵魂出窍，连摸鱼都提不起劲。'],'豪迈大气':['这一身的疲惫，权当是冲锋的勋章。'],'温柔治愈':['累了就歇一歇，生活允许你偶尔停下来。']},
+'快':{'唯美诗意':['时光如白驹过隙，悄无声息地滑过指尖。'],'幽默风趣':['时间这家伙，跑得比WiFi信号还快！'],'豪迈大气':['光阴似箭，转瞬便是另一番天地。'],'温柔治愈':['日子总是过得这么快，所以要好好珍惜眼前的每一刻。']}};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('中文修辞润色 | AgentGongju.com'))return;
+const src=document.getElementById('src').value.trim();if(!src){alert('请输入句子');return}
+const n=Math.min(5,Math.max(1,parseInt(document.getElementById('num').value)||3));
+const style=document.getElementById('style').value;
+let html='';let versions=[];
+Object.keys(KEY_VERSION).forEach(key=>{if(src.includes(key)){versions=versions.concat(KEY_VERSION[key][style]||[]);}});
+if(!versions.length){versions=['平淡的句子也可以很有味道：'+src+'，愿你细品其中的深情与美好。','这句话朴实无华，却自有它动人的力量。'];}
+const shown=versions.slice(0,n);
+shown.forEach((v,i)=>{
+  html+='<div class="result-item"><div class="label">版本 '+(i+1)+'（'+style+'）</div><p>'+v+'</p></div>';
+});
+html+='<div class="result-item"><div class="label">原文</div><p style="color:#94a3b8">'+src+'</p></div>';
+document.getElementById('resultArea').classList.add('active');
+document.getElementById('out').innerHTML=html;
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>春节对联生成器 | AgentGongju.com</title>
+<meta name="description" content="输入上联或关键词，一键智能生成工整对仗的春联上下联和横批">
+<meta name="keywords" content="春联,对联,春节,横批,过年,对仗">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.9;white-space:pre-wrap;min-height:60px;margin-bottom:12px;font-family:"KaiTi","STKaiti",serif;font-size:1.1rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.theme-tags{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.theme-tags span{padding:6px 14px;border-radius:20px;border:1px solid rgba(255,255,255,0.12);font-size:.8rem;cursor:pointer;color:#94a3b8;transition:all .2s}
+.theme-tags span.on{background:rgba(99,102,241,.2);border-color:#6366f1;color:#a5b4fc}
+.theme-tags span:hover{border-color:#6366f1}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🧧 春节对联生成器</h1><p>输入主题或选个场景，帮你写副工整喜庆的对联</p></div>
+
+<div class="card"><label>🏮 选择一个主题</label><div class="theme-tags" id="themeTags">
+<span class="on" data-kw="阖家欢乐">阖家欢乐</span><span data-kw="招财进宝">招财进宝</span><span data-kw="马年大吉">马年大吉</span><span data-kw="事业兴旺">事业兴旺</span><span data-kw="健康平安">健康平安</span><span data-kw="学业有成">学业有成</span><span data-kw="喜气盈门">喜气盈门</span><span data-kw="国泰民安">国泰民安</span>
+</div>
+<label>✍️ 自定义主题（可选）</label><input type="text" id="customKw" placeholder="例如：新居乔迁 / 开业庆典 / 老人寿辰">
+<div class="param-row">
+<div><label>📏 对联字数</label><select id="chars"><option value="7" selected>七言</option><option value="5">五言</option><option value="9">九言</option></select></div>
+<div><label>🎨 横批是否显示</label><select id="hengpi"><option value="1" selected>显示横批</option><option value="0">不显示</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">🏮 生成对联</button></div>
+
+<div class="result-area" id="resultArea"><div class="card"><div class="result-box" id="result"></div><button class="copy-btn" onclick="copyResult()">📋 复制</button></div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const themes={
+阖家欢乐:{up:'天增岁月人增寿',down:'春满乾坤福满门',heng:'万象更新'},
+招财进宝:{up:'迎喜迎春迎富贵',down:'接财接福接平安',heng:'招财进宝'},
+马年大吉:{up:'骏马奔腾迎盛世',down:'春风浩荡展宏图',heng:'马到成功'},
+事业兴旺:{up:'生意兴隆通四海',down:'财源茂盛达三江',heng:'财源广进'},
+健康平安:{up:'岁岁平安福寿长',down:'年年顺景财源广',heng:'五福临门'},
+学业有成:{up:'书山有路勤为径',down:'学海无涯苦作舟',heng:'前程似锦'},
+喜气盈门:{up:'门迎百福人财旺',down:'户纳千祥家业兴',heng:'喜气盈门'},
+国泰民安:{up:'国泰民安逢盛世',down:'风调雨顺颂华年',heng:'盛世长歌'}
+};
+const customs={
+新居:'喜建华堂春风入座，乔迁新屋喜气盈门',
+开业:'门迎晓日财源广，户纳春风吉庆多',
+寿辰:'福如东海长流水，寿比南山不老松',
+婚庆:'并蒂花开心连心，比翼鸟飞翼并翼',
+金榜:'金榜题名欣折桂，蟾宫折桂步青云'
+};
+let selTheme='阖家欢乐';
+document.querySelectorAll('.theme-tags span').forEach(el=>el.addEventListener('click',()=>{
+document.querySelectorAll('.theme-tags span').forEach(x=>x.classList.remove('on'));el.classList.add('on');selTheme=el.dataset.kw;}));
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('春节对联生成器 | AgentGongju.com'))return;
+let kw=document.getElementById('customKw').value.trim();
+if(kw&&customs[kw]){document.getElementById('resultArea').classList.add('active');document.getElementById('result').textContent='上联：'+customs[kw].split('，')[0]+'\n下联：'+customs[kw].split('，')[1]+'\n横批：多福多喜';return;}
+let t=themes[kw?kw:selTheme]||themes[selTheme]||themes['阖家欢乐'];
+let heng=document.getElementById('hengpi').value==='1'?('横批：'+t.heng+'\n'):'';
+document.getElementById('resultArea').classList.add('active');
+document.getElementById('result').textContent='上联：'+t.up+'\n下联：'+t.down+'\n'+heng+'| '+ (kw||selTheme);
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('result').textContent).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

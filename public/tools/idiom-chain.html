@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 成语接龙 | AgentGongju.com</title>
+<meta name="description" content="AI成语接龙，输入任意成语，AI自动接出一个成语并解释含义，可不断挑战，边玩边学成语，学习娱乐两不误">
+<meta name="keywords" content="AI成语接龙,成语大全,成语解释,成语游戏,语文学习工具">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus{ border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;margin-bottom:12px;font-size:.92rem}
+#nextBtn{display:none;width:100%;padding:14px;background:linear-gradient(135deg,#a855f7,#6366f1);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s;margin-top:12px}
+#nextBtn:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(168,85,247,0.3)}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🀄 AI 成语接龙</h1><p>和 AI 一直接下去，边玩边学成语</p></div>
+
+<div class="card">
+<label>💬 输入一个成语（四个字）</label>
+<input type="text" id="input_idiom" placeholder="例如：一心一意 / 画龙点睛" />
+<button class="btn-gen" id="genBtn">🀄 开始接龙</button>
+<div class="result-area" id="resultArea">
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制接龙</button>
+<button id="nextBtn" onclick="next()">🔁 AI 继续接</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const data={'一':[['一心一意','心思专一，没有杂念'],['一目了然','一眼就能看清楚'],['一帆风顺','航行顺利，比喻非常顺利'],['一鸣惊人','比喻平时无闻，突然做出惊人成绩']],'心':[['心想事成','心中想什么都能成功'],['心旷神怡','心境开阔，精神愉快'],['心花怒放','内心非常高兴'],['心悦诚服','真心地服气或佩服']],'意':[['意气风发','形容精神振奋，气概豪迈'],['意味深长','含义深刻，耐人寻味'],['意气相投','志趣性格十分相合']],'马':[['马到成功','形容工作刚开始就取得成功'],['马不停蹄','比喻不停顿地向前进'],['马前泼水','比喻事已定局']],'龙':[['龙飞凤舞','形容书法笔势有力灵活'],['龙凤呈祥','表示吉祥喜庆'],['龙腾虎跃','形容威武活跃，非常生气勃勃']],'虎':[['虎头蛇尾','比喻做事前紧后松，有始无终'],['虎背熊腰','形容人魁梧强壮'],['虎视眈眈','形容贪婪而凶狠地注视']],'精':[['精益求精','已经很好了还追求更好'],['精打细算','精细地筹划计算'],['精卫填海','比喻意志坚决，不畏艰难']],'彩':[['彩凤随鸦','比喻女子嫁给才貌配不上的人'],['五彩缤纷','形容颜色繁多而好看']],'画':[['画蛇添足','比喻做了多余的事反而不恰当'],['画龙点睛','比喻在关键处加上精辟的话使内容更加生动']],'点':[['点头哈腰','形容恭顺谦卑'],['点石成金','比喻修改文章使文字好起来']],'晴':[['晴天霹雳','比喻突然发生的意外、震惊的事'],['晴空万里','形容天气晴朗']],'成':[['成竹在胸','比喻做事之前已有主意'],['成人之美','帮助别人实现愿望'],['成败利钝','指事情的成功与失败']],'功':[['功成名就','功业建立，名声显赫'],['功亏一篑','比喻做事只差最后一步而失败'],['功德无量','功德极多，无法计算']],'美':[['美不胜收','美好的东西太多，一时看不过来'],['美中不足','虽然很好，但还有缺陷'],['妙不可言','形容好得难以用语言表达']],'风':[['风调雨顺','形容风雨适时，年景好'],['风平浪静','比喻平静无事'],['风度翩翩','形容举止洒脱有风度'],['风雨同舟','比喻共同经历患难']]};
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 已复制！'))}
+let chainCount=0;
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 成语接龙 | AgentGongju.com'))return;
+const w=document.getElementById('input_idiom').value.trim();
+if(!/^[\u4e00-\u9fa5]{4}$/.test(w)){alert('请输入四字成语');return;}
+chainCount=0;
+const last=w.charAt(w.length-1);
+const list=data[last];
+let out=`🀄 成语接龙开始\n\n`;
+out+=`你：${w}\n`;
+if(list){const pick=list[Math.floor(Math.random()*list.length)];chainCount++;out+=`AI：${pick[0]}（释义：${pick[1]}）\n`;}
+else out+=`AI：暂时接不上了，你赢啦！🏆\n`;
+out+=`\n你可以再用「${list?list[0].charAt(list[0].length-1):w.charAt(w.length-1)}」字开头继续哦。`;
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+document.getElementById('nextBtn').style.display='block';
+});
+function next(){
+const out=document.getElementById('outputBox').innerText;
+const lines=out.split('\n');
+const lastAI=lines[lines.length-3]||'';
+let lastChar;
+const m=lastAI.match(/[一-龥]/g);
+lastChar=m?m[m.length-1]:'一';
+const list=data[lastChar];
+if(chainCount>=5){document.getElementById('outputBox').innerText=out+`\n\n（已接${chainCount}个，休息一下，换条链再战！）`;document.getElementById('nextBtn').style.display='none';return;}
+if(chainCount>=3){alert('这一轮 AI 已接了不少，建议用新的成语重新开一局～');return;}
+if(list){const pick=list[Math.floor(Math.random()*list.length)];chainCount++;const nl=`AI：${pick[0]}（释义：${pick[1]}）\n`;document.getElementById('outputBox').innerText=out+nl+`你可以用「${pick[0].charAt(pick[0].length-1)}」字继续。`;}
+else{document.getElementById('outputBox').innerText=out+`\nAI 接不上啦，你获胜！🏆`;document.getElementById('nextBtn').style.display='none';}
+}
+</script>
+</body>
+</html>

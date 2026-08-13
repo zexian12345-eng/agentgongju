@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 旅行手账文案 | AgentGongju.com</title>
+<meta name="description" content="AI旅行手账文案，输入目的地、旅行感悟与风格，自动生成文艺走心的旅行文案、朋友圈配文和手账段落，记录旅途美好瞬间">
+<meta name="keywords" content="AI旅行文案,旅行手账,Vlog文案,朋友圈旅行,旅行记录">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:70px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;margin-bottom:12px;font-size:.92rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>✈️ AI 旅行手账文案</h1><p>把旅途写成诗，让美好有迹可循</p></div>
+
+<div class="card">
+<label>📍 目的地 + 旅行感悟</label>
+<textarea id="place" placeholder="例如：云南洱海，第一次看到那么蓝的天和湖，风很温柔，整个人都被治愈了，还遇到了超热情的房东"></textarea>
+<div class="param-row">
+<div><label>🎨 文案风格</label>
+<select id="style">
+<option value="文艺" selected>🌌 文艺诗意</option>
+<option value="治愈">🫧 治愈走心</option>
+<option value="简洁">✨ 简洁高级</option>
+<option value="活泼">🎉 活泼元气</option>
+</select></div>
+<div><label>📄 输出形式</label>
+<select id="format">
+<option value="朋友圈" selected>📱 朋友圈配文</option>
+<option value="手账">📔 手账段落</option>
+<option value="vlog">🎬 Vlog旁白</option>
+<option value="全部">🌐 三种都要</option>
+</select></div>
+</div>
+<button class="btn-gen" id="genBtn">✨ 生成旅行文案</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">✈️ 你的旅行文案</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制文案</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 文案已复制！'))}
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 旅行手账文案 | AgentGongju.com'))return;
+const place=document.getElementById('place').value.trim();
+if(!place){alert('请先填写目的地与感悟');return;}
+const style=document.getElementById('style').value;
+const format=document.getElementById('format').value;
+const parts=[];
+const name=place.split(/，|,|。/)[0]||'旅途';
+const rest=place.length>name.length?place.slice(name.length).replace(/^[，,。\s]+/,'')||name:name;
+if(format==='朋友圈'||format==='全部'){
+if(style==='文艺')parts.push(`📮 朋友圈配文\n「${name}」——把日子过成诗，把远方装进心里。\n\n风把这里的蓝吹进我眼里，也把疲惫都吹散了。原来热爱的旅途，真的是治愈一切的良药。\n${rest}\n\n#旅行 #${name} #在路上`);
+else if(style==='治愈')parts.push(`📮 朋友圈配文\n到了${name}，忽然就觉得，人生值得被认真对待。\n一路的风景和遇到的人，都在提醒我：慢一点，美好会来的。\n${rest}\n\n#治愈旅行 #${name}`);
+else if(style==='简洁')parts.push(`📮 朋友圈配文\n${name}，此刻即是最好。\n${rest}\n\n#旅行`);
+else parts.push(`📮 朋友圈配文\n到${name}啦！ε(*´꒳`*)з 真的会被这里的每一帧治愈到，快乐到原地转圈～\n${rest}\n\n#旅行日记 #${name} #特种兵转治愈系`);
+}
+if(format==='手账'||format==='全部'){
+parts.push(`📔 手账段落（可配照片/贴纸）\nDay 1 · ${name}\n今天的颜色，是${style==='治愈'?'温柔的海蓝与纯净的云白':'一眼万年的清透与辽阔'}。车窗外的风景一帧帧略过，我心里那个"想认真生活"的开关，被轻轻拨动了。${rest} 我想，旅行的意义不是走了多远，而是在路上重新遇见更好的自己。`);
+}
+if(format==='vlog'||format==='全部'){
+parts.push(`🎬 Vlog 旁白（配BGM）\n（画面：车窗外风景/海边漫步）\n"有人说，远方有诗。直到我站在这片${name}的土地上，才真的懂了这句话。\n${rest}。\n风温柔的像在说：别急，慢慢走，你想要的，终究会抵达。"`);
+}
+let out=`✈️ ${place.split(/，|,/)[0]} · 旅行文案（${style}风格）\n\n`+parts.join('\n\n');
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+</script>
+</body>
+</html>

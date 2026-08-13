@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>评论情感分析 | AgentGongju.com</title>
+<meta name="description" content="AI用户评论情感分析工具，批量分析好评差评、提炼用户关注点，辅助产品优化">
+<meta name="keywords" content="评论分析,情感分析,用户反馈,舆情分析,差评分析">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:100px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.btn-gen:disabled{opacity:.5;cursor:not-allowed}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.stat{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
+@media(max-width:600px){.stat{grid-template-columns:1fr 1fr}}
+.stat-box{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:16px;text-align:center}
+.stat-box .num{font-size:1.6rem;font-weight:700}
+.stat-box .lb{color:#94a3b8;font-size:.8rem;margin-top:4px}
+.c-item{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:12px 16px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center}
+.c-item .txt{color:#e2e8f0;font-size:.9rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip-box{background:rgba(99,102,241,0.1);border:1px solid rgba(99,102,241,0.3);border-radius:10px;padding:14px;color:#a5b4fc;margin-top:8px}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>💬 评论情感分析</h1><p>批量分析用户评论的情感倾向，提炼核心关注点与改进建议</p></div>
+
+<div class="card"><label>📥 粘贴用户评论（每行一条）</label>
+<textarea id="comments" placeholder="例如：&#10;商品质量真的很好，物流也快&#10;太差了，客服反应特别慢&#10;颜值可以，就是有点小贵&#10;用了一个月，感觉还不错"></textarea>
+<button class="btn-gen" id="genBtn">📊 开始分析</button></div>
+
+<div class="result-area" id="resultArea"><div class="card"><div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 分析完成</div>
+<div class="stat">
+<div class="stat-box"><div class="num" id="posNum" style="color:#22c55e">0</div><div class="lb">👍 好评</div></div>
+<div class="stat-box"><div class="num" id="neuNum" style="color:#eab308">0</div><div class="lb">😐 中性</div></div>
+<div class="stat-box"><div class="num" id="negNum" style="color:#ef4444">0</div><div class="lb">👎 差评</div></div>
+</div>
+<div id="out"></div>
+<div class="tip-box" id="tip"></div>
+<button class="copy-btn" onclick="copyReport()" style="margin-top:12px">📋 复制分析报告</button></div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const POS=['好','棒','赞','喜欢','快','不错','满意','强烈推荐','优秀','实惠','推荐','值得','爱','惊喜','靠谱'];
+const NEG=['差','烂','慢','贵','不满意','失望','坑','垃圾','难用','退货','后悔','气','糟糕','没用','差评','客服慢'];
+function sentiment(c){let p=0,n=0;POS.forEach(k=>{if(c.includes(k))p++});NEG.forEach(k=>{if(c.includes(k))n++});if(p>n)return'pos';if(n>p)return'neg';return'neu';}
+let allResults={pos:[],neg:[],neu:[]};
+function copyReport(){let r=['评论情感分析报告',''];allResults.pos.forEach(c=>r.push('[好评] '+c));allResults.neg.forEach(c=>r.push('[差评] '+c));allResults.neu.forEach(c=>r.push('[中性] '+c));navigator.clipboard.writeText(r.join('\n')).then(()=>alert('✅ 已复制'))}
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('评论情感分析 | AgentGongju.com'))return;
+const list=document.getElementById('comments').value.split('\n').map(c=>c.trim()).filter(Boolean);
+if(!list.length){alert('请输入评论');return}
+allResults={pos:[],neg:[],neu:[]};
+const colors={pos:'#22c55e',neg:'#ef4444',neu:'#eab308'};
+const labels={pos:'👍 好评',neg:'👎 差评',neu:'😐 中性'};
+list.forEach(c=>{const s=sentiment(c);allResults[s].push(c);});
+document.getElementById('posNum').textContent=allResults.pos.length;
+document.getElementById('neuNum').textContent=allResults.neu.length;
+document.getElementById('negNum').textContent=allResults.neg.length;
+let html='';
+Object.keys(allResults).forEach(k=>{
+  allResults[k].slice(0,8).forEach(c=>{html+='<div class="c-item"><span class="txt">'+c+'</span><span style="color:'+colors[k]+';font-size:.8rem">'+labels[k].replace('👍 ','').replace('👎 ','').replace('😐 ','')+'</span></div>';});
+});
+// 提炼关注点
+let focus=[];
+if(allResults.neg.some(c=>c.includes('慢')||c.includes('客服')))focus.push('⚠️ 服务/响应速度受到部分用户吐槽');
+if(allResults.neg.some(c=>c.includes('贵')))focus.push('💸 价格敏感度较高，可考虑性价比优化或活动');
+if(allResults.neg.some(c=>c.includes('质量')||c.includes('差')||c.includes('烂')))focus.push('🔧 产品质量有提升空间');
+if(allResults.pos.some(c=>c.includes('快')))focus.push('🚀 物流/速度快是口碑亮点，应继续保持');
+if(allResults.pos.length>allResults.neg.length)focus.unshift('✅ 整体口碑偏正面，好评率表现良好');
+else if(allResults.neg.length>allResults.pos.length)focus.unshift('🛠 差评占比较高，建议优先改善主要槽点');
+if(!focus.length)focus.push('📊 正负反馈较为均衡，建议持续收集更多样本');
+document.getElementById('out').innerHTML=html;
+document.getElementById('tip').innerHTML='<b>🔍 核心关注点：</b><br>'+focus.join('<br>');
+});
+</script>
+</body>
+</html>

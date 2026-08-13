@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 合同生成器 | AgentGongju.com</title>
+<meta name="description" content="AI合同生成器，输入双方信息与合作要点，自动生成规范、专业的合同文本，支持劳务/采购/合作/租赁等多种类型，随时复制使用">
+<meta name="keywords" content="AI合同,合同生成,劳务合同,合作协议,合同模板,办公工具">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:80px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;margin-bottom:12px;font-size:.92rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip-note{font-size:.78rem;color:#64748b;margin-top:6px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📄 AI 合同生成器</h1><p>输入合作要点，自动生成规范专业的合同文本</p></div>
+
+<div class="card">
+<label>🏷️ 合同名称（如：产品采购合同 / 劳务服务合同）</label>
+<input type="text" id="title" placeholder="例如：软件开发服务合同" />
+<div class="param-row">
+<div><label>🅰️ 甲方</label><input type="text" id="partyA" placeholder="甲方名称" /></div>
+<div><label>🅱️ 乙方</label><input type="text" id="partyB" placeholder="乙方名称" /></div>
+</div>
+<label>📝 合作内容与核心条款要点（金额、周期、交付物等）</label>
+<textarea id="terms" placeholder="例如：乙方为甲方开发一套官网，总金额5万元，分两期付款，工期45天，含源代码交付，售后免费维护一年"></textarea>
+<div class="param-row">
+<div><label>📂 合同类型</label>
+<select id="type">
+<option value="服务">🤝 服务合同</option>
+<option value="采购">📦 采购合同</option>
+<option value="合作">✨ 合作协议</option>
+<option value="租赁">🏠 租赁合同</option>
+<option value="劳务">👷 劳务合同</option>
+</select></div>
+<div><label>📏 篇幅</label>
+<select id="length">
+<option value="标准" selected>标准版</option>
+<option value="精简">精简版</option>
+<option value="详细">详细版</option>
+</select></div>
+</div>
+<button class="btn-gen" id="genBtn">✨ 生成合同</button>
+<p class="tip-note">⚠️ 本工具生成内容仅供参考，重大交易请咨询专业律师。</p>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">📄 生成的合同</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制合同</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function esc(s){return s.replace(/\n/g,'').trim()||'【待补充】'}
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 合同生成器 | AgentGongju.com'))return;
+const title=esc(document.getElementById('title').value);
+const pA=esc(document.getElementById('partyA').value);
+const pB=esc(document.getElementById('partyB').value);
+const terms=esc(document.getElementById('terms').value);
+const type=document.getElementById('type').value;
+const len=document.getElementById('length').value;
+let out=`${title}\n\n合同编号：AGJ-CT-${Date.now().toString().slice(-6)}\n\n甲方（${pA}）\n乙方（${pB}）\n\n`;
+out+=`第一条 合作内容\n根据《中华人民共和国民法典》及相关法律法规，甲乙双方本着平等自愿、诚实信用的原则，就「${title}」事宜达成如下协议。乙方应按照约定完成下列工作内容，具体要求以附件及双方确认的需求为准。\n\n`;
+out+=`第二条 合同金额与支付方式\n1. 本合同总金额为：${terms.match(/[\d.,]+万元?|[\d.,]+元/)?terms.match(/[\d.,]+万元?|[\d.,]+元/)[0]:'【按约定金额】'}。\n2. 支付方式：双方确认后，甲方按约定节点支付进度款；尾款于全部交付验收合格后${len==='详细'?'十五个工作日内':'十日内'}结清。\n3. 付款前，乙方应开具相应金额的合法发票。\n\n`;
+out+=`第三条 交付与验收\n1. 乙方应在约定周期内完成全部交付物并提交甲方验收。\n2. 甲方应在收到交付物后${len==='详细'?'七个工作日内':'五日内'}组织验收，逾期视为验收通过。\n3. 验收不合格的，乙方应在合理期限内整改后重新提交。\n\n`;
+out+=`第四条 知识产权\n乙方为保证交付物不侵犯任何第三方合法权益，交付成果的知识产权自甲方结清全部款项后归甲方所有。乙方不得挪用或授权他人使用甲方商业秘密。\n\n`;
+out+=`第五条 保密条款\n双方对在合作过程中获知的对方商业秘密、技术资料负有保密义务，未经对方书面同意，不得向任何第三方披露；本保密义务不因合同终止而失效。\n\n`;
+out+=`第六条 违约责任\n1. 乙方逾期交付或甲方逾期付款的，违约方应按合同总额的每日千分之三向守约方支付违约金，累计不超过合同总额的${len==='详细'?'百分之二十':'百分之十'}。\n2. 一方严重违约或根本违约，另一方有权书面通知解除合同，并可依法追究违约责任。\n\n`;
+if(len!=='精简'){
+out+=`第七条 不可抗力\n因不可抗力致使本合同无法履行的，受影响一方应及时通知对方并提供证明，双方协商后可顺延履行或终止合同，互不承担违约责任。\n\n第八条 争议解决\n本合同履行过程中发生争议的，双方应友好协商解决；协商不成的，任何一方可向合同签订地有管辖权的人民法院提起诉讼。\n\n`;
+}
+out+=`第九条 其他\n1. 本合同的任何变更、补充均须经双方书面确认后方为有效。\n2. 本合同一式两份，甲乙双方各执一份，自双方签字（盖章）之日起生效。\n\n甲方（盖章）：${pA}\n签字：____________\n日期：____年__月__日\n\n乙方（盖章）：${pB}\n签字：____________\n日期：____年__月__日`;
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 合同已复制！'))}
+</script>
+</body>
+</html>

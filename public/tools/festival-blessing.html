@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 节日祝福语 | AgentGongju.com</title>
+<meta name="description" content="AI节日祝福语，选节日、定对象和风格，一键生成走心不油腻的祝福语，春节、中秋、情人节、教师节、母亲节等全覆盖，适合微信、短信、贺卡">
+<meta name="keywords" content="AI祝福语,节日祝福,中秋祝福,春节祝福,祝福短信,贺卡文案">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus{ border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;margin-bottom:12px;font-size:.92rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🎁 AI 节日祝福语</h1><p>走心不油腻，节日问候不再词穷</p></div>
+
+<div class="card">
+<label>🎊 节日</label>
+<select id="festival">
+<option value="中秋" selected>🌕 中秋节</option>
+<option value="春节">🧧 春节</option>
+<option value="元宵">🏮 元宵节</option>
+<option value="端午">🎋 端午节</option>
+<option value="国庆">🎇 国庆节</option>
+<option value="元旦">🗓️ 元旦</option>
+<option value="情人节">💕 情人节</option>
+<option value="母亲节">🌷 母亲节</option>
+<option value="父亲节">👔 父亲节</option>
+<option value="教师节">📚 教师节</option>
+<option value="圣诞节">🎄 圣诞节</option>
+</select>
+<div class="param-row" style="margin-top:12px">
+<div><label>👤 发送对象</label>
+<select id="target">
+<option value="长辈">👴 长辈</option>
+<option value="朋友">🧑‍🤝‍🧑 朋友</option>
+<option value="同事">💼 同事/客户</option>
+<option value="爱人">💑 爱人</option>
+<option value="老师">👩‍🏫 老师</option>
+</select></div>
+<div><label>🎨 风格</label>
+<select id="style">
+<option value="走心">💗 走心温暖</option>
+<option value="简短">⚡ 简短得体</option>
+<option value="文艺">🎭 文艺高级</option>
+<option value="幽默">😄 幽默轻松</option>
+</select></div>
+</div>
+<button class="btn-gen" id="genBtn">✨ 生成祝福语</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🎁 祝福语</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制祝福语</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const fesName={'中秋':'中秋节','春节':'春节','元宵':'元宵节','端午':'端午节','国庆':'国庆节','元旦':'元旦','情人节':'情人节','母亲节':'母亲节','父亲节':'父亲节','教师节':'教师节','圣诞节':'圣诞节'};
+const banks={
+'中秋':{
+'走心':['月圆人团圆，最是想念时。愿这轮明月把我的祝福捎给你，阖家安康，事事顺心。','今夜月色真美，像极了对你的牵挂。愿团圆与温暖，都如期而至。','月饼再甜，不如家常的团圆甜。愿人月两团圆，岁岁常安康。'],
+'简短':['中秋快乐，阖家安康！','月满人团圆，佳节共欢颜。']},
+'春节':{
+'走心':['旧岁已展千重锦，新岁更进百尺竿。愿你新的一年平安喜乐，所求皆如愿。','过年好！愿新年的每一缕阳光都照进你的生活，万事顺遂，幸福绵长。'],
+'简短':['新年快乐，万事如意！','新春大吉，阖家幸福！']},
+'元宵':{'走心':['灯火可亲，团圆可期。愿这碗汤圆甜进心头，生活热气腾腾。','花灯明亮，月色正好。祝你圆满幸福，事事皆甜。'],'简短':['元宵节快乐，团团圆圆！']},
+'端午':{'走心':['粽叶裹住的是思念，龙舟划动的是安康。愿你的端午既有粽香，更有人间清欢。','艾草青青，粽香袅袅。祝你端午安康，平安顺遂。'],'简短':['端午安康，平安喜乐！']},
+'国庆':{'走心':['红旗漫卷，山河锦绣。愿你与时代同行，前程宽广，生活蒸蒸日上。'],'简短':['国庆快乐，祖国万岁！']},
+'元旦':{'走心':['旧的篇章翻过，旧的遗憾清零。愿你新年新气象，所行皆坦途，所愿皆成真。'],'简短':['元旦快乐，新年大吉！']},
+'情人节':{'走心':['遇见你之后，我愿把每一个普通日子，都过成值得纪念的情人节。'],'简短':['情人节快乐，爱你哟❤️']},
+'母亲节':{'走心':['妈妈，以前是你为我撑伞，如今换我为您挡风。节日快乐，永远爱您。','你陪我长大，我陪你到老。母亲节快乐，愿您平安健康，笑口常开。'],'简短':['母亲节快乐，最爱您！']},
+'父亲节':{'走心':['父亲的山，虽沉默却伟岸。谢谢您扛起整个家，节日快乐，愿您健康长寿。'],'简短':['父亲节快乐，您辛苦啦！']},
+'教师节':{'走心':['粉笔灰落下的是知识，您举起的是未来。老师，教师节快乐，感谢您一路照亮我。'],'简短':['老师，您辛苦了，节日快乐！']},
+'圣诞节':{'走心':['愿你圣诞有暖灯、有好梦，也有值得期待的人与事。'],'简短':['Merry Christmas！圣诞快乐！']}};
+const quotePool=['愿所有的美好都如期而至','愿岁月温柔，人安心暖','愿平安常在，快乐常伴','愿所得皆所期，所失亦无碍'];
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 祝福语已复制！'))}
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 节日祝福语 | AgentGongju.com'))return;
+const fes=document.getElementById('festival').value;
+const target=document.getElementById('target').value;
+const style=document.getElementById('style').value;
+const name=fesName[fes];
+const pool=banks[fes][style]||banks[fes]['走心'];
+const b=pool[Math.floor(Math.random()*pool.length)];
+const targetTxt={'长辈':'，祝您'+name+'快乐','朋友':'，'+(fes==='情人节'?'':'祝你')+name+'快乐','同事':'，'+name+'快乐，合作愉快','爱人':'，我的爱人，'+name+'快乐','老师':'老师，'+name+'快乐'}[target];
+let out=`${target!=='爱人'?targetTxt:targetTxt}\n\n${b}\n\n`;
+out+=`—— ${quotePool[Math.floor(Math.random()*quotePool.length)]}`;
+if(style==='幽默')out+=`\n祝${name}快乐之余，别忘了多吃好的，别只发祝福不给饭🥂`;
+if(style==='文艺')out+='\n愿明月清风，皆为你而来。';
+out+=`\n${target==='老师'?'您的学生':''}敬上`;
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+</script>
+</body>
+</html>

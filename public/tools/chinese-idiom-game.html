@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>成语猜猜猜小游戏 | AgentGongju.com</title>
+<meta name="description" content="看图猜成语、根据释义猜成语，全民都能玩的成语互动小游戏">
+<meta name="keywords" content="成语游戏,猜成语,成语接龙,国学,学习游戏">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:760px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:30px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:20px}
+.qbox{text-align:center;margin-bottom:20px}
+.clue{font-size:1.3rem;font-weight:600;color:#fff;margin-bottom:8px}
+.hint{color:#94a3b8;font-size:.92rem;margin-bottom:16px}
+.boxes{display:flex;gap:8px;justify-content:center;margin-bottom:22px;flex-wrap:wrap}
+.bx{width:52px;height:58px;font-size:1.6rem;font-weight:700;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#6366f1,#a855f7);border-radius:10px;color:#fff}
+.bx.empty{background:rgba(255,255,255,0.05);border:1px dashed rgba(255,255,255,0.25);color:#94a3b8}
+.keys{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:18px}
+.key{padding:10px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);border-radius:10px;color:#e2e8f0;font-size:1.1rem;cursor:pointer;transition:all .15s}
+.key:hover{border-color:#6366f1;background:rgba(99,102,241,0.1)}
+.key.used{opacity:.3;pointer-events:none}
+.btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.btn{display:inline-block;padding:10px 22px;border:none;border-radius:10px;font-size:.95rem;font-weight:600;cursor:pointer}
+.btn-primary{background:linear-gradient(135deg,#6366f1,#a855f7);color:#fff}
+.btn-ghost{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.15);color:#e2e8f0}
+.msg{text-align:center;margin-top:16px;font-weight:600;min-height:24px}
+.win{color:#22c55e}.lose{color:#ef4444}.info{color:#a5b4fc}
+.score{text-align:center;color:#94a3b8;font-size:.9rem;margin-bottom:20px}
+.score b{color:#a5b4fc}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🧩 成语猜猜猜小游戏</h1><p>根据提示猜成语，看看你的文学储备量！</p></div>
+
+<div class="card">
+<div class="score">已完成 <b id="done">0</b> 题 · 猜对 <b id="right">0</b> 题 · 得分 <b id="pts">0</b></div>
+<div class="qbox"><div class="clue" id="clue"></div><div class="hint" id="hint"></div></div>
+<div class="boxes" id="boxes"></div>
+<div class="keys" id="keys"></div>
+<div class="btns">
+<button class="btn btn-primary" onclick="next()">下一题</button>
+<button class="btn btn-ghost" onclick="giveUp()">跳过/看答案</button>
+</div>
+<div class="msg" id="msg"></div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const QS=[
+{ans:'守株待兔',hint:'比喻不主动努力，存侥幸心理，希望得到意外收获'},
+{ans:'亡羊补牢',hint:'出了问题及时补救，还不算晚'},
+{ans:'画蛇添足',hint:'做多余的事，反而弄巧成拙'},
+{ans:'对牛弹琴',hint:'对不懂道理的人讲道理，白费口舌'},
+{ans:'掩耳盗铃',hint:'自欺欺人，骗得了自己骗不了别人'},
+{ans:'杯弓蛇影',hint:'疑神疑鬼，自己吓自己'},
+{ans:'井底之蛙',hint:'眼界狭小，见识短浅的人'},
+{ans:'纸上谈兵',hint:'空谈理论，不能解决实际问题'}
+];
+let idx=0,done=0,right=0,pts=0,cur=null,letters=0;
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function load(i){cur=QS[i];letters=0;document.getElementById('clue').textContent='？'.repeat(cur.ans.length);
+document.getElementById('hint').textContent='💡 '+cur.hint;
+const ansArr=cur.ans.split('');
+let pool=ansArr.slice();
+while(pool.length<8){pool.push('甲乙丙丁'[Math.floor(Math.random()*4)]);}
+pool=shuffle(pool);
+const boxes=document.getElementById('boxes');boxes.innerHTML='';
+for(let i=0;i<cur.ans.length;i++){const d=document.createElement('div');d.className='bx empty';boxes.appendChild(d);}
+const keys=document.getElementById('keys');keys.innerHTML='';
+pool.forEach(l=>{const k=document.createElement('div');k.className='key';k.textContent=l;k.onclick=()=>pickChar(k,l);keys.appendChild(k);});
+document.getElementById('msg').className='msg';document.getElementById('msg').textContent='用下方偏旁组字提示，拼出这个成语';
+}
+function pickChar(el,l){if(document.getElementById('curLocks'))return;const bs=document.querySelectorAll('#boxes .bx');for(let i=0;i<bs.length;i++){if(bs[i].classList.contains('empty')){bs[i].textContent=l;bs[i].classList.remove('empty');bs[i].setAttribute('data-l',l);letters++;el.classList.add('used');break;}}
+checkGuess();}
+function guess(){const bs=document.querySelectorAll('#boxes .bx');let s='';bs.forEach(b=>s+=b.textContent||'');return s;}
+function checkGuess(){if(letters<cur.ans.length)return;const s=guess();if(s===cur.ans){right++;pts+=10;done++;document.getElementById('right').textContent=right;document.getElementById('pts').textContent=pts;document.getElementById('done').textContent=done;
+const msg=document.getElementById('msg');msg.className='msg win';msg.textContent='🎉 恭喜答对！「'+cur.ans+'」答案是哪个？点"下一题"继续';curSolved=true;}else{const msg=document.getElementById('msg');msg.className='msg lose';msg.textContent='❌ 差一点，再试试看（可点"跳过"看答案）';}}
+function giveUp(){document.getElementById('clue').textContent=cur.ans;done++;document.getElementById('done').textContent=done;const msg=document.getElementById('msg');msg.className='msg info';msg.textContent='答案：「'+cur.ans+'」。记住啦，下次再见它！';}
+function next(){if(!Paywall.countUse('成语猜猜猜小游戏 | AgentGongju.com'))return;idx=(idx+1)%QS.length;load(idx);}
+load(idx);
+</script>
+</body>
+</html>

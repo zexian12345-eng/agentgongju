@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI星座运势每日播报 | AgentGongju.com</title>
+<meta name="description" content="AI星座运势，输入星座生成今日综合运势、爱情、事业、财运分析">
+<meta name="keywords" content="星座,运势,今日运势,星座运势,占星">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px;color-scheme:dark}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.9;white-space:pre-wrap;min-height:60px;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.star{color:#fbbf24;letter-spacing:2px}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>✨ AI星座运势每日播报</h1><p>每日星座运势，爱情、事业、财运全解析（仅供娱乐参考）</p></div>
+<div class="card"><div class="param-row">
+<div><label>♈ 你的星座</label><select id="sign">
+<option value="白羊座">♈ 白羊座 3.21-4.19</option>
+<option value="金牛座">♉ 金牛座 4.20-5.20</option>
+<option value="双子座">♊ 双子座 5.21-6.21</option>
+<option value="巨蟹座">♋ 巨蟹座 6.22-7.22</option>
+<option value="狮子座">♌ 狮子座 7.23-8.22</option>
+<option value="处女座">♍ 处女座 8.23-9.22</option>
+<option value="天秤座">♎ 天秤座 9.23-10.23</option>
+<option value="天蝎座">♏ 天蝎座 10.24-11.22</option>
+<option value="射手座">♐ 射手座 11.23-12.21</option>
+<option value="摩羯座">♑ 摩羯座 12.22-1.19</option>
+<option value="水瓶座">♒ 水瓶座 1.20-2.18</option>
+<option value="双鱼座">♓ 双鱼座 2.19-3.20</option>
+</select></div>
+<div><label>📅 运势周期</label><select id="period"><option value="今日运势">今日运势</option><option value="本周运势">本周运势</option><option value="本月运势">本月运势</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">🔮 查看我的运势</button></div>
+<div class="result-area" id="resultArea"><div class="card"><div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 运势已生成（娱乐参考）</div>
+<div class="result-box" id="out"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制运势</button></div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function copyResult(){navigator.clipboard.writeText(document.getElementById('out').textContent).then(()=>alert('✅ 已复制！'))}
+const SIGNS={
+'白羊座':{el:'火象',color:'热情红',trait:'勇敢果断、冲劲十足',lucky:'3、7、11'},
+'金牛座':{el:'土象',color:'大地绿',trait:'稳重踏实、注重品质',lucky:'4、8、20'},
+'双子座':{el:'风象',color:'明快黄',trait:'机智灵活、沟通能力强',lucky:'5、14、22'},
+'巨蟹座':{el:'水象',color:'温柔的蓝',trait:'情感细腻、顾家体贴',lucky:'2、7、16'},
+'狮子座':{el:'火象',color:'耀眼的金',trait:'自信大方、领导气质',lucky:'1、9、19'},
+'处女座':{el:'土象',color:'纯净白',trait:'认真细致、追求完美',lucky:'6、15、23'},
+'天秤座':{el:'风象',color:'优雅的紫',trait:'公平友善、审美一流',lucky:'4、7、13'},
+'天蝎座':{el:'水象',color:'神秘黑',trait:'洞察力强、意志坚定',lucky:'2、11、18'},
+'射手座':{el:'火象',color:'活力的橙',trait:'乐观自由、热爱冒险',lucky:'3、12、21'},
+'摩羯座':{el:'土象',color:'沉稳褐',trait:'坚韧务实、目标明确',lucky:'5、10、17'},
+'水瓶座':{el:'风象',color:'科技蓝',trait:'特立独行、富有创意',lucky:'4、14、24'},
+'双鱼座':{el:'水象',color:'梦幻紫',trait:'浪漫善良、富有想象力',lucky:'7、12、25'}};
+const STAR=['⭐⭐⭐⭐⭐','⭐⭐⭐⭐','⭐⭐⭐⭐','⭐⭐⭐','⭐⭐⭐⭐','⭐⭐⭐','⭐⭐⭐⭐⭐','⭐⭐⭐⭐'];
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI星座运势每日播报 | AgentGongju.com'))return;
+const sign=document.getElementById('sign').value;
+const period=document.getElementById('period').value;
+const s=SIGNS[sign];
+const date=new Date();
+const d=(date.getMonth()+1)+'月'+date.getDate()+'日';
+let out='✨ 【'+sign+' · '+period+'】\n📅 '+d+' 　元素：'+s.el+'　代表色：'+s.color+'\n\n';
+out+='【今日一句话】\n'+(s.trait)+'的你，今天整体节奏'+['顺畅','平稳','略有起伏','张弛有度','渐入佳境'][date.getDate()%5]+'，保持好心态一切皆顺。\n\n';
+const gen=(t,o)=>'【'+t+'】'+STAR[Math.floor(Math.random()*STAR.length)]+'\n'+o+'\n';
+const adv=['适合推进重要事情，把握黄金窗口期','保持低调，默默积累实力','主动邀约，人脉会带来好运'];
+out+=gen('综合运势','能量充沛，做事效率较高，适合处理积压的事务。'+adv[date.getDate()%3]);
+out+=gen('爱情运势','单身的你可能遇到值得留意的人；有伴的多沟通能增进感情。');
+out+=gen('事业学业','思路清晰，合作默契，是展现能力的好时机。');
+out+=gen('财运','收支平稳，投资理财宜持谨慎乐观态度。');
+out+='【招财幸运】\n幸运数字：'+s.lucky+'　幸运颜色：'+s.color+'　幸运方位：'+(date.getDate()%2?'东南方':'正南方')+'\n\n※ 运势为AI娱乐生成，仅供休闲参考，请理性看待。';
+document.getElementById('resultArea').classList.add('active');
+document.getElementById('out').textContent=out;
+});
+</script>
+</body>
+</html>

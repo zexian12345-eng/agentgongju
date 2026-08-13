@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>姓名起名打分 | AgentGongju.com</title>
+<meta name="description" content="AI姓名打分评测工具，从寓意、音律、五行、字形多维度为名字打分并给出解析">
+<meta name="keywords" content="姓名打分,名字评测,起名,姓名测试,五行">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.btn-gen:disabled{opacity:.5;cursor:not-allowed}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.score-ring{text-align:center;padding:20px;background:rgba(99,102,241,0.08);border:1px solid rgba(99,102,241,0.3);border-radius:16px}
+.score-ring .big{font-size:3rem;font-weight:800;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.score-ring .lb{color:#94a3b8;margin-top:4px}
+.dim-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
+@media(max-width:600px){.dim-row{grid-template-columns:1fr}}
+.dim{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:14px}
+.dim h5{color:#a5b4fc;margin-bottom:6px}
+.bar{height:8px;background:rgba(255,255,255,0.08);border-radius:5px;overflow:hidden;margin-top:6px}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,#6366f1,#a855f7);border-radius:5px}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.8;margin-top:16px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem;margin-top:14px}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🔤 姓名起名打分</h1><p>从寓意、音律、五行、字形为你的名字多维打分（仅供参考）</p></div>
+
+<div class="card"><label>🗣️ 输入姓名</label>
+<input type="text" id="name" placeholder="例如：李伟宸 / 张梓萱">
+<label>👤 性别（影响部分判定）</label>
+<select id="gender"><option value="男">男</option><option value="女">女</option></select>
+<button class="btn-gen" id="genBtn">🔍 开始打分</button></div>
+
+<div class="result-area" id="resultArea"><div class="card">
+<div class="score-ring"><div class="big" id="score">0</div><div class="lb" id="scoreLb">综合评分</div></div>
+<div class="dim-row" id="dims"></div>
+<div class="result-box" id="out"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制报告</button></div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function copyResult(){navigator.clipboard.writeText(document.getElementById('out').textContent).then(()=>alert('✅ 已复制！'))}
+const GOOD_CHARS='伟宸晨曦浩然宇轩欣怡梓萱梓桐俊杰明哲嘉懿若愚诗涵静宜';
+const BAD_CHARS='死破丧孤灾灾辱贱穷';
+const ELEMENT_MAP=['水','火','土','木','金','水','火','土','木','金'];
+function score(s){if(!s)return 0;let sc=40;const c=s.split('');const unique=new Set(c);if(unique.size===c.length)sc+=15;// 无重复
+const hasBad=BAD_CHARS.split('').some(b=>s.includes(b));if(hasBad)sc-=20;
+let good=0;GOOD_CHARS.split('').forEach(g=>{if(s.includes(g))good++;});sc+=good*8;
+if(c.length>=2&&c.length<=3)sc+=10;if(c.length>3)sc-=5;
+return Math.max(30,Math.min(98,sc));}
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('姓名起名打分 | AgentGongju.com'))return;
+const name=document.getElementById('name').value.trim();if(!name){alert('请输入姓名');return}
+const gender=document.getElementById('gender').value;
+const chars=name.split('');
+const total=score(name);
+const dims={
+'音律流畅度':50+Math.random()*40,
+'寓意内涵':40+Math.min(40,chars.filter(c=>GOOD_CHARS.includes(c)).length*12),
+'五行搭配':55+Math.random()*30,
+'字形结构':55+(chars.length>=2&&chars.length<=3?20:5)
+};
+const grade=total>=85?'优秀':total>=70?'良好':total>=55?'及格':'建议优化';
+document.getElementById('score').textContent=total;
+document.getElementById('scoreLb').textContent='综合评分 · '+grade;
+let dimHtml='';
+const names={'音律流畅度':'🎵','寓意内涵':'💎','五行搭配':'☯️','字形结构':'🖋️'};
+Object.keys(dims).forEach(k=>{const v=Math.round(dims[k]);dimHtml+='<div class="dim"><h5>'+names[k]+' '+k+' <span style="color:#a5b4fc;float:right">'+v+'</span></h5><div class="bar"><i style="width:'+v+'%"></i></div></div>';});
+document.getElementById('dims').innerHTML=dimHtml;
+// 详细解析
+let out='【姓名解析】「'+name+'」\n\n';
+out+='🔤 字形结构：由'+chars.length+'个汉字组成'+(chars.length<=3?'，简洁易记，结构清爽，书写美观。':'，字数偏多，建议简洁一些。')+'\n\n';
+out+='💎 寓意内涵：';
+if(chars.some(c=>GOOD_CHARS.includes(c)))out+='字中蕴含'+(gender==='男'?'阳刚进取、睿智大气':'温柔美好、聪慧灵动')+'的美好寓意，寄托了美好的期许。';
+else out+='用字较为平常，寓意可进一步提升。';
+out+='\n\n☯️ 五行层面：';
+out+='（娱乐参考）姓名所用之字五行属性多样，搭配'+(total>=70?'较为协调':'可稍作平衡调整')+'，寓意顺遂。';
+out+='\n\n📝 综合评语：'+(grade==='优秀'?'这个名字起得相当不错，音、形、意俱佳，辨识度高！':grade==='良好'?'整体不错，略有提升空间。':'名字整体尚可，可根据喜好酌情优化。）');
+out+='\n\n※ 本评分基于趣味算法，仅供娱乐参考，具体请理性看待。';
+document.getElementById('out').textContent=out;
+document.getElementById('resultArea').classList.add('active');
+});
+</script>
+</body>
+</html>

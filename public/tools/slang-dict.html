@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>网络流行语解释器 | AgentGongju.com</title>
+<meta name="description" content="遇到看不懂的网络热词、缩写、梗？输入帮你解释并给例句">
+<meta name="keywords" content="网络用语,热词,缩写,梗,00后,流行语,翻译">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:700px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.word{font-size:1.8rem;font-weight:800;text-align:center;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin:14px 0}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;min-height:60px;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.hot{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.hot span{padding:6px 14px;border-radius:18px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);font-size:.8rem;color:#94a3b8;cursor:pointer}
+.hot span:hover{border-color:#6366f1;color:#a5b4fc}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🤔 网络流行语解释器</h1><p>看不懂年轻人的黑话？输入热词，一秒翻译成人话</p></div>
+
+<div class="card"><label>🔤 输入看不懂的词或缩写</label><input type="text" id="kw" placeholder="例如：栓Q / fyp / 画饼 / 破防">
+<div class="hot" id="hot"></div>
+<button class="btn-gen" id="genBtn">🔍 帮我解释</button></div>
+
+<div class="result-area" id="resultArea"><div class="card"><div class="word" id="word"></div><div class="result-box" id="result"></div><button class="copy-btn" onclick="copyResult()">📋 复制</button></div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const dict={fyp:['For You Page，即短视频推荐页','“这条最好能上fyp让更多人看到”'],yyds:['永远的神，表示极好的东西','“这个螺蛳粉yyds！”'],栓q:['Thank you 的谐音“栓Q”，表示无语或真心感谢（常反讽）','“被老板气到栓Q”'],破防:['心理防线被击穿，情绪崩溃或实感动','“听到那番话直接破防了”'],画饼:['给人开出空头承诺，兑现遥遥无期','“老板又在给员工画饼了”'],绝绝子:['太绝了、非常棒，或讽刺的很无语','“这家店的环境绝绝子”'],emo:['情绪低落、伤感的状态','“深夜emo中，别打扰我”'],摆烂:['既然做不好就干脆不管、放任不管','“这季业绩太难了，干脆摆烂”'],内卷:['无意义的竞争内耗','“大家整天加班就是卷”'],e人:['外向性格的人（对应i人内向）','“我是e人，社交对我就是充电”'],i人:['内向性格的人','“我是i人，聚会太耗神了”'],xql:['小情侣的缩写','“xql又去旅游了”'],打工人:['自嘲的上班族','“打工人，打工魂”'],雨女无瓜:['“与你无关”的谐音（雨女无瓜）','“这是我的事，雨女无瓜”'],夺笋:['“多损”的谐音，形容很损','“你这话说得太夺笋了”']};
+const hotList=['yyds','栓q','破防','画饼','emo','摆烂','内卷','e人','i人','打工人','夺笋','绝绝子'];
+document.getElementById('hot').innerHTML=hotList.map(w=>'<span onclick="pick(\''+w+'\')">'+w+'</span>').join('');
+function pick(w){document.getElementById('kw').value=w;}
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('网络流行语解释器 | AgentGongju.com'))return;
+let kw=document.getElementById('kw').value.trim().toLowerCase().replace(/\s/g,'');
+if(!kw){alert('请输入要解释的词');return;}
+document.getElementById('word').textContent=kw;
+let d=dict[kw];
+if(d){document.getElementById('result').textContent='【含义】\n'+d[0]+'\n\n【例句】\n“'+d[1]+'”\n\n有时候语境不同意思会有细微差别，你可以在具体聊天场景里感受一下～';}
+else {document.getElementById('result').textContent='【未收录】\n抱歉，这个词目前不在我们的词库里。\n\n它可能是：\n• 新出现的网络热词\n• 特定圈子的黑话缩写\n可以尝试换个词，或稍后再来看看，我们会持续更新词库！';}
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('word').textContent+'\n'+document.getElementById('result').textContent).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

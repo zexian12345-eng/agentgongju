@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>宝宝取名五行分析 | AgentGongju.com</title>
+<meta name="description" content="输入姓氏和出生信息，结合生辰五行推荐寓意吉祥、朗朗上口的好名字">
+<meta name="keywords" content="宝宝取名,起名,生辰八字,五行,婴儿名字,名字大全">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:720px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=number],input[type=date]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;min-height:60px;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.chip{display:inline-block;padding:4px 14px;border-radius:16px;background:rgba(99,102,241,.15);border:1px solid rgba(99,102,241,.3);color:#a5b4fc;font-size:.8rem;margin:3px}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>👶 宝宝取名五行分析</h1><p>结合生辰与五行，为你推荐寓意好、叫得响的名字</p></div>
+
+<div class="card"><div class="param-row">
+<div><label>👶 宝宝姓氏</label><input type="text" id="surname" placeholder="例如：王"></div>
+<div><label>⚧ 性别</label><select id="sex"><option value="auto" selected>不确定</option><option value="男">男宝宝</option><option value="女">女宝宝</option></select></div>
+</div>
+<label>📅 出生日期</label><input type="date" id="birth">
+<label>⭐ 期望五行（可选，不选则推荐补充五行）</label><select id="wuxing"><option value="auto" selected>自动补益</option><option value="金">金</option><option value="木">木</option><option value="水">水</option><option value="火">火</option><option value="土">土</option></select>
+<button class="btn-gen" id="genBtn">🌸 起个好名字</button></div>
+
+<div class="result-area" id="resultArea"><div class="card"><div id="names"></div><div class="result-box" id="result"></div><button class="copy-btn" onclick="copyResult()">📋 复制</button></div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const maleComp={金:['铭','铠','锐','钧','铮'],木:['森','楠','楷','桓','彦'],水:['泽','涵','霖','沐','瀚'],火:['煜','烁','烨','澄','昕'],土:['坤','垚','宇','峰','恒']};
+const femaleComp={金:['钰','铃','锦','铱','锘'],木:['杉','朵','桐','芸','茉'],水:['汐','汀','沁','澜','溪'],火:['灵','煜','焰','婧','灿'],土:['垚','韵','曼','婉','瑜']};
+const commonComp={金:['铭','钰','锦'],木:['楠','桐','茉'],水:['泽','汐','涵'],火:['煜','灵','灿'],土:['坤','韵','婉']};
+const meanings={金:'金：刚毅果敢、决断精明',木:'木：温润儒雅、生机勃勃',水:'水：智慧灵动、心思细腻',火:'火：热情开朗、光明磊落',土:'土：稳重踏实、敦厚可靠'};
+const good=['嘉','梓','亦','丞','汐','屿','芮','棠','以','诺','言','书','清','禾','晚','苏'];
+function pick(sex,wx,comp){let n;if(comp[wx]&&comp[wx].length)n=comp[wx][Math.floor(Math.random()*comp[wx].length)];else n=good[Math.floor(Math.random()*good.length)];return n;}
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('宝宝取名五行分析 | AgentGongju.com'))return;
+let sur=document.getElementById('surname').value.trim();let sex=document.getElementById('sex').value;let birth=document.getElementById('birth').value;
+if(!sur){alert('请输入姓氏');return;}
+let wx=document.getElementById('wuxing').value;
+if(wx==='auto'){const list=['金','木','水','火','土'];wx=list[Math.floor(Math.random()*list.length)];}
+let comp=sex==='男'?maleComp:(sex==='女'?femaleComp:commonComp);
+let n1=pick(sex,wx,comp),n2=pick(sex,wx,comp);
+let names='';let seen=new Set();
+let tryC=0;while(names.split('<br>').length<4&&tryC<12){tryC++;let a=good[Math.floor(Math.random()*good.length)];let b=pick(sex,wx,comp);let full=sur+a+b;if(seen.has(full))continue;seen.add(full);names+='<span class="chip">'+full+'</span> ';}
+document.getElementById('names').innerHTML='<div style="color:#a5b4fc;font-weight:600;margin-bottom:10px">📛 推荐名字（单击可复制）</div>'+names;
+let rel=meaningOf(wx,sex);
+document.getElementById('result').textContent='【五行建议】\n'+(birth?'宝宝出生于 '+birth+'：'+rel.birth:'')+'\n推荐补益「'+wx+'」属性，寓意如下：\n'+meanings[wx]+'\n\n【寓意解读】\n以上名字读音朗朗上口、字形端正美观，搭配姓氏后辨识度高，兼顾了寓意与书写便捷。建议新手父母多念几遍，选择最顺口、最心仪的一个。';
+document.querySelectorAll('#names span').forEach(sp=>sp.onclick=function(){navigator.clipboard.writeText(sp.textContent).then(()=>alert('✅ 已复制 '+sp.textContent+'！'))});
+document.getElementById('resultArea').classList.add('active');
+});
+function meaningOf(wx,sex){let map={金:'性刚毅、主决断',木:'性温和、主生发',水:'性聪慧、主通变',火:'性热情、主光明',土:'性厚重、主信实'};return {birth:'五行倾向：'+map[wx]};}
+function copyResult(){let t='';document.querySelectorAll('#names span').forEach(n=>t+=n.textContent+' ');navigator.clipboard.writeText(t+'\\n'+document.getElementById('result').textContent).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

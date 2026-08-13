@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>店铺招牌文案起名 | AgentGongju.com</title>
+<meta name="description" content="根据店铺类型和风格，生成洋气好听又有内涵的门店名与招牌文案">
+<meta name="keywords" content="店铺起名,店名,招牌,门头文案,开店,奶茶店,服装店">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:720px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.nameList{display:grid;gap:12px;margin-bottom:16px}
+.name-item{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:16px;cursor:pointer;transition:all .2s}
+.name-item:hover{border-color:#a855f7;background:rgba(168,85,247,.08)}
+.name-item .n{font-size:1.2rem;font-weight:700;color:#e2e8f0;margin-bottom:4px}
+.name-item .s{font-size:.82rem;color:#64748b}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#cbd5e1;line-height:2;white-space:pre-wrap;min-height:60px;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🏬 店铺招牌文案起名</h1><p>开店想店名？帮你起个洋气体面的门头</p></div>
+
+<div class="card"><div class="param-row">
+<div><label>🏪 店铺类型</label><select id="type"><option value="奶茶" selected>奶茶饮品</option><option value="咖啡">咖啡店</option><option value="服装">服装店</option><option value="餐饮">中餐厅</option><option value="美妆">美妆护肤</option><option value="书店">书店文创</option><option value="民宿">民宿</option><option value="宠物">宠物店</option></select></div>
+<div><label>🎨 风格</label><select id="style"><option value="简约" selected>简约洋气</option><option value="古风">古风雅致</option><option value="文艺">文艺清新</option><option value="活力">年轻潮流</option></select></div>
+</div>
+<label>💡 额外提示（可选）</label><input type="text" id="hint" placeholder="例如：主打水果茶 / 走高端路线">
+<button class="btn-gen" id="genBtn">🏷️ 生成店名</button></div>
+
+<div class="result-area" id="resultArea"><div class="card"><div class="nameList" id="nameList"></div><div class="result-box" id="result"></div><button class="copy-btn" onclick="copyResult()">📋 复制全部</button></div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const names={奶茶:['山茶研','云想茶','拾光里tea','茶屿','白桃汽水铺','知愈茶室','半糖主义','一盏春风'],咖啡:['生豆','午后容器','屿coffee','山雾咖啡','理光咖啡','巷味','月下意','豆志'],服装:['衣二三事','褶皱','简白造','有衣舍','半见','他年','布白','摩尔街'],餐饮:['小巷人家','一味相承','人间至味','灶升','拾味长街','满堂红','烟火里'],美妆:['半妆','肌底研究所','焕颜','素里','颜究所','一抹成色','肌遇'],书店:['拾荒书房','一纸云烟','墨里','半窗悦读','知了书店','破卷斋','纸间'],民宿:['山野小筑','砚山情','枕溪','有风小院','云栖林间','拾光民宿','止庐'],宠物:['爪爪星球','毛茸茸','哄哄宠物','萌爪工坊','胖胖铲屎官','元气喵','狗窝里']};
+const slogans={奶茶:['一口甜，一天暖','好茶，喝出好心情','快乐，其实很简单'],咖啡:['醒来，从一杯好豆开始','把时间泡进这一杯','香，是喝出来的'],服装:['穿出你的态度','好看，从不过时','日常，也要体面'],餐饮:['家的味道，家的感觉','匠心好味，暖心之选','食在人间，味在心头'],美妆:['天生美，更自信','美，无需定义','绽放此刻'],书店:['阅读，让脚步慢下来','书里自有山海','与好故事相遇'],民宿:['住在风景里','把日子过成诗','一处心安的落脚'],宠物:['毛茸茸的治愈','把爱托在掌心里','宠你，就在日常里']};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('店铺招牌文案起名 | AgentGongju.com'))return;
+let type=document.getElementById('type').value;let style=document.getElementById('style').value;let hint=document.getElementById('hint').value.trim();
+let list=names[type]||names['奶茶'];
+let choices=[...list].sort(()=>Math.random()-0.5).slice(0,5);
+let html='';choices.forEach(n=>{html+='<div class="name-item" onclick="copyOne(\''+n+'\')"><div class="n">'+n+'</div><div class="s">点击复制这个店名</div></div>';});
+document.getElementById('nameList').innerHTML=html;
+let slogan=slogans[type][Math.floor(Math.random()*slogans[type].length)];
+document.getElementById('result').textContent='【招牌标语】\n“'+slogan+'”'+(hint?'\n\n【定制提示】已考虑你的要求：'+hint:'')+'\n\n💡 建议：门头店名建议3-4字最佳，兼顾记忆与辨识度；如需注册，请先查询同行业是否重名。';
+document.getElementById('resultArea').classList.add('active');
+});
+function copyOne(n){navigator.clipboard.writeText(n).then(()=>alert('✅ 已复制 '+n))}
+function copyResult(){let d=document.querySelectorAll('.name-item .n');let txt='';d.forEach(x=>txt+=x.textContent+'\n');txt+='\n'+document.getElementById('result').textContent;navigator.clipboard.writeText(txt).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

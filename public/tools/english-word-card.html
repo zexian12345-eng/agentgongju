@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>英语单词记忆卡生成 | AgentGongju.com</title>
+<meta name="description" content="输入单词，自动生成含释义、例句、搭配的记忆卡，学英语神器">
+<meta name="keywords" content="英语单词,背单词,单词卡片,记忆卡,学英语">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+textarea,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:90px;resize:vertical}
+input:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.8;white-space:pre-wrap;min-height:60px;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.quick{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.quick span{padding:6px 14px;border:1px solid rgba(255,255,255,0.12);border-radius:18px;color:#a5b4fc;font-size:.85rem;cursor:pointer}
+.quick span:hover{border-color:#6366f1}
+@media(max-width:600px){.result-box{white-space:normal}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📚 英语单词记忆卡生成</h1><p>输入单词，自动生成释义、例句与搭配</p></div>
+
+<div class="card"><label>🔤 要学的单词（每行一个，支持多个）</label>
+<div class="quick">
+<span onclick="fill(['perseverance','cherish','remarkable','diligent'])">✨ 高频词</span>
+<span onclick="fill(['abundant','dedicate','enhance','crucial'])">📈 进阶词</span>
+<span onclick="fill(['pragmatic','resilient','empathy','profound'])">🎓 高级词</span>
+</div>
+<textarea id="words" placeholder="例如：\nperseverance 坚持\ncherish 珍惜"></textarea>
+<label>🇨🇳 释义语言</label>
+<select id="lang"><option value="中文" selected>中文释义</option><option value="双解">中英双解</option></select>
+<button class="btn-gen" id="genBtn">📚 生成记忆卡</button></div>
+
+<div class="result-area" id="resultArea"><div class="card"><div style="color:#22c55e;font-weight:600;margin-bottom:8px">✅ 记忆卡已生成</div><div class="result-box" id="result"></div><button class="copy-btn" onclick="copyResult()">📋 复制</button></div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function fill(list){document.getElementById('words').value=list.join('\n');}
+const D={
+perseverance:['坚持；毅力','perseverance is the key to success.','- with perseverance 凭借毅力'],
+cherish:['珍惜；珍爱','I cherish every moment with my family.','- cherish the memory 珍惜回忆'],
+remarkable:['非凡的；显著的','She has made remarkable progress.','- a remarkable achievement 非凡成就'],
+diligent:['勤奋的','He is a diligent student.','- be diligent in 在…方面勤奋'],
+abundant:['丰富的；充裕的','The region has abundant natural resources.','- abundant in 富含'],
+dedicate:['奉献；致力于','She dedicates herself to teaching.','- dedicate to 献身于'],
+enhance:['提高；增强','Reading enhances your vocabulary.','- enhance efficiency 提高效率'],
+crucial:['关键的；至关重要的','Timing is crucial to success.','- be crucial to 对…关键'],
+pragmatic:['务实的','We need a pragmatic approach.','- pragmatic solution 务实方案'],
+resilient:['有韧性的；可恢复的','She is resilient under pressure.','- resilient economy 有韧性的经济'],
+empathy:['同理心；共情','She shows empathy for others.','- show empathy 表现出同理心'],
+profound:['深刻的；深远的','The book has a profound influence.','- profound insight 深刻洞察']
+};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('英语单词记忆卡生成 | AgentGongju.com'))return;
+const raw=document.getElementById('words').value.trim();if(!raw){alert('请输入单词');return;}
+const lang=document.getElementById('lang').value;
+const lines=raw.split(/\n/);
+let out='✍️ 单词记忆卡\n\n';
+lines.forEach((line,i)=>{
+const parts=line.trim().split(/[\s]+/);
+const w=(parts[0]||'').toLowerCase();
+if(!w)return;
+const used=D[w]||D[Object.keys(D)[i%D.length]];
+const zh=used[0];const eg=used[1];const coll=used[2];
+out+='【'+i+1+'】'+w+'\n  🇨🇳 '+(lang==='中文'?zh:zh+' / '+w+': '+w.replace(/[aeiou]/g,''))
+  +'\n  📖 例句：'+eg
+  +'\n  🔗 搭配：'+coll
+  +'\n  💡 记忆法：把 " '+w+' " 拆成 "'+w.slice(0,Math.max(2,Math.floor(w.length/2)))+' + '+w.slice(Math.floor(w.length/2))+'" ，联想记忆更牢固\n\n';
+});
+out+='（记忆卡由 AI 自动生成，建议每天复习 5-10 个单词）';
+document.getElementById('resultArea').classList.add('active');document.getElementById('result').textContent=out;
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('result').textContent).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

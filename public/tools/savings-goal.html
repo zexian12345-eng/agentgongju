@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>存钱目标规划器 | AgentGongju.com</title>
+<meta name="description" content="设定存钱目标，AI帮你规划每月该存多少钱、需要多久达成">
+<meta name="keywords" content="存钱计划,储蓄目标,理财规划,攒钱,目标存款">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:760px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:30px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:20px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.big{text-align:center;padding:22px;border:1px solid rgba(99,102,241,0.3);border-radius:16px;background:rgba(99,102,241,0.08);margin-bottom:16px}
+.b-num{font-size:2.4rem;font-weight:800;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.b-label{color:#94a3b8;font-size:.9rem;margin-top:4px}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.9;white-space:pre-wrap;min-height:60px;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🐷 存钱目标规划器</h1><p>定个目标，算算每月该存多少、多久到位</p></div>
+
+<div class="card"><label>🎯 存钱目标（元）</label>
+<input type="number" id="goal" value="100000" min="100">
+<div class="param-row">
+<div><label>💰 每月可存（元）</label><input type="number" id="per" value="3000" min="100"></div>
+<div><label>📅 起始年月</label><input type="month" id="start"></div>
+</div>
+<label>✍️ 目标名称（可选）</label>
+<input type="text" id="name" placeholder="例如：买车的首付 / 出国旅行基金">
+<button class="btn-gen" id="genBtn">🐷 开始规划</button></div>
+
+<div class="result-area" id="resultArea"><div class="card">
+<div class="big"><div class="b-num" id="months">—</div><div class="b-label" id="bLabel"></div></div>
+<div class="result-box" id="result"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制计划</button>
+</div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('存钱目标规划器 | AgentGongju.com'))return;
+const goal=parseFloat(document.getElementById('goal').value);if(!goal||goal<=0){alert('请输入存钱目标金额');return;}
+const per=parseFloat(document.getElementById('per').value);if(!per||per<=0){alert('请输入每月可存金额');return;}
+const name=document.getElementById('name').value.trim()||'存钱目标';
+const startRaw=document.getElementById('start').value;
+let months=Math.ceil(goal/per);
+const actual=per*months;
+const y=Math.floor(months/12),m=months%12;
+const dur=y>0?(y+'年'+(m?m+'个月':'')):(months+'个月');
+const finish=new Date();if(startRaw){const sp=startRaw.split('-');finish.setFullYear(+sp[0],+sp[1]-1,1);}finish.setMonth(finish.getMonth()+months);
+const finishStr=(finish.getFullYear())+'年'+(finish.getMonth()+1)+'月';
+document.getElementById('months').textContent=months+' 个月';
+document.getElementById('bLabel').textContent='≈ '+(y>0?dur:months+'个月')+' · '+name+'，预计 '+finishStr+' 达成';
+let out='🐷 存钱计划 · '+name+'\n\n';
+out+='🎯 目标金额：'+goal.toLocaleString()+' 元\n';
+out+='💰 每月存入：'+per.toLocaleString()+' 元\n';
+out+='⏳ 需时约：'+dur+'（'+months+' 个月）\n';
+out+='📅 预计达成：'+finishStr+' 前后，到场约 '+actual.toLocaleString()+' 元（可能略多于目标，很稳妥）\n\n';
+out+='💡 规划建议\n';
+out+='  • 建议每个月初自动转存，先存后花\n';
+if(months>12)out+='  • 时间较长，可考虑定投类稳健理财，测算收益更佳\n';
+if(months<=6)out+='  • 时间紧迫，若临时遇到大开支，可适当调整月存额\n';
+out+='  • 坚持比金额更重要，阶段达成给自己一点小奖励\n\n';
+out+='（规划由 AI 自动计算，具体储蓄以个人实际为准）';
+document.getElementById('resultArea').classList.add('active');document.getElementById('result').textContent=out;
+});
+function copyResult(){const t=document.getElementById('result').textContent;navigator.clipboard.writeText(t).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

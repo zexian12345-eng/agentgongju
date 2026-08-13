@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 面试模拟 | AgentGongju.com</title>
+<meta name="description" content="AI面试模拟，选择岗位与面试轮次，一键生成高频面试问题和参考答案，帮你在面试前系统准备、临场不慌，覆盖研发、产品、运营、销售等岗位">
+<meta name="keywords" content="AI面试模拟,面试准备,面试问题,求职面试,面试题库">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus{ border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;margin-bottom:12px;font-size:.92rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>💼 AI 面试模拟</h1><p>高频面试题+参考答案，搞定心仪 offer</p></div>
+
+<div class="card">
+<label>🎯 目标岗位</label>
+<select id="role">
+<option value="研发" selected>💻 研发/技术</option>
+<option value="产品">📱 产品经理</option>
+<option value="运营">📈 运营</option>
+<option value="销售">🤝 销售</option>
+<option value="设计">🎨 设计</option>
+<option value="行政">📋 行政/职能</option>
+</select>
+<div class="param-row" style="margin-top:12px">
+<div><label>🕘 面试轮次</label>
+<select id="round">
+<option value="初面">📌 初面（一轮）</option>
+<option value="二面" selected>📌 二面/业务面</option>
+<option value="终面">🏆 终面/总监面</option>
+</select></div>
+<div><label>📄 面试题数量</label>
+<select id="num">
+<option value="3">3题</option>
+<option value="5" selected>5题</option>
+<option value="8">8题</option>
+</select></div>
+</div>
+<label>📝 你的简历亮点（选填，让问题更有针对性）</label>
+<textarea id="exp" placeholder="例如：3年Java开发经验，主导过支付系统重构，日活10万，学过分布式架构"></textarea>
+<button class="btn-gen" id="genBtn">✨ 生成面试模拟</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">💼 模拟面试题与参考回答</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制提纲</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const roleQs={
+'研发':['请简单自我介绍，并把技术栈讲清楚','讲一个你解决过的最难的技术问题','你如何保证系统的高可用和高并发？','遇到线上事故你的处理流程是什么？','你接触过哪些主流框架，它们的优劣？','你对代码质量和单元测试怎么看？','讲讲你最近的一个技术项目'],
+'产品':['你如何从0到1设计一个产品功能？','怎么看待"需求变更频繁"？','如何用数据驱动产品决策？','讲讲你失败过的一个项目及复盘','如何协调研发、运营等多方资源？','你怎么判断一个功能的优先级？'],
+'运营':['你如何做一次完整的运营活动策划？','涨粉/转化的核心抓手有哪些？','怎么分析一个运营数据异常？','你的用户增长思路是什么？','如何平衡内容质量与更新频率？','讲讲你最有成就感的一次运营','面对KPI压力你如何自处？'],
+'销售':['讲一个你成功拿下大客户的案例','面对客户拒绝你如何调整心态？','你如何挖掘客户痛点并引导需求？','你的报价谈判策略是什么？','如何维护老客户实现复购？','你觉得自己销售最大的优势是？'],
+'设计':['讲讲你的设计方法论','你如何理解"以用户为中心"？','分享一个你最满意的设计作品','设计评审被质疑时你如何应对？','如何平衡审美与业务需求？','你用什么工具和流程管理设计交付？'],
+'行政':['你如何安排一场大型会议的会务？','多任务并行时你如何排优先级？','面对突发状况（如出差机票取消）怎么办？','你如何管理公司资产与日常采购？','你怎么看待行政工作的价值？']};
+const roundHint={'初面':['请做个简短的自我介绍，突出匹配点。','对我们公司和这个岗位了解多少？','为什么选择加入我们？'],'二面':[],'终面':['讲一个你最典型的成功案例。','你未来的职业规划是什么？','如果给你团队，你会如何管理？']};
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 提纲已复制！'))}
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 面试模拟 | AgentGongju.com'))return;
+const role=document.getElementById('role').value;
+const round=document.getElementById('round').value;
+const num=parseInt(document.getElementById('num').value);
+const exp=document.getElementById('exp').value.trim();
+const qs=[...roleQs[role]].sort(()=>Math.random()-0.5).slice(0,num);
+const rHints=round==='初面'?roundHint['初面']:round==='终面'?roundHint['终面']:[];
+let out=`💼 ${role}岗位 · ${round}面试模拟\n${exp?`背景：${exp}\n`:''}\n`;
+if(rHints.length&&qs.length<num){rHints.slice(0,num-qs.length).forEach(q=>qs.push(q));}
+let idx=1;
+qs.forEach(q=>{
+out+=`\nQ${idx++}. ${q}\n`;
+out+=`参考回答框架：\n`;
+out+=`1. 开头：简要回应问题核心，给出结论。\n`;
+out+=`2. 展开：结合自身项目/数据举例（用 STAR 原则：情境-任务-行动-结果）。${exp?`可关联你写的"${exp.slice(0,15)}…"经历。`:''}\n`;
+out+=`3. 收尾：总结复盘，顺势反问面试官，展现思考深度。\n`;
+});
+out+=`\n💡 准备建议\n· 每个问题都准备2-3分钟完整口述版，并用计时器练习。\n· 深挖简历中的至少3个亮点，能讲出数据与细节。\n· 结束时准备2-3个反问问题，展现主动性。`;
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+</script>
+</body>
+</html>

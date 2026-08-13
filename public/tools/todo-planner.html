@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 每日待办规划 | AgentGongju.com</title>
+<meta name="description" content="AI每日待办规划，输入今天要做的几件事，AI自动按优先级、重要紧急程度帮你排好时间表和顺序，效率翻倍，告别瞎忙">
+<meta name="keywords" content="AI待办,每日计划,时间管理,优先级,效率工具">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:110px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;margin-bottom:12px;font-size:.92rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>⏱️ AI 每日待办规划</h1><p>把待办排好优先级，一天从容不焦虑</p></div>
+
+<div class="card">
+<label>📋 今天要做的事情（每行一项，可标注重要/紧急/预计时长）</label>
+<textarea id="tasks" placeholder="例如：重要：准备明天向老板汇报的PPT（约2小时）
+紧急：回复客户投诉邮件（30分钟）
+写产品需求文档（1小时）
+回复工作群消息
+健身房锻炼（1小时）
+看行业文章（30分钟）"></textarea>
+<div class="param-row">
+<div><label>⏰ 今日可支配起始时间</label>
+<select id="start">
+<option value="9" selected>9:00</option>
+<option value="8">8:00</option>
+<option value="10">10:00</option>
+</select></div>
+<div><label>🍅 专注节奏</label>
+<select id="pace">
+<option value="番茄">🍅 番茄钟(25+5)</option>
+<option value="块">🧱 长块时间(60+10)</option>
+</select></div>
+</div>
+<button class="btn-gen" id="genBtn">✨ 生成每日规划</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">⏱️ 你的每日规划</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制规划</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 规划已复制！'))}
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 每日待办规划 | AgentGongju.com'))return;
+const tasks=document.getElementById('tasks').value.split('\n').map(s=>s.trim()).filter(s=>s&&!s.startsWith('#'));
+if(!tasks.length){alert('请先填写待办事项');return;}
+const start=parseInt(document.getElementById('start').value);
+const pace=document.getElementById('pace').value;
+// 分类
+const high=[],mid=[],todo=[];
+tasks.forEach(t=>{
+if(/重要|紧急|老板|汇报|投诉|截止|deadline|DDL|今天.*前|必须|尽快/.test(t))high.push(t);
+else if(/计划|规划|文档|项目|推进|写|整理|开发|需求|方案|会议|拜访|客户/.test(t))mid.push(t);
+else todo.push(t);
+});
+const ordered=[...high,...mid,...todo];
+let out=`⏱️ 今日计划（${new Date().toLocaleDateString('zh-CN',{month:'long',day:'numeric',weekday:'long'})}）\n`;
+out+=`时间单位：${pace==='番茄'?'番茄钟 25分钟工作+5分钟休息':'60分钟工作+10分钟休息'}\n\n`;
+out+=`◎ 优先级排序（先难后易，先重要后杂事）\n`;
+ordered.forEach((t,i)=>out+=`${i+1}. ${t}\n`);
+out+=`\n◎ 时间安排\n`;
+let cur=start;
+let slot=0;
+const min=pace==='番茄'?25:60;
+ordered.forEach(t=>{
+const m=t.match(/约?(\d+)\s*(小时|h|分钟|min)/);
+let dur=m? (m[2].includes('小时')||m[2]==='h')? parseInt(m[1])*60: parseInt(m[1]) : (high.slice(0,1).includes(t)?60:40);
+dur=Math.max(20,Math.min(120,dur));
+if(cur+dur/60>22)cur=9; // 换到下午
+const hh=String(Math.floor(cur)).padStart(2,'0');
+const mm=String(Math.round((cur%1)*60)).padStart(2,'0');
+const next=cur+dur/60;
+const nhh=String(Math.floor(next)).padStart(2,'0');
+const nmm=String(Math.round((next%1)*60)).padStart(2,'0');
+out+=`${hh}:${mm} - ${nhh}:${nmm}　🕒 ${t}\n`;
+cur=next+ (pace==='番茄'?5:10)/60;
+slot++;
+});
+out+=`\n◎ 晚间复盘（睡前5分钟）\n· 标记完成/未完成事项，找出时间黑洞。\n· 把未完成的顺延到明天，并重新排优先级。\n\n`;
+out+=`💡 小贴士：先吃掉"最重要但最难"的那只青蛙，一天都会很轻松。`;
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+</script>
+</body>
+</html>

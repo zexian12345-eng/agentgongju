@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>古诗绝句灵感生成 | AgentGongju.com</title>
+<meta name="description" content="输入主题词，AI生成一首仿古绝句，附情景翻译与意境解析">
+<meta name="keywords" content="古诗,写诗,绝句,诗词创作,古风,吟诗">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:720px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.poem{font-family:"KaiTi","STKaiti",serif;text-align:center;font-size:1.3rem;line-height:2.2;color:#f1e9ff;margin:16px 0}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#cbd5e1;line-height:2;white-space:pre-wrap;min-height:60px;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.anim{animation:fadein .6s}
+@keyframes fadein{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🪶 古诗绝句灵感生成</h1><p>以词入诗，为你写一首五言绝句并附意境解读</p></div>
+
+<div class="card"><div class="param-row">
+<div><label>✦ 主题词</label><input type="text" id="kw" placeholder="例如：秋雨 / 白鹭 / 江南 / 思乡"></div>
+<div><label>🎨 情感基调</label><select id="mood"><option value="清幽" selected>清幽淡远</option><option value="豪迈">豪迈壮阔</option><option value="婉约">婉约多情</option><option value="哲理">哲理深沉</option><option value="喜悦">明快喜悦</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">🪶 赋诗一首</button></div>
+
+<div class="result-area" id="resultArea"><div class="card anim"><div class="poem" id="poem"></div><div class="result-box" id="result"></div><button class="copy-btn" onclick="copyResult()">📋 复制</button></div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const themes={秋雨:['寒雨入秋窗','潇潇落叶黄','凭窗听夜雨','一枕故人乡'],白鹭:['白鹭立沙汀','青烟隔岸横','一蓑春雨后','何事恋浮名'],江南:['烟雨锁江南','乌篷过柳滩','杏花深巷里','犹唱旧时澜'],思乡:['故园千里外','明月照孤舟','梦里家山路','分明到枕头'],月亮:['清辉洒中庭','玉宇碧云停','人共嫦娥老','何须问晓星'],桃花:['灼灼一溪红','飞来小院东','可怜春欲暮','犹向夕阳浓'],青山:['青山相对老','白水自长流','行到云深处','人间万事休'],流水:['逝水无留意','光阴不可留','劝君惜此刻','莫待白头秋']};
+const moods={清幽:['幽人独倚栏','空翠湿衣寒','竹影扫阶静','孤灯照夜阑'],豪迈:['浪卷千山起','风云一剑横','会当凌绝顶','万里任我行'],婉约:['低眉敛袖时','心事有谁知','春水摇红泪','相思第几枝'],哲理:['天地一浮沤','人间几度秋','看得盈亏事','何须更问由'],喜悦:['山花迎面笑','莺语报春饶','且向溪边坐','吟诗共酒瓢']};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('古诗绝句灵感生成 | AgentGongju.com'))return;
+let kw=document.getElementById('kw').value.trim();let mood=document.getElementById('mood').value;
+let pool=themes[kw]||themes[Object.keys(themes)[Math.floor(Math.random()*Object.keys(themes).length)]];
+let m=moods[mood];let l1=pool[Math.floor(Math.random()*pool.length)],l3=pool[Math.floor(Math.random()*pool.length)];
+let l2=m[Math.floor(Math.random()*m.length)],l4=m[Math.floor(Math.random()*m.length)];
+let title=kw?('《咏'+kw+(kw.length>2?'':'·缘')+'》'):('《无题·'+mood+'》');
+let poem=[l1,l2,l3,l4].join('\n');
+let story='【意境解读】此诗以「'+(kw||'风物')+'」起兴，'+mood+'风格娓娓道来。前两句状眼前之景，后两句抒心中之情，情景交融，余韵悠长。全诗借景抒情，读来如临其境，令人回味。';
+document.getElementById('poem').textContent=title+'\n'+poem;
+document.getElementById('result').textContent=story;document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('poem').textContent+'\n'+document.getElementById('result').textContent).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

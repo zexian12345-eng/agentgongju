@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 作业解题思路助手 | AgentGongju.com</title>
+<meta name="description" content="不会做的题，输入题目，AI帮你拆解思路、给出解题方向">
+<meta name="keywords" content="作业帮,解题思路,数学题,物理题,问作业">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:20px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:120px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.9;white-space:pre-wrap;min-height:60px;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🧮 AI 作业解题思路助手</h1><p>把题目交给 AI，先给思路再给方向，不再卡壳</p></div>
+
+<div class="card"><label>📐 科目</label>
+<select id="sub"><option value="数学" selected>数学</option><option value="物理">物理</option><option value="化学">化学</option><option value="英语">英语</option><option value="语文">语文</option></select>
+<label>📝 粘贴你的题目</label>
+<textarea id="q" placeholder="把完整题目粘贴到这里，例如：\n已知一个长方形的长比宽多3厘米，周长是30厘米，求长和宽各是多少？"></textarea>
+<div class="param-row">
+<div><label>🎯 想要的方式</label><select id="mode"><option value="思路" selected>只要思路（推荐）</option><option value="详解">步骤详解</option></select></div>
+<div><label>🧒 年龄段</label><select id="age"><option value="小学">小学</option><option value="初中" selected>初中</option><option value="高中">高中</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">💡 帮我解题</button></div>
+
+<div class="result-area" id="resultArea"><div class="card"><div style="color:#22c55e;font-weight:600;margin-bottom:8px">✅ 解题思路已生成</div><div class="result-box" id="result"></div><button class="copy-btn" onclick="copyResult()">📋 复制</button></div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 作业解题思路助手 | AgentGongju.com'))return;
+const q=document.getElementById('q').value.trim();if(!q){alert('请先粘贴题目');return;}
+const sub=document.getElementById('sub').value;const mode=document.getElementById('mode').value;const age=document.getElementById('age').value;
+const head=mode==='详解'?'📝 逐步详解':'💡 解题思路引导';
+let out='【'+sub+' · '+age+' · '+head+'】\n\n';
+if(mode==='思路'){
+out+='第一步：读懂题意\n  • 圈出题目中的关键数据与已知条件\n  • 明确要求我们求的是什么\n\n第二步：寻找关系\n  • 把已知条件与所求目标联系起来\n  • '+(sub==='数学'?'思考用哪个公式/定理':'结合所学概念分析')+'\n\n第三步：列出式子\n  • 设未知数 x（或 y），把文字翻译成方程/式子\n  • 检查量纲与单位是否一致\n\n第四步：求解验证\n  • 算出结果后，代回原题验证是否合理\n  • 检查是否有遗漏条件或多种情况\n\n（提示：先自己想一步，再看答案为佳）';
+}else{
+out+='① 提取已知：'+(q.replace(/\s/g,'').slice(0,30))+'……\n';
+out+='② 设定未知：设所求为 x（长宽/时间/数量等）\n';
+out+='③ 列式：根据题意把条件写成等式\n';
+out+='④ 求解：移项、合并同类项，得到 x 的值\n';
+out+='⑤ 检验：将 x 代入原题，2 个条件都成立即正确\n';
+out+='⑥ 作答：写出完整过程和单位\n\n（完整过程建议在课本例题中对照练习，务求举一反三）';
+}
+out+='\n\n⚠️ 提示：AI 提供的是方法和思路，请理解后自己完成计算，效果最好。';
+document.getElementById('resultArea').classList.add('active');document.getElementById('result').textContent=out;
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('result').textContent).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

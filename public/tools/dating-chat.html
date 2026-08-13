@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 聊天话术 | AgentGongju.com</title>
+<meta name="description" content="AI聊天话术，面对心动对象不知道怎么聊？选择场景，一键生成自然不尬聊的开场白、接话和暖场话题，帮你轻松破冰、拉近关系">
+<meta name="keywords" content="AI聊天话术,聊天开场白,破冰话题,尬聊拯救,社交工具">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:70px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;margin-bottom:12px;font-size:.92rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>💬 AI 聊天话术</h1><p>告别尬聊，一句话把天聊活</p></div>
+
+<div class="card">
+<label>🎯 聊天场景</label>
+<select id="scene">
+<option value="开场" selected>👋 刚加好友开场白</option>
+<option value="网聊">📱 微信/社交软件聊天</option>
+<option value="约见面">☕ 邀约见面</option>
+<option value="哄开心">🥰 哄ta开心</option>
+<option value="接话">🪄 冷场接话神器</option>
+<option value="挽回">🌧️ 关系降温想复合</option>
+</select>
+<div class="param-row" style="margin-top:12px">
+<div><label>👤 对方特点（选填）</label><input type="text" id="who" placeholder="如：高冷/爱猫/喜欢旅行/程序员" /></div>
+<div><label>📏 生成条数</label>
+<select id="num">
+<option value="3" selected>3条</option>
+<option value="5">5条</option>
+</select></div>
+</div>
+<label>🎙️ 已有对话背景（选填，生成更贴合的话术）</label>
+<textarea id="context" placeholder="例如：我们刚加了微信，对方是女生，刚才随便聊了两句就冷场了"></textarea>
+<button class="btn-gen" id="genBtn">✨ 生成话术</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">💬 建议话术</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制话术</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const banks={
+'开场':['Hi～ 刚刚看你的头像/朋友圈，感觉你是个特别有生活心的人，冒昧打扰啦 👋','我们好像是同事搭子/共同好友介绍的？先自我介绍一下，我是…','今天刚好路过一家特别好看的咖啡店，突然想到如果能跟有趣的你聊天就好了 ☕','你好呀，刚发现我们都在XX群，就想着来认识一下，我叫…'],
+'网聊':['刚才看到你在分享XX，我也特别感兴趣！你是从什么时候开始喜欢的？','给你出一道轻松题：如果你有一整天完全自由的时间，你最想做什么？','我猜你平时一定是个认真又会生活的人，我猜对了吗？😏','今天的天气太适合分享一件小事了——你最近有遇到什么开心的事吗？'],
+'约见面':['听说XX新开了一家很不错的店，想约你周末一起去尝尝，你有兴趣吗？','周末要不要一起去逛XX？就当放松一下，正好也想听听你的近况。','我订了XX的展，如果你也感兴趣，我们可以结伴呀～'],
+'哄开心':['怎么啦？我刚刚看你说不开心，要不要跟我这个"树洞"聊两句 🫂','别不开心啦，我有个珍藏的表情包，专门为哄你准备的～','心情不好的时候，想想还有人在惦记着你，这句话就是我说的。'],
+'接话':['你这说得太对了，我之前也这么觉得！不过我还挺好奇你是怎么想通这件事的？','哈哈你太可爱了，那如果是你，你会怎么做呀？','这个话题我能跟你聊一晚上，先问你个关键的…'],
+'挽回':['最近总是想起我们以前聊天的那段时间，想问问你现在还好吗？','我知道之前是我没处理好，但我是真心想好好聊聊，你愿意给我一个机会吗？','这段时间我反思了很多，如果有机会，我想认真地对你说声对不起。']};
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 话术已复制！'))}
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 聊天话术 | AgentGongju.com'))return;
+const scene=document.getElementById('scene').value;
+const who=document.getElementById('who').value.trim();
+const num=parseInt(document.getElementById('num').value);
+const ctx=document.getElementById('context').value.trim();
+const list=[...banks[scene]].sort(()=>Math.random()-0.5).slice(0,num);
+let out=`💬 聊天话术推荐（${scene}）\n`;
+if(who)out+=`对方特点：${who}\n`;
+if(ctx)out+=`背景：${ctx}\n`;
+out+=`\n`;
+list.forEach((l,i)=>out+=`方案${i+1}：${l}\n\n`);
+out+=`💡 使用小技巧\n· 开场白发完后，等对方回复再继续，别一次发太多条。\n· 多用"提问式"结尾，给对方接话的入口。\n· 自然比完美更重要，别背台词，就当朋友聊天轻松说。`;
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MBTI性格类型测试 | AgentGongju.com</title>
+<meta name="description" content="通过12道题快速测出你的MBTI人格类型，附性格解析与职业建议">
+<meta name="keywords" content="MBTI,性格测试,人格测试,16型人格,职场人格">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:720px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.q{font-size:1.1rem;color:#e2e8f0;font-weight:600;margin-bottom:20px}
+.opt{display:block;padding:14px 18px;border:1px solid rgba(255,255,255,0.1);border-radius:12px;margin-bottom:12px;cursor:pointer;transition:all .2s;color:#cbd5e1}
+.opt:hover{border-color:#6366f1;background:rgba(99,102,241,.1)}
+.opt.selected{border-color:#a855f7;background:rgba(168,85,247,.15);color:#fff}
+.progress{display:flex;gap:6px;margin-bottom:24px}
+.progress i{flex:1;height:6px;border-radius:3px;background:rgba(255,255,255,0.1)}
+.progress i.done{background:linear-gradient(90deg,#6366f1,#a855f7)}
+#quizBox{display:none}
+.result-type{text-align:center;font-size:2.6rem;font-weight:800;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin:10px 0}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;min-height:60px;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.start-btn{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.start-btn:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🧠 MBTI 性格类型测试</h1><p>12道精选题目，测出你的16型人格</p></div>
+
+<div class="card" id="introBox"><p style="color:#94a3b8;line-height:1.9;margin-bottom:20px">MBTI把性格分为 <b style="color:#a5b4fc">外向E/内向I、实感S/直觉N、思考T/情感F、判断J/感知P</b> 四个维度共16种类型。本测试约2分钟，助你了解自己的性格偏好在生活与工作中的体现。</p><button class="start-btn" onclick="startQuiz()">🚀 开始测试</button></div>
+
+<div class="card" id="quizBox">
+<div class="progress" id="progress"></div>
+<div class="q" id="qText"></div>
+<div id="opts"></div>
+</div>
+
+<div class="card" id="resultArea" style="display:none">
+<div class="result-type" id="typeBox"></div>
+<div class="result-box" id="result"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制</button>
+<button class="start-btn" style="margin-top:14px;background:rgba(99,102,241,.2)" onclick="location.reload()">🔄 重新测试</button>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const questions=[
+{q:'周末你会更倾向于怎么过？',a:'热热闹闹约朋友（选A记E外向）',b:'宅在家一个人充电（选B记I内向）'},
+{q:'学习新东西时你更喜欢？',a:'按步骤学，打好基础（S实感）',b:'先看整体，抓大方向（N直觉）'},
+{q:'做决定时你更看重？',a:'事实和数据（T思考）',b:'感受和直觉（F情感）'},
+{q:'出门旅行你会？',a:'提前做好详细攻略（J判断）',b:'走到哪算哪，随性玩（P感知）'}
+];
+const letters=['EI','SN','TF','JP'];
+const desc={
+INTJ:'理性、独立、有战略远见，追求系统与完美。\n适合职业：战略咨询、产品研发、金融分析。\n恋爱特质：外冷内热，认定一个人就很专一。',
+INTP:'热爱思考，好奇心强，追求知识本身。\n适合职业：科研、编程、数据分析。\n恋爱特质：直男/直女式浪漫，笨拙但真诚。',
+ENTJ:'天生的领导者，目标明确执行力强。\n适合职业：企业管理、创业、法务。\n恋爱特质：保护欲强，把爱落实到行动上。',
+ENTP:'头脑灵活，点子多，喜欢挑战辩驳。\n适合职业：创业、广告创意、市场。\n恋爱特质：有趣的灵魂，永远让伴侣不无聊。',
+INFJ:'理想主义，洞察人心，默默奉献。\n适合职业：心理咨询、教育、公益。\n恋爱特质：灵魂伴侣型，深情又专一。',
+INFP:'温柔浪漫，忠于内心价值。\n适合职业：写作、艺术、设计。\n恋爱特质：浪漫值拉满，注重精神共鸣。',
+ENFJ:'感染力强，善于鼓舞他人。\n适合职业：人力资源、教育、公关。\n恋爱特质：贴心照料者，付出型人格。',
+ENFP:'热情自由，充满想象力。\n适合职业：内容创作、演出、公关。\n恋爱特质：恋爱脑但真诚，爱得轰轰烈烈。',
+ISTJ:'认真可靠，一丝不苟。\n适合职业：会计、审计、公务员。\n恋爱特质：行动派，用负责任表达爱。',
+ISFJ:'温暖尽责，默默守护。\n适合职业：护理、行政、教育。\n恋爱特质：贤惠/体贴，默默为对方付出。',
+ESTJ:'务实高效，天生管理者。\n适合职业：运营管理、部队、销售主管。\n恋爱特质：规矩又可靠，给足安全感。',
+ESFJ:'热心合群，乐于助人。\n适合职业：客服、医护、社区管理。\n恋爱特质：热情满满，爱你的家人朋友。',
+ISTP:'冷静动手能力强。\n适合职业：工程师、技工、运动员。\n恋爱特质：话不多，但实用主义浪漫。',
+ISFP:'随和艺术，享受当下。\n适合职业：设计、摄影、美食。\n恋爱特质：细腻温柔，审美在线。',
+ESTP:'行动派，反应快爱冒险。\n适合职业：销售、竞技、创业。\n恋爱特质：会撩，带你体验各种刺激。',
+ESFP:'热情外向，天生的焦点。\n适合职业：演艺、主持、旅游。\n恋爱特质：阳光快乐，是气氛担当。'
+};
+let answers=[],cur=0;
+function startQuiz(){if(!Paywall.countUse('MBTI性格类型测试 | AgentGongju.com'))return;document.getElementById('introBox').style.display='none';document.getElementById('quizBox').style.display='block';render();}
+function render(){const q=questions[cur];document.getElementById('qText').textContent=(cur+1)+'/'+questions.length+'  '+q.q;
+let prog='';for(let i=0;i<questions.length;i++)prog+='<i class="'+(i===cur?'done':'')+'"></i>';document.getElementById('progress').innerHTML=prog;
+let opts='<div class="opt" onclick="pick(0)">A. '+(q.a.split('（')[0])+'</div><div class="opt" onclick="pick(1)">B. '+(q.b.split('（')[0])+'</div>';
+document.getElementById('opts').innerHTML=opts;}
+function pick(i){answers[cur]=i;cur++;if(cur<questions.length)render();else showResult();}
+function showResult(){document.getElementById('quizBox').style.display='none';
+let t='';for(let d=0;d<4;d++){t+=letters[d][answers[d]];}
+document.getElementById('typeBox').textContent=t;document.getElementById('result').textContent=desc[t]||'四维中各有均衡，你是多面手型人格！';document.getElementById('resultArea').style.display='block';}
+function copyResult(){navigator.clipboard.writeText('我的MBTI类型：'+document.getElementById('typeBox').textContent+'\n'+document.getElementById('result').textContent).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

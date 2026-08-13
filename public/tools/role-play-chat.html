@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 角色扮演聊天 | AgentGongju.com</title>
+<meta name="description" content="与AI名场面、二次元或职业角色对话，本地模拟智能应答">
+<meta name="keywords" content="角色扮演,AI聊天,模拟对话,二次元,AI陪聊">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:30px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:24px;margin-bottom:20px}
+.role-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:12px}
+.role{text-align:center;padding:16px 10px;border:1px solid rgba(255,255,255,0.1);border-radius:12px;cursor:pointer;transition:all .2s}
+.role:hover{border-color:#6366f1;background:rgba(99,102,241,0.08)}
+.role.sel{border-color:#6366f1;background:rgba(99,102,241,0.15)}
+.role .ico{font-size:2rem}
+.role .nm{font-size:.85rem;color:#e2e8f0;margin-top:6px}
+.chat-box{max-height:420px;overflow-y:auto;display:flex;flex-direction:column;gap:12px;padding:10px 2px;margin-bottom:16px}
+.msg{max-width:75%;padding:12px 16px;border-radius:16px;line-height:1.6;font-size:.92rem}
+.msg.bot{align-self:flex-start;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);border-top-left-radius:4px}
+.msg.user{align-self:flex-end;background:linear-gradient(135deg,#6366f1,#a855f7);border-top-right-radius:4px}
+.chat-input{display:flex;gap:10px}
+.chat-input input{flex:1;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:.9rem;outline:none}
+.chat-input input:focus{border-color:#6366f1}
+.send-btn{padding:12px 22px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:10px;color:white;font-size:.95rem;font-weight:600;cursor:pointer}
+.send-btn:hover{box-shadow:0 6px 20px rgba(99,102,241,0.3)}
+.clear-btn{background:none;border:1px solid rgba(255,255,255,0.15);color:#94a3b8;border-radius:8px;padding:6px 14px;font-size:.8rem;cursor:pointer}
+.hint{color:#64748b;font-size:.8rem;text-align:center;margin-top:8px}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🎭 AI 角色扮演聊天</h1><p>选个人设，和 AI 来一场沉浸式对话</p></div>
+
+<div class="card"><label>🎭 选择你要扮演的角色</label>
+<div class="role-grid" id="roles"></div>
+<div style="margin-top:14px;display:flex;justify-content:flex-end"><button class="clear-btn" onclick="resetChat()">🧹 清空对话</button></div>
+<div class="chat-box" id="chatBox">
+<div class="msg bot">你好！我是你的<span id="curName">AI 助手</span>。选一个角色，我们开始聊天吧～</div>
+</div>
+<div class="chat-input"><input id="inp" placeholder="输入你想说的话……"><button class="send-btn" id="sendBtn">发送</button></div>
+<div class="hint">提示：输入字数越多，我的回答越丰富噢</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const roles=[
+{ico:'🤖',nm:'AI助手',greet:'我是你的贴心小助手，什么都能聊',replies:['好的呢！然后呢？','这个想法很不错，展开说说？','哈哈，有意思，还有吗？','我明白了，继续继续～','嗯嗯，我听着呢！']},
+{ico:'🧙',nm:'老智者',greet:'年轻人，你我有缘，且听我一言。',replies:['凡事皆有两面，静观其变方为上策。','不必急于求成，慢即是快。','心若安定，万事自安。','你所思之事，自有其因果。','缘分自有天定，顺其自然就好。']},
+{ico:'⚡',nm:'元气少女',greet:'哇！你来啦！今天也要元气满满哦！',replies:['耶！好棒好棒！！','真的吗？我好兴奋呀！','哇塞，这个也太厉害了吧！','嘿嘿，我就知道你可以的！','加油加油！我会一直支持你的！']},
+{ico:'🕵️',nm:'冷面侦探',greet:'我知道你在找答案，而那答案，就在细节里。',replies:['有意思……继续说下去。','这个线索很反常，注意了。','我注意到你话里有话。','真相往往藏在第三句谎言里。','别急，我自有推理。']},
+{ico:'🍜',nm:'美食博主',greet:'来了老铁！今儿想聊点啥？',replies:['好嘞！这个能出个爆款视频！','灵光一现，这菜可以改良！','得嘞，回头就安排上菜单！','老铁有品味，这个绝了！','记得多放点蒜，香得很！']},
+{ico:'🐱',nm:'傲娇小猫',greet:'哼，才、才不是特意等你的呢！',replies:['哼，我才不关心呢……（其实很关心）','又来找我？真拿你没办法。','勉、勉为其难地回应你一下。','才不是因为你重要呢，笨蛋！','……（尾巴轻轻摇了一下）']},
+{ico:'💼',nm:'职场导师',greet:'准备好迎接挑战了吗？',replies:['这个问题，建议你从结果倒推。','记住：先处理情绪，再处理事情。','汇报时结论先行，数据佐证。','学会借力，别单打独斗。','复盘比努力更重要。']},
+{ico:'📚',nm:'书虫学者',greet:'读书使人明智，有何高见想与我探讨？',replies:['从文献角度讲，此事确有深意。','容我引经据典……其实古人早有明训。','认知的边界，在于不断提问。','这一观点，与某位哲人暗合。','学问之道，贵在质疑与求索。']}
+];
+let sel=roles[0];
+const grid=document.getElementById('roles');
+roles.forEach(r=>{const d=document.createElement('div');d.className='role'+(r===sel?' sel':'');d.innerHTML='<div class="ico">'+r.ico+'</div><div class="nm">'+r.nm+'</div>';d.onclick=()=>{sel=r;grid.querySelectorAll('.role').forEach(x=>x.classList.remove('sel'));d.classList.add('sel');document.getElementById('curName').textContent=r.nm;addMsg('bot',r.ico+' '+r.nm+'：'+r.greet);};grid.appendChild(d);});
+function addMsg(who,text){const b=document.getElementById('chatBox');const m=document.createElement('div');m.className='msg '+who;m.textContent=text;b.appendChild(m);b.scrollTop=b.scrollHeight;}
+function botReply(text){let r=sel.replies[Math.floor(Math.random()*sel.replies.length)];const n=text.replace(/\s/g,'').length;if(n>18){r='关于你提到的“'+text.slice(0,15)+'…”，我的看法是：'+(['这件事很有嚼头','我从中想到很多','确实值得深入聊聊','让我颇为触动','这里面门道不少'][Math.floor(Math.random()*5)])+'。'+sel.ico+' '+sel.replies[Math.floor(Math.random()*sel.replies.length)];}setTimeout(()=>addMsg('bot',sel.ico+' '+sel.nm+'：'+r),400);}
+function resetChat(){if(!Paywall.countUse('AI 角色扮演聊天 | AgentGongju.com'))return;const cur=sel.ico+' '+sel.nm;document.getElementById('chatBox').innerHTML='<div class="msg bot">'+cur+'：'+(sel.greet)+'</div>';}
+document.getElementById('sendBtn').addEventListener('click',()=>{send();});
+document.getElementById('inp').addEventListener('keydown',e=>{if(e.key==='Enter')send();});
+function send(){if(!Paywall.countUse('AI 角色扮演聊天 | AgentGongju.com'))return;const v=document.getElementById('inp').value.trim();if(!v)return;addMsg('user',v);document.getElementById('inp').value='';botReply(v);}
+</script>
+</body>
+</html>

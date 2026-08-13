@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 视频分镜脚本 | AgentGongju.com</title>
+<meta name="description" content="AI视频分镜脚本，输入拍摄主题与视频类型，自动生成含景别、画面、台词、运镜、时长的完整分镜脚本，短视频创作、宣传片、Vlog通吃">
+<meta name="keywords" content="AI分镜脚本,短视频脚本,拍摄脚本,运镜,视频创作工具">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:80px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;margin-bottom:12px;font-size:.92rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🎬 AI 视频分镜脚本</h1><p>从灵感直接到可拍摄的完整分镜脚本</p></div>
+
+<div class="card">
+<label>🎥 视频主题 / 拍摄想法</label>
+<textarea id="topic" placeholder="例如：一条30秒咖啡店探店视频，从进门、点单、咖啡制作到出片，突出氛围感"></textarea>
+<div class="param-row">
+<div><label>📹 视频类型</label>
+<select id="vtype">
+<option value="短视频" selected>📱 抖音/短视频</option>
+<option value="探店">☕ 探店Vlog</option>
+<option value="宣传片">🏢 企业宣传片</option>
+<option value="教学">🎓 教程教学</option>
+<option value="产品">🛍️ 产品种草</option>
+</select></div>
+<div><label>⏱️ 目标时长</label>
+<select id="dur">
+<option value="15">15秒</option>
+<option value="30" selected>30秒</option>
+<option value="60">60秒</option>
+<option value="120">2分钟</option>
+</select></div>
+</div>
+<div class="param-row">
+<div><label>🎨 画面风格</label>
+<select id="mood">
+<option value="暖色调" selected>🌞 暖色调</option>
+<option value="冷淡风">🌫️ 冷淡高级</option>
+<option value="活泼">🎉 活泼明快</option>
+<option value="电影感">🎞️ 电影质感</option>
+</select></div>
+<div><label>🗣️ 口播</label>
+<select id="talk">
+<option value="无">💬 无口播</option>
+<option value="少">🎧 少量口播</option>
+<option value="多" selected>🎙️ 全程口播</option>
+</select></div>
+</div>
+<button class="btn-gen" id="genBtn">✨ 生成分镜脚本</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🎬 分镜脚本</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制脚本</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function secs(n){const s=parseInt(n%60);const m=Math.floor(n/60);return m?`${m}分${s}秒`:`${s}秒`;}
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 脚本已复制！'))}
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 视频分镜脚本 | AgentGongju.com'))return;
+const topic=document.getElementById('topic').value.trim();
+if(!topic){alert('请先填写视频主题');return;}
+const vt=document.getElementById('vtype').value;
+const total=parseInt(document.getElementById('dur').value);
+const mood=document.getElementById('mood').value;
+const talk=document.getElementById('talk').value;
+const shotPool={
+'短视频':[['特写','咖啡拉花/主角表情特写','镜头由近到远缓缓拉开'],
+['中景','跟拍主角动作','跟随运镜，节奏轻快'],
+['全景','交代环境氛围','稳定器缓缓平移']],
+'探店':[['中景','进门环视四周','手持跟拍入店'],
+['特写','食物/饮品特写','微距慢推，增强食欲'],
+['中景','主角品尝并点评','切近景眼神交流']],
+'宣传片':[['航拍/全景','企业形象展示','缓慢推进，大气'],
+['中景','团队工作状态','稳定平移'],
+['特写','品牌标识/细节','聚焦定格，提升质感']],
+'教学':[['特写','演示重点步骤','俯拍清晰展示'],
+['中景','老师示范','侧机位跟拍'],
+['特写','成果与总结','正面直给']],
+'产品':[['特写','产品外观/卖点','环绕展示'],
+['中景','使用场景','手持动感跟拍'],
+['特写','效果对比','双屏或渐变展示']]};
+const shots=Math.max(3,Math.min(8,Math.ceil(total/8)));
+let out=`🎬 分镜脚本表\n主题：${topic}\n类型：${vt}　总时长：${secs(total)}　风格：${mood}\n\n`;
+for(let i=1;i<=shots;i++){
+const base=shotPool[vt][i-1]||shotPool[vt][(i-1)%shotPool[vt].length];
+const per=Math.round(100/shotPool[vt].length)/100;
+const seg=Math.round(total/shots*10)/10;
+out+=`分镜 ${i}｜景别：${base[0]}｜时长：约${secs(seg)}\n`;
+out+=`· 画面：${base[1]}\n`;
+out+=`· 运镜/手法：${base[2]}\n`;
+if(talk!=='无')out+=`· 台词${talk==='多'?`（口播）`:'（点缀）'}：${i===1?'开场抓住眼球，一句话点出主题。':i===shots?'引导关注与互动，强化记忆点。':`自然承接，介绍本段的「${vt}」亮点。`}\n`;
+if(talk!=='多')out+=`· 背景音乐/BGM：${mood==='活泼'?'节奏明快':mood==='冷淡'?'低音舒缓':'情绪递进、氛围感强'}${talk==='多'?'（压低音量不压口播）':''}\n`;
+out+=`\n`;
+}
+out+=`结尾动作：统一「引导关注/点赞/收藏」手势与字幕，强化完播转化。`;
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+</script>
+</body>
+</html>

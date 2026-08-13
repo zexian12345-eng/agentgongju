@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI励志语录生成 | AgentGongju.com</title>
+<meta name="description" content="AI励志语录生成器，根据心情与场景为你定制正能量短句，朋友圈文案必备">
+<meta name="keywords" content="励志语录,正能量句子,鸡汤,朋友圈文案,早安晚安">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px;color-scheme:dark}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;min-height:60px;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.quote{font-size:1.15rem;color:#e9d5ff;font-weight:600;margin-bottom:14px}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>💪 AI励志语录生成</h1><p>一键生成专属正能量语录，为你的朋友圈与生活续航</p></div>
+<div class="card"><div class="param-row">
+<div><label>当前心情</label><select id="mood">
+<option value="挫败低落">挫败低落</option>
+<option value="迷茫焦虑">迷茫焦虑</option>
+<option value="疲惫不堪">疲惫不堪</option>
+<option value="平淡日常">平淡日常</option>
+<option value="开心雀跃">开心雀跃</option>
+</select></div>
+<div><label>使用场景</label><select id="scene">
+<option value="朋友圈自勉">朋友圈自勉</option>
+<option value="早安打卡">早安打卡</option>
+<option value="晚安文案">晚安文案</option>
+<option value="日常配图">日常配图</option>
+<option value="工作励志">工作励志</option>
+</select></div>
+</div>
+<div><label>想补充的主题（可选）</label>
+<input type="text" id="topic" placeholder="例如：坚持、梦想、减肥、学习、运动"></div>
+<button class="btn-gen" id="genBtn">🌟 生成语录</button></div>
+<div class="result-area" id="resultArea"><div class="card"><div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 语录已生成，为你的生活加点甜</div>
+<div class="quote" id="mainQuote"></div>
+<div class="result-box" id="out"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制语录</button></div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function copyResult(){navigator.clipboard.writeText(document.getElementById('mainQuote').textContent+'\n'+document.getElementById('out').textContent).then(()=>alert('✅ 已复制！'))}
+const MOOD={
+'挫败低落':['低谷是上坡路的前奏。','你已经很棒了，只是暂时还没看到结果。','别怕，风雨过后总会有彩虹。'],
+'迷茫焦虑':['不必急着看清远方，先走好脚下这一步。','迷茫是因为你在寻找更好的方向。','焦虑的解药是行动，哪怕只是最小的那一步。'],
+'疲惫不堪':['累了就歇一歇，但别轻易说放弃。','对自己温柔一点，你值得被好好对待。','休息不是懒惰，是为了走更远的路。'],
+'平淡日常':['把平凡的日子过出诗意，就是最大的浪漫。','今天也要元气满满地热爱生活呀✨','生活明朗，万物可爱，人间值得。'],
+'开心雀跃':['好心情是今天最棒的行囊！','嘴角上扬的人，运气都不会太差😄','把快乐放大，把烦恼缩小！']};
+const SCENE={
+'朋友圈自勉':['努力的人运气都不会差。','不将就不妥协，做自己的光。'],
+'早安打卡':['早安，今天也要加油鸭！','新的一天，从元气满满开始。','早起的鸟儿有虫吃，早安~'],
+'晚安文案':['晚安，好梦，明天见。','今天也辛苦了，早点休息。','把烦恼留给今天，晚安给我自己。'],
+'日常配图':['生活不止眼前的苟且，还有诗和远方。','慢慢来，比较快。'],
+'工作励志':['加油打工人！努力终有回报。','把工作当事业，把奋斗当修行。']};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI励志语录生成 | AgentGongju.com'))return;
+const mood=document.getElementById('mood').value;
+const scene=document.getElementById('scene').value;
+const topic=document.getElementById('topic').value.trim();
+const m=MOOD[mood];const s=SCENE[scene];
+const variants=['✨','🌟','💫','🌈','🔥'];
+const e=variants[Math.floor(Math.random()*variants.length)];
+let main='';
+if(topic){
+main='在「'+topic+'」这条路上，你一定会闪闪发光！';
+}else{
+main=(m[Math.floor(Math.random()*m.length)])+' '+e;
+}
+const pick=(arr)=>{let v=arr.filter(x=>x!==main);return v[Math.floor(Math.random()*v.length)];};
+let out='';
+const extras=pick(m);
+out+='◗ '+extras+'\n';
+out+='◗ '+pick(s)+'\n';
+out+='◗ '+(['越努力，越幸运。','相信自己，你值得最好的。','保持热爱，奔赴山海。'][Math.floor(Math.random()*3)])+'\n\n';
+out+='—— 来自 AgentGongju 的今日份元气';
+document.getElementById('mainQuote').textContent='“'+main+'”';
+document.getElementById('resultArea').classList.add('active');
+document.getElementById('out').textContent=out;
+});
+</script>
+</body>
+</html>

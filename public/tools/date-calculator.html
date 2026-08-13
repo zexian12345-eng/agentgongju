@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>恋爱纪念日情话生成 | AgentGongju.com</title>
+<meta name="description" content="计算恋爱天数，一键生成走心表白情话文案">
+<meta name="keywords" content="恋爱天数,纪念日,情话,表白文案,情侣">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=number],input[type=date]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.9;white-space:pre-wrap;min-height:60px;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.days{font-size:2rem;font-weight:700;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-align:center;margin:10px 0}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>💕 恋爱纪念日情话生成</h1><p>算算在一起第几天，顺便写句走心情话</p></div>
+
+<div class="card"><div class="param-row">
+<div><label>🗓️ 你们在一起的日期</label><input type="date" id="start"></div>
+<div><label>👤 对方昵称</label><input type="text" id="ta" placeholder="例如：宝贝 / 小明"></div>
+</div>
+<label>🌸 情话风格</label><select id="style"><option value="温柔告白" selected>温柔告白</option><option value="俏皮逗趣">俏皮逗趣</option><option value="文艺诗意">文艺诗意</option><option value="深情承诺">深情承诺</option></select>
+<button class="btn-gen" id="genBtn">💌 生成情话</button></div>
+
+<div class="result-area" id="resultArea"><div class="card"><div style="color:#22c55e;font-weight:600;text-align:center">💞 恋爱天数</div><div class="days" id="daysBox">—</div><div class="result-box" id="result"></div><button class="copy-btn" onclick="copyResult()">📋 复制</button></div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const openers={温柔告白:'想了好久，还是想认真对你说',俏皮逗趣:'喂，跟你说个秘密',文艺诗意:'遇见你之后,世间万物都有了颜色',深情承诺:'这一路，我愿一直陪着你'};
+const middles={温柔告白:['遇见你，是我平凡日子里最亮的惊喜。','有你在的每一天，连风都变得温柔。','只要想到你，嘴角就会不自觉上扬。'],俏皮逗趣:['我家的猪猪今天格外可爱，别狡辩说的就是你！','把你放进心里那一刻，就再也没打算放出来。','你是我的快乐源泉，充电五分钟续航一辈子！'],文艺诗意:['你是黄昏时的一抹橘，也是清晨的第一缕光。','山河远阔，人间烟火，无一是你，无一不是你。','愿我们的故事，像星星一样又亮又长。'],深情承诺:['未来的路很长，但只要你在，我就有走下去的勇气。','不管风雨，我都想站在你这边。','余生皆是欢喜，皆是你。']};
+const endings={温柔告白:'永远爱你的人',俏皮逗趣:'你的专属可爱鬼',文艺诗意:'愿意陪你看遍四季的人',深情承诺:'决定和你走到底的人'};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('恋爱纪念日情话生成 | AgentGongju.com'))return;
+let start=document.getElementById('start').value;if(!start){alert('请选择在一起的日期');return;}
+const ta=document.getElementById('ta').value.trim()||'亲爱的';
+const style=document.getElementById('style').value;
+const s=new Date(start),now=new Date();s.setHours(0,0,0,0);now.setHours(0,0,0,0);
+let days=Math.floor((now-s)/86400000);if(days<0)days=0;if(days===0)days=1;
+document.getElementById('daysBox').textContent=days+' 天';
+const mid=middles[style][Math.floor(Math.random()*middles[style].length)];
+const out='亲爱的 '+ta+'：\n\n'+openers[style]+'\n\n💞 我们在一起已经第 '+days+' 天了。\n\n'+mid+'\n\n'+(['谢谢你成为我的软肋与铠甲。','以后的日子，请多指教。','这个数字，我会陪你一直往下数。','想在未来的每个纪念日，都见到你的笑。'][Math.floor(Math.random()*4)])+'\n\n—— 爱你的'+endings[style];
+document.getElementById('resultArea').classList.add('active');document.getElementById('result').textContent=out;
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('result').textContent).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

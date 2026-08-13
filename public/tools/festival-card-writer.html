@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>节日贺卡文案 | AgentGongju.com</title>
+<meta name="description" content="AI节日贺卡文案生成器，春节、中秋、母亲节等节日自动生成走心贺卡祝福语">
+<meta name="keywords" content="贺卡文案,节日贺卡,祝福语,贺卡内容">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:70px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.btn-gen:disabled{opacity:.5;cursor:not-allowed}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.card-preview{background:linear-gradient(135deg,rgba(99,102,241,0.15),rgba(168,85,247,0.15));border:1px solid rgba(99,102,241,0.4);border-radius:16px;padding:30px;text-align:center;margin-bottom:16px}
+.card-preview .greet{font-size:1.5rem;font-weight:700;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:12px}
+.card-preview .body{color:#e2e8f0;line-height:1.9}
+.card-preview .sign{color:#94a3b8;margin-top:12px}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:16px;color:#94a3b8;font-size:.85rem;white-space:pre-line}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem;margin-top:12px}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>💌 节日贺卡文案</h1><p>为春节、中秋、母亲节等节日生成走心的贺卡祝福文案</p></div>
+
+<div class="card"><label>🗓 选择节日</label>
+<select id="fest"><option value="春节">🧧 春节</option><option value="元宵节">🏮 元宵节</option><option value="母亲节">🌷 母亲节</option><option value="父亲节">👔 父亲节</option><option value="中秋节">🌕 中秋节</option><option value="教师节">📚 教师节</option><option value="国庆节">🇨🇳 国庆节</option><option value="圣诞节">🎄 圣诞节</option></select>
+<div class="param-row">
+<div><label>收卡对象</label><input type="text" id="to" placeholder="例如：妈妈 / 恩师 / 好友"></div>
+<div><label>落款署名</label><input type="text" id="sign" placeholder="例如：爱你的女儿 / 学生XXX"></div>
+</div>
+<button class="btn-gen" id="genBtn">🎨 生成贺卡</button></div>
+
+<div class="result-area" id="resultArea"><div class="card">
+<div class="card-preview"><div class="greet" id="greet">🧧 春节快乐</div><div class="body" id="body"></div><div class="sign" id="sign"></div></div>
+<div class="result-box" id="plain"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制贺卡文案</button></div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const EMOJI={'春节':'🧧','元宵节':'🏮','母亲节':'🌷','父亲节':'👔','中秋节':'🌕','教师节':'📚','国庆节':'🇨🇳','圣诞节':'🎄'};
+const GREETING={'春节':'新春快乐','元宵节':'元宵喜乐','母亲节':'母亲节快乐','父亲节':'父亲节快乐','中秋节':'中秋快乐','教师节':'教师节快乐','国庆节':'国庆快乐','圣诞节':'圣诞快乐'};
+const TEMPLATES={
+'春节':[
+'新年的钟声敲响，愿过去一年的辛苦都化作此刻的圆满。愿你新的一年，平安喜乐，万事顺遂，所行皆坦途，所遇皆温柔。',
+'爆竹声中一岁除，春风送暖入屠苏。愿你在新的一年里，身体健康，财源广进，全家幸福安康！',
+'辞旧迎新际，愿你新年心情好，好运常相伴，日子红红火火，生活甜甜蜜蜜！'],
+'母亲节':[
+'妈妈，谢谢您用一生的操劳，换来我一路的温暖。您的白发是岁月的印记，也是我心中最深的牵挂。母亲节快乐，永远爱您。',
+'有您在的地方就是家。愿岁月对您温柔以待，愿您笑口常开，健康常伴。妈妈，母亲节快乐！',
+'您把最好的都给了我。这世间的温柔，也该为您留一份。母亲节快乐，愿您永远是那个被宠爱的女孩。'],
+'父亲节':[
+'爸爸，您是我沉默的靠山，也是我稳稳的骄傲。谢谢您为我撑起一片天。父亲节快乐！',
+'您的背影，是我一生最坚实的依靠。愿时光慢些，让您的白发慢一点。爸爸，节日快乐！'],
+'中秋节':[
+'月圆人团圆，愿这轮明月带去我最深的祝福。祝你中秋快乐，阖家幸福，天涯共此时。',
+'月饼甜，桂花香，愿你的生活也如这月色般温柔圆满。中秋快乐！'],
+'教师节':[
+'感谢您，用一盏灯点亮了我求知的路。桃李不言，下自成蹊。老师，教师节快乐！',
+'您的谆谆教诲，是我人生路上最亮的星光。祝您节日快乐，桃李满天下！'],
+'教师节补':[]};
+TEMPLATES['元宵节']=['一碗汤圆，盛满团圆的甜。愿你新的一年，生活像汤圆一样圆满甜润。元宵节快乐！','灯火万家，愿这良辰美景，福气满满，万事圆圆。元宵快乐！'];
+TEMPLATES['国庆节']=['山河锦绣，盛世华诞。愿祖国繁荣昌盛，也愿你节日快乐，万事顺心！','黄金周里，祝愿快乐加倍，出行平安，享受美好假期！'];
+TEMPLATES['圣诞节']=['平安夜的钟声敲响，愿所有的美好都如期而至。圣诞快乐，愿这个冬天温暖如春。','Merry Christmas! 愿幸福与平安，常伴你左右。圣诞快乐！'];
+function copyResult(){navigator.clipboard.writeText(document.getElementById('plain').textContent).then(()=>alert('✅ 已复制！'))}
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('节日贺卡文案 | AgentGongju.com'))return;
+const fest=document.getElementById('fest').value;
+const to=document.getElementById('to').value.trim();
+const sign=document.getElementById('sign').value.trim();
+const arr=TEMPLATES[fest];
+const body=arr[Math.floor(Math.random()*arr.length)];
+const greet=EMOJI[fest]+' '+GREETING[fest];
+const full=(to?to+'：\n':'')+body+(sign?'\n—— '+sign:'');
+document.getElementById('greet').textContent=greet;
+document.getElementById('body').textContent=body;
+document.getElementById('sign').textContent=sign?'—— '+sign:'';
+document.getElementById('plain').textContent=(to?to+'：':'')+body+(sign?'\n—— '+sign:'');
+document.getElementById('resultArea').classList.add('active');
+});
+</script>
+</body>
+</html>

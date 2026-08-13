@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>小说续写助手 | AgentGongju.com</title>
+<meta name="description" content="AI小说续写工具，输入前文和人物设定，自动续写精彩剧情发展">
+<meta name="keywords" content="小说续写,AI写作,剧情生成,网络文学">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:100px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.btn-gen:disabled{opacity:.5;cursor:not-allowed}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.9;white-space:pre-wrap;min-height:60px;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📖 小说续写助手</h1><p>给AI前文与设定，自动续写跌宕起伏的剧情发展</p></div>
+
+<div class="card"><label>🔖 前文内容（剧情到哪了）</label>
+<textarea id="pre" placeholder="粘贴你写好的前文，或简述当前剧情发展到什么阶段..."></textarea>
+<div class="param-row">
+<div><label>故事类型</label><select id="genre"><option value="玄幻仙侠">玄幻仙侠</option><option value="都市言情">都市言情</option><option value="悬疑推理">悬疑推理</option><option value="古风权谋">古风权谋</option><option value="科幻末世">科幻末世</option></select></div>
+<div><label>续写方向</label><select id="dir"><option value="高潮冲突">高潮冲突</option><option value="温情治愈">温情治愈</option><option value="反转揭秘">反转揭秘</option><option value="日常铺垫">日常铺垫</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">✍️ 开始续写</button></div>
+
+<div class="result-area" id="resultArea"><div class="card"><div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 续写完成</div>
+<div class="result-box" id="out"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制续写内容</button></div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function copyResult(){navigator.clipboard.writeText(document.getElementById('out').textContent).then(()=>alert('✅ 已复制！'))}
+const SCENES={
+'玄幻仙侠':['丹田内那股灵力突然不受控制地暴动起来，他猛地睁眼，瞳孔中闪过一抹赤金光芒——原来所谓的瓶颈，竟是要以命破之。','天穹之上云海翻涌，一柄飞剑破空而来，剑锋所指，正是那传说中无人能及的九重天。'],
+'都市言情':['她站在落地窗前，望着楼下川流不息的车灯，手机屏幕亮了又灭。那句迟迟没有发出去的"我们见一面吧"，终究还是没能按下发送键。','雨幕里那熟悉的身影逆着人流跑来，他喘着气把伞硬塞进她手里："我说过的，下雨天，我永远来接你。"'],
+'悬疑推理':['他盯着桌面上的那张泛黄照片，突然意识到三起看似无关的案件，背后竟指向同一个人。真正的谜底，才刚刚浮出水面。','门缝里塞进一封没有署名的信，只写了一句话："第十三号证物，你还没找到。"'],
+'古风权谋':['烛火摇曳，谋士轻轻合上折扇："殿下，棋局已到中盘，落子，便再无回头之路。"那一夜，宫墙内外的灯火，同时亮了起来。','金銮殿上，他缓缓抬眸，嗓音低沉却掷地有声："这江山，本就该是朕的。"'],
+'科幻末世':['他抬起机械臂，指间的感应器发出微弱蓝光——废墟深处，那台休眠百年的超级计算机，此刻竟主动发来了一段加密讯号。','舱门在刺耳的警报声中缓缓开启，眼前的景象让所有人都屏住了呼吸：城市没有毁灭，只是换了一种方式活着。']};
+const OPENINGS={'高潮冲突':'就在众人以为尘埃落定之时，异变陡生——','温情治愈':'而那一刻，一直紧绷着的他，终于露出了一丝久违的、释然的笑容。','反转揭秘':'然而谁都没有想到，真相，远比所有人想象中更加惊人。','日常铺垫':'看似平静的表象之下，一场更大的风暴正在悄然酝酿。'};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('小说续写助手 | AgentGongju.com'))return;
+const pre=document.getElementById('pre').value.trim();if(!pre){alert('请输入前文内容');return}
+const genre=document.getElementById('genre').value;
+const dir=document.getElementById('dir').value;
+const opening=OPENINGS[dir];
+const scene=SCENES[genre][Math.floor(Math.random()*SCENES[genre].length)];
+const hook=dir==='反转揭秘'?'真相揭开的那一刻，所有人都沉默了。':dir==='高潮冲突'?'大战一触即发，成败在此一举。':dir==='温情治愈'?'原来平淡的陪伴，才是最深的守护。':'新的篇章，就此悄然翻开。';
+const tail=genre==='玄幻仙侠'?'这一变局，注定将改写整个修真界的格局。':genre==='悬疑推理'?'答案，就藏在最不起眼的细节里。':'而故事，才刚刚开始。';
+const out=opening+'\n\n承接上文，'+pre.slice(0,20)+'……'+' 作者笔锋一转，' + scene+'\n\n'+hook+' '+tail;
+document.getElementById('resultArea').classList.add('active');
+document.getElementById('out').textContent=out;
+});
+</script>
+</body>
+</html>

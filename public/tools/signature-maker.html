@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>艺术签名在线生成 | AgentGongju.com</title>
+<meta name="description" content="输入你的名字，一键生成有设计感的艺术签名样式文字">
+<meta name="keywords" content="艺术签名,签名设计,个性签名,手写签名,签名字体">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:740px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:30px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:20px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:1.1rem;outline:none;margin-bottom:12px;letter-spacing:4px}
+input:focus{border-color:#6366f1}
+.tags{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+.tag{padding:8px 16px;border:1px solid rgba(255,255,255,0.12);border-radius:20px;color:#94a3b8;font-size:.88rem;cursor:pointer}
+.tag:hover{border-color:#6366f1;color:#fff}
+.tag.sel{background:linear-gradient(135deg,#6366f1,#a855f7);border-color:transparent;color:#fff}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.signs{display:flex;flex-direction:column;gap:14px;margin-top:20px}
+.sign{display:flex;justify-content:space-between;align-items:center;padding:20px 22px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:14px}
+.sign:hover{border-color:#6366f1}
+.s{font-size:2.2rem;color:#fff;font-family:'Kaiti SC','STKaiti','KaiTi',serif;letter-spacing:6px;transform:rotate(-3deg)}
+.s .deco{color:#a855f7}
+.copy-btn{padding:7px 14px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.8rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.info{color:#64748b;font-size:.82rem;text-align:center;margin-top:16px}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>✒️ 艺术签名在线生成</h1><p>输入名字，生成几种风格的"电子签名"效果</p></div>
+
+<div class="card"><label>✍️ 你的名字</label>
+<input type="text" id="name" placeholder="例如：张伟">
+<label>🎨 选择风格</label>
+<div class="tags" id="tags">
+<span class="tag sel" data="潇洒">🌊 潇洒流畅</span>
+<span class="tag" data="大气磅礴">🔥 大气磅礴</span>
+<span class="tag" data="简约商务">💼 简约商务</span>
+<span class="tag" data="艺术浪漫">🌸 艺术浪漫</span>
+</div>
+<button class="btn-gen" id="genBtn">✒️ 生成签名</button>
+<div class="signs" id="signs"></div>
+<div class="info">提示：此为文字样式效果，用于心情签名、头像落款等。正式签名建议找专业设计。</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+let st='潇洒';
+document.querySelectorAll('.tag').forEach(t=>t.onclick=()=>{document.querySelectorAll('.tag').forEach(x=>x.classList.remove('sel'));t.classList.add('sel');st=t.getAttribute('data');});
+function build(name,style){
+const n=name.split('');
+const gs={潇洒:['℘','✦','〜'],大气磅礴:['⚡','▲','◆'],简约商务:['−','·','.'],艺术浪漫:['♡','✿','✦']}[style]||['✦'];
+const deco=gs[Math.floor(Math.random()*gs.length)];
+return n.join('')+deco;
+}
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('艺术签名在线生成 | AgentGongju.com'))return;
+const name=document.getElementById('name').value.trim();if(!name){alert('请输入你的名字');return;}
+const box=document.getElementById('signs');box.innerHTML='';
+const count=Math.min(name.length,4);
+for(let i=0;i<count;i++){
+const sig=build(name,st);
+const row=document.createElement('div');row.className='sign';
+row.innerHTML='<span class="s">'+sig+'</span><button class="copy-btn">复制</button>';
+row.querySelector('.copy-btn').onclick=()=>{navigator.clipboard.writeText(sig).then(()=>alert('✅ 已复制签名样式'));};
+box.appendChild(row);
+}
+});
+</script>
+</body>
+</html>

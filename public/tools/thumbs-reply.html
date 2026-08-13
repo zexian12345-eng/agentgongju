@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 好评回复生成 | AgentGongju.com</title>
+<meta name="description" content="AI好评回复生成器，针对顾客/客户的评价，生成走心、专业、有温度的好评回复，维护好形象提升复购，支持外卖、电商、差评安抚等场景">
+<meta name="keywords" content="AI好评回复,评价回复,客户好评回复,外卖评价回复,客服工具">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:80px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;margin-bottom:12px;font-size:.92rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>💬 AI 好评回复生成</h1><p>回复走心又专业，客户好感拉满</p></div>
+
+<div class="card">
+<label>⭐ 用户评价原文（好评 / 差评都行）</label>
+<textarea id="review" placeholder="例如：这家店的汉堡太好吃了！肉饼很厚，酱料绝了，配送也很快，强烈推荐！"></textarea>
+<div class="param-row">
+<div><label>🏪 行业/场景</label>
+<select id="scene">
+<option value="餐饮" selected>🍔 餐饮外卖</option>
+<option value="电商">🛍️ 电商/淘宝</option>
+<option value="酒店">🏨 酒店民宿</option>
+<option value="服务">💼 服务行业</option>
+</select></div>
+<div><label>🗣️ 回复风格</label>
+<select id="style">
+<option value="走心" selected>💗 走心温暖</option>
+<option value="专业">🤝 专业得体</option>
+<option value="俏皮">😄 幽默俏皮</option>
+<option value="简短">⚡ 简洁感谢</option>
+</select></div>
+</div>
+<button class="btn-gen" id="genBtn">✨ 生成回复</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">💬 建议回复</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制回复</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 回复已复制！'))}
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 好评回复生成 | AgentGongju.com'))return;
+const review=document.getElementById('review').value.trim();
+if(!review){alert('请先粘贴用户评价');return;}
+const scene=document.getElementById('scene').value;
+const style=document.getElementById('style').value;
+const isNeg=/差|不好|不行|难吃|失望|太慢|态度|问题|拉黑|再也/.test(review);
+const brandName={'餐饮':'本店','电商':'我们小店','酒店':'我们民宿/酒店','服务':'我们'}[scene];
+let out=`💬 回复用户评价\n\n`;
+if(isNeg){
+out+=`（消极反馈处理：先道歉安抚，再承诺改进，并引导私信解决）\n\n`;
+out+=`感谢您的反馈，非常抱歉这次没能让您满意🙏。您提到的问题我们已经认真记录并在积极改进，希望能给您带来更好的体验。若方便，您也可以联系我们的客服${scene==='餐饮'?'(私信我们)':'(点开店铺联系客服)'}，我们会第一时间为您处理。期待您下次光临，给我们一个弥补的机会！`;
+}else{
+const praise=review.slice(0,Math.min(review.length,18));
+if(style==='走心'){
+out+=`看到您这么用心的评价，${brandName}真的超感动🥰！能得到您的认可，是我们最大的动力。我们会继续用心，不负每一份期待。欢迎常来，下次见呀～`;
+}else if(style==='专业'){
+out+=`非常感谢您对${brandName}的支持与认可！您提到的「${praise}…」正是我们一直坚持的标准。欢迎随时回来，我们将一如既往为您带来高品质的服务，期待您的再次光临！`;
+}else if(style==='俏皮'){
+out+=`被您夸得不好意思了😄！能得到这么高的评价，${brandName}的菜单/货架都要骄傲起来了。希望您开心满意，下次来还有惊喜等你哦！`;
+}else{
+out+=`感谢您的五星好评！${brandName}会继续努力，期待再次为您服务～`;
+}}
+out+=`\n\n💡 提示：回复时把"您提到的具体细节"（如某道菜/某个服务）写进去，会让回复更真诚、更有温度。`;
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+</script>
+</body>
+</html>

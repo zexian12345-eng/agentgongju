@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 小说大纲生成 | AgentGongju.com</title>
+<meta name="description" content="AI小说大纲生成器，输入题材、主角设定与一句话故事，自动生成完整小说大纲：世界观、人物关系、分卷情节、冲突钩子，网文创作起步神器">
+<meta name="keywords" content="AI小说大纲,小说创作,网文大纲,故事构思,写作工具">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:80px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;margin-bottom:12px;font-size:.92rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📖 AI 小说大纲生成</h1><p>一句话创意，秒变完整小说创作蓝图</p></div>
+
+<div class="card">
+<label>🪄 一句话故事 / 核心创意</label>
+<textarea id="idea" placeholder="例如：现代社畜穿越到修仙界，靠写职场PUA老板的爽文一路开挂成圣，最后却发现所有修仙大佬都是他小说的读者"></textarea>
+<div class="param-row">
+<div><label>🎭 题材</label>
+<select id="genre">
+<option value="玄幻" selected>🐉 玄幻修仙</option>
+<option value="都市">🏙️ 都市</option>
+<option value="科幻">🚀 科幻</option>
+<option value="悬疑">🔍 悬疑推理</option>
+<option value="言情">💕 言情</option>
+<option value="游戏">🎮 游戏/系统流</option>
+</select></div>
+<div><label>📏 字数规模</label>
+<select id="size">
+<option value="短篇">短篇(20万内)</option>
+<option value="中篇" selected>中篇(50-100万)</option>
+<option value="长篇">长篇(150万+)</option>
+</select></div>
+</div>
+<div class="param-row">
+<div><label>👑 主角人设</label><input type="text" id="hero" placeholder="如：林玄，冷静腹黑，嘴炮王者" /></div>
+<div><label>⚔️ 核心矛盾</label>
+<select id="conflict">
+<option value="逆袭" selected>逆袭打脸</option>
+<option value="守护">守护家园</option>
+<option value="探寻">身世之谜</option>
+<option value="争霸">争霸巅峰</option>
+</select></div>
+</div>
+<button class="btn-gen" id="genBtn">✨ 生成大纲</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">📖 小说大纲</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制大纲</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const confMap={'逆袭':'从底层被轻视到一步步逆袭打脸，爽点密集','守护':'围绕守护重要的人与物展开，情感张力足','探寻':'以主角身世或惊天秘密为线索层层推进','争霸':'以大格局争锋为主线，群像丰富'};
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 大纲已复制！'))}
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 小说大纲生成 | AgentGongju.com'))return;
+const idea=document.getElementById('idea').value.trim();
+if(!idea){alert('请先填写核心创意');return;}
+const g=document.getElementById('genre').value;
+const size=document.getElementById('size').value;
+const hero=document.getElementById('hero').value.trim()||'主角';
+const cf=document.getElementById('conflict').value;
+const vols=size==='短篇'?3:size==='中篇'?5:8;
+let out=`📖 《${(idea.split(/，|,/)[0]||'无名之作').slice(0,12)}》小说大纲\n题材：${g}　矛盾主线：${confMap[cf]}\n\n`;
+out+=`一、世界观设定（${g}）\n`;
+if(g==='玄幻')out+=`· 构建以灵气复苏为核心的力量体系，修为分境界；宗门林立、秘境无数。\n`;
+else if(g==='都市')out+=`· 现代都市背景，隐藏世家与都市异能并存，明暗两线交织。\n`;
+else if(g==='科幻')out+=`· 星际纪元，人类与外星文明对峙，科技与人性博弈。\n`;
+else if(g==='悬疑')out+=`· 以连环事件为引，线索与反转层层铺开，真相扑朔迷离。\n`;
+else if(g==='言情')out+=`· 现代都市情感为主，细腻心理与误会纠葛推动发展。\n`;
+else out+=`· 以游戏世界为舞台，系统金手指与真实成长并存。\n`;
+out+=`\n二、核心人物\n· 主角：${hero}——担当、成长与情感的主线承载。\n· 主要对手：能力初期压制主角、后期被反超的关键人物。\n· 助力伙伴：与主角互补，负责情感线与支线。\n\n`;
+out+=`三、核心创意\n${idea}\n\n`;
+out+=`四、分卷大纲（共 ${vols} 卷）\n`;
+const volNames=['缘起之章','崭露头角','风波骤起','暗流涌动','身世迷局','强敌环伺','浴火蜕变','巅峰之战'];
+for(let i=1;i<=vols;i++){
+const name=volNames[i-1]||`第${i}卷·终局`;
+out+=`【第${i}卷】${name}\n`;
+if(i===1)out+=`· 引入世界观，主角以「${hero}」登场，遭遇首次危机，立下目标。\n· 钩子：埋下贯穿全文的悬念伏笔。\n`;
+else if(i===vols)out+=`· 矛盾总爆发，终极对决，主角完成蜕变。\n· 钩子：揭晓全部伏笔，余韵悠长。\n`;
+else out+=`· 推进主线，冲突升级，主角实力与人际网络同步壮大。\n· 钩子：结尾抛出新事件或新人物，制造追更欲望。\n`;
+out+=`\n`;
+}
+out+=`五、商业卖点\n· 核心爽点密集、节奏明快，符合${g}读者口味。\n· 人物成长弧线清晰，感情线与事业线并重。`;
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+</script>
+</body>
+</html>

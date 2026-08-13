@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI塔罗占卜 | AgentGongju.com</title>
+<meta name="description" content="AI塔罗牌占卜，输入你的问题，随机抽取塔罗牌并智能解读三张牌阵">
+<meta name="keywords" content="塔罗牌,占卜,塔罗解读,运势,AI占卜">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px;color-scheme:dark}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.9;white-space:pre-wrap;min-height:60px;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.t-card{background:linear-gradient(135deg,rgba(99,102,241,0.2),rgba(168,85,247,0.15));border:1px solid rgba(168,85,247,0.4);border-radius:12px;padding:16px 20px;margin-bottom:14px}
+.t-card .t-name{font-weight:700;color:#c4b5fd;margin-bottom:6px}
+.t-card .t-mean{color:#e2e8f0;font-size:.9rem;line-height:1.7}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🔮 AI塔罗占卜</h1><p>凝神静思你的问题，抽取三张塔罗牌为你解读过去·现在·未来</p></div>
+<div class="card"><label>🎯 你想占卜的问题</label>
+<input type="text" id="question" placeholder="例如：我该不该换工作？ / 最近的感情运势如何？">
+<div class="param-row">
+<div><label>占卜领域</label><select id="field"><option value="事业">💼 事业</option><option value="感情">❤️ 感情</option><option value="财运">💰 财运</option><option value="健康">💪 健康</option><option value="综合">🌈 综合</option></select></div>
+<div><label>牌阵</label><select id="spread"><option value="过去-现在-未来">过去-现在-未来</option><option value="现状-建议-结果">现状-建议-结果</option><option value="自己-对方-关系">自己-对方-关系</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">✨ 开始占卜</button></div>
+<div class="result-area" id="resultArea"><div class="card"><div style="color:#22c55e;font-weight:600;margin-bottom:12px">✨ 塔罗已为你揭晓</div>
+<div id="cards"></div>
+<div class="result-box" id="out"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制占卜报告</button></div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function copyResult(){navigator.clipboard.writeText(document.getElementById('out').textContent).then(()=>alert('✅ 已复制！'))}
+const CARDS=[
+{n:'愚者',emoji:'🃏',pos:'新的开始、冒险精神',neg:'鲁莽冲动、缺乏规划'},
+{n:'魔术师',emoji:'✨',pos:'掌握资源、行动力强',neg:'华而不实、虚有其表'},
+{n:'女祭司',emoji:'🌙',pos:'直觉敏锐、内在智慧',neg:'过分保守、封闭自我'},
+{n:'皇后',emoji:'👑',pos:'丰富滋养、温柔包容',neg:'过度依赖、患得患失'},
+{n:'皇帝',emoji:'🏛️',pos:'权威领导、掌控全局',neg:'固执强硬、专制压迫'},
+{n:'恋人',emoji:'💞',pos:'情感结合、重要抉择',neg:'犹豫不决、感情用事'},
+{n:'战车',emoji:'🎠',pos:'意志坚定、勇往直前',neg:'失控倒退、方向迷失'},
+{n:'力量',emoji:'🦁',pos:'以柔克刚、内心强大',neg:'逞强硬撑、力不从心'},
+{n:'隐士',emoji:'🏮',pos:'内省探索、寻求真理',neg:'过度孤僻、与人疏离'},
+{n:'命运之轮',emoji:'🎡',pos:'机遇来临、时来运转',neg:'变故突生、运势起伏'},
+{n:'正义',emoji:'⚖️',pos:'公平公正、因果相报',neg:'失衡偏颇、难以服众'},
+{n:'倒吊人',emoji:'🪢',pos:'换个角度、静待时机',neg:'白白牺牲、停滞不前'},
+{n:'死神',emoji:'💀',pos:'结束重生、脱胎换骨',neg:'拖延抗拒、难以放手'},
+{n:'节制',emoji:'⏳',pos:'平衡调和、健康有序',neg:'失衡过度、缺乏耐心'},
+{n:'恶魔',emoji:'😈',pos:'看清欲望、直面诱惑',neg:'沉迷束缚、作茧自缚'},
+{n:'高塔',emoji:'🗼',pos:'破而后立、真相显现',neg:'突遭变故、措手不及'},
+{n:'星星',emoji:'⭐',pos:'希望降临、指引方向',neg:'希望渺茫、丧失信心'},
+{n:'月亮',emoji:'🌕',pos:'潜意识觉醒、洞察迷雾',neg:'困惑不安、自欺欺人'},
+{n:'太阳',emoji:'☀️',pos:'成功喜悦、光明坦途',neg:'得意忘形、盲目乐观'},
+{n:'审判',emoji:'📯',pos:'觉醒重生、拨云见日',neg:'自我怀疑、逃避责任'},
+{n:'世界',emoji:'🌍',pos:'圆满达成、梦想成真',neg:'差临门一脚、功亏一篑'}];
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI塔罗占卜 | AgentGongju.com'))return;
+const question=document.getElementById('question').value.trim()||'综合运势';
+const field=document.getElementById('field').value;
+const spread=document.getElementById('spread').value;
+const labels=spread.split('-');
+const picked=[];
+const pool=[...CARDS];
+for(let i=0;i<3;i++){const idx=Math.floor(Math.random()*pool.length);picked.push(pool.splice(idx,1)[0]);}
+const uprights=picked.map(()=>Math.random()>0.3);
+let out='🔮 【塔罗占卜报告】\n\n问题：'+question+'｜领域：'+field+'\n牌阵：'+spread+'\n\n';
+let cardsHtml='';
+picked.forEach((c,i)=>{
+const up=uprights[i];
+const pos=up?c.pos:c.neg;
+out+='【'+(i+1)+' · '+labels[i]+'】'+c.emoji+' '+c.n+(up?'（正位）':'（逆位）')+'\n';
+out+=pos+'\n\n';
+cardsHtml+='<div class="t-card"><div class="t-name">'+(i+1)+'. '+labels[i]+'　'+c.emoji+' '+c.n+(up?'（正位）':'（逆位）')+'</div><div class="t-mean">'+pos+'</div></div>';
+});
+const adviceMap={
+'事业':['保持专注与耐心，机会偏爱有准备的人','多沟通协作，避免单打独斗'],
+'感情':['真诚表达内心，关系会逐渐升温','给对方一点空间，也给自己一些沉淀'],
+'财运':['稳健为主，切勿冲动投资','合理规划将带来长久回报'],
+'健康':['调整作息，身体会给你正向反馈','适度运动，心境自然开阔'],
+'综合':['跟随内心直觉，方向会越来越清晰','保持开放心态，好运正在靠近']};
+const advice=(adviceMap[field]||adviceMap['综合'])[Math.floor(Math.random()*2)];
+out+='【综合建议】\n'+advice+'\n\n※ 塔罗占卜为AI娱乐解读，仅供休闲参考，请理性看待。';
+document.getElementById('cards').innerHTML=cardsHtml;
+document.getElementById('resultArea').classList.add('active');
+document.getElementById('out').textContent=out;
+});
+</script>
+</body>
+</html>

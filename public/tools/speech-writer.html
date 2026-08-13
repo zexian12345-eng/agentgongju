@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI演讲稿生成 | AgentGongju.com</title>
+<meta name="description" content="AI演讲稿生成器，输入主题与场合，快速生成层次分明、打动听众的演讲稿">
+<meta name="keywords" content="演讲稿,发言稿,致辞,演讲稿生成,汇报发言">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px;color-scheme:dark}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;min-height:60px;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🎤 AI演讲稿生成</h1><p>输入演讲主题与场合，为你生成层次分明、富有感染力的演讲稿</p></div>
+<div class="card"><label>🎯 演讲主题</label>
+<input type="text" id="topic" placeholder="例如：青春与梦想 / 坚持的意义 / 团队合作的力量">
+<div class="param-row">
+<div><label>演讲场合</label><select id="scene"><option value="公司年会">公司年会</option><option value="学校演讲">学校演讲</option><option value="毕业典礼">毕业典礼</option><option value="行业论坛">行业论坛</option><option value="婚礼致辞">婚礼致辞</option><option value="总结汇报">总结汇报</option></select></div>
+<div><label>预计时长</label><select id="length"><option value="3分钟">3分钟</option><option value="5分钟">5分钟</option><option value="10分钟">10分钟</option></select></div>
+</div>
+<div><label>补充内容（可选）</label>
+<input type="text" id="extra" placeholder="例如：我想强调的几个观点 / 真实的案例"></div>
+<button class="btn-gen" id="genBtn">📜 生成演讲稿</button></div>
+<div class="result-area" id="resultArea"><div class="card"><div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 演讲稿已生成！</div>
+<div class="result-box" id="out"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制演讲稿</button></div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function copyResult(){navigator.clipboard.writeText(document.getElementById('out').textContent).then(()=>alert('✅ 已复制！'))}
+const OPEN={
+'公司年会':'尊敬的各位领导、亲爱的同事们：\n大家晚上好！',
+'学校演讲':'尊敬的老师、亲爱的同学们：\n大家好！',
+'毕业典礼':'敬爱的老师们、亲爱的同学们：\n大家好！',
+'行业论坛':'各位前辈、各位同行、朋友们：\n大家好！',
+'婚礼致辞':'各位来宾、各位亲朋好友：\n大家好！',
+'总结汇报':'各位领导、各位同仁：\n大家好！'};
+const CLOSE={
+'公司年会':'最后，祝愿公司蒸蒸日上，祝愿大家工作顺利、阖家幸福！谢谢大家！',
+'学校演讲':'让我们一起加油，不负青春！我的演讲到此结束，谢谢大家！',
+'毕业典礼':'愿我们前程似锦，常回母校看看！谢谢大家！',
+'行业论坛':'希望我们携手同行，共促行业繁荣发展！谢谢大家！',
+'婚礼致辞':'再次祝福两位新人永结同心、百年好合！谢谢大家！',
+'总结汇报':'以上是我今天的汇报，请各位领导批评指正！谢谢！'};
+const TIPS=['热情饱满，自然大方','语速适中，重点处放慢加重','可与观众进行眼神交流','适当加入手势增强感染力'];
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI演讲稿生成 | AgentGongju.com'))return;
+const topic=document.getElementById('topic').value.trim();
+if(!topic){alert('请输入演讲主题');return}
+const scene=document.getElementById('scene').value;
+const length=document.getElementById('length').value;
+const extra=document.getElementById('extra').value.trim();
+const opens=OPEN[scene],closes=CLOSE[scene];
+const pars=Math.min(parseInt(length.split('分')[0]),10);
+const CORE=[
+'当我们在谈论「'+topic+'」时，我们究竟在谈论什么？它不是一个宏大的口号，而是与我们每个人息息相关的生活方式与选择。',
+'有人说，'+topic+'之路注定充满挑战。但正是那些咬牙坚持的时刻，才让我们真正成长为一个更强大的自己。',
+'我相信，每一位走到今天的你我，都曾在深夜思考过自己的方向。而'+topic+'，正是我们共同寻找到的那束光。',
+'如果把'+topic+'比作一场长跑，那么重要的不是起点的快慢，而是能否一直保持向前奔跑的勇气。',
+'很多故事告诉我们：成功往往源于一次次微小的坚持。'+(topic)+'也一样，点滴积累终会汇成江海。',
+'我们也许会遇到质疑，会遇到挫折，但只要方向是对的，就不怕路远。'+topic+'之路，值得我们全力以赴。',
+'与其迷茫焦虑，不如把注意力拉回当下，认真做好每一件小事。这，恰恰是'+topic+'最有力量的开始。'];
+let out=opens+'\n\n　今天，站在这方讲台上，我想和大家聊聊「'+topic+'」。\n\n';
+const useIdx=new Set();
+for(let i=0;i<pars;i++){
+let idx=Math.floor(Math.random()*CORE.length);
+while(useIdx.has(idx))idx=Math.floor(Math.random()*CORE.length);
+useIdx.add(idx);
+out+='　'+CORE[idx]+'\n\n';
+}
+if(extra)out+='　我想特别提到的是：'+extra+'。这让我更加坚定地相信'+topic+'的意义所在。\n\n';
+out+='　最后与大家共勉：唯有扎根现实，方能行稳致远；唯有心怀热爱，方能奔赴山海。\n\n';
+out+=closes;
+document.getElementById('resultArea').classList.add('active');
+document.getElementById('out').textContent=out;
+});
+</script>
+</body>
+</html>

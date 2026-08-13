@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>人生格言座右铭生成 | AgentGongju.com</title>
+<meta name="description" content="根据性格关键词和小众风格，生成一句专属人生格言座右铭">
+<meta name="keywords" content="座右铭,人生格言,励志短句,签名,个性签名,格言">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:720px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.motto{font-size:1.6rem;font-weight:700;text-align:center;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin:16px 0;line-height:1.8}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#cbd5e1;line-height:2;white-space:pre-wrap;min-height:60px;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>✨ 人生格言座右铭生成</h1><p>一句不落俗套的话，写进你的签名和心头</p></div>
+
+<div class="card"><div class="param-row">
+<div><label>💫 性格/主题</label><select id="kw"><option value="自由" selected>自由洒脱</option><option value="坚持">坚持不懈</option><option value="成长">自我成长</option><option value="温柔">温柔坚韧</option><option value="极简">极简主义</option><option value="野心">远大野心</option></select></div>
+<div><label>🎭 文案风格</label><select id="style"><option value="文艺" selected>文艺诗意</option><option value="古风">古风雅致</option><option value="简短">简短利落</option><option value="犀利">犀利清醒</option></select></div>
+</div>
+<label>🌈 想写的名字/署名（可选）</label><input type="text" id="name" placeholder="例如：小满 / 阿澈">
+<button class="btn-gen" id="genBtn">✨ 生成座右铭</button></div>
+
+<div class="result-area" id="resultArea"><div class="card"><div class="motto" id="motto"></div><div class="result-box" id="result"></div><button class="copy-btn" onclick="copyResult()">📋 复制</button></div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const pool={
+自由:['心之所向，素履以往','且将新火试新茶，诗酒趁年华','此心安处即是吾乡','不被定义，自成山海'],
+坚持:['道阻且长，行则将至','滴水穿石，非一日之功','熬过长夜，便是黎明','日拱一卒，功不唐捐'],
+成长:['凡是过往，皆为序章','慢慢来，比较快','与自己和解，与世界交手','所有的成长，都是与自己的和解'],
+温柔:['温柔地对待世界，也被世界温柔以待','眼底有星河，心中有山海','柔软但不脆弱，温和而有力量'],
+极简:['少即是多','简素之人，清白之心','留白处，皆是自由'],
+野心:['心中有丘壑，眉目作山河','要么出众，要么出局','这不是终点，只是起点']};
+const warm=['愿你历尽千帆，归来仍是少年','走过平湖烟雨，依旧热爱人间','纵有疾风起，人生不言弃','保持热爱，奔赴山海','保持相信，境随心转'];
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('人生格言座右铭生成 | AgentGongju.com'))return;
+let kw=document.getElementById('kw').value;let style=document.getElementById('style').value;let name=document.getElementById('name').value.trim();
+let list=pool[kw]||pool['自由'];
+let base=list[Math.floor(Math.random()*list.length)];
+let warmup=warm[Math.floor(Math.random()*warm.length)];
+let m=base;
+if(style==='简短')m=base.split('，')[0];
+if(style==='犀利')m=base;
+document.getElementById('motto').textContent='「 '+m+' 」';
+document.getElementById('result').textContent='释义：'+(m)+'。\n'+(name?('—— '+name):'')+'\n\n搭配暖句：'+warmup;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){let m=document.getElementById('motto').textContent;let r=document.getElementById('result').textContent;navigator.clipboard.writeText(m+'\n'+r).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

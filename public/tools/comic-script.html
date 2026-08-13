@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI漫画分镜脚本生成 | AgentGongju.com</title>
+<meta name="description" content="输入故事梗概，AI自动生成漫画分镜脚本，包含分镜画面、台词、场景描述">
+<meta name="keywords" content="漫画分镜,脚本生成,漫画创作,分镜脚本,AI创作">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px;color-scheme:dark}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.9;white-space:pre-wrap;min-height:60px;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🖌️ AI漫画分镜脚本生成</h1><p>输入故事梗概，快速生成专业漫画分镜脚本</p></div>
+<div class="card"><label>📖 故事梗概</label>
+<textarea id="story" rows="4" placeholder="例如：一个胆小的高中生意外获得预知未来的能力，为了拯救同学他必须克服恐惧……"></textarea>
+<div class="param-row">
+<div><label>分镜数量</label><select id="frames"><option value="6">6格</option><option value="8" selected>8格</option><option value="12">12格</option></select></div>
+<div><label>漫画风格</label><select id="style"><option value="热血少年">热血少年</option><option value="恋爱少女">恋爱少女</option><option value="悬疑推理">悬疑推理</option><option value="搞笑日常">搞笑日常</option><option value="科幻冒险">科幻冒险</option><option value="治愈温情">治愈温情</option></select></div>
+</div>
+<div class="param-row">
+<div><label>主角名字</label><input type="text" id="name" value="小楠"></div>
+<div><label>画面密度</label><select id="detail"><option value="简笔风">简笔风</option><option value="精细分镜">精细分镜</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">🎬 生成分镜脚本</button></div>
+<div class="result-area" id="resultArea"><div class="card"><div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 分镜脚本生成完成！</div>
+<div class="result-box" id="out"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制脚本</button></div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function copyResult(){navigator.clipboard.writeText(document.getElementById('out').textContent).then(()=>alert('✅ 已复制！'))}
+const SHOT=['远景 establish shot，交代环境','中景 medium shot，展示人物动作','近景 close-up，突出表情','特写 extreme close-up，强调细节','俯视 high-angle，增强压迫感','仰视 low-angle，突出力量感','全景 wide shot','过肩 shot，营造对话感'];
+const FRAMES={
+6:['开场引入','冲突铺垫','矛盾升级','转折点','高潮爆发','结局收尾'],
+8:['引言','角色登场','日常铺垫','意外发生','危机逼近','首次对抗','高潮爆发','结局反转'],
+12:['序章','角色引出','世界观', '日常铺垫','伏笔埋设','冲突触发','第一次危机','转折抉择','团队集结','最终决战','反转升华','尾声彩蛋']};
+const CAM=['固定机位','推镜头','拉镜头','跟镜头','摇镜头','移镜头'];
+const REPL={
+'热血少年':['眼神坚定地握紧拳头，使出全力一击','镜头定格在主角燃烧的双眼','背景虚化，突出爆发的能量'],
+'恋爱少女':['少女脸颊微红，低头抿嘴','风轻轻吹起发梢，花瓣飘落','两人视线交汇的瞬间，心跳加速'],
+'悬疑推理':['阴影笼罩，紧张气氛拉满','侦探推了推眼镜，目光锐利','关键物证的黑色特写'],
+'搞笑日常':['夸张的表情爆笑登场','摔了个四脚朝天，尘土飞扬','一脸无奈地扶额叹气'],
+'科幻冒险':['巨型飞船划过天际','奇异星球的光怪陆离','机甲装甲展开的金属质感'],
+'治愈温情':['清晨温暖的阳光洒进窗','主角露出释然温柔的笑容','两个背影在夕阳下并肩而行']};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI漫画分镜脚本生成 | AgentGongju.com'))return;
+const story=document.getElementById('story').value.trim();
+if(!story){alert('请输入故事梗概');return}
+const n=parseInt(document.getElementById('frames').value);
+const st=document.getElementById('style').value;
+const name=document.getElementById('name').value.trim()||'小楠';
+const beatArr=FRAMES[n]||FRAMES[8];
+const repl=REPL[st]||REPL['热血少年'];
+let out='【漫画分镜脚本】《'+story.split('，')[0].substring(0,8)+'》　风格：'+st+'　主角：'+name+'\n\n';
+beatArr.forEach((beat,i)=>{
+const shot=SHOT[i%SHOT.length];
+const cam=CAM[Math.floor(Math.random()*CAM.length)];
+const rp=repl[i%repl.length];
+out+='── 分镜 '+(i+1)+'：'+beat+' ──\n';
+out+='【画面】'+shot+'｜'+cam+'｜'+name+' '+(['出现在', '回望', '缓步走来', '猛地站起', '神情专注地', '若有所思地'][Math.floor(Math.random()*6)])+rp+'。\n';
+out+='【场景】'+['城市街道','教室','屋顶天台','昏暗房间','林间小径','车站月台'][Math.floor(Math.random()*6)]+'，'+['阳光明媚','阴云密布','夜色深沉','晨光熹微','细雨蒙蒙','霓虹闪烁'][Math.floor(Math.random()*6)]+'。\n';
+out+='【台词】'+(name)+'：「'+['我必须这么做！','我有一种预感……','不会吧？！','你相信我！','这一次，我不会再退缩了。','事情远没有这么简单。'][Math.floor(Math.random()*6)]+'」\n';
+out+='【备注】'+['注意情绪递进，脸部特写加强感染力','节奏加快，台词精简','此处留白，制造悬念','转场可用速度线强化冲击','音量渐强，背景音乐烘托','动作幅度大，画面张力足'][Math.floor(Math.random()*6)]+'\n\n';
+});
+out+='※ 分镜脚本由AI生成，可根据实际画面效果调整细节。';
+document.getElementById('resultArea').classList.add('active');
+document.getElementById('out').textContent=out;
+});
+</script>
+</body>
+</html>

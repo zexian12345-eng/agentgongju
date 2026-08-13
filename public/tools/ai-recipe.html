@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 菜谱生成器 | AgentGongju.com</title>
+<meta name="description" content="输入手头食材，AI一键生成家常菜谱，附步骤与营养参考">
+<meta name="keywords" content="菜谱生成,做饭菜谱,食材变菜,Ai菜谱,家常菜谱">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:100px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.8;white-space:pre-wrap;min-height:60px;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.chip{display:inline-block;padding:4px 12px;border-radius:20px;background:rgba(99,102,241,0.15);color:#a5b4fc;font-size:.8rem;margin:4px 4px 4px 0;cursor:pointer;border:1px solid transparent}
+.chip:hover{background:rgba(99,102,241,0.3)}
+.chip.sel{border-color:#6366f1;color:#fff}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🍳 AI 菜谱生成器</h1><p>输入手头食材，一键生成家常菜谱</p></div>
+
+<div class="card"><label>🥩 你手上有什么食材？（用顿号/逗号分隔）</label>
+<textarea id="foods" placeholder="例如：鸡蛋 番茄 土豆 青椒 五花肉"></textarea>
+<div style="margin-bottom:12px">
+<span class="chip" onclick="pick(this,'鸡蛋','番茄','土豆','青椒','五花肉','豆腐','鸡腿','虾仁','青菜')">🥚 家常组合</span>
+<span class="chip" onclick="pick(this,'牛肉','洋葱','彩椒','口蘑','胡萝卜')">🥩 牛肉类</span>
+<span class="chip" onclick="pick(this,'鸡翅','可乐','姜','葱','蒜')">🍗 鸡肉类</span>
+<span class="chip" onclick="pick(this,'豆腐','香菇','青菜','粉丝','木耳')">🥬 素菜类</span>
+</div>
+<label>👥 几人份？</label>
+<select id="people"><option value="1">1人食</option><option value="2" selected>2人份</option><option value="3">3-4人份</option><option value="5">5人以上</option></select>
+<label>🌶️ 口味偏好</label>
+<div id="tastes">
+<span class="chip" onclick="taste(this)">清淡</span>
+<span class="chip" onclick="taste(this)">微辣</span>
+<span class="chip" onclick="taste(this)">麻辣</span>
+<span class="chip" onclick="taste(this)">酸甜</span>
+<span class="chip" onclick="taste(this)">蒜香</span>
+<span class="chip" onclick="taste(this)">酱香</span>
+</div>
+<label>⏱️ 烹饪时间（分钟）</label>
+<input type="number" id="time" value="30" min="5" max="180">
+<button class="btn-gen" id="genBtn">🍳 生成菜谱</button></div>
+
+<div class="result-area" id="resultArea"><div class="card"><div style="color:#22c55e;font-weight:600;margin-bottom:8px">✅ 菜谱已生成</div><div class="result-box" id="result"></div><button class="copy-btn" onclick="copyResult()">📋 复制</button></div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+let selTastes=[];
+function pick(el){document.getElementById('foods').value=el.getAttribute('data');}
+document.querySelectorAll('.chip[onclick^="pick"]').forEach(c=>c.onclick=()=>{document.getElementById('foods').value=c.textContent.trim();});
+function taste(el){if(el.classList.contains('sel')){el.classList.remove('sel');selTastes=selTastes.filter(t=>t!==el.textContent);}else{el.classList.add('sel');selTastes.push(el.textContent);}}
+function arr(s){return s.split(/[，,、\s]+/).filter(x=>x.trim());}
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 菜谱生成器 | AgentGongju.com'))return;
+const foods=arr(document.getElementById('foods').value);if(foods.length<1){alert('请输入至少一种食材');return;}
+const people=document.getElementById('people').value;
+const t=document.getElementById('time').value||30;
+const tasteTxt=selTastes.length?selTastes.join('、'):'家常';
+const main=foods[0];
+const mainSide=foods.slice(1,3).length?('搭配 '+foods.slice(1,3).join('、')):'';
+const out='【'+main+'】'+tasteTxt+'风味菜谱（'+people+'份）\n\n'+
+'🧂 食材准备\n'+
+foods.map(f=>'  • '+f+'：适量').join('\n')+'\n'+
+'  调味料：食用油、盐、生抽、'+(selTastes.includes('麻辣')?'花椒、干辣椒':'姜蒜')+'\n\n'+
+'📝 制作步骤\n'+
+'  1. '+main+'洗净处理（切块/切片备用），'+(mainSide?mainSide.replace('搭配','配角'):'配角食材')+'处理好待用\n'+
+'  2. 热锅下油，油温六成热时下姜蒜爆香\n'+
+'  3. 倒入'+main+'大火翻炒至变色，加入调味料调味\n'+
+'  4. 加入配角食材继续翻炒均匀，'+(selTastes.includes('麻辣')?'加干辣椒花椒提香':'加半碗清水焖煮')+'\n'+
+'  5. 中火焖煮 '+(t>=20?'约'+(Math.floor(t/2))+'分钟':'3-5分钟')+'，至食材熟透入味\n'+
+'  6. 大火收汁，试味调整咸淡，出锅装盘\n\n'+
+'💡 小贴士\n'+
+'  • 全程控制火候，'+main+'下锅后别频繁翻动，才能锁住肉汁\n'+
+'  • '+(selTastes.includes('酸甜')?'出锅前加少许醋和糖提鲜':tasteTxt==='清淡'?'少盐少油更健康，可加少许蚝油提鲜':'根据口味酌情增减调料')+'\n'+
+'  • 若觉单调，可撒葱花或白芝麻点缀\n\n'+
+'（此菜谱由 AI 根据食材自动生成，烹饪时可灵活调整）';
+document.getElementById('resultArea').classList.add('active');document.getElementById('result').textContent=out;
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('result').textContent).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

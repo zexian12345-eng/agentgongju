@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI短视频脚本生成 | AgentGongju.com</title>
+<meta name="description" content="AI短视频脚本生成器，输入主题一键生成口播/剧情类抖音快手短视频脚本，含分镜、台词、BGM建议">
+<meta name="keywords" content="短视频脚本,抖音脚本,快手,口播脚本,视频脚本生成">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px;color-scheme:dark}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.9;white-space:pre-wrap;min-height:60px;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+.hook{background:linear-gradient(135deg,rgba(99,102,241,0.15),rgba(168,85,247,0.1));border:1px solid rgba(168,85,247,0.35);border-radius:10px;padding:12px 16px;margin-bottom:10px;color:#e9d5ff}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🎬 AI短视频脚本生成</h1><p>输入主题，1分钟生成抖音/快手爆款短视频完整脚本</p></div>
+<div class="card"><label>🎯 视频主题</label>
+<input type="text" id="topic" placeholder="例如：3个让你存钱的攒钱妙招 / 新手小白如何学英语">
+<div class="param-row">
+<div><label>视频类型</label><select id="type"><option value="口播干货">口播干货</option><option value="剧情小剧场">剧情小剧场</option><option value="Vlog日常">Vlog日常</option><option value="知识科普">知识科普</option></select></div>
+<div><label>视频时长</label><select id="dur"><option value="15-30秒">15-30秒</option><option value="30-60秒">30-60秒</option><option value="1-3分钟">1-3分钟</option></select></div>
+</div>
+<div class="param-row">
+<div><label>目标人群</label><select id="aud"><option value="年轻人">年轻人</option><option value="上班族">上班族</option><option value="学生党">学生党</option><option value="宝妈人群">宝妈人群</option><option value="大众">大众</option></select></div>
+<div><label>内容风格</label><select id="tone"><option value="幽默轻松">幽默轻松</option><option value="专业严谨">专业严谨</option><option value="温暖治愈">温暖治愈</option><option value="热血励志">热血励志</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">🚀 生成脚本</button></div>
+<div class="result-area" id="resultArea"><div class="card"><div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 脚本生成完成，开拍吧！</div>
+<div class="result-box" id="out"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制脚本</button></div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function copyResult(){navigator.clipboard.writeText(document.getElementById('out').textContent).then(()=>alert('✅ 已复制！'))}
+const HOOK=['别划走！这条视频能让你少走三年弯路','90%的人都不知道的真相，今天必须告诉你',
+'三句话，让你瞬间清醒','人人都能做到的秘诀，今天全部分享给你','看完这条，不信你还不会！'];
+const CTA=['觉得有用的话，记得点赞收藏关注三连','评论区聊聊你的想法吧','点个关注，下期更精彩','转发给你的朋友，一起变好'];
+const BGM=['轻快节奏卡点','温馨治愈纯音乐','激昂热血的燃曲','悬疑紧张氛围音','舒缓放松白噪音'];
+const SHOT=['近景正面口播','手部特写放干货','快切分屏转场','第一视角Vlog','慢镜头抒情','特写镜头表情'];
+const TYPES={
+'口播干货':['开场金句','干货输出','案例补充','总结呼吁'],
+'剧情小剧场':['情境引入','冲突爆发','转折解决','欢乐收尾'],
+'Vlog日常':['日常切入','过程记录','高光时刻','感想点睛'],
+'知识科普':['抛问题','讲原理','举例说明','引申总结']};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI短视频脚本生成 | AgentGongju.com'))return;
+const topic=document.getElementById('topic').value.trim();
+if(!topic){alert('请输入视频主题');return}
+const type=document.getElementById('type').value;
+const dur=document.getElementById('dur').value;
+const aud=document.getElementById('aud').value;
+const tone=document.getElementById('tone').value;
+const beats=TYPES[type];
+const isReel=dur==='15-30秒';
+const segN=isReel?4:5;
+let out='🎬 【短视频脚本】\n主题：'+topic+'\n类型：'+type+'｜时长：'+dur+'｜人群：'+aud+'｜风格：'+tone+'\n\n';
+out+='🏷️ 标题建议：'+['你绝对不知道的'+topic+'','关于'+topic+'，这次说清楚了','必看！'+topic+'的真相'][Math.floor(Math.random()*3)]+'\n\n';
+out+='🔥 黄金3秒开头（钩子）：\n'+HOOK[Math.floor(Math.random()*HOOK.length)]+'\n\n';
+for(let i=0;i<Math.min(segN,beats.length);i++){
+out+='—— 段落'+(i+1)+'：'+beats[i]+' ——\n';
+out+='【画面】'+SHOT[Math.floor(Math.random()*SHOT.length)]+'\n';
+out+='【台词】'+(topic)+'，到底该怎么做？'+(['其实很简单，记住这三点。','很多人一开始就走错了方向。','接下来我给大家详细拆解。','关键就在于一个细节。','很多人最关心的问题来了。'][Math.floor(Math.random()*5)])+'\n';
+out+='【字幕/提示】'+['屏幕大字强调关键词','放大展示数据/物品','画面配可爱贴纸','弹出重点提示框'][Math.floor(Math.random()*4)]+'\n\n';
+}
+out+='✍️ 结尾引导（CTA）：\n'+CTA[Math.floor(Math.random()*CTA.length)]+'\n\n';
+out+='🎵 BGM建议：'+BGM[Math.floor(Math.random()*BGM.length)]+'\n';
+out+='📐 拍摄建议：竖屏9:16，前3秒画面动起来，字幕颜色与画面高对比。';
+document.getElementById('resultArea').classList.add('active');
+document.getElementById('out').textContent=out;
+});
+</script>
+</body>
+</html>
