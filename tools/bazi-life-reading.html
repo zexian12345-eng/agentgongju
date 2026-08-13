@@ -659,8 +659,9 @@ function aggregateSection(sec, bazi){
   const ageStart = sec.start;
   for(const ye of sec.yearEvents){
     for(const [cat, score] of Object.entries(ye.points)){
-      // 年龄过滤：未成年人不上婚恋/破财/官非等成人事件
+      // 年龄过滤：未成年人不上婚恋/破财/官非等成人事件；老年人婚恋降权
       if(ye.age < 16 && (cat==="婚恋"||cat==="破财"||cat==="官非")) continue;
+      if(ye.age > 68 && cat==="婚恋") continue;
       if(ye.age < 20 && cat==="丧事") continue;
       catScore[cat] = (catScore[cat]||0) + score;
       catBases[cat] = catBases[cat]||[];
