@@ -63,6 +63,16 @@ input:focus,select:focus{border-color:#6366f1}
 .flow-year{display:inline-block;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:6px 10px;margin:4px 6px 0 0;font-size:.8rem;color:#e2e8f0}
 .flow-year b{color:#f0abfc}
 .warn{background:rgba(251,191,36,0.08);border:1px solid rgba(251,191,36,0.2);border-radius:10px;padding:10px 14px;font-size:.78rem;color:#fcd34d;line-height:1.7;margin-top:14px}
+.plain-block{background:rgba(52,211,153,0.08);border:1px solid rgba(52,211,153,0.25);border-radius:10px;padding:10px 14px;font-size:.85rem;color:#a7f3d0;line-height:1.8;margin:6px 0 12px}
+.ev-plain{color:#a7f3d0;font-size:.85rem;margin-top:5px;line-height:1.7}
+.year-detail{margin-top:12px;border:1px solid rgba(255,255,255,0.08);border-radius:10px;background:rgba(255,255,255,0.02)}
+.year-detail summary{cursor:pointer;padding:10px 14px;color:#c4b5fd;font-size:.85rem;font-weight:600;user-select:none}
+.year-detail summary:hover{color:#a78bfa}
+.yd-year{margin:10px 14px 4px;padding-top:8px;border-top:1px dashed rgba(255,255,255,0.08);color:#e2e8f0;font-size:.88rem}
+.yd-item{padding:5px 14px 5px 20px;font-size:.82rem;line-height:1.7}
+.yd-label{color:#f0abfc;font-weight:600;margin-right:8px}
+.yd-plain{color:#e2e8f0}
+.yd-desc{color:#64748b;font-size:.76rem}
 .disclaimer{font-size:.74rem;color:#64748b;line-height:1.8;margin-top:10px}
 .city-hint{font-size:.75rem;color:#64748b;margin-top:4px}
 @media(max-width:640px){.param-row,.param-row-3{grid-template-columns:1fr}.bazi-grid{grid-template-columns:repeat(2,1fr)}.info-grid{grid-template-columns:1fr}}
@@ -469,7 +479,9 @@ const CITIES = [
   {name:"亚的斯亚贝巴",country:"埃塞俄比亚",province:"亚的斯亚贝巴",lat:9.0320,lon:38.7469,tz:3}
 ];
 
-// ==================== 事件推断引擎 ====================
+// ==================== 事件推断引擎 v2（细化 + 大白话版） ====================
+
+// 十神含义（术语版）
 const SS_MEANING = {
   "正财": "稳定财运、正当收入、置业积蓄，男命亦主妻缘",
   "偏财": "意外之财、投资机遇、生意之财，亦主父亲与异性缘",
@@ -482,6 +494,72 @@ const SS_MEANING = {
   "比肩": "朋友兄弟、合伙合作、自立自强，亦主竞争",
   "劫财": "破财损耗、竞争争夺、合伙分财，需防财物损失"
 };
+
+// 十神大白话版（给老板看的通俗解释）
+const PLAIN_SS = {
+  "正财": "正财就是明面上的正经钱：工资、生意款、稳定收入都归它管，男命还代表老婆缘。",
+  "偏财": "偏财是计划外的钱：奖金、外快、投资回报、横财都归它管，还代表父亲和异性缘。",
+  "正官": "正官代表职位、名声、规矩，走官星就是事业上有名分、有位置的机会，女命还代表丈夫。",
+  "七杀": "七杀代表压力、竞争、挑战，扛住了就是权力和晋升，扛不住就是劳累、伤病和是非。",
+  "正印": "正印代表文凭、证书、房子、贵人和长辈，走印运适合读书考试、买房、靠长辈帮忙。",
+  "偏印": "偏印代表偏门学问、独门手艺、另类技能，适合学技术搞研究，也主想得多、变动。",
+  "食神": "食神代表才华、口福、享受和子女，温和地输出才华，日子过得滋润。",
+  "伤官": "伤官代表才华外露、嘴巴厉害、创意多，容易出成绩但也容易得罪人，女命还代表子女。",
+  "比肩": "比肩代表兄弟朋友、合伙人，大家一起干、互相帮，但也代表旗鼓相当的对手。",
+  "劫财": "劫财代表花钱、破财、被人分财，朋友之间容易因为钱起纠纷，合伙要小心。"
+};
+
+// 地支关系大白话
+const PLAIN_REL = {
+  "冲": "冲就是正面碰撞，代表变动、突发：搬家、换工作、感情起波澜，好事坏事都来得快。",
+  "合": "合就是结合、吸引，代表关系走近、合作谈成、婚恋缘分出现、事情办得顺。",
+  "刑": "刑就是互相别扭，代表口舌纠纷、小摩擦，容易把小事闹大，注意说话分寸。",
+  "害": "害就是暗地里使绊子，代表小人、暗耗、被骗，钱和精力不知不觉就没了。"
+};
+
+// 神煞大白话
+const PLAIN_SHEN = {
+  "红鸾": "红鸾星是喜星，代表婚嫁喜事：订婚、结婚、领证、办喜事。",
+  "桃花": "桃花星代表异性缘：单身容易脱单谈恋爱，已婚要防烂桃花和感情纠纷。",
+  "驿马": "驿马星代表走动奔波：出差、搬家、换工作地点、出远门，动中求财。",
+  "丧门": "丧门星主孝服，家里长辈或亲人的健康要多留神。",
+  "吊客": "吊客星也主白事，慎防亲属生病或离世之事。",
+  "羊刃": "羊刃是刚烈的星，代表伤病血光、意外磕碰，也主脾气大、容易起冲突。",
+  "天乙贵人": "天乙贵人是大贵人，关键时刻有人拉你一把，遇事能逢凶化吉。",
+  "华盖": "华盖星主孤独和智慧，适合静心学习思考，也容易感到孤单。"
+};
+
+// 细分事件字典：名称 → 展示标签（含emoji）
+const SUBCAT = {
+  "收入提升": "💰 收入提升",
+  "偏财进账": "🎲 偏财进账",
+  "破财": "⚠️ 破财损耗",
+  "升职加薪": "🏆 升职加薪",
+  "工作变动": "🔄 工作变动",
+  "创业契机": "🚀 创业契机",
+  "考试升学": "📚 考试升学",
+  "置业买房": "🏠 置业安家",
+  "恋爱缘": "💘 恋爱缘",
+  "婚喜": "💍 婚喜临门",
+  "感情波动": "💔 感情波动",
+  "怀孕生子": "👶 怀孕生子",
+  "子女缘": "👪 子女缘",
+  "长辈健康": "🕯️ 长辈健康",
+  "丧事": "🕯️ 丧事之兆",
+  "伤病": "🏥 伤病注意",
+  "口舌官非": "⚖️ 口舌官非",
+  "合伙合作": "🤝 合伙合作",
+  "竞争破财": "🥊 竞争争夺",
+  "贵人相助": "🙏 贵人相助",
+  "出行迁居": "🧳 出行迁居",
+  "进修独处": "🧘 静思进修",
+  "人际应酬": "🍻 人际应酬",
+  "才华输出": "🎨 才华输出",
+  "和合": "🤗 和合顺遂",
+  "摩擦口角": "😤 摩擦口角",
+  "暗耗谨防": "🌫️ 暗耗谨防"
+};
+
 const LIUHE = {子:"丑",丑:"子",寅:"亥",亥:"寅",卯:"戌",戌:"卯",辰:"酉",酉:"辰",巳:"申",申:"巳",午:"未",未:"午"};
 const LIUCHONG = {子:"午",午:"子",丑:"未",未:"丑",寅:"申",申:"寅",卯:"酉",酉:"卯",辰:"戌",戌:"辰",巳:"亥",亥:"巳"};
 const XING = {寅:"巳申",巳:"寅申",申:"寅巳",丑:"戌未",戌:"丑未",未:"丑戌",子:"卯",卯:"子",辰:"辰",午:"午",酉:"酉",亥:"亥"};
@@ -511,7 +589,7 @@ function flowShensha(lz, bazi){
   return out;
 }
 
-// 大运主题
+// 大运主题（术语版）
 function dayunTheme(ssG, ssZ){
   const g = ssG||"", z = ssZ||"";
   const s = g+z;
@@ -521,6 +599,31 @@ function dayunTheme(ssG, ssZ){
   if(s.includes("食神")||s.includes("伤官")) return "才艺输出运：才华展现、创作表达、子女缘分，注意口舌";
   if(s.includes("比肩")||s.includes("劫财")) return "人际竞争运：朋友合作增多，防竞争破财，合伙需谨慎";
   return "平稳过渡期：运势平顺，按部就班积累";
+}
+
+// 大运大白话总评（带少年版措辞）
+function dayunPlain(ssG, ssZ, gender, startAge){
+  const gz = (ssG||"")+(ssZ||"");
+  const young = (startAge!==undefined && startAge < 18);
+  const s = [];
+  if(young){
+    if(gz.includes("正官")||gz.includes("七杀")) s.push("这十年是打基础、受管束的阶段（上学、学徒或刚入行）：规矩多、压力不小，但管得住自己、肯吃苦，以后才有出息。");
+    if(gz.includes("正印")||gz.includes("偏印")) s.push("这十年是读书学习的好时候，长辈、老师的帮衬多，专心念书、学本事最划算，考个好学校、学门好手艺都是本钱。");
+    if(gz.includes("正财")||gz.includes("偏财")) s.push("这十年开始接触钱，学会攒钱、理财、别乱花，养成好习惯受益一辈子。");
+    if(gz.includes("食神")||gz.includes("伤官")) s.push("这十年聪明劲足、爱表现，成绩和才艺容易冒尖，但也要管住嘴，别顶撞长辈老师。");
+    if(gz.includes("比肩")||gz.includes("劫财")) s.push("这十年朋友同学多、讲义气，但别跟人攀比乱花钱，也别讲义气替人背锅。");
+    if(!s.length) s.push("这十年是积累成长的关键期，打牢基础、学好本事最重要。");
+    return s.join("");
+  }
+  if(gz.includes("正财")||gz.includes("偏财")) s.push("这十年是财运当令的十年，挣钱的机会明显比别的运多：正财管稳定进账，偏财管意外之财，适合开源节流、置业攒钱，但也别贪大，见好就收。");
+  if(gz.includes("正官")||gz.includes("七杀")) s.push("这十年事业是重头戏：官杀主职位和压力，扛得住就是升职掌权、名声在外，扛不住就是劳累和是非，宜积极进取，也要守规矩、防小人。");
+  if(gz.includes("正印")||gz.includes("偏印")) s.push("这十年贵人长辈运好，适合读书、考证、进修、买房置业，靠文凭、证书和长辈助力能上一个台阶，是沉淀充电的好时候。");
+  if(gz.includes("食神")||gz.includes("伤官")) s.push("这十年才华往外冒，适合搞创作、做手艺、做生意、表现自己，容易出成果，但嘴巴要管住，防口舌是非。");
+  if(gz.includes("比肩")||gz.includes("劫财")) s.push("这十年朋友多、应酬多、合伙机会多，但钱也容易被分走，合伙务必白纸黑字、亲兄弟明算账，防竞争防破财。");
+  if(!s.length) s.push("这十年运势平稳过渡，按部就班积累实力，稳中求进就好。");
+  if((gz.includes("正财")||gz.includes("偏财"))&&gender==="male") s.push("男命财星也主妻缘，这十年感情婚姻上也会有动静。");
+  if(gz.includes("正官")&&gender==="female") s.push("女命官星为夫星，这十年感情婚姻上有机遇，适合定下来。");
+  return s.join("");
 }
 
 // 六亲星（男/女命）
@@ -538,93 +641,109 @@ function sixQin(ss, gender){
   return map[ss]||"";
 }
 
-// 单流年分析
-function analyzeYear(yy, bazi, step){
+// 单流年分析（细分事件 + 大白话）
+function analyzeYear(yy, bazi, step, age){
   const gender = bazi.gender;
   const dayG = bazi.pillars.day.g;
   const [lg, lz] = decodeGZ(yearGZ(yy, false));
   const ss = shishen(dayG, lg);
   const yz=bazi.pillars.year.z, mz=bazi.pillars.month.z, dz=bazi.pillars.day.z, hz=bazi.pillars.hour.z;
-  const sig = {year:yy, gz:lg+lz, ss, bases:[], points:{}};
-  const add = (cat, w, desc) => { sig.points[cat]=(sig.points[cat]||0)+w; sig.bases.push({cat,desc}); };
-  // 1. 流年天干十神信号
-  const ssEvents = {
-    "正财": [["得财",2,"正财透干，收入/财运信号"],["婚恋",1,"男命正财主妻缘"]],
-    "偏财": [["偏财",2,"偏财透干，意外之财或投资机遇"],["婚恋",1,"异性缘/父亲相关"]],
-    "正官": [["事业",2,"正官当值，职位名声相关"],["官非",1,"官星受制则防官非"]],
-    "七杀": [["事业",1,"七杀主压力竞争"],["伤病",1,"七杀无制防伤病"],["官非",1,"七杀攻身防是非"]],
-    "正印": [["学业",2,"正印主文书证书学业"],["置业",1,"印主房产"]],
-    "偏印": [["学业",1,"偏印主偏门学问技能"]],
-    "食神": [["才华",1,"食神主才华输出"],["子女",1,"食神主子女缘分"]],
-    "伤官": [["才华",1,"伤官主创意表达"],["口舌",1,"伤官易惹口舌是非"]],
-    "比肩": [["人际",1,"比肩主朋友合伙"]],
-    "劫财": [["破财",2,"劫财主破财损耗"],["人际",1,"劫财主竞争"]]
+  const sig = {year:yy, gz:lg+lz, ss, points:{}, bases:[]};
+  const add = (sub, w, plain, desc, ageMin, ageMax) => {
+    if(ageMin && age < ageMin) return;
+    if(ageMax && age > ageMax) return;
+    sig.points[sub]=(sig.points[sub]||0)+w; sig.bases.push({sub, plain, desc});
   };
-  if(ssEvents[ss]) for(const [cat,w,d] of ssEvents[ss]) add(cat,w,d);
-  // 2. 流年支与命局地支关系
-  const pillarsZ = [["年支",yz],["月支",mz],["日支",dz],["时支",hz]];
-  for(const [name, z] of pillarsZ){
-    if(LIUCHONG[lz]===z) add("变动",2, `流年${lz}冲${name}${z}，主变动`);
-    if(LIUHE[lz]===z) add("和合",1, `流年${lz}合${name}${z}，主和合`);
-    if((XING[lz]||"").includes(z)) add("摩擦",1, `流年${lz}刑${name}${z}，主摩擦`);
-    if((HAI[lz]||"").includes(z)) add("暗耗",1, `流年${lz}害${name}${z}，主暗耗`);
+
+  // 1. 流年天干十神 → 细分事件
+  const ssRules = {
+    "正财": [
+      ["收入提升",2,"正财星明晃晃出现，正经收入（工资、生意款、稳定进账）机会变多，是挣钱攒钱的好年份。","流年天干正财透出"],
+      ["置业买房",1,"正财主积蓄置业，适合攒钱、买房、添置家当。","正财主不动产积蓄"],
+      ["婚喜",1,gender==="male"?"正财是男命的老婆星，单身男这年容易遇到合适的结婚对象。":"","男命正财主妻缘",20]
+    ],
+    "偏财": [
+      ["偏财进账",2,"偏财星出现，奖金、外快、投资回报、意外之财有机会进账，来得快去得也快，见好就收。","流年天干偏财透出"],
+      ["恋爱缘",1,"偏财主异性缘，容易有心动对象、暧昧或浪漫邂逅。","偏财主异性缘",16],
+      ["长辈健康",1,gender==="male"?"偏财是男命的父星，父亲健康或家事多留意。":"偏财为父星，家中男性长辈之事多留意。","偏财为父星"]
+    ],
+    "正官": [
+      ["升职加薪",2,"正官当值，职位、名分、名声上有好消息，容易被领导看重、委以重任，事业上台阶。","流年天干正官透出",18],
+      ["口舌官非",1,"官星太旺受制则防是非，做事守规矩、合同看清楚再签。","官星过旺防官非",18],
+      ["婚喜",1,gender==="female"?"正官是女命的夫星，这年有夫缘，适合确定关系或谈婚论嫁。":"","女命正官主夫缘",20]
+    ],
+    "七杀": [
+      ["工作变动",1,"七杀主压力竞争，工作强度大，也可能被迫变动岗位或跳槽。","流年天干七杀透出",18],
+      ["伤病",1,"七杀无制防伤病，注意身体劳损和意外磕碰，多休息。","七杀攻身防伤病"],
+      ["口舌官非",1,"七杀主是非压力，防官非纠纷，签字前多看几遍。","七杀主是非",18],
+      ["创业契机",1,"七杀有闯劲，配偏财适合开拓新事业、自己闯一闯。","七杀主开拓",20]
+    ],
+    "正印": [
+      ["考试升学",2,"印星主文书，考试、考证、评职称、签约办手续顺利，脑子好使。","流年天干正印透出"],
+      ["置业买房",1,"印主房产，适合买房、装修、搬家。","印星主房产",22],
+      ["贵人相助",1,"印星为贵人长辈，容易得到长辈、上级的帮忙提携。","印星主贵人"]
+    ],
+    "偏印": [
+      ["考试升学",1,"偏印主偏门学问，学技术、学手艺、研究新东西有心得。","流年天干偏印透出"],
+      ["进修独处",1,"偏印主独处思考，适合钻研、沉淀、闭关修炼。","偏印主钻研"]
+    ],
+    "食神": [
+      ["才华输出",1,"食神主才华，适合创作、展示手艺、享受生活，日子过得滋润。","流年天干食神透出"],
+      ["子女缘",1,"食神主子女，子女方面有好消息或与子女关系亲近。","食神主子女"],
+      ["怀孕生子",1,gender==="female"?"食神是女命子女星，有怀孕生子的信号。":"","女命食神主子女",20,50]
+    ],
+    "伤官": [
+      ["才华输出",1,"伤官主才华外露，创意表达、作品输出多，适合表现自己、大胆展示。","流年天干伤官透出"],
+      ["口舌官非",1,"伤官嘴巴厉害，容易得罪人、惹口舌是非，说话注意分寸。","伤官主口舌",16],
+      ["怀孕生子",1,gender==="female"?"伤官是女命子女星，有怀孕生子信号。":"","女命伤官主子女",20,50]
+    ],
+    "比肩": [
+      ["合伙合作",1,"比肩主朋友兄弟，合伙、合作、一起干的机会多。","流年天干比肩透出"],
+      ["人际应酬",1,"比肩主朋友往来，应酬聚会多，人脉扩张。","比肩主朋友"]
+    ],
+    "劫财": [
+      ["破财",2,"劫财主破财，花钱的地方多，投资借贷要谨慎，防朋友借钱不还。","流年天干劫财透出",18],
+      ["竞争破财",1,"劫财主竞争，有人抢机会抢生意，防被截胡、被分财。","劫财主竞争"]
+    ]
+  };
+  if(ssRules[ss]) for(const [sub,w,plain,desc,ageMin] of ssRules[ss]) if(plain) add(sub,w,plain,desc,ageMin);
+
+  // 2. 流年支与命局地支关系（冲合刑害）
+  const pillarsZ = [["年支",yz,"出行迁居","根基有动：搬家、远行、家庭或长辈之事有变动"],["月支",mz,"工作变动","事业家庭根基有变：调岗、换工作、家宅变动"],["日支",dz,"感情波动","配偶宫被冲，感情起波澜"],["时支",hz,"子女缘","子女或晚年之事有变动"]];
+  for(const [name, z, sub, plainCore] of pillarsZ){
+    if(LIUCHONG[lz]===z) add(sub,2, (name==="日支"?"配偶宫（日支）被冲，感情容易起大波澜：要么结婚领证的大事，要么吵架闹矛盾，关系大起大落。":"流年冲"+name+"，"+plainCore+"。"), "流年"+lz+"冲"+name+z, name==="日支"?18:0);
+    if(LIUHE[lz]===z) add("和合",1, "地支相合，关系融洽，合作谈成，事情办得顺。","流年"+lz+"合"+name+z);
+    if((XING[lz]||"").includes(z)) add("摩擦口角",1, "地支相刑，容易跟人闹别扭、起口角，注意说话方式，小事别闹大。","流年"+lz+"刑"+name+z);
+    if((HAI[lz]||"").includes(z)) add("暗耗谨防",1, "地支相害，有小人暗地里使绊子，钱和精力不知不觉损耗，防骗防坑。","流年"+lz+"害"+name+z);
   }
-  // 配偶宫（日支）动 → 婚恋
-  if(LIUCHONG[lz]===dz) add("婚恋",2, "冲日支配偶宫，婚恋感情易有变动");
-  if(LIUHE[lz]===dz) add("婚恋",2, "合日支配偶宫，婚恋缘分显现");
+  // 配偶宫（日支）动 → 婚恋细化
+  if(LIUCHONG[lz]===dz) add("感情波动",1, "流年冲配偶宫，已婚防婚变、未婚防分手，感情上要多沟通、少赌气。","冲日支配偶宫",18);
+  if(LIUHE[lz]===dz) add("婚喜",1, "配偶宫被合，缘分来了：恋爱确定关系、订婚结婚的信号。","合日支配偶宫",20);
+
   // 3. 流年神煞
   const fss = flowShensha(lz, bazi);
   for(const s of fss){
-    if(s==="红鸾") add("婚恋",3, "红鸾星动，婚喜之兆");
-    if(s==="桃花") add("婚恋",2, "桃花星现，异性缘分活跃（需防多角关系）");
-    if(s==="驿马") add("变动",2, "驿马逢动，主出行迁居或工作变动");
-    if(s==="丧门") add("丧事",2, "丧门入命，六亲健康需关注");
-    if(s==="吊客") add("丧事",2, "吊客临年，慎防长辈/亲属健康之事");
-    if(s==="羊刃") add("伤病",2, "羊刃逢值，防伤病血光");
-    if(s==="天乙贵人") add("贵人",2, "天乙贵人临年，有贵人相助");
-    if(s==="华盖") add("独处",1, "华盖入命，宜静思进修，也主孤独感");
+    if(s==="红鸾") add("婚喜",3, "红鸾星动，喜事临门，订婚、结婚、办喜事的信号很强。","红鸾星动",20);
+    if(s==="桃花") add("恋爱缘",2, "桃花星现，异性缘旺：单身容易脱单谈恋爱，已婚防烂桃花、感情纠纷。","桃花星现",16);
+    if(s==="驿马") add("出行迁居",2, "驿马星动，奔波走动：出差、旅游、搬家、换城市，动中求财。","驿马逢动",18);
+    if(s==="丧门") add("长辈健康",2, "丧门入命，家里长辈健康要多留神，多关心多体检。","丧门入命",20);
+    if(s==="吊客") add("长辈健康",1, "吊客临年，慎防亲属生病或白事，家事多留意。","吊客临年",20);
+    if(s==="羊刃") add("伤病",2, "羊刃当值，防伤病血光、意外磕碰，注意交通安全和身体保养。","羊刃逢值",18);
+    if(s==="天乙贵人") add("贵人相助",2, "天乙贵人临年，关键时刻有人拉一把，遇事能逢凶化吉。","天乙贵人临年");
+    if(s==="华盖") add("进修独处",1, "华盖入命，适合静心学习思考，也容易感到孤单，耐得住寂寞就有收获。","华盖入命",16);
   }
-  // 4. 六亲星受克（丧事细化）：流年支冲克六亲星所在柱
-  //   年柱=祖上/长辈，月柱=父母/兄弟，时柱=子女
-  const ganSS = shishen(dayG, lg);
-  if(ganSS==="正印"||ganSS==="偏印"){
-    if(LIUCHONG[lz]===mz) add("六亲",1, "印星+冲月柱，母亲或长辈健康需留意");
-  }
-  if(ganSS==="正财"||ganSS==="偏财"){
-    if(LIUCHONG[lz]===mz) add("六亲",1, gender==="male"?"财星+冲月柱，父亲或财务有变":"财星受冲，财务波动");
-  }
-  // 5. 官非
-  if((ss==="伤官"||ss==="七杀") && (fss.includes("羊刃")||LIUCHONG[lz]===dz)) add("官非",2, "伤官/七杀配羊刃或冲配偶宫，防口舌官非");
-  return sig;
-}
 
-// 事件措辞模板
-function eventPhrase(cat, bases, year, gender){
-  const desc = bases.map(b=>b.desc).join("；");
-  let phrase = "";
-  const tpl = {
-    "得财": "收入与财运提升的年份，正财透出，工作回报或投资理财有较好表现",
-    "偏财": "偏财运活跃的年份，可能有意外之财、奖金或投资机会，也需防冲动消费",
-    "事业": "事业发展的关键年份，职位、名声方面有机遇，宜主动争取",
-    "学业": "学习进修的好年份，考试、证书、职称类事宜顺利",
-    "置业": "与房产、不动产相关的年份，购房置业或家宅变动",
-    "婚恋": "婚恋感情信号明显的年份",
-    "变动": "人生变动较多的年份，工作、住所或生活节奏可能调整",
-    "破财": "财务支出增大的年份，注意投资风险与借贷，防破耗",
-    "伤病": "健康需多加留意的年份，注意劳逸结合与意外防护",
-    "口舌": "口舌是非较多的年份，言行宜谨慎，少议人非",
-    "官非": "易有规则纠纷的年份，合同文书需谨慎，避免法律风险",
-    "丧事": "六亲健康与家庭事务需关注的年份",
-    "贵人": "贵人运强的年份，关键时刻有人相助",
-    "人际": "人际互动频繁的年份，朋友往来与合伙机会增多",
-    "独处": "内心趋于安静独立的年份，适合沉淀思考",
-    "六亲": "六亲相关事务需要留意的年份",
-    "和合": "人际和合的年份，关系融洽",
-    "摩擦": "易有摩擦口角的年份，需注意沟通方式",
-    "暗耗": "精力与钱财有暗耗的年份，宜守不宜攻"
-  };
-  phrase = tpl[cat] || "";
-  return phrase;
+  // 4. 组合细化规则
+  if((ss==="正官"||ss==="七杀") && fss.includes("天乙贵人")) add("升职加薪",2, "官星配贵人，职位晋升、被重用的信号很强，好好表现。","正官/七杀+天乙贵人",18);
+  if((ss==="偏财"||ss==="正财") && fss.includes("驿马")) add("偏财进账",1, "驿马带财，出差、跑外地容易谈成生意、挣到钱。","财星+驿马",18);
+  if((ss==="伤官"||ss==="七杀") && (fss.includes("羊刃")||LIUCHONG[lz]===dz)) add("口舌官非",2, "伤官/七杀配羊刃，嘴巴惹祸，防官司合同纠纷，签字要谨慎。","伤官/七杀+羊刃",18);
+  if(gender==="female" && (ss==="食神"||ss==="伤官") && (fss.includes("红鸾")||fss.includes("桃花")||LIUHE[lz]===dz)) add("怀孕生子",2, "子女星发动，又有婚喜星呼应，有怀孕生子的信号。","食伤星动+婚喜星",20,50);
+  if(gender==="male" && (ss==="正财"||ss==="偏财") && fss.includes("红鸾")) add("婚喜",2, "财星配红鸾，娶妻成家的信号，适合谈婚论嫁。","财星+红鸾",20);
+  if((ss==="正印"||ss==="偏印") && LIUCHONG[lz]===mz) add("长辈健康",1, "印星代表母亲长辈，印星被冲，母亲或长辈健康要多留意。","印星+冲月柱");
+  if((ss==="正财"||ss==="偏财") && LIUCHONG[lz]===mz) add("长辈健康",1, gender==="male"?"财星为父星，被冲防父亲健康或家财变动。":"财星受冲，财务上有波动。","财星+冲月柱");
+  if(ss==="比肩" && LIUHE[lz]===mz) add("合伙合作",1, "比肩逢合，朋友合伙、合作机会多，适合一起干。","比肩+合",18);
+  if(ss==="劫财" && LIUCHONG[lz]===mz) add("破财",1, "劫财逢冲，破财信号强，防投资失利、被人分钱。","劫财+冲",18);
+  return sig;
 }
 
 // 主分析：按大运分段
@@ -635,14 +754,14 @@ function analyzeLife(bazi){
   for(const step of bazi.dayun.steps){
     const sG = step.gz[0], sZ = step.gz[1];
     const ssG = shishen(dayG, sG);
-    const ssZ = shishen(dayG, CANG[sZ][0]);   // 地支取主气藏干论十神
+    const ssZ = shishen(dayG, CANG[sZ][0]);
     const theme = dayunTheme(ssG, ssZ);
     const startAge = Math.floor(step.start);
     const endAge = Math.ceil(step.end);
     const yearEvents = [];
     for(let age = startAge; age < endAge && age < 90; age++){
       const yy = birthYear + age;
-      const sig = analyzeYear(yy, bazi, step);
+      const sig = analyzeYear(yy, bazi, step, age);
       sig.age = age;
       yearEvents.push(sig);
     }
@@ -651,49 +770,51 @@ function analyzeLife(bazi){
   return sections;
 }
 
-// 聚合每步大运的事件（选高分类别）
+// 聚合每步大运的事件（细分事件 + 大白话）
 function aggregateSection(sec, bazi){
-  const catScore = {};
-  const catBases = {};
-  const catYears = {};
-  const ageStart = sec.start;
+  const subScore = {};
+  const subData = {};
   for(const ye of sec.yearEvents){
-    for(const [cat, score] of Object.entries(ye.points)){
-      // 年龄过滤：未成年人不上婚恋/破财/官非等成人事件；老年人婚恋降权
-      if(ye.age < 16 && (cat==="婚恋"||cat==="破财"||cat==="官非")) continue;
-      if(ye.age > 68 && cat==="婚恋") continue;
-      if(ye.age < 20 && cat==="丧事") continue;
-      catScore[cat] = (catScore[cat]||0) + score;
-      catBases[cat] = catBases[cat]||[];
-      for(const b of ye.bases) if(b.cat===cat) catBases[cat].push({year:ye.year, gz:ye.gz, desc:b.desc});
-      catYears[cat] = catYears[cat]||[];
-      catYears[cat].push(ye.year);
+    for(const [sub, score] of Object.entries(ye.points)){
+      if(ye.age < 16 && (sub==="婚喜"||sub==="恋爱缘"||sub==="怀孕生子")) continue;
+      if(ye.age < 20 && sub==="婚喜") continue;
+      if(ye.age > 68 && (sub==="婚喜"||sub==="恋爱缘")) continue;
+      if(ye.age > 60 && sub==="婚喜") continue;
+      if(ye.age > 55 && sub==="恋爱缘") continue;
+      if(ye.age > 50 && sub==="怀孕生子") continue;
+      if(ye.age < 25 && sub==="丧事") continue;
+      subScore[sub] = (subScore[sub]||0) + score;
+      (subData[sub] = subData[sub]||[]).push(ye);
     }
   }
-  // 按分数排序
-  const cats = Object.entries(catScore).sort((a,b)=>b[1]-a[1]);
+  const cats = Object.entries(subScore).sort((a,b)=>{
+    const w1 = ({"摩擦口角":0.5,"暗耗谨防":0.5,"和合":0.5,"人际应酬":0.6,"进修独处":0.6}[a[0]]||1)*a[1];
+    const w2 = ({"摩擦口角":0.5,"暗耗谨防":0.5,"和合":0.5,"人际应酬":0.6,"进修独处":0.6}[b[0]]||1)*b[1];
+    return w2-w1;
+  });
   const result = [];
-  const catLabel = {
-    "得财":"💰 财运提升", "偏财":"🎲 偏财机遇", "事业":"🏢 事业进展", "学业":"📚 学业文书",
-    "置业":"🏠 置业安家", "婚恋":"💕 婚恋感情", "变动":"🔄 人生变动", "破财":"⚠️ 破财损耗",
-    "伤病":"🏥 健康注意", "口舌":"🗣️ 口舌是非", "官非":"⚖️ 官非纠纷", "丧事":"🕯️ 六亲事务",
-    "贵人":"🤝 贵人相助", "人际":"👥 人际合作", "独处":"🧘 静思沉淀", "六亲":"👪 六亲事务",
-    "和合":"🤗 人际和合", "摩擦":"😤 摩擦口角", "暗耗":"🌫️ 暗耗谨防"
-  };
-  for(const [cat, score] of cats){
+  for(const [sub, score] of cats){
     if(score < 3) continue;
-    const years = catYears[cat].slice(0,5);
-    const bases = catBases[cat].slice(0,4);
-    const conf = score >= 8 ? "高" : score >= 5 ? "中" : "参考";
+    const yearsData = subData[sub];
+    const years = [...new Set(yearsData.map(y=>y.year))].slice(0,4);
+    const conf = score >= 9 ? "高" : score >= 5 ? "中" : "参考";
+    const plains = [];
+    const bases = [];
+    for(const ye of yearsData){
+      for(const b of ye.bases){
+        if(b.sub===sub && plains.length<2) plains.push(b.plain);
+        if(b.sub===sub && bases.length<4) bases.push(ye.year+"年("+ye.gz+") "+b.desc);
+      }
+      if(plains.length>=2 && bases.length>=4) break;
+    }
     result.push({
-      cat, label: catLabel[cat]||cat, score, conf,
-      years: years.slice(0,4),
-      bases: bases.map(b=>b.year+"年("+b.gz+") "+b.desc),
-      phrase: eventPhrase(cat, bases, null, bazi.gender)
+      sub, label: SUBCAT[sub]||sub, score, conf,
+      years,
+      plain: [...new Set(plains)].join(""),
+      bases
     });
   }
-  // 取前 5 条
-  return result.slice(0,5);
+  return result.slice(0,6);
 }
 
 // ==================== UI 与渲染 ====================
@@ -848,8 +969,8 @@ function renderReport(bazi, input){
 
   // 事件推断
   const sections = analyzeLife(bazi);
-  h.push(`<div class="rp-card"><h2>🔮 人生事件推断 <span class="tag">按大运分段 · 结合十神/神煞/宫位</span></h2>`);
-  h.push(`<div class="warn" style="border-color:rgba(99,102,241,.3);background:rgba(99,102,241,.06);color:#c7d2fe">推断方法：以日主十神定事象（财=钱财、官=事业、印=文书长辈、食伤=才华子女、比劫=人际），结合宫位（年柱祖上早年、月柱父母根基、日支配偶、时柱子女晚年）与流年神煞（红鸾、桃花、驿马、丧门、吊客、羊刃、天乙贵人、华盖），按大运分段、流年细化。以下为传统命理规则推断，属可能性提示，需结合现实情况判断，切勿绝对化。</div>`);
+  h.push(`<div class="rp-card"><h2>🔮 人生事件推断 <span class="tag">按大运分段 · 逐年细化 · 大白话解读</span></h2>`);
+  h.push(`<div class="warn" style="border-color:rgba(99,102,241,.3);background:rgba(99,102,241,.06);color:#c7d2fe">推断方法：以日主十神定事象（财=钱财、官=事业、印=文书长辈、食伤=才华子女、比劫=人际），结合宫位（年柱祖上早年、月柱父母根基、日支配偶、时柱子女晚年）与流年神煞（红鸾、桃花、驿马、丧门、吊客、羊刃、天乙贵人、华盖）及刑冲合害，按大运分段、逐年细化。每个事件都附有<b>大白话解读</b>和<b>推算依据</b>。以下为传统命理规则推断，属可能性提示，需结合现实情况判断，切勿绝对化。</div>`);
   for(const sec of sections){
     const agg = aggregateSection(sec, bazi);
     const sG = sec.gz[0], sZ = sec.gz[1];
@@ -857,6 +978,7 @@ function renderReport(bazi, input){
     const sy = bazi.birthYear + Math.floor(sec.start);
     h.push(`<div class="section-title">📌 ${sec.gz} 大运（${Math.floor(sec.start)}—${Math.floor(sec.end)}岁 · ${sy}—${sy+10}年）</div>`);
     h.push(`<div class="theme-line">${sec.theme}<br><span style="font-size:.78rem;color:#94a3b8">大运十神：${ssTxt}（${SS_MEANING[sec.ssG]||""}）</span></div>`);
+    h.push(`<div class="plain-block">💬 <b>大白话总评：</b>${dayunPlain(sec.ssG, sec.ssZ, bazi.gender, Math.floor(sec.start))}</div>`);
     if(agg.length===0){
       h.push(`<div style="color:#64748b;font-size:.85rem;padding:6px 0">此运整体平稳，无明显大事件信号，宜按部就班、稳中求进。</div>`);
     }
@@ -865,8 +987,24 @@ function renderReport(bazi, input){
       h.push(`<div class="ev-item">`);
       h.push(`<div class="ev-head"><span class="ev-cat">${ev.label}</span><span class="${confCls}" style="font-size:.78rem">置信度：${ev.conf}</span></div>`);
       h.push(`<div class="ev-year">关键年份：${ev.years.map(y=>y+"年").join("、")}</div>`);
-      h.push(`<div class="ev-base">${ev.phrase}。${ev.bases.map(b=>"<br>· "+b).join("")}</div>`);
+      h.push(`<div class="ev-plain">💬 ${ev.plain}</div>`);
+      h.push(`<div class="ev-base">📐 推算依据：${ev.bases.map(b=>"<br>· "+b).join("")}</div>`);
       h.push(`</div>`);
+    }
+    // 逐年详解（折叠）
+    const years = sec.yearEvents.filter(y=>Object.keys(y.points).length>0);
+    if(years.length){
+      h.push(`<details class="year-detail"><summary>📖 逐年详解（点击展开 · 共${years.length}个有信号年份）</summary>`);
+      for(const ye of years){
+        const subs = Object.entries(ye.points).sort((a,b)=>b[1]-a[1]).slice(0,5);
+        h.push(`<div class="yd-year"><b>${ye.year}年（${ye.gz} · ${ye.ss}）</b></div>`);
+        for(const [sub] of subs){
+          const pl = ye.bases.find(b=>b.sub===sub);
+          if(!pl) continue;
+          h.push(`<div class="yd-item"><span class="yd-label">${SUBCAT[sub]||sub}</span><span class="yd-plain">${pl.plain}</span><span class="yd-desc">（${pl.desc}）</span></div>`);
+        }
+      }
+      h.push(`</details>`);
     }
   }
   h.push(`</div>`);
