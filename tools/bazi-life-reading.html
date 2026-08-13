@@ -843,18 +843,90 @@ function gzName(idx){return GAN[idx%10]+ZHI[idx%12];}
 // 日主五行性格
 function personality(dayGan){
   const map = {
-    "甲": "甲木为参天大树，性格正直向上、有担当，重原则，有时略显固执，有领导欲。",
-    "乙": "乙木为花草藤蔓，性格柔韧灵活、善变通，适应力强，重感情，有时优柔寡断。",
-    "丙": "丙火为太阳之火，性格热情开朗、光明磊落，感染力强，急躁冲动，爱面子。",
-    "丁": "丁火为灯烛之火，性格细腻敏锐、外柔内刚，洞察力强，多思虑，易多愁善感。",
-    "戊": "戊土为高山厚土，性格稳重诚信、包容性强，踏实可靠，有时过于保守固执。",
-    "己": "己土为田园之土，性格温和包容、心思缜密，善理财，有时多疑计较。",
-    "庚": "庚金为刀剑之金，性格刚毅果断、讲义气，行动力强，有时锋芒过露易得罪人。",
-    "辛": "辛金为珠玉之金，性格精致敏感、追求完美，审美力强，有时清高孤傲。",
-    "壬": "壬水为江河之水，性格豁达聪慧、机智善变，交际广，有时想法太多难安定。",
-    "癸": "癸水为雨露之水，性格温柔细腻、直觉敏锐，含蓄内敛，有时多愁善感。"
+    "甲": "甲木是参天大树命，性格正直向上、有担当、重原则，有时认死理，有当头的潜质。",
+    "乙": "乙木是花草藤蔓命，性格柔韧灵活、会变通、适应力强，重感情，有时优柔寡断。",
+    "丙": "丙火是太阳火命，性格热情开朗、光明磊落，感染力强，脾气急、爱面子。",
+    "丁": "丁火是灯烛火命，性格细腻敏锐、外柔内刚，看得透人心，心思重、容易多愁善感。",
+    "戊": "戊土是高山厚土命，性格稳重诚信、能包容，踏实可靠，有时过于保守。",
+    "己": "己土是田园土命，性格温和细心、会过日子，善于精打细算，有时想得多。",
+    "庚": "庚金是刀剑金命，性格刚毅果断、讲义气、行动力强，说话直，容易得罪人。",
+    "辛": "辛金是珠玉金命，性格精致、追求完美、有品位，眼光高，有时清高。",
+    "壬": "壬水是江河大水平，性格豁达聪明、脑子活、交游广，想法多、不太安定。",
+    "癸": "癸水是雨露水命，性格温柔细腻、直觉准，含蓄内敛，有时想太多。"
   };
   return map[dayGan] || "";
+}
+
+// ===== 精准总结（白话·去套话）=====
+function preciseSummary(bazi){
+  const p = bazi.pillars;
+  const dg = p.day.g;
+  const dw = WX_GAN[dg];
+  const mz = bazi.monthZhi;
+  const mzWx = {"寅":"木","卯":"木","巳":"火","午":"火","申":"金","酉":"金","亥":"水","子":"水","辰":"土","戌":"土","丑":"土","未":"土"}[mz];
+  const sa = strengthAnalysis(bazi);
+  const wx = wuxingStats(bazi);
+  const wxSorted = Object.entries(wx).sort((a,b)=>b[1]-a[1]);
+  const most = wxSorted[0], least = wxSorted[wxSorted.length-1];
+  const missing = Object.entries(wx).filter(x=>x[1]<0.5).map(x=>x[0]);
+  const ssList = Object.entries(bazi.shensha).map(([k])=>k.replace(/（.*/,""));
+  const out = [];
+  // 1. 日主+季节寒暖
+  const monthDesc = {子:"寒冬十一月",丑:"寒冬腊月",寅:"早春正月",卯:"仲春二月",辰:"暮春三月",巳:"初夏四月",午:"盛夏五月",未:"盛夏六月",申:"初秋七月",酉:"仲秋八月",戌:"暮秋九月",亥:"初冬十月"};
+  const coldWarm = (mz==="亥"||mz==="子"||mz==="丑"||mz==="寅"||mz==="卯") ? "寒" : (mz==="巳"||mz==="午"||mz==="未"||mz==="申"||mz==="酉") ? "热" : "平";
+  out.push(`你生在${monthDesc[mz]||mz+"月"}，${dw}命。${personality(dg)}`);
+  // 2. 旺衰性格
+  if(sa.strong) out.push(`你的${dw}气很旺，是个主意正、能扛事的人，遇事自己拿主意，适合闯荡、担责任，但也容易固执、听不进劝。`);
+  else out.push(`你的${dw}气偏弱，性格偏含蓄内敛，遇事容易多想、需要有人撑腰，多借贵人长辈之力才能成事。`);
+  // 3. 寒暖调候提示
+  if(dw==="火"&&coldWarm==="寒") out.push(`你是火命却生在寒天，天生需要温暖——适合在南方、靠近暖的地方发展，做事需要有人捧场鼓劲，越被认可越有干劲。`);
+  if(dw==="水"&&coldWarm==="热") out.push(`你是水命却生在热天，心思活泛但容易急躁，适合做需要冷静沉住气的事，越沉稳越有财运。`);
+  if(dw==="金"&&coldWarm==="寒") out.push(`你是金命生在寒天，性格里带着冷和硬，容易孤独要强，多与人走动、沾点烟火气反而旺你。`);
+  if(dw==="木"&&coldWarm==="寒") out.push(`你是木命生在寒天，扎根慢、起步晚，但后劲足，年轻时多积累，中年后越走越顺。`);
+  // 4. 月令主线（月支十神定人生主线）
+  const mzSS = shishen(dg, CANG[mz][0]);
+  const mainLine = {
+    "正官":"月令正官，你一生主线在'名分'：适合在单位、体制里求职位，走稳当路，最怕走歪门邪道。",
+    "七杀":"月令七杀，你一生主线在'闯'：压力大、竞争多，但扛得住就能掌权，适合军警、管理、开拓类工作。",
+    "正财":"月令正财，你一生主线在'正财'：靠正经本事挣钱，踏踏实实做实业、攒家底是你的命。",
+    "偏财":"月令偏财，你一生主线在'偏财'：做生意、跑业务、搞投资的命，钱来得活，但守财要下功夫。",
+    "正印":"月令正印，你一生主线在'学'：靠文凭、证书、技术吃饭，长辈庇荫重，适合教育、文职、科研。",
+    "偏印":"月令偏印，你一生主线在'偏门'：有特殊才艺或偏门手艺，靠独门绝活吃饭，想法独特。",
+    "食神":"月令食神，你一生主线在'才'：靠才华口福吃饭，适合手艺、创作、餐饮美食，日子过得滋润。",
+    "伤官":"月令伤官，你一生主线在'秀'：聪明外露、才华横溢，适合技术、艺术、口才类，但管住嘴才有大出息。",
+    "比肩":"月令比肩，你一生主线在'自立'：凡事靠自己，朋友兄弟多，适合合伙、体育、武职。",
+    "劫财":"月令劫财，你一生主线在'争'：身边竞争多、花钱快，要学会守财，防朋友分财。"
+  };
+  out.push(mainLine[mzSS]||"");
+  // 5. 五行分布提示
+  if(missing.length){
+    const missHint = {金:"缺金：财星不显，理财要主动，多学点金融知识补短板。",木:"缺木：人脉和靠山弱，凡事多靠自己。",水:"缺水：脑子里的弯弯绕少，做事直接，但缺灵活。",火:"缺火：性格偏冷，缺乏热情和冲劲，要多晒太阳多运动。",土:"缺土：根基不稳，容易漂泊，早点置业安家对你有利。"};
+    out.push(`你五行缺${missing.join("、")}。${missing.map(m=>missHint[m]||"").join("")}`);
+  } else {
+    out.push(`你五行俱全，性格比较均衡，人生起伏相对平缓。`);
+  }
+  // 6. 神煞点睛
+  if(ssList.includes("天乙贵人")) out.push(`你命中带天乙贵人，一辈子有贵人帮，关键时刻总有人拉你一把，遇事别硬扛。`);
+  if(ssList.includes("文昌")) out.push(`你命中带文昌，脑子好使，读书考试、学东西都比别人快。`);
+  if(ssList.includes("桃花")) out.push(`你命中带桃花，异性缘好，人也讨喜，但感情上要防烂桃花。`);
+  if(ssList.includes("驿马")) out.push(`你命中带驿马，是个闲不住爱跑的命，出外发展、跑业务比守在家里强。`);
+  if(ssList.includes("华盖")) out.push(`你命中带华盖，骨子里有点孤独，适合钻研一门学问或技艺，耐得住寂寞就有成就。`);
+  if(ssList.includes("魁罡")) out.push(`你命中带魁罡，性格刚直、眼里不揉沙子，有领导范儿，但脾气要收着点。`);
+  return out.filter(x=>x).join("");
+}
+
+// ===== 事件白话·结合喜忌（去套话）=====
+function refinePlain(sub, plain, bazi){
+  const sa = strengthAnalysis(bazi);
+  const strong = sa.strong;
+  const tweaks = {
+    "收入提升": strong? "你身旺担得住财，这钱能接住、能攒下，放心挣。" : "你身弱财旺，钱来得费劲，见好就收，别贪大。",
+    "偏财进账": strong? "你担得起，有机会就抓，能落袋。" : "你身弱守不住，小赚即走，别恋战。",
+    "破财": strong? "你身旺不怕破，但也不该花的别乱花。" : "你身弱，破财伤身，这年管住钱包最重要。",
+    "升职加薪": strong? "你有底气，职位上大胆争取。" : "你身弱，职务是压力，能守则守，别硬扛。",
+    "考试升学": strong? "你状态好，考运在线，正常发挥就成。" : "你状态偏软，要多下功夫，别指望临场运气。"
+  };
+  return plain + (tweaks[sub]||"");
 }
 // 五行旺衰简评 + 喜用神（简化规则：按月令旺相休囚死 + 得地通根）
 function strengthAnalysis(bazi){
@@ -928,80 +1000,72 @@ function renderReport(bazi, input){
   // 神煞
   const ssList = Object.entries(bazi.shensha);
   if(ssList.length){
-    h.push(`<div class="section-title">✨ 神煞</div>`);
+    h.push(`<div class="section-title">✨ 命里带的星（神煞）</div>`);
     for(const [k,v] of ssList) h.push(`<span class="tag-badge">${k} → ${v}</span>`);
+    h.push(`<div style="color:#64748b;font-size:.76rem;margin-top:8px;line-height:1.7">这些是命里带的'特殊星'：天乙贵人是贵人星、文昌是聪明星、桃花是异性缘、驿马是奔波星、华盖主孤独智慧……您对应的每个星在白话总结里都有解释。</div>`);
   }
   h.push(`</div>`);
 
-  // 命局简评
-  const sa = strengthAnalysis(bazi);
+  // 命主总评（白话·精准）
+  h.push(`<div class="rp-card"><h2>🧭 命主总评 <span class="tag">大白话总结</span></h2>`);
+  h.push(`<div class="plain-block" style="line-height:2">${preciseSummary(bazi)}</div>`);
   const wx = wuxingStats(bazi);
   const wxNames = {金:"金",木:"木",水:"水",火:"火",土:"土"};
   const wxSorted = Object.entries(wx).sort((a,b)=>b[1]-a[1]);
   const missing = Object.entries(wx).filter(x=>x[1]<0.5).map(x=>wxNames[x[0]]);
-  h.push(`<div class="rp-card"><h2>🧭 命局简评</h2>`);
-  h.push(`<div class="theme-line">日主 <b>${p.day.g}${p.day.z}</b>（${WX_GAN[p.day.g]}${YY_GAN[p.day.g]}）· ${personality(p.day.g)}</div>`);
   h.push(`<div class="info-grid">`);
-  h.push(`<div><span class="k">日主强弱：</span><span class="v">${sa.verdict}（同党${sa.same} vs 异党${sa.diff}）</span></div>`);
-  h.push(`<div><span class="k">月令：</span><span class="v">${bazi.monthZhi}月（${sa.season}），日主在月令${sa.seasonRank===0?"当令得势":sa.seasonRank<=1?"得生":sa.seasonRank<=2?"平相":"失令"}${sa.roots>=2?"，通根有力":""}</span></div>`);
-  h.push(`<div><span class="k">喜用：</span><span class="v">${sa.xi}</span></div>`);
-  h.push(`<div><span class="k">忌神：</span><span class="v">${sa.ji}</span></div>`);
-  h.push(`<div><span class="k">五行分布：</span><span class="v">${wxSorted.map(([k,v])=>wxNames[k]+" "+v.toFixed(1)).join(" · ")}</span></div>`);
-  h.push(`<div><span class="k">五行缺：</span><span class="v">${missing.length?missing.join("、")+"（参考）":"无明显缺失"}</span></div>`);
+  h.push(`<div><span class="k">五行强弱排序：</span><span class="v">${wxSorted.map(([k,v])=>wxNames[k]+" "+v.toFixed(1)).join(" · ")}</span></div>`);
+  h.push(`<div><span class="k">五行所缺：</span><span class="v">${missing.length?missing.join("、"):"无明显缺失"}</span></div>`);
   h.push(`</div>`);
-  h.push(`<div class="warn">注：日主强弱与喜用神为简化规则推断，供参考；专业论断需结合格局、调候、岁运综合。</div>`);
   h.push(`</div>`);
 
   // 大运
   const qy = bazi.dayun.qiYun;
   h.push(`<div class="rp-card"><h2>🚀 起运与大运</h2>`);
   h.push(`<div class="theme-line">${bazi.forward?"阳男/阴女顺排":"阴男/阳女逆排"}大运。出生后约 <b>${qy[0]}年${qy[1]}个月${qy[2]}天</b> 起运（${qy[0]>=1?"虚岁"+(qy[0]+1):"幼年"}交第一步大运）。</div>`);
-  h.push(`<table class="dayun-table"><tr><th>大运</th><th>十神</th><th>年龄段</th><th>公历年份</th><th>主题</th></tr>`);
+  h.push(`<table class="dayun-table"><tr><th>大运</th><th>主事</th><th>年龄段</th><th>公历年份</th><th>这步运的主题</th></tr>`);
   for(const s of bazi.dayun.steps){
     const sG = s.gz[0];
     const ss = shishen(p.day.g, sG);
     const theme = dayunTheme(ss, shishen(p.day.g, s.gz[1]));
     const sy = bazi.birthYear + Math.floor(s.start);
     const ey = bazi.birthYear + Math.floor(s.end);
-    h.push(`<tr><td class="gz-cell">${s.gz}</td><td>${ss}</td><td>${s.start}—${s.end}岁</td><td>${sy}—${ey}年</td><td style="font-size:.78rem;color:#94a3b8">${theme.split("：")[0]}</td></tr>`);
+    h.push(`<tr><td class="gz-cell">${s.gz}</td><td>${PLAIN_SS[ss]?ss:""}</td><td>${s.start}—${s.end}岁</td><td>${sy}—${ey}年</td><td style="font-size:.78rem;color:#94a3b8">${theme.split("：")[0]}</td></tr>`);
   }
   h.push(`</table></div>`);
 
   // 事件推断
   const sections = analyzeLife(bazi);
-  h.push(`<div class="rp-card"><h2>🔮 人生事件推断 <span class="tag">按大运分段 · 逐年细化 · 大白话解读</span></h2>`);
-  h.push(`<div class="warn" style="border-color:rgba(99,102,241,.3);background:rgba(99,102,241,.06);color:#c7d2fe">推断方法：以日主十神定事象（财=钱财、官=事业、印=文书长辈、食伤=才华子女、比劫=人际），结合宫位（年柱祖上早年、月柱父母根基、日支配偶、时柱子女晚年）与流年神煞（红鸾、桃花、驿马、丧门、吊客、羊刃、天乙贵人、华盖）及刑冲合害，按大运分段、逐年细化。每个事件都附有<b>大白话解读</b>和<b>推算依据</b>。以下为传统命理规则推断，属可能性提示，需结合现实情况判断，切勿绝对化。</div>`);
+  h.push(`<div class="rp-card"><h2>🔮 人生大事 <span class="tag">按十年分段 · 逐年细说 · 纯大白话</span></h2>`);
+  h.push(`<div class="warn" style="border-color:rgba(99,102,241,.3);background:rgba(99,102,241,.06);color:#c7d2fe">下面按每十年一段，把这一生的喜事、坏事、升职、挣钱、结婚、生子、健康、老人之事都说到。这是传统命理推法，说的是可能性，不是定数，您对照自己经历看，供参考。</div>`);
   for(const sec of sections){
     const agg = aggregateSection(sec, bazi);
     const sG = sec.gz[0], sZ = sec.gz[1];
-    const ssTxt = (sec.ssG===sec.ssZ?sec.ssG:sec.ssG+"·"+sec.ssZ);
     const sy = bazi.birthYear + Math.floor(sec.start);
     h.push(`<div class="section-title">📌 ${sec.gz} 大运（${Math.floor(sec.start)}—${Math.floor(sec.end)}岁 · ${sy}—${sy+10}年）</div>`);
-    h.push(`<div class="theme-line">${sec.theme}<br><span style="font-size:.78rem;color:#94a3b8">大运十神：${ssTxt}（${SS_MEANING[sec.ssG]||""}）</span></div>`);
-    h.push(`<div class="plain-block">💬 <b>大白话总评：</b>${dayunPlain(sec.ssG, sec.ssZ, bazi.gender, Math.floor(sec.start))}</div>`);
+    h.push(`<div class="plain-block">💬 ${dayunPlain(sec.ssG, sec.ssZ, bazi.gender, Math.floor(sec.start))}</div>`);
     if(agg.length===0){
-      h.push(`<div style="color:#64748b;font-size:.85rem;padding:6px 0">此运整体平稳，无明显大事件信号，宜按部就班、稳中求进。</div>`);
+      h.push(`<div style="color:#64748b;font-size:.85rem;padding:6px 0">这十年整体平稳，没有大起大落，按部就班过日子就行。</div>`);
     }
     for(const ev of agg){
       const confCls = ev.conf==="高"?"conf-high":ev.conf==="中"?"conf-mid":"conf-ref";
       h.push(`<div class="ev-item">`);
-      h.push(`<div class="ev-head"><span class="ev-cat">${ev.label}</span><span class="${confCls}" style="font-size:.78rem">置信度：${ev.conf}</span></div>`);
-      h.push(`<div class="ev-year">关键年份：${ev.years.map(y=>y+"年").join("、")}</div>`);
-      h.push(`<div class="ev-plain">💬 ${ev.plain}</div>`);
-      h.push(`<div class="ev-base">📐 推算依据：${ev.bases.map(b=>"<br>· "+b).join("")}</div>`);
+      h.push(`<div class="ev-head"><span class="ev-cat">${ev.label}</span><span class="${confCls}" style="font-size:.78rem">把握度：${ev.conf}</span></div>`);
+      h.push(`<div class="ev-year">重点年份：${ev.years.map(y=>y+"年").join("、")}</div>`);
+      h.push(`<div class="ev-plain">${refinePlain(ev.sub, ev.plain, bazi)}</div>`);
       h.push(`</div>`);
     }
     // 逐年详解（折叠）
     const years = sec.yearEvents.filter(y=>Object.keys(y.points).length>0);
     if(years.length){
-      h.push(`<details class="year-detail"><summary>📖 逐年详解（点击展开 · 共${years.length}个有信号年份）</summary>`);
+      h.push(`<details class="year-detail"><summary>📖 逐年细说（点击展开 · ${years.length}个有动静的年份）</summary>`);
       for(const ye of years){
         const subs = Object.entries(ye.points).sort((a,b)=>b[1]-a[1]).slice(0,5);
-        h.push(`<div class="yd-year"><b>${ye.year}年（${ye.gz} · ${ye.ss}）</b></div>`);
+        h.push(`<div class="yd-year"><b>${ye.year}年</b></div>`);
         for(const [sub] of subs){
           const pl = ye.bases.find(b=>b.sub===sub);
           if(!pl) continue;
-          h.push(`<div class="yd-item"><span class="yd-label">${SUBCAT[sub]||sub}</span><span class="yd-plain">${pl.plain}</span><span class="yd-desc">（${pl.desc}）</span></div>`);
+          h.push(`<div class="yd-item"><span class="yd-label">${SUBCAT[sub]||sub}</span><span class="yd-plain">${pl.plain}</span></div>`);
         }
       }
       h.push(`</details>`);
