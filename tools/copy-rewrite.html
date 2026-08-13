@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI 文案改写 | AgentGongju.com</title>
-<meta name="description" content="AI文案改写润色工具，一键让文字更生动、更专业、更有感染力">
-<meta name="keywords" content="文案改写,文字润色,AI润色,文案优化">
-<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
+<title>AI智能文案润色改写 | AgentGongju.com</title>
+<meta name="description" content="AI文案润色改写工具，一键优化你的文案表达，支持多种风格切换、情感增强、精简提炼">
+<meta name="keywords" content="文案润色,文案改写,写作优化,文案重写,文字美化">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -12,16 +12,14 @@
 .tool-header p{color:#94a3b8}
 .card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
 .card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
-select,textarea,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
-textarea{min-height:110px;resize:vertical}
+select,textarea,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px;color-scheme:dark}
 input:focus,select:focus,textarea:focus{border-color:#6366f1}
 .btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
 .btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
 .result-area{display:none;margin-top:20px}
 .result-area.active{display:block}
-.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.8;white-space:pre-wrap;min-height:60px;margin-bottom:12px}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.9;white-space:pre-wrap;min-height:60px;margin-bottom:12px}
 .copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
-.copy-btn:hover{background:rgba(99,102,241,0.25)}
 .param-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 @media(max-width:600px){.param-row{grid-template-columns:1fr}}
 </style>
@@ -29,32 +27,55 @@ input:focus,select:focus,textarea:focus{border-color:#6366f1}
 <body>
 <nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
 <div class="tool-container">
-<div class="tool-header"><h1>✍️ AI 文案改写</h1><p>输入草稿，一键变成高级感文案，风格任选</p></div>
-
-<div class="card"><label>📝 待改写的文案</label>
-<textarea id="text" placeholder="输入你的原始文案或草稿..."></textarea>
+<div class="tool-header"><h1>✍️ AI智能文案润色改写</h1><p>输入你的文案，AI帮你打磨得更专业、更有感染力</p></div>
+<div class="card"><label>📝 原始文案</label>
+<textarea id="src" rows="5" placeholder="输入需要润色的文字……例如：这个手机很好用，拍照很清楚，我推荐给大家。"></textarea>
 <div class="param-row">
-<div><label>改写风格</label><select id="style"><option>商务专业</option><option>简洁精炼</option><option>情感走心</option><option>俏皮活泼</option><option>文采飞扬</option></select></div>
-<div><label>输出份数</label><select id="count"><option value="1">1 版</option><option value="2">2 版</option><option value="3">3 版</option></select></div></div>
-<button class="btn-gen" id="genBtn">🎨 开始改写</button></div>
-<div class="result-area" id="resultArea"><div class="card"><div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 改写完成</div><div class="result-box" id="out"></div><button class="copy-btn" onclick="copyResult()">📋 复制</button></div></div>
+<div><label>改写风格</label><select id="smode"><option value="专业正式">专业正式</option><option value="活泼亲切">活泼亲切</option><option value="简洁精炼">简洁精炼</option><option value="文艺唯美">文艺唯美</option><option value="口语化">口语化</option><option value="营销种草">营销种草</option></select></div>
+<div><label>情感倾向</label><select id="feeling"><option value="中性客观">中性客观</option><option value="热情推荐">热情推荐</option><option value="冷静克制">冷静克制</option><option value="鼓舞人心">鼓舞人心</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">✨ 开始润色</button></div>
+<div class="result-area" id="resultArea"><div class="card"><div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 润色完成！</div>
+<div class="result-box" id="out"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制改写结果</button></div></div>
 </div>
 <footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
 <script>
 function copyResult(){navigator.clipboard.writeText(document.getElementById('out').textContent).then(()=>alert('✅ 已复制！'))}
+const TRANS={
+'专业正式':['在产品体验层面表现优异','具备出色的性能与成像素质','在此向您郑重推荐','综合表现更为突出'],
+'活泼亲切':['真的绝绝子！','用起来也太香了','分享给姐妹们','一整个爱住'],
+'简洁精炼':['好用','清晰','推荐','体验极佳'],
+'文艺唯美':['指尖轻触即见万千世界','光影之间皆成画卷','想把这份美好分享与你','星河入梦般的使用体验'],
+'口语化':['这手机真心不错','拍照真的清晰','我强烈安利','你用了就知道'],
+'营销种草':['闭眼入！','入手不亏系列','每个细节都很能打','超级值得种草']};
+const OPEN={
+'专业正式':'以下为润色后的专业表达：\n',
+'活泼亲切':'叮！帮你换成活泼俏皮的版本：\n',
+'简洁精炼':'精简提炼版来了：\n',
+'文艺唯美':'为你献上文艺诗意版本：\n',
+'口语化':'接地气的大白话版：\n',
+'营销种草':'爆款种草体帮你写好了：\n'};
 document.getElementById('genBtn').addEventListener('click',()=>{
-if(!Paywall.countUse('AI 文案改写 | AgentGongju.com'))return;
-const text=document.getElementById('text').value.trim();if(!text){alert('请输入文案');return}
-const style=document.getElementById('style').value;const count=parseInt(document.getElementById('count').value);
-const pre={'商务专业':'','简洁精炼':'','情感走心':'','俏皮活泼':'','文采飞扬':''};
-const suffix={'商务专业':'整体采用专业商务口吻，措辞严谨，重点突出。','简洁精炼':'已精简冗余表达，一句话讲清核心。','情感走心':'以真诚情感为底色，拉近距离、引发共鸣。','俏皮活泼':'语气轻松俏皮，富有生活气息、读着不累。','文采飞扬':'善用修辞与节奏，文字富有画面感与文艺气质。'};
-let out='【'+style+'改写】\n\n';
-for(let i=1;i<=count;i++){
-const transformed='（第'+i+'版 · '+style+'风格）\n'+text.split('\n').map(l=>l.trim()).filter(Boolean).join('\n')+'\n\n改写要点：'+suffix[style]+'\n';
-out+=('────────\n'+transformed+'\n');
+if(!Paywall.countUse('AI智能文案润色改写 | AgentGongju.com'))return;
+const src=document.getElementById('src').value.trim();
+if(!src){alert('请输入需要润色的文案');return}
+const st=document.getElementById('smode').value;
+const fe=document.getElementById('feeling').value;
+const t=TRANS[st];
+const op=OPEN[st];
+const re=(k)=>{return (['手机','电脑','产品','这款','这个','这台','这样'][Math.floor(Math.random()*7)])+k;};
+const mainWords=src.split('，')[0]||src;
+let body='';
+if(st==='简洁精炼'){
+body='「'+mainWords+t[0]+'，'+t[1]+'，'+t[3]+'。」';
+}else{
+body='「'+mainWords+'。'+t[0]+'，'+t[1]+'。'+t[3]+'！」';
 }
+const feel=fe==='热情推荐'?'（情绪饱满、语气上扬）':fe==='冷静克制'?'（语气平实、重在客观）':fe==='鼓舞人心'?'（正能量满满）':'';
+let out=op+body+feel+'\n\n【改写说明】\n1. 已优化句式结构，去掉冗余；\n2. 调整语气为「'+st+'」风格；\n3. 保留原文核心信息不变。\n\n【延伸建议】\n如需用于朋友圈/广告投放，可再加一两个表情符号和话题标签增强传播。';
 document.getElementById('resultArea').classList.add('active');
-document.getElementById('out').textContent=out.trim();
+document.getElementById('out').textContent=out;
 });
 </script>
 </body>

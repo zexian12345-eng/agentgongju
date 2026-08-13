@@ -1,26 +1,25 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI 周报生成器 | AgentGongju.com</title>
-<meta name="description" content="免费周报生成工具，一键生成工作周报">
-<meta name="keywords" content="周报生成,工作周报,自动写周报,AI周报">
-<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
+<title>AI周报自动生成 | AgentGongju.com</title>
+<meta name="description" content="输入本周几项工作要点，一键生成正式规范的周报，支持不同岗位模板">
+<meta name="keywords" content="周报,工作总结,汇报,职场,周报生成器,工作报告">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
 <style>
-.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-container{max-width:760px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
 .tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
 .tool-header p{color:#94a3b8}
 .card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
 .card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
-select,textarea,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
-textarea{min-height:100px;resize:vertical}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
 input:focus,select:focus,textarea:focus{border-color:#6366f1}
+textarea{resize:vertical;min-height:100px}
 .btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
 .btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
-.btn-gen:disabled{opacity:.5;cursor:not-allowed}
 .result-area{display:none;margin-top:20px}
 .result-area.active{display:block}
-.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.8;white-space:pre-wrap;min-height:60px;margin-bottom:12px}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.9;white-space:pre-wrap;min-height:60px;margin-bottom:12px}
 .copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
 .copy-btn:hover{background:rgba(99,102,241,0.25)}
 .param-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
@@ -30,24 +29,34 @@ input:focus,select:focus,textarea:focus{border-color:#6366f1}
 <body>
 <nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
 <div class="tool-container">
-<div class="tool-header"><h1>📊 AI 周报生成器</h1><p>输入工作事项，自动生成规范周报</p></div>
+<div class="tool-header"><h1>📋 AI 周报生成器</h1><p>碎碎念几句，AI帮你整理成规范周报</p></div>
 
-<div class="card"><label>📝 本周完成了哪些工作？（每行一项，或逗号分隔）</label>
-<textarea id="week" placeholder="例如：\n完成项目A的需求调研\n修复了3个bug\n和客户开了2次会"></textarea>
-<button class="btn-gen" id="reportBtn">📊 生成周报</button></div>
-<div class="result-area" id="resultArea"><div class="card"><div style="color:#22c55e;font-weight:600;margin-bottom:8px">✅ 周报已生成</div><div class="result-box" id="result"></div><button class="copy-btn" onclick="copyResult()">📋 复制</button></div></div>
+<div class="card"><div class="param-row">
+<div><label>🧑‍💻 你的岗位</label><select id="role"><option value="互联网" selected>互联网/产品</option><option value="运营">运营/市场</option><option value="销售">销售</option><option value="行政">行政/人事</option><option value="程序员">程序员/技术</option><option value="其他">其他</option></select></div>
+<div><label>📅 截止表现</label><select id="tone"><option value="正常" selected>正常推进</option><option value="顺利">顺利超额</option><option value="有挑战">遇到挑战</option></select></div>
+</div>
+<label>✍️ 本周做了什么（每行一条，随意写）</label><textarea id="items" placeholder="例如：&#10;上线了新的个人中心页面&#10;推进了APP 2.3版本的需求评审&#10;配合运营做了三版活动banner"></textarea>
+<button class="btn-gen" id="genBtn">📤 生成周报</button></div>
+
+<div class="result-area" id="resultArea"><div class="card"><div class="result-box" id="result"></div><button class="copy-btn" onclick="copyResult()">📋 复制</button></div></div>
 </div>
 <footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
 <script>
-
-document.getElementById('reportBtn').addEventListener('click',()=>{
-if(!Paywall.countUse('AI 周报生成器 | AgentGongju.com'))return;
-const week=document.getElementById('week').value.trim();if(!week){alert('请输入本周工作内容');return}
-const d=new Date();const dateStr=d.getMonth()+1+'月'+d.getDate()+'日';
-const out='【本周工作周报 - '+dateStr+'】\n\n📋 一、本周工作概述\n本周主要完成了以下工作：\n'+week.split(/\n|,/).filter(x=>x.trim()).map((x,i)=>'  '+(i+1)+'. '+x.trim()).join('\n')+'\n\n📈 二、工作成果\n  • 完成了既定任务，进展顺利\n  • 与团队协作顺畅，沟通高效\n  • 积累了一定经验，为后续工作打下基础\n\n📌 三、下周计划\n  • 继续推进在手项目，确保按期交付\n  • 重点跟进新任务，合理安排时间\n  • 加强学习，提升工作效率\n\n（此报告由 AI 自动生成，可在此基础上修改完善）';
-document.getElementById('resultArea').classList.add('active');document.getElementById('result').textContent=out;});
+const verbs={互联网:['完成了','主导推进了','协同落地了','迭代上线了'],运营:['执行了','策划并落地了','复盘了','发布了'],销售:['拜访了','跟进成交了','维护了','开拓了'],行政:['协调组织了','处理了','完善了','保障了'],程序员:['开发完成了','修复了','优化了','部署上线了'],其他:['推进完成','处理了','落实了','完成了']};
+const plans=['聚焦重点项目，同步推进各项任务','持续优化流程，提升团队协作效率','把控进度节点，保障交付质量','深化业务理解，精细化运营'];
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI周报自动生成 | AgentGongju.com'))return;
+let raw=document.getElementById('items').value.split('\n').map(s=>s.trim()).filter(Boolean);
+if(raw.length===0){alert('请输入本周工作内容');return;}
+let role=document.getElementById('role').value;let tone=document.getElementById('tone').value;
+let v=verbs[role][Math.floor(Math.random()*verbs[role].length)];
+let list=raw.map((r,i)=>'1. '+v+(v.endsWith('了')?'':(v.endsWith('完成')?'了':''))+' '+toItem(r)).join('\n');
+function toItem(r){let s=r.replace(/^(重点|把|将|推进|完成|处理|负责|做了)/,'');return s.charAt(0).toUpperCase?s:s;}
+document.getElementById('resultArea').classList.add('active');
+let prog=tone==='顺利'?'本周各项任务均按计划推进，个别事项提前完成，整体进展顺利。':tone==='有挑战'?'本周核心任务稳步推进，其中部分事项因跨部门协调略有延后，已及时跟进解决。':'本周工作按既定计划有序推进，重点任务均已落实节点。';
+document.getElementById('result').textContent='【本周工作总结】\n\n'+list+'\n\n【进展与成果】\n'+prog+'\n\n【下周计划】\n1. '+plans[0]+'\n2. '+plans[1]+'\n3. '+plans[2]+'\n\n【风险与建议】\n当前整体风险可控，建议下周继续加强沟通协作，确保重点事项按节点交付。';
+});
 function copyResult(){navigator.clipboard.writeText(document.getElementById('result').textContent).then(()=>alert('✅ 已复制！'))}
-
 </script>
 </body>
 </html>
