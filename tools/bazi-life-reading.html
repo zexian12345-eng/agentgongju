@@ -1019,7 +1019,9 @@ function renderReport(bazi, input){
     }
   }
   if(allYears.length){
-    const sorted = allYears.sort((a,b)=>b.total-a.total).slice(0,12);
+    const seen = {};
+    const dedup = allYears.filter(y=>{ if(seen[y.year]) return false; seen[y.year]=1; return true; });
+    const sorted = dedup.sort((a,b)=>b.total-a.total).slice(0,12);
     h.push(`<div style="display:flex;flex-wrap:wrap;gap:8px">`);
     for(const y of sorted){
       h.push(`<span class="flow-year"><b>${y.year}年</b> ${y.gz}（${y.ss}）<br><span style="font-size:.7rem;color:#94a3b8">${y.cats.map(c=>c[0]).join("·")}</span></span>`);
