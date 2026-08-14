@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 算命先生 | AgentGongju.com</title>
+<meta name="description" content="AI趣味算命，输入生日与姓名，生成个性解读、财运事业与幸运提示，仅供娱乐参考">
+<meta name="keywords" content="AI算命,姓名测算,生日测算,运势,趣味占卜,娱乐">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px;box-sizing:border-box}
+input:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.disc{color:#64748b;font-size:.78rem;text-align:center;margin-top:18px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🔮 AI 算命先生</h1><p>趣味生辰姓名测算，仅供娱乐，快乐就好</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>🈲 姓名</label><input type="text" id="name" placeholder="请输入姓名"></div>
+<div><label>🎂 出生年份</label><input type="number" id="year" placeholder="例如 1995" min="1900" max="2026"></div>
+</div>
+<label>🎯 想看哪方面</label>
+<select id="aspect" style="width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px"><option value="综合运势">🌐 综合运势</option><option value="感情">❤️ 感情</option><option value="事业财运">💼 事业财运</option><option value="性格">🧠 性格</option></select>
+<button class="btn-gen" id="genBtn">✨ 掐指一算</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🔮 命理解析</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制结果</button>
+<div class="disc">* 本内容由 AI 娱乐生成，仅供放松解压，请理性看待，不构成任何决策依据。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const elem='金木水火土';
+const nature={金:{heart:'重情重义，待朋友真诚仗义',career:'适合科技、金融、制造等讲规则领域',luck:'本年金气足，宜稳健守成，防冲动'},
+木:{heart:'温和包容，善解人意，人缘极好',career:'适合教育、文化、设计等创意领域',luck:'木正逢春，宜开拓进取，定有升迁'},
+水:{heart:'机敏灵动，心思细腻，情感丰富',career:'适合贸易、传媒、艺术等流动领域',luck:'水主生发，财运流通顺畅，忌贪多'},
+火:{heart:'热情似火，行动力强，敢爱敢恨',career:'适合互联网、能源、市场等爆发领域',luck:'火旺当令，事业红火，慎防冲动惹口舌'},
+土:{heart:'踏实稳重，值得信赖，是靠谱的伙伴',career:'适合地产、农业、服务等稳定领域',luck:'土主厚德，得贵人相助，宜积财守成'}};
+const personalities=[[{t:'沉稳可靠',d:'像山峦般踏实，认准的事会坚持到底'},{t:'善解人意',d:'总能察觉他人情绪，是贴心的倾听者'}],[{t:'乐观开朗',d:'自带阳光气场，是身边人的能量源'},{t:'坚持韧性',d:'遇到困难不轻易放弃，越挫越勇'}],[{t:'思维敏捷',d:'点子多、反应快，善于随机应变'},{t:'富有激情',d:'对热爱的事全力以赴，感染力强'}]];
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 算命先生 | AgentGongju.com'))return;
+const name=document.getElementById('name').value.trim();
+const year=document.getElementById('year').value;
+const aspect=document.getElementById('aspect').value;
+if(!name){alert('请输入你的姓名');return;}
+if(!year){alert('请输入出生年份');return;}
+const y=parseInt(year);
+const branch=['申','酉','戌','亥','子','丑','寅','卯','辰','巳','午','未'][(y-4)%12];
+const stem='甲乙丙丁戊己庚辛壬癸'[(y-4)%10];
+const element=elem[Math.floor((y-4)%10/2)];
+const el=nature[element];
+const n=name.length;
+const luckScore=(n*13+y%7)%10+1;
+const nat=personalities[Math.floor(Math.random()*personalities.length)];
+let out='【'+name+'】年柱为：'+stem+branch+'年，五行为「'+element+'」。\n\n';
+out+='◈ 性格特质 ◈\n· '+nat[0].t+'：'+nat[0].d+'\n· '+nat[1].t+'：'+nat[1].d+'\n· 五行本色：'+el.heart+'\n\n';
+if(aspect==='综合运势'||aspect==='事业财运'||aspect==='性格'){out+='◈ '+(aspect==='事业财运'?'事业财运':'事业运势')+' ◈\n· '+el.career+'\n· 年度提示：'+el.luck+'\n\n';}
+if(aspect==='综合运势'||aspect==='感情'){out+='◈ 感情运势 ◈\n· '+el.heart+'\n· 桃花指数：'+'★★★★'.slice(0,luckScore%
+4+1)+(luckScore>6?'（本年度桃花渐旺，宜主动把握）':'（宜先经营好自己，缘分会来）')+'\n\n';}
+out+='◈ 幸运指数 ◈\n· 今日幸运色：'+['靛蓝','紫罗兰','翠绿','暖橙','珊瑚红'][y%5]+'\n· 幸运数字：'+((y%9)+1)+'\n· 综合指数：'+Math.min(99,(luckScore*10+y%20))+' 分\n\n';
+out+='📿 一句箴言：'+(['顺势而为，厚积薄发','知足常乐，方得长久','心若向阳，无畏悲伤','踏踏实实，皆是通途'][y%4]);
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 结果已复制！'))}
+</script>
+</body>
+</html>

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 小红书文案 | AgentGongju.com</title>
+<meta name="description" content="AI小红书文案生成器，输入产品/主题，自动生成爆款笔记标题、正文、话题标签，适合种草笔记">
+<meta name="keywords" content="AI小红书,小红书文案,爆款笔记,种草文案,标题生成,自媒体">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:90px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📕 AI 小红书文案</h1><p>输入主题，一键生成爆款种草笔记标题与正文</p></div>
+
+<div class="card">
+<label>🛍️ 介绍你的产品 / 主题</label>
+<textarea id="topic" placeholder="例如：一款超级好用的平价防晒霜，清爽不油腻，适合学生党"></textarea>
+<div class="param-row">
+<div><label>🎯 笔记类型</label>
+<select id="style"><option value="种草安利">🌱 种草安利</option><option value="避雷测评">🧪 避雷测评</option><option value="干货教程">📖 干货教程</option><option value="好物分享">🎁 好物分享</option></select></div>
+<div><label>👑 标题风格</label>
+<select id="tone"><option value="惊叹">❗ 惊叹吸睛</option><option value="真诚">🤍 真诚走心</option><option value="疑问">❓ 设问引导</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">✨ 生成笔记</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#ff4d6d;font-weight:600;margin-bottom:12px">📕 你的笔记文案</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制笔记</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const titleBank={
+惊叹:['后悔没早点发现！！','这是什么神仙宝藏','直接封神，太绝了','忍不住疯狂安利','闭眼入不踩雷','真的会谢，也太好用了'],
+真诚:['我用了三个月，来说句实话','真心分享，不吹不黑','被问了八百遍的好物','用空瓶才敢来推荐','一些掏心窝子的建议','普通人也能轻松上手'],
+疑问:['有人还不知道吗？','这真的是我能用到的吗？','为什么没人早点告诉我','你敢信它才这个价？','还在纠结的进来看','不信你来试试']
+};
+const openers={种草安利:['家人们我又来安利了！','姐妹们，这个真的绝了！','今天必须跟大家说说'],避雷测评:['先说结论再细说，仅供参考。','测了半个月，优缺点都来讲讲'],干货教程:['纯干货，建议先收藏！','手把手教，零基础也能会'],好物分享:['攒了好久的私藏，分享给你们','遇见了就想告诉全世界']};
+const tags={种草安利:['#安利','#好物推荐','#真实测评','#学生党'],避雷测评:['#测评','#避雷','#实话实说','#拔草'],干货教程:['#干货','#教程','#经验分享','#涨知识'],好物分享:['#好物','#平价好物','#闭眼入','#回购']};
+function titleFor(tone){return titleBank[tone][Math.floor(Math.random()*titleBank[tone].length)];}
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 小红书文案 | AgentGongju.com'))return;
+const topic=document.getElementById('topic').value.trim();
+const style=document.getElementById('style').value;
+const tone=document.getElementById('tone').value;
+if(!topic){alert('请先介绍你的产品/主题');return;}
+const op=openers[style][Math.floor(Math.random()*openers[style].length)];
+let out='【标题】\n'+titleFor(tone)+(Math.random()>0.5?' ✨':'')+'\n\n';
+out+='【正文】\n'+op+'\n';
+out+='今天想跟大家聊聊「'+topic+'」。\n\n';
+out+='👇 直接说重点：\n';
+if(style==='避雷测评'){out+='· 优点：的确有做得不错的地方，+说性价比。\n· 缺点：就这个价位，也能挑出点小毛病，我会如实说。\n';}
+else{out+='· 为什么值得买：好用还不贵，体验感直接拉满。\n· 谁适合：适合'+['学生党、上班族','预算有限的朋友','追求性价比的姐妹','日常通勤族'][Math.floor(Math.random()*4)]+'。\n';}
+out+='· 小建议：根据自己实际情况入手，理性消费。\n\n';
+out+='真心话时间：'+(style==='避雷测评'?'好东西不吹过头，缺点也不藏着，大家自己判断。':'我回购到第N次，还是会被惊喜到。')+'\n\n';
+out+='📌 有用记得点赞收藏哦～\n\n【话题标签】\n'+tags[style].map(t=>t+(topic.replace(/[的是一款]/g,''))).join('  ');
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 笔记已复制！'))}
+</script>
+</body>
+</html>

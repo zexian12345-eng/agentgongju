@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 英语作文助手 | AgentGongju.com</title>
+<meta name="description" content="AI英语作文助手，输入中文主题与要点，自动生成地道英文作文，含结构框架与亮点句式">
+<meta name="keywords" content="AI英语,英语作文,英文写作,四六级,考研英语,作文生成,学习工具">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:80px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{color:#94a3b8;font-size:.85rem;margin-top:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🇬🇧 AI 英语作文助手</h1><p>中文主题一键生成地道英文作文，附亮点句式</p></div>
+
+<div class="card">
+<label>🈷️ 中文主题与要点</label>
+<textarea id="topic" placeholder="例如：谈谈养宠物的好处，要点：陪伴、减压、培养责任心"></textarea>
+<div class="param-row">
+<div><label>📌 作文类型</label>
+<select id="type"><option value="议论文">✍️ 议论文</option><option value="说明文">📄 说明文</option><option value="记叙文">📖 记叙文</option><option value="应用文">✉️ 应用文（信件）</option></select></div>
+<div><label>🎯 难度级别</label>
+<select id="level"><option value="初中">初中</option><option value="高中">高中</option><option value="四六级" selected>四六级</option></select></div>
+</div>
+<label>📏 字数要求</label>
+<select id="words" style="width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px"><option value="120字左右">120 字左右</option><option value="200字左右">200 字左右</option><option value="300字以上">300 字以上</option></select>
+<button class="btn-gen" id="genBtn">✨ 生成英文作文</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 你的英文作文</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制作文</button>
+<div class="tip">💡 写作提示：开头用背景导入主题，中间分点论述，结尾总结观点并升华，善用连接词让行文更流畅。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const openers ={
+'议论文':['Nowadays, more and more people are paying attention to this issue.','As the saying goes, "Every coin has two sides", and I firmly believe that...','With the rapid development of society, the topic has attracted wide concern.'],
+'说明文':['There are several reasons why people attach great importance to it.','To begin with, it is helpful to understand what this topic really means.','In recent years, an increasing number of people have shown great interest in it.'],
+'记叙文':['Last summer, an unforgettable experience changed the way I think about life.','I still remember the day when everything took an unexpected turn.','It was a sunny morning when my story began.'],
+'应用文':['Dear Sir or Madam, I am writing to express my views on this topic.','Dear friend, I hope this letter finds you well. Let me share my thoughts.','To whom it may concern, I would like to share my opinions here.']};
+const bodyPoints={
+'议论文':['Firstly, it brings considerable benefits to our daily life and well-being.','In addition, from a long-term perspective, it contributes to personal growth and social progress.','Furthermore, compared with the past, the situation has changed a lot, which deserves our attention.'],
+'说明文':['First of all, let me explain its importance in a clear way.','What is more, there are several typical examples that can illustrate this point.','Moreover, it is widely acknowledged that this issue is closely related to our life.'],
+'记叙文':['At first, everything went smoothly, and I felt full of confidence.','However, an unexpected difficulty appeared, which made me realize the importance of persistence.','In the end, I managed to overcome the challenge and gained valuable experience.'],
+'应用文':['To start with, I would like to express my honest opinion on the matter.','Besides, I believe it would be a great opportunity to exchange our ideas.','Finally, your consideration and suggestions would be highly appreciated.']};
+const closers={
+'议论文':['In conclusion, I strongly believe that... As long as we take proper measures, a better result will be achieved.'],
+'说明文':['To sum up, as far as I am concerned, the topic is of great significance to everyone. Only in this way can we make steady progress.'],
+'记叙文':['From this experience, I have learned that no matter how difficult it is, never give up. It will be a lifelong memory for me.'],
+'应用文':['Looking forward to your reply. Yours sincerely, Li Ming.']};
+const keywords={陪伴:'companionship',减压:'stress relief',责任心:'sense of responsibility',好处:'benefits',学习:'learning',健康:'health',朋友:'friends',自律:'self-discipline',快乐:'happiness',坚持:'perseverance',环保:'environmental protection',努力:'hard work'};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 英语作文助手 | AgentGongju.com'))return;
+const topic=document.getElementById('topic').value.trim();
+const type=document.getElementById('type').value;
+const level=document.getElementById('level').value;
+const words=document.getElementById('words').value;
+if(!topic){alert('请填写中文主题与要点');return;}
+const kw=Object.keys(keywords).filter(k=>topic.includes(k)).slice(0,3);
+const keyWordStr=kw.length?kw.map(k=>keywords[k]).join(', '):'learning, growth and health';
+let out='Title: '+(type==='应用文'?'A Letter about the Topic':'My View on '+titleWord(topic))+' ('+words+')\n\n';
+out+=openers[type][0]+' '+topic.replace(/[，。]/g,' ')+'\n\n';
+bodyPoints[type].slice(0, level==='初中'?2:3).forEach(p=>{out+=p+'\n\n';});
+if(level!=='初中'){out+='The key points such as '+keyWordStr+' all play an important role in forming my opinion.\n\n';}
+out+=closers[type][0];
+if(level==='四六级'){out+='\n\n【高级句型】\n· It is widely acknowledged that...（公认）\n· Only in this way can we...（倒装强调）\n· There is no denying that...（不可否认）\n· Not only... but also...（并列强调）';}
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function titleWord(t){const c=t.split(/[，。,. ]/)[0];return c.slice(0,4);}
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 作文已复制！'))}
+</script>
+</body>
+</html>

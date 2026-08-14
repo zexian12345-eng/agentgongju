@@ -91,6 +91,25 @@ input:focus,select:focus{border-color:#6366f1}
 .yd-desc{color:#64748b;font-size:.76rem}
 .disclaimer{font-size:.74rem;color:#64748b;line-height:1.8;margin-top:10px}
 .city-hint{font-size:.75rem;color:#64748b;margin-top:4px}
+textarea#inEvents{width:100%;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.12);border-radius:10px;color:#e2e8f0;padding:10px 12px;font-size:.85rem;font-family:inherit;line-height:1.6;box-sizing:border-box}
+textarea#inEvents:focus{outline:none;border-color:rgba(167,139,250,0.6)}
+.verify-item{border-radius:10px;padding:10px 14px;margin-bottom:8px;font-size:.84rem;line-height:1.7}
+.verify-item.ok{background:rgba(52,211,153,0.07);border:1px solid rgba(52,211,153,0.25)}
+.verify-item.no{background:rgba(251,191,36,0.06);border:1px solid rgba(251,191,36,0.25)}
+.verify-item .v-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.verify-item .v-year{color:#e2e8f0;font-weight:600}
+.verify-item .v-plain{color:#94a3b8;margin-top:4px}
+.v-badge-ok{display:inline-block;padding:1px 8px;border-radius:20px;font-size:.7rem;background:rgba(52,211,153,0.15);color:#4ade80;border:1px solid rgba(52,211,153,0.35)}
+.v-badge-no{display:inline-block;padding:1px 8px;border-radius:20px;font-size:.7rem;background:rgba(251,191,36,0.12);color:#fbbf24;border:1px solid rgba(251,191,36,0.35)}
+.big-list{display:flex;flex-direction:column;gap:0;margin-top:10px}
+.big-item{display:flex;gap:12px;padding:11px 0;border-bottom:1px dashed rgba(255,255,255,0.08)}
+.big-item:last-child{border-bottom:none}
+.big-left{flex:0 0 88px;text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:2px}
+.big-year{color:#f0abfc;font-weight:700;font-size:1rem}
+.big-age{color:#64748b;font-size:.75rem}
+.big-right{flex:1}
+.big-label{color:#e2e8f0;font-weight:600;font-size:.92rem}
+.big-plain{color:#a7f3d0;font-size:.82rem;line-height:1.7;margin-top:3px}
 @media(max-width:640px){.param-row,.param-row-3{grid-template-columns:1fr}.bazi-grid{grid-template-columns:repeat(2,1fr)}.info-grid{grid-template-columns:1fr}}
 </style>
 </head>
@@ -134,6 +153,11 @@ input:focus,select:focus{border-color:#6366f1}
 <label><input type="checkbox" id="optTrueSolar" checked> 真太阳时校正（经度修正+均时差）</label>
 <label><input type="checkbox" id="optZishi" checked> 晚子时（23点后）按次日排盘</label>
 </div>
+</div>
+<div style="margin-top:14px">
+<label>📝 您已发生的大事（选填，越准越贴合您本人）</label>
+<textarea id="inEvents" rows="4" placeholder="每行一条：年份 + 事件，例如：&#10;1998参军&#10;2005结婚&#10;2011转业&#10;2014生女儿&#10;2018投资失败"></textarea>
+<div class="city-hint">填上后，报告会先核验这些事和命盘是否吻合，再围绕您本人展开分析。事件关键词：参军 / 转业 / 结婚 / 生子 / 换工作 / 升职 / 破财 / 伤病 / 搬家 / 买房 / 创业 / 考试</div>
 </div>
 <button class="btn-gen" onclick="run()">🔮 开始排盘</button>
 </div>
@@ -585,7 +609,13 @@ const LIUHE = {子:"丑",丑:"子",寅:"亥",亥:"寅",卯:"戌",戌:"卯",辰:"
 const LIUCHONG = {子:"午",午:"子",丑:"未",未:"丑",寅:"申",申:"寅",卯:"酉",酉:"卯",辰:"戌",戌:"辰",巳:"亥",亥:"巳"};
 const XING = {寅:"巳申",巳:"寅申",申:"寅巳",丑:"戌未",戌:"丑未",未:"丑戌",子:"卯",卯:"子",辰:"辰",午:"午",酉:"酉",亥:"亥"};
 const HAI = {子:"未",未:"子",丑:"午",午:"丑",寅:"酉",酉:"寅",卯:"辰",辰:"卯",巳:"亥",亥:"巳",申:"戌",戌:"申"};
+const PO = {子:"酉",酉:"子",午:"卯",卯:"午",辰:"丑",丑:"辰",戌:"未",未:"戌",寅:"亥",亥:"寅",巳:"申",申:"巳"}; // 六破
+const WUHE = {甲:"己",己:"甲",乙:"庚",庚:"乙",丙:"辛",辛:"丙",丁:"壬",壬:"丁",戊:"癸",癸:"戊"}; // 天干五合
 function sanheOf(z){for(const[k,v]of Object.entries({"申子辰":"水局","寅午戌":"火局","巳酉丑":"金局","亥卯未":"木局"}))if(k.includes(z))return v;return null;}
+function banheOf(a,b){ // 半合：返回局名或null
+  const pairs = {"申子":"水局","子辰":"水局","寅午":"火局","午戌":"火局","巳酉":"金局","酉丑":"金局","亥卯":"木局","卯未":"木局"};
+  return pairs[a+b]||pairs[b+a]||null;
+}
 
 // 流年神煞（以流年支+命局年支/日支起）
 function flowShensha(lz, bazi){
@@ -751,19 +781,23 @@ function analyzeYear(yy, bazi, step, age){
   // 2. 流年支与命局地支关系（冲合刑害）
   const pillarsZ = [["年支",yz,"出行迁居","根基有动：搬家、远行、家庭或长辈之事有变动"],["月支",mz,"工作变动","事业家庭根基有变：调岗、换工作、家宅变动"],["日支",dz,"感情波动","配偶宫被冲，感情起波澜"],["时支",hz,"子女缘","子女或晚年之事有变动"]];
   for(const [name, z, sub, plainCore] of pillarsZ){
-    if(LIUCHONG[lz]===z) add(sub,2, (name==="日支"?"配偶宫（日支）被冲，感情容易起大波澜：要么结婚领证的大事，要么吵架闹矛盾，关系大起大落。":"流年冲"+name+"，"+plainCore+"。"), "流年"+lz+"冲"+name+z, name==="日支"?18:0);
+    if(LIUCHONG[lz]===z) add(sub, (name==="日支"?1.5:2), (name==="日支"?"配偶宫（日支）被冲，感情容易起大波澜：要么结婚领证的大事，要么吵架闹矛盾，关系大起大落。":"流年冲"+name+"，"+plainCore+"。"), "流年"+lz+"冲"+name+z, name==="日支"?18:0);
     if(LIUHE[lz]===z) add("和合",1, "地支相合，关系融洽，合作谈成，事情办得顺。","流年"+lz+"合"+name+z);
     if((XING[lz]||"").includes(z)) add("摩擦口角",1, "地支相刑，容易跟人闹别扭、起口角，注意说话方式，小事别闹大。","流年"+lz+"刑"+name+z);
     if((HAI[lz]||"").includes(z)) add("暗耗谨防",1, "地支相害，有小人暗地里使绊子，钱和精力不知不觉损耗，防骗防坑。","流年"+lz+"害"+name+z);
   }
   // 配偶宫（日支）动 → 婚恋细化
-  if(LIUCHONG[lz]===dz) add("感情波动",1, "流年冲配偶宫，已婚防婚变、未婚防分手，感情上要多沟通、少赌气。","冲日支配偶宫",18);
+  if(LIUCHONG[lz]===dz) add("感情波动",1, "流年冲配偶宫，感情上容易起波澜：已婚防吵架冷战，未婚防分手，多沟通、少赌气。","冲日支配偶宫",18);
   if(LIUHE[lz]===dz) add("婚喜",1, "配偶宫被合，缘分来了：恋爱确定关系、订婚结婚的信号。","合日支配偶宫",20);
+  const banhe = banheOf(lz,dz);
+  if(banhe) add("婚喜",2, "流年与配偶宫半合成局（"+banhe+"）：缘分到位，确定关系、订婚结婚的信号强。","半合配偶宫",20);
+  const sanheKey = ["申子辰","寅午戌","巳酉丑","亥卯未"].find(k=>k.includes(lz)&&k.includes(dz)&&lz!==dz);
+  if(sanheKey) add("婚喜",1, "流年与配偶宫同在三合局（"+sanheKey+"）：姻缘合局，婚恋有进展。","三合配偶宫",20);
 
   // 3. 流年神煞
   const fss = flowShensha(lz, bazi);
   for(const s of fss){
-    if(s==="红鸾") add("婚喜",3, "红鸾星动，喜事临门，订婚、结婚、办喜事的信号很强。","红鸾星动",20);
+    if(s==="红鸾") add("婚喜",3, "红鸾星动，喜事临门：单身者订婚、结婚的信号强；已婚者主家中有喜（添丁、乔迁、儿女喜事），夫妻感情升温。","红鸾星动",20);
     if(s==="桃花") add("恋爱缘",2, "桃花星现，异性缘旺：单身容易脱单谈恋爱，已婚防烂桃花、感情纠纷。","桃花星现",16);
     if(s==="驿马") add("出行迁居",2, "驿马星动，奔波走动：出差、旅游、搬家、换城市，动中求财。","驿马逢动",18);
     if(s==="丧门") add("长辈健康",2, "丧门入命，家里长辈健康要多留神，多关心多体检。","丧门入命",20);
@@ -792,6 +826,27 @@ function analyzeYear(yy, bazi, step, age){
   if(dySS==="比肩"&&(ss==="正财"||ss==="偏财")) add("竞争破财",1, "大运比肩争财，流年财星透出：有人跟你抢机会抢钱，防合伙分财。","比肩运遇财星",18);
   if(dySS==="七杀"&&(ss==="正印"||ss==="偏印")) add("贵人相助",1, "大运七杀压力大，流年印星化解：杀印相生，压力变权力，贵人出面帮你摆平事情，是转危为安的一年。","杀印相生",18);
   if(dySS==="食神"&&(ss==="偏印")) add("才华输出",-0.5, "大运食神被流年偏印克：枭神夺食，才华发挥受限，想法憋屈，多休息少硬扛。","枭神夺食");
+
+  // 4.6 破财专项：三刑日支 / 大运财星遇刑冲 / 流年干合身+财被刑
+  const sanXingZ = ["丑","戌","未"];
+  const xingDay = (XING[lz]||"").includes(dz);
+  const sanXingDay = sanXingZ.includes(lz)&&sanXingZ.includes(dz)&&lz!==dz;
+  if(sanXingDay) add("破财",2, "流年刑日支（丑戌未三刑）：自身根基被刑，主是非破耗，这年投资、借贷、担保都要格外谨慎，防破财。","流年刑日支",18);
+  else if(xingDay) add("破财",1, "流年刑日支：容易有暗耗破财、手续纠纷，钱的事情多留个心眼。","流年刑日支",18);
+  if((dySS==="正财"||dySS==="偏财")&&(LIUCHONG[lz]===dz||sanXingDay)) add("破财",2, "大运财星当令，流年刑冲日支：财被刑冲，投资失利、破财风险高，这年捂紧钱包，不碰高风险投资。","财运+刑冲日支",18);
+  if(WUHE[lg]===dayG&&(dySS==="正财"||dySS==="偏财")&&(LIUCHONG[lz]===dz||sanXingDay)) add("破财",2, "流年天干合日主（身被拖累），大运财星又被刑冲：投资合伙之事容易套牢亏钱，防破财。","合身+财被刑冲",18);
+
+  // 4.7 男命子女宫动：食伤流年→添丁；官杀流年→子女之事
+  if(gender==="male"&&age>=22&&age<=50){
+    const hz2 = bazi.pillars.hour.z;
+    const dong = LIUCHONG[lz]===hz2||LIUHE[lz]===hz2||(XING[lz]||"").includes(hz2)||HAI[lz]===hz2||banheOf(lz,hz2)||(sanheOf(lz)&&sanheOf(hz2)&&sanheOf(lz)===sanheOf(hz2)&&lz!==hz2);
+    const caiWx = {甲:"土",乙:"土",丙:"金",丁:"金",戊:"水",己:"水",庚:"木",辛:"木",壬:"火",癸:"火"}[dayG];
+    const ZHI_WX = {子:"水",丑:"土",寅:"木",卯:"木",辰:"土",巳:"火",午:"火",未:"土",申:"金",酉:"金",戌:"土",亥:"水"};
+    const caiDi = ZHI_WX[lz]===caiWx;
+    if(dong&&(ss==="食神"||ss==="伤官")) add("怀孕生子",2, "流年引动时柱（子女宫），又逢食伤（子女星）：有添丁之喜的信号，家里可能添孩子。","子女宫动+食伤",22,50);
+    else if(dong&&(ss==="正官"||ss==="七杀")) add("子女缘",1, "流年引动子女宫，逢官杀（子女星）：子女方面有事发生，多关注孩子。","子女宫动+官杀",22,50);
+    else if((ss==="食神"||ss==="伤官")&&(caiDi||flowShensha(lz,bazi).includes("桃花"))) add("怀孕生子",2, "食伤（子女星）透干，流年又是财星旺地/桃花：有添丁之喜的信号，家里可能添孩子。","食伤+财地/桃花",22,50);
+  }
 
   // 5. 专项事件：车祸/出轨/当兵/转业/二次择业
   const fss2 = flowShensha(lz, bazi);
@@ -853,34 +908,43 @@ function analyzeLife(bazi){
   return sections;
 }
 
-// 后处理：当兵→转业链（当兵后 1-6 年逢财星/食伤+冲月柱/驿马 → 转业）
+// 后处理：当兵→转业链（当兵后 1-15 年逢财/食伤/印星 + 冲月柱/驿马/破月支/合年支 → 转业）
 function postProcess(sections, bazi){
   const dayG = bazi.pillars.day.g;
   const junYears = [];
   for(const sec of sections) for(const ye of sec.yearEvents) if(ye.points["当兵入伍"]) junYears.push(ye);
   if(!junYears.length) return;
   for(const jy of junYears){
-    for(let k=1;k<=6;k++){
-      const age = jy.age + k;
-      const sec2 = sections.find(s=>age>=Math.floor(s.start)&&age<Math.ceil(s.end));
-      if(!sec2) continue;
-      const ye = sec2.yearEvents.find(y=>y.age===age);
-      if(!ye) continue;
-      const yy = bazi.birthYear + age;
-      const [lg,lz] = decodeGZ(yearGZ(yy,false));
-      const ss = shishen(dayG, lg);
-      const yz=bazi.pillars.year.z, mz=bazi.pillars.month.z;
-      const yima={"申子辰":"寅","寅午戌":"申","巳酉丑":"亥","亥卯未":"巳"};
-      const grp=["申子辰","寅午戌","巳酉丑","亥卯未"].find(g=>g.includes(yz));
-      const yimaHit = grp && yima[grp]===lz;
-      const chongMonth = LIUCHONG[lz]===mz;
-      if((ss==="正财"||ss==="食神"||ss==="伤官") && (chongMonth||yimaHit)){
-        if(!ye.points["转业"]){
-          ye.points["转业"]=2;
-          ye.bases.push({sub:"转业", plain:"当兵之后逢财星/食伤加冲月柱/驿马：这是离开部队、转业回地方工作的信号，转业后重新择业，方向反而对路，是人生一个转折点。", desc:"当兵→转业链"});
+    let best = null;
+    for(const range of [[8,20],[2,7]]){  // 优先长期服役转业，其次短期退伍
+      for(let k=range[0]; k<=range[1]; k++){
+        const age = jy.age + k;
+        const sec2 = sections.find(s=>age>=Math.floor(s.start)&&age<Math.ceil(s.end));
+        if(!sec2) continue;
+        const ye = sec2.yearEvents.find(y=>y.age===age);
+        if(!ye) continue;
+        const yy = bazi.birthYear + age;
+        const [lg,lz] = decodeGZ(yearGZ(yy,false));
+        const ss = shishen(dayG, lg);
+        const yz=bazi.pillars.year.z, mz=bazi.pillars.month.z;
+        const yima={"申子辰":"寅","寅午戌":"申","巳酉丑":"亥","亥卯未":"巳"};
+        const grp=["申子辰","寅午戌","巳酉丑","亥卯未"].find(g=>g.includes(yz));
+        const yimaHit = grp && yima[grp]===lz;
+        const chongMonth = LIUCHONG[lz]===mz;
+        const poMonth = PO[lz]===mz;
+        const heYear = LIUHE[lz]===yz;
+        const ssOK = ["正财","偏财","食神","伤官","正印","偏印"].includes(ss);
+        const relOK = chongMonth||yimaHit||poMonth||heYear;
+        if(ssOK && relOK){
+          const score = (chongMonth?2:0)+(poMonth?2:0)+(yimaHit?1:0)+(heYear?1:0)+(["正财","偏财","食神","伤官"].includes(ss)?1.5:1);
+          if(!best || score>best.score) best = {age, ye, score};
         }
-        break;
       }
+      if(best && range[0]===8) break; // 8-20 内有候选即用它
+    }
+    if(best && !best.ye.points["转业"]){
+      best.ye.points["转业"]=2;
+      best.ye.bases.push({sub:"转业", plain:"当兵多年后逢印星/财星发动，又遇冲、破、驿马：这是离开部队、转业回地方工作的信号，转业后重新择业，方向反而对路，是人生一个转折点。", desc:"当兵→转业链"});
     }
   }
 }
@@ -914,6 +978,7 @@ function aggregateSection(sec, bazi){
       if(ye.age > 50 && sub==="怀孕生子") continue;
       if(ye.age < 25 && sub==="丧事") continue;
       if(ye.age < 25 && sub==="出轨") continue;
+      if(ye.age > 70 && sub==="感情波动") continue;
       const base = ye.bases.find(b=>b.sub===sub);
       const conf = SPECIAL.includes(sub) ? (score>=6?"高":score>=3?"中":"参考") : (score>=9?"高":score>=5?"中":"参考");
       const cur = subBest[sub];
@@ -944,50 +1009,106 @@ function aggregateSection(sec, bazi){
   return trimmed;
 }
 
-// 一生大事年表：每个关键事件只挑信号最强（婚喜/生子优先青年段）的那一年，按时间排序
-function bestFor(sub, aMin, aMax, sections){
-  let best = null;
-  for(const sec of sections){
-    for(const ye of sec.yearEvents){
-      for(const [s, score] of Object.entries(ye.points)){
-        if(s!==sub) continue;
-        if(ye.age<aMin||ye.age>aMax) continue;
-        if(score<2) continue;
-        const base = ye.bases.find(b=>b.sub===s);
-        if(!best || score>best.score) best = {year:ye.year, age:ye.age, sub:s, label:SUBCAT[s]||s, score, plain:base?base.plain:""};
-      }
-    }
-  }
-  return best;
+// 用户输入事件关键词 → 事件类型
+function mapUserEvent(text){
+  const t = String(text||"");
+  if(/参军|入伍|当兵|军校|警队|从军/.test(t)) return "当兵入伍";
+  if(/转业|退伍|退役|复员/.test(t)) return "转业";
+  if(/结婚|领证|成家|订婚/.test(t)) return "婚喜";
+  if(/生|孩子|女儿|儿子|添丁|二胎|生育|怀孕/.test(t)) return "怀孕生子";
+  if(/换工作|跳槽|转行|换行|换行业|调岗|调动|换岗/.test(t)) return "工作变动";
+  if(/升职|晋升|提拔|提干|升官|升迁/.test(t)) return "升职加薪";
+  if(/破财|亏|损失|投资失败|赔/.test(t)) return "破财";
+  if(/病|住院|手术|受伤|伤/.test(t)) return "伤病";
+  if(/车祸|事故|撞/.test(t)) return "车祸意外";
+  if(/买房|置业|购房|安家/.test(t)) return "置业买房";
+  if(/搬家|迁居|换城市|搬迁/.test(t)) return "出行迁居";
+  if(/创业|开店|开公司|办厂/.test(t)) return "创业契机";
+  if(/考试|升学|高考|考研|考证/.test(t)) return "考试升学";
+  return null;
 }
-function buildLifeTimeline(bazi){
+
+// 解析用户输入"年份+事件"多行文本
+function parseUserEvents(text){
+  const out = [];
+  for(const line of String(text||"").split(/\n|;|；/)){
+    const m = line.match(/(\d{4})/);
+    if(!m) continue;
+    const year = +m[1];
+    const sub = mapUserEvent(line);
+    if(sub) out.push({year, sub, raw: line.trim()});
+  }
+  return out;
+}
+
+// 核验：用户事件年份 ±1 年内是否有对应命理信号
+function verifyUserEvents(bazi, userEvents){
   const sections = analyzeLife(bazi);
-  const want = ["当兵入伍","转业","二次择业","工作变动","升职加薪","创业契机","破财","伤病","车祸意外","置业买房","出行迁居","偏财进账"];
-  const SPECIAL = ["当兵入伍","转业","二次择业","车祸意外","出轨"];
-  const ageOK = {"当兵入伍":[16,24],"转业":[20,45],"二次择业":[25,55],"工作变动":[18,60],"升职加薪":[18,65],"创业契机":[20,65],"置业买房":[20,70],"破财":[18,75],"偏财进账":[18,75],"伤病":[0,99],"车祸意外":[16,80],"出行迁居":[0,99]};
-  const best = {};
-  // 婚喜/生子：青年段优先（婚喜20-40、生子23-40），该段无强信号再放宽到中晚年
-  const hun = bestFor("婚喜",20,40,sections) || bestFor("婚喜",41,60,sections);
-  if(hun && hun.score>=2) best["婚喜"] = hun;
-  const zi = bestFor("怀孕生子",23,40,sections) || bestFor("怀孕生子",41,48,sections);
-  if(zi && zi.score>=2) best["怀孕生子"] = zi;
-  for(const sec of sections){
-    for(const ye of sec.yearEvents){
+  const yearMap = {};
+  for(const sec of sections) for(const ye of sec.yearEvents) yearMap[ye.year] = ye;
+  const results = [];
+  for(const ue of userEvents){
+    let best = null, bestGap = 99;
+    for(let g=-1; g<=1; g++){
+      const ye = yearMap[ue.year+g];
+      if(!ye) continue;
       for(const [sub, score] of Object.entries(ye.points)){
-        if(!want.includes(sub)) continue;
-        const minS = SPECIAL.includes(sub)?2:2.5;
-        if(score < minS) continue;
-        const [aMin, aMax] = ageOK[sub]||[0,99];
-        if(ye.age < aMin || ye.age > aMax) continue;
-        const base = ye.bases.find(b=>b.sub===sub);
-        const cur = best[sub];
-        if(!cur || score > cur.score){
-          best[sub] = {year:ye.year, age:ye.age, sub, label:SUBCAT[sub]||sub, score, plain:base?base.plain:""};
+        if(sub !== ue.sub) continue;
+        if(score < 2) continue;
+        const gap = Math.abs(g);
+        if(gap < bestGap){
+          bestGap = gap;
+          best = {year: ye.year, sub, score, plain: ((ye.bases.find(b=>b.sub===sub))||{}).plain||"", all: Object.entries(ye.points).map(([s,v])=>[s,v]).sort((a,b)=>b[1]-a[1]).slice(0,4)};
         }
       }
     }
+    results.push({...ue, matched: !!best, match: best});
   }
-  return Object.values(best).sort((a,b)=>a.year-b.year);
+  return results;
+}
+
+// 一生大事列表：按时间排序，每年最多2件大事，全生命周期取信号最强的
+function buildLifeEvents(bazi, userEventsText){
+  const sections = analyzeLife(bazi);
+  const MAJOR_W = {"婚喜":1.4,"怀孕生子":1.4,"当兵入伍":1.3,"转业":1.3,"车祸意外":1.3,"破财":1.15,"升职加薪":1.15,"置业买房":1.1,"二次择业":1.1,"工作变动":1.0,"出行迁居":0.9,"创业契机":1.1,"伤病":1.05,"偏财进账":0.8};
+  const SPECIAL = ["当兵入伍","转业","二次择业","车祸意外","出轨"];
+  const ageOK = {"婚喜":[20,60],"怀孕生子":[22,50],"当兵入伍":[16,24],"转业":[20,45],"二次择业":[25,55],"工作变动":[18,60],"升职加薪":[18,65],"创业契机":[20,65],"置业买房":[20,70],"破财":[18,75],"偏财进账":[18,75],"伤病":[0,99],"车祸意外":[16,80],"出行迁居":[0,99]};
+  // 用户确认的事件加权，确保出现在列表里
+  const boost = {};
+  for(const ue of parseUserEvents(userEventsText)) boost[ue.year+"_"+ue.sub] = true;
+  const all = [];
+  for(const sec of sections){
+    for(const ye of sec.yearEvents){
+      for(const [sub, score] of Object.entries(ye.points)){
+        if(!MAJOR_W[sub]) continue;
+        const boosted = !!boost[ye.year+"_"+sub];
+        if(score < (SPECIAL.includes(sub)?1.8:2.2) && !boosted) continue;
+        const [aMin, aMax] = ageOK[sub]||[0,99];
+        if(ye.age < aMin || ye.age > aMax) continue;
+        const base = ye.bases.find(b=>b.sub===sub);
+        let sc = score*MAJOR_W[sub];
+        if(boost[ye.year+"_"+sub]) sc *= 2.5;
+        all.push({year:ye.year, age:ye.age, sub, score: sc, raw: score, plain: base?base.plain:"", desc: base?base.desc:""});
+      }
+    }
+  }
+  // 每个事件类型取最强2年，整体按分数取 top18
+  const subTop = {};
+  for(const n of all.sort((a,b)=>b.score-a.score)){
+    if(!subTop[n.sub]) subTop[n.sub] = [];
+    if(subTop[n.sub].length < 2) subTop[n.sub].push(n);
+  }
+  let picked = Object.values(subTop).flat().sort((a,b)=>b.score-a.score).slice(0,18);
+  const byYear = {};
+  for(const n of picked){
+    (byYear[n.year] = byYear[n.year]||[]).push(n);
+  }
+  const events = [];
+  for(const [year, list] of Object.entries(byYear)){
+    list.sort((a,b)=>b.score-a.score);
+    events.push({year:+year, list: list.slice(0,2)});
+  }
+  return events.sort((a,b)=>a.year-b.year);
 }
 
 // ==================== UI 与渲染 ====================
@@ -1197,77 +1318,71 @@ function renderReport(bazi, input){
   h.push(`<div class="rp-card"><h2>🚀 起运与大运</h2>`);
   h.push(`<div class="theme-line">${bazi.forward?"阳男/阴女顺排":"阴男/阳女逆排"}大运。出生后约 <b>${qy[0]}年${qy[1]}个月${qy[2]}天</b> 起运（${qy[0]>=1?"虚岁"+(qy[0]+1):"幼年"}交第一步大运）。</div>`);
   h.push(`<table class="dayun-table"><tr><th>大运</th><th>主事</th><th>年龄段</th><th>公历年份</th><th>这步运的主题</th></tr>`);
+  const SS_SHORT = {"正官":"事业名望","七杀":"压力闯荡","正财":"正财运","偏财":"偏财运","正印":"学习贵人","偏印":"偏门钻研","食神":"才艺口福","伤官":"才华口舌","比肩":"朋友自立","劫财":"竞争破财"};
   for(const s of bazi.dayun.steps){
     const sG = s.gz[0];
     const ss = shishen(p.day.g, sG);
-    const theme = dayunTheme(ss, shishen(p.day.g, s.gz[1]));
+    const theme = dayunTheme(ss, shishen(p.day.g, CANG[s.gz[1]][0]));
     const sy = bazi.birthYear + Math.round(s.start);
     const ey = bazi.birthYear + Math.round(s.end);
-    h.push(`<tr><td class="gz-cell">${s.gz}</td><td>${PLAIN_SS[ss]?ss:""}</td><td>${s.start}—${s.end}岁</td><td>${sy}—${ey}年</td><td style="font-size:.78rem;color:#94a3b8">${theme.split("：")[0]}</td></tr>`);
+    h.push(`<tr><td class="gz-cell">${s.gz}</td><td>${SS_SHORT[ss]||ss}</td><td>${s.start}—${s.end}岁</td><td>${sy}—${ey}年</td><td style="font-size:.78rem;color:#94a3b8">${theme.split("：")[0]}</td></tr>`);
   }
   h.push(`</table></div>`);
 
-  // 事件推断（按大运叙事·每类只报最强年份）
-  const sections = analyzeLife(bazi);
-  const timeline = buildLifeTimeline(bazi);
-  h.push(`<div class="rp-card"><h2>🔮 人生大事 <span class="tag">按大运十年一段 · 事件精准到年</span></h2>`);
-  h.push(`<div class="warn" style="border-color:rgba(99,102,241,.3);background:rgba(99,102,241,.06);color:#c7d2fe">下面按每十年一大运，一段一段讲您这辈子的事：几岁起运、这十年事业财运感情健康各有什么动静，每件事只标信号最强的那一年，不啰嗦。这是传统命理推法，说的是可能性，不是定数，您对照自己经历看，供参考。</div>`);
-  for(let i=0;i<sections.length;i++){
-    const sec = sections[i];
-    const agg = aggregateSection(sec, bazi);
-    const sy = bazi.birthYear + Math.round(sec.start);
-    const ey = bazi.birthYear + Math.round(sec.end) - 1;
-    h.push(`<div class="dy-block">`);
-    h.push(`<div class="dy-head">📌 第${i+1}步大运：${sec.gz}运（${Math.floor(sec.start)}—${Math.floor(sec.end)}岁 · ${sy}—${ey}年）</div>`);
-    h.push(`<div class="dy-theme">🧭 ${dayunPlain(sec.ssG, sec.ssZ, bazi.gender, Math.floor(sec.start))}</div>`);
-    if(agg.length===0){
-      h.push(`<div class="dy-quiet">这十年整体平稳，没有大起大落，按部就班过日子就行。</div>`);
-    }
-    for(const g of agg){
-      h.push(`<div class="dy-group">${CAT_NAME[g.cat]||g.cat}</div>`);
-      for(const ev of g.items){
-        const confCls = ev.conf==="高"?"conf-high":ev.conf==="中"?"conf-mid":"conf-ref";
-        h.push(`<div class="ev-item">`);
-        h.push(`<div class="ev-head"><span class="ev-cat">${ev.label}</span><span class="${confCls}" style="font-size:.78rem">把握度：${ev.conf}</span></div>`);
-        h.push(`<div class="ev-when">🎯 ${ev.year}年（${ev.age}岁）</div>`);
-        h.push(`<div class="ev-plain">${refinePlain(ev.sub, ev.plain, bazi)}</div>`);
-        h.push(`</div>`);
+  // ===== 您的一生大事（年份精准·贴合本人） =====
+  const userEvents = parseUserEvents(input.userEvents);
+  const verifyRes = userEvents.length ? verifyUserEvents(bazi, userEvents) : [];
+  const lifeEvents = buildLifeEvents(bazi, input.userEvents);
+  const MAJOR_SHOW = {婚喜:"💍 婚喜", 怀孕生子:"👶 添丁", 当兵入伍:"🎖️ 参军", 转业:"🔄 转业", 二次择业:"🔁 换行业", 工作变动:"🔄 换工作", 升职加薪:"🏆 升职", 破财:"⚠️ 破财", 伤病:"🏥 伤病", 车祸意外:"🚗 车祸磕碰", 置业买房:"🏠 买房", 出行迁居:"🧳 搬家", 创业契机:"🚀 创业", 偏财进账:"🎲 进财"};
+  h.push(`<div class="rp-card"><h2>📅 ${name}的一生大事 <span class="tag">哪年发生什么事 · 精准到年</span></h2>`);
+  h.push(`<div class="warn" style="border-color:rgba(99,102,241,.3);background:rgba(99,102,241,.06);color:#c7d2fe">下面按时间顺序把这一生的大事一件一件列出来：哪年参军、哪年结婚、哪年生孩子、哪年换工作、哪年破财，每件事只标最有可能的那一年。您填过的已发生大事会优先核验；没填的就看命理信号。这是传统命理推法，说的是可能性，不是定数，供您参考。</div>`);
+  // 已发生大事核验
+  if(verifyRes.length){
+    h.push(`<div class="section-title">✅ 您填的大事 · 命理核验</div>`);
+    for(const v of verifyRes){
+      if(v.matched){
+        h.push(`<div class="verify-item ok"><div class="v-head"><span class="v-year">${v.raw}</span><span class="v-badge-ok">✓ 命理吻合</span></div><div class="v-plain">${v.match.plain}</div></div>`);
+      } else {
+        h.push(`<div class="verify-item no"><div class="v-head"><span class="v-year">${v.raw}</span><span class="v-badge-no">△ 信号不明显</span></div><div class="v-plain">这年命盘信号不强，可能跟出生时辰不准或大运边界有关，也可能属个人主动选择。可核对一下出生时间是否准确。</div></div>`);
       }
     }
-    // 逐年详解（折叠）
-    const years = sec.yearEvents.filter(y=>Object.keys(y.points).length>0);
-    if(years.length){
-      h.push(`<details class="year-detail"><summary>📖 逐年细说（点击展开 · ${years.length}个有动静的年份）</summary>`);
-      for(const ye of years){
-        const subs = Object.entries(ye.points).sort((a,b)=>b[1]-a[1]).slice(0,5);
-        h.push(`<div class="yd-year"><b>${ye.year}年（${ye.age}岁）</b></div>`);
-        for(const [sub] of subs){
-          const pl = ye.bases.find(b=>b.sub===sub);
-          if(!pl) continue;
-          h.push(`<div class="yd-item"><span class="yd-label">${SUBCAT[sub]||sub}</span><span class="yd-plain">${pl.plain}</span></div>`);
-        }
-      }
-      h.push(`</details>`);
-    }
-    h.push(`</div>`);
   }
-  h.push(`</div>`);
-
-  // 一生大事年表
-  h.push(`<div class="rp-card"><h2>📅 一生大事年表 <span class="tag">哪年结婚生子换工作，一眼看全</span></h2>`);
-  if(timeline.length){
-    h.push(`<div class="warn" style="border-color:rgba(99,102,241,.3);background:rgba(99,102,241,.06);color:#c7d2fe">把全生命周期里信号最强的关键节点挑出来，按时间排成一条线：结婚、生子、换工作、升职、破财、伤病、搬迁都在这里。每件事只标最有可能的那一年，供您对照。</div>`);
-    h.push(`<div class="tl-wrap">`);
-    for(const n of timeline){
-      const confCls = n.score>=9?"conf-high":n.score>=5?"conf-mid":"conf-ref";
-      h.push(`<div class="tl-item">`);
-      h.push(`<div class="tl-left"><span class="tl-year">${n.year}年</span><span class="tl-age">${n.age}岁</span></div>`);
-      h.push(`<div class="tl-right"><div class="tl-label">${n.label} <span class="${confCls}" style="font-size:.72rem">把握度：${n.score>=9?"高":n.score>=5?"中":"参考"}</span></div><div class="tl-plain">${refinePlain(n.sub, n.plain, bazi)}</div></div>`);
-      h.push(`</div>`);
+  // 一生大事列表
+  h.push(`<div class="section-title">📌 一生大事（按时间排）</div>`);
+  const confirmedYears = {};
+  for(const v of verifyRes) if(v.matched) confirmedYears[v.match.year+"_"+v.sub] = 1;
+  if(lifeEvents.length){
+    h.push(`<div class="big-list">`);
+    for(const ev of lifeEvents){
+      const year = ev.year, age = year - bazi.birthYear;
+      h.push(`<div class="big-item">`);
+      h.push(`<div class="big-left"><span class="big-year">${year}年</span><span class="big-age">${age}岁</span></div>`);
+      h.push(`<div class="big-right">`);
+      h.push(`<div class="big-label">${ev.list.map(t=>(MAJOR_SHOW[t.sub]||t.sub)+(confirmedYears[year+"_"+t.sub]?' <span class="v-badge-ok" style="margin-left:2px">✔已发生</span>':'')).join(' · ')}</div>`);
+      h.push(`<div class="big-plain">${ev.list.map(t=>refinePlain(t.sub, t.plain, bazi)).join('')}</div>`);
+      h.push(`</div></div>`);
     }
     h.push(`</div>`);
   } else {
-    h.push(`<div style="color:#64748b;font-size:.85rem">未发现高信号节点。</div>`);
+    h.push(`<div style="color:#64748b;font-size:.85rem">未发现明显大事信号，请核对出生时间。</div>`);
+  }
+  h.push(`</div>`);
+
+  // ===== 往后看 =====
+  const future = lifeEvents.filter(ev=>ev.year>=2026);
+  h.push(`<div class="rp-card"><h2>🔭 往后看 <span class="tag">未来几年重点</span></h2>`);
+  if(future.length){
+    for(const ev of future.slice(0,4)){
+      const top = ev.list[0];
+      const confCls = top.raw>=7?"conf-high":top.raw>=4.5?"conf-mid":"conf-ref";
+      h.push(`<div class="ev-item">`);
+      h.push(`<div class="ev-head"><span class="ev-cat">${MAJOR_SHOW[top.sub]||top.sub}</span><span class="${confCls}" style="font-size:.78rem">把握度：${top.raw>=7?"高":top.raw>=4.5?"中":"参考"}</span></div>`);
+      h.push(`<div class="ev-when">🎯 ${ev.year}年（${ev.year-bazi.birthYear}岁）</div>`);
+      h.push(`<div class="ev-plain">${refinePlain(top.sub, top.plain, bazi)}</div>`);
+      h.push(`</div>`);
+    }
+  } else {
+    h.push(`<div style="color:#64748b;font-size:.85rem">往后暂无高信号年份，平稳为主，安心过日子。</div>`);
   }
   h.push(`</div>`);
 
@@ -1312,7 +1427,8 @@ function run(){
     }
     const cityName = cityInput.replace(/（.*/,"").trim();
     const bazi = buildBazi({y:solar.y, m:solar.m, d:solar.d, h:hh, mi:mi}, lon, tz, gender, useTrueSolar, lateZishi);
-    renderReport(bazi, {name, gender, calendar, dateStr, timeStr, city: cityName||"自定义", lon, tz, useTrueSolar, lateZishi});
+    const userEventsText = (document.getElementById("inEvents")||{}).value||"";
+    renderReport(bazi, {name, gender, calendar, dateStr, timeStr, city: cityName||"自定义", lon, tz, useTrueSolar, lateZishi, userEvents: userEventsText});
   }catch(e){
     console.error(e);
     alert("排盘出错：" + e.message);

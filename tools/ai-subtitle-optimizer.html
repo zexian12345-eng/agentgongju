@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 字幕优化 | AgentGongju.com</title>
+<meta name="description" content="AI视频字幕优化/口播稿润色，把口语化的文字整理成通顺、有节奏感的口播文案，附断句提示">
+<meta name="keywords" content="AI字幕,口播稿,文案润色,短视频文案,视频字幕,字幕优化">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:120px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2.2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🎬 AI 字幕优化</h1><p>把口播原稿整理成通顺有节奏的短视频字幕</p></div>
+
+<div class="card">
+<label>🎙️ 粘贴口播原稿（可含口水话、重复）</label>
+<textarea id="raw" placeholder="例如：然后呢我跟你讲这个真的很好用，就是那个，怎么说呢，用起来特别方便……"></textarea>
+<div class="param-row">
+<div><label>📹 视频风格</label>
+<select id="style"><option value="干货知识">📚 干货知识</option><option value="种草带货">🛍️ 种草带货</option><option value="情感鸡汤">💗 情感鸡汤</option><option value="搞笑娱乐">😂 搞笑娱乐</option><option value="新闻资讯">📰 新闻资讯</option></select></div>
+<div><label>📐 字幕节奏</label>
+<select id="pace"><option value="紧凑" selected>紧凑（语速快）</option><option value="适中">适中（标准）</option><option value="舒缓">舒缓（娓娓道来）</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">✨ 优化字幕</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">✅ 优化后的口播稿（括号内为镜头 / 停顿提示）</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制字幕</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const openings={'干货知识':['话不多说，直接上干货。','先码住，学会这招至少省一半时间。'],'种草带货':['家人们，这个我真心推荐。','我用了整整一个月，才来跟你说。'],'情感鸡汤':['你有没有过这样的时刻？','成年人的世界，哪有容易二字。'],'搞笑娱乐':['笑死，我跟你说个事。','你永远想不到接下来会发生什么。'],'新闻资讯':['消息来了，速看！','这条信息有点重要，认真听。']};
+const endings={'干货知识':['觉得有用记得收藏转发。','关注我，每天一个实用小技巧。'],'种草带货':['链接放评论区了，手慢无。','真心安利给每一个需要的你。'],'情感鸡汤':['愿你温柔，也被这个世界温柔以待。','点个赞，把好运传给下一个看到的人。'],'搞笑娱乐':['反正我是笑不活了。','看完记得来评论区聊聊。'],'新闻资讯':['持续关注，我会第一时间跟进。','更多详情，晚上见分晓。']};
+function clean(raw){let p=raw.replace(/然后呢|那个|就是说|怎么说呢|对吧|你懂吧|就是/gi,'').replace(/[。！？!?]+/g,'\n').replace(/\n+/g,'\n');return p.split('\n').map(s=>s.trim()).filter(Boolean);}
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 字幕优化 | AgentGongju.com'))return;
+const raw=document.getElementById('raw').value.trim();
+const style=document.getElementById('style').value;
+const pace=document.getElementById('pace').value;
+if(!raw){alert('请粘贴你的口播原稿');return;}
+const sentences=clean(raw);
+const op=Math.random()>0.3?openings[style][Math.floor(Math.random()*openings[style].length)]+'':'';
+const ed=Math.random()>0.4?endings[style][Math.floor(Math.random()*endings[style].length)]+'':'';
+const pad=pace==='紧凑'?'':'（停顿）';
+let out=op+'\n';
+sentences.slice(0,8).forEach(s=>{out+='· '+s+pad+'\n';});
+if(pace!=='紧凑'){out+='· 好，我们接着往下看。'+'\n';}
+sentences.slice(8,14).forEach(s=>{out+='· '+s+pad+'\n';});
+out+=ed;
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 字幕已复制！'))}
+</script>
+</body>
+</html>

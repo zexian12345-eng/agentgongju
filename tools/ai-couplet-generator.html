@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 对联生成器 | AgentGongju.com</title>
+<meta name="description" content="AI春联/对联生成器，输入上联或关键词，自动生成工整对仗、寓意吉祥的下联与横批">
+<meta name="keywords" content="AI对联,春联生成,对联生成,书法对联,节日祝福">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+input[type=text],select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px;box-sizing:border-box}
+input:focus,select:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.couplet{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:26px 20px;color:#e2e8f0;text-align:center;margin-bottom:12px;line-height:2.2;font-size:1.1rem}
+.couplet .heng{display:inline-block;background:linear-gradient(135deg,#6366f1,#a855f7);padding:4px 18px;border-radius:20px;color:#fff;font-size:1.1rem;margin-bottom:14px}
+.couplet .ln{display:block;color:#a5b4fc}
+.couplet .lt{color:#94a3b8;font-size:.85rem;margin-top:10px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🧧 AI 对联生成器</h1><p>春联、婚联、开业联，一键生成工整对仗的好联</p></div>
+
+<div class="card">
+<label>🏮 对联主题 / 场景</label>
+<select id="scene"><option value="新年">🧨 春节新年</option><option value="开业">🏪 开业大吉</option><option value="婚庆">💒 新婚之喜</option><option value="乔迁">🏠 乔迁之喜</option><option value="升学">📚 金榜题名</option><option value="寿诞">🎂 祝寿</option></select>
+<label>✍️ 或输入上联（可选，生成下联）</label>
+<input type="text" id="upper" placeholder="可不填，例如：迎新春江山锦绣">
+<button class="btn-gen" id="genBtn">✨ 生 成 对 联</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 为你写好的对联</div>
+<div id="out"></div>
+<button class="copy-btn" onclick="copyMax()">📋 复制对联</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const banks={
+'新年':{heng:['万象更新','五福临门','吉祥如意'],pair:['迎新春江山锦绣','辞旧岁事泰辉煌','辞旧岁岁岁平安','接福禄步步高升','家和万事兴】【人顺百福臻','财源广进达三江','生意兴隆通四海']},
+'开业':{heng:['开业大吉','财源广进','生意兴隆'],pair:['门迎晓日财源广','户纳春风吉庆多','红火生意似春潮','八方客来财路宽','开张迎客八方喜','聚宝纳财四季兴']},
+'婚庆':{heng:['百年好合','永结同心','喜结良缘'],pair:['鸾凤和鸣美满姻缘','天长地久幸福一生','同心同德同舟共济','相亲相爱携手白头','喜今日结成连理','期来年共育英才']},
+'乔迁':{heng:['安居乐业','新居大吉','紫气东来'],pair:['吉日迁居万事如意','良辰安宅百年遂心','华堂锦屋祥光满','福地新居喜气盈','搬得新居迎旭日','乔迁宝地纳祥云']},
+'升学':{heng:['金榜题名','鹏程万里','学业有成'],pair:['十年寒窗终有果','一朝金榜定题名','书山有路勤为径','学海无涯苦作舟','金榜题名扬四海','青云直上步九霄']},
+'寿诞':{heng:['松鹤延年','福寿安康','长命百岁'],pair:['福如东海长流水','寿比南山不老松','年年有今日岁岁朝','欢颜永驻春常在','鹤发童颜春不老','龄高德厚福无边']}
+};
+const counters={日:['月','风','雨','星'],春:['秋','冬','夕'],天:['地','海','山'],山:['水','海','云'],福:['财','禄','寿'],新:['旧','故','老'],广:['大','宏','宽']};
+function counter(word){const l=word[word.length-1];return counters[l]?counters[l][Math.floor(Math.random()*counters[l].length)]:['丰','盛','安','和'][Math.floor(Math.random()*4)];}
+let last={{}};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 对联生成器 | AgentGongju.com'))return;
+const scene=document.getElementById('scene').value;
+const upper=document.getElementById('upper').value.trim();
+const bank=banks[scene];
+let shang='',xia='',heng;
+if(upper){shang=upper;const n=upper.length;xia=upper.slice(0,-1)+(counter(upper));}
+else{const idx=Math.floor(Math.random()*Math.floor(bank.pair.length/2))*2;shang=bank.pair[idx];xia=bank.pair[idx+1];}
+heng=bank.heng[Math.floor(Math.random()*bank.heng.length)];
+let html='<div class="couplet"><span class="heng">'+heng+'</span><span class="ln">'+shang+'</span><span class="ln">'+xia+'</span><div class="lt">✦ 工整对仗 · 寓意吉祥 ✦</div></div>';
+document.getElementById('out').innerHTML=html;
+document.getElementById('resultArea').classList.add('active');
+last={heng,shang,xia};
+});
+function copyMax(){const t='【'+last.heng+'】\n'+last.shang+'\n'+last.xia;navigator.clipboard.writeText(t).then(()=>alert('✅ 对联已复制！'))}
+</script>
+</body>
+</html>

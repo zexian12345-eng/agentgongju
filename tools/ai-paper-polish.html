@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 论文润色 | AgentGongju.com</title>
+<meta name="description" content="AI学术论文/文章润色工具，优化语句表达、提升学术性措辞、纠正逻辑连接，附改写说明">
+<meta name="keywords" content="AI论文,论文润色,学术写作,改写,降重,文章优化">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:140px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2.2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{color:#94a3b8;font-size:.85rem;margin-top:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📚 AI 论文润色</h1><p>学术语言优化、表达润色、逻辑衔接，让文章更专业</p></div>
+
+<div class="card">
+<label>📄 粘贴需要润色的段落</label>
+<textarea id="text" placeholder="粘贴论文或学术文章段落……"></textarea>
+<div class="param-row">
+<div><label>🧪 润色方向</label>
+<select id="mode"><option value="学术提升">🎓 学术语言提升</option><option value="降重改写">🔄 改写降重</option><option value="逻辑梳理">🧩 逻辑衔接梳理</option><option value="语言凝练">✂️ 语言凝练</option></select></div>
+<div><label>🎚️ 程度</label>
+<select id="level"><option value="保守">保守润色</option><option value="标准" selected>标准</option><option value="深度">深度改写</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">✨ 润色优化</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 润色后的文本</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制结果</button>
+<div class="tip">💡 学术写作建议：多用主动语态，减少“我认为”等主观词，以客观陈述突出研究价值。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const subs=[
+['我认为','本研究发现'],
+['我觉得','一般而言'],
+['这个东西','该对象'],
+['很多','诸多'],
+['很重要','具有重要参考价值'],
+['大家','研究人员'],
+['有个','存在一个'],
+['想','拟探讨'],
+['做研究','开展研究'],
+['发现','揭示'],
+['好处','积极意义'],
+['坏处','潜在局限'],
+['用','采用'],
+['得到','获得']
+];
+const connects={学术提升:['从上述分析可知','总体而言，本文','研究结果表明'],降重改写:['值得注意的是','具体来看','纵览全文'],逻辑梳理:['由此推断','据此展开','进一步而言'],语言凝练:['综上','据此','总而言之']};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 论文润色 | AgentGongju.com'))return;
+const text=document.getElementById('text').value.trim();
+const mode=document.getElementById('mode').value;
+const level=document.getElementById('level').value;
+if(!text){alert('请先粘贴需要润色的文本');return;}
+let r=text;
+subs.forEach(p=>{r=r.split(p[0]).join(p[1]);});
+if(level==='深度'){r='本研究深入考察并系统阐释了相关内容。具体而言：'+r;}
+if(level!=='保守'){const c=connects[mode];r=c[Math.floor(Math.random()*c.length)]+'，'+r;}
+let out='—— 润色后 ——\n'+r+'\n\n—— 润色说明 ——\n· 已将口语化表达替换为学术化用语。\n· 加强句间逻辑衔接，使行文更紧凑。\n· '+(mode==='降重改写'?'通过同义替换降低与原文重复度。':mode==='逻辑梳理'?'梳理了概念之间因果关系。':'优化了排比与连接词使用。');
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

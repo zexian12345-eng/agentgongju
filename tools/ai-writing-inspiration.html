@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 写作灵感库 | AgentGongju.com</title>
+<meta name="description" content="AI写作灵感生成器，输入主题与体裁，一键生成文章开头、金句、段落大纲等创意灵感">
+<meta name="keywords" content="AI写作,灵感,文章开头,金句,大纲,创意,自媒体">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:80px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.section{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:14px 16px;margin-bottom:12px}
+.section .st{color:#a855f7;font-weight:600;margin-bottom:8px}
+.section .bd{color:#e2e8f0;line-height:1.9;font-size:.92rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>💡 AI 写作灵感库</h1><p>没灵感？一键生成开头、金句与写作大纲</p></div>
+
+<div class="card">
+<label>📝 写作主题</label>
+<textarea id="topic" placeholder="例如：我的2026年成长记录、职场新人如何快速适应、关于坚持跑步的收获"></textarea>
+<div class="param-row">
+<div><label>📚 文章体裁</label>
+<select id="genre"><option value="随笔散文">随笔散文</option><option value="干货文章">干货文章</option><option value="观点评论">观点评论</option><option value="情感故事">情感故事</option><option value="工作总结">工作总结</option></select></div>
+<div><label>🎯 灵感类型</label>
+<select id="need"><option value="全部" selected>全部灵感</option><option value="开头">只要开头</option><option value="金句">只要金句</option><option value="大纲">只要大纲</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">✨ 帮我找灵感</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 为你生成的灵感</div>
+<div id="out"></div>
+<button class="copy-btn" onclick="copyAll()">📋 复制全部灵感</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const openerPool={
+'随笔散文':['时光像一杯温水，不声不响就滑过了这一年。','坐在窗前，窗外车来人往，我忽然想写点什么。','总有些平淡的日子，回头看时却格外闪亮。','我不急着赶着生活，反而看见了很多被忽略的美好。'],
+'干货文章':['先给结论：做好这三件事，能省下你一半时间。','可能很多人没意识到，方法比努力更重要。','这篇不是鸡汤，全是能落地的方法。','如果你也总在忙却没有结果，请往下看。'],
+'观点评论':['最近引发热议的话题，我想聊点不一样的。','很多人只看到了表面，我却想说说背后。','与其争论对错，不如先看清本质。','这个现象背后，藏着值得我们思考的问题。'],
+'情感故事':['那天傍晚，她突然发来一条消息。','有很多故事，是从一次寻常的偶遇开始的。','他从来没说过爱，却用行动说了无数次。','有些告别，还没来得及好好说再见。'],
+'工作总结':['回顾这段日子，我在挑战中收获了成长。','从忙乱到从容，这是我一阶段的真实写照。','每一项任务的背后，都是一次学习与沉淀。','成长的痕迹，往往就藏在这些平凡的日子里。']
+};
+const quotePool={随笔散文:['把日子过成诗，是温柔的本领','生活不在别处，就在眼前的光里','慢慢来，反而比较快'],干货文章:['种一棵树最好的时间是十年前，其次是现在','行动是治愈焦虑的良药','方法对了，事半功倍'],观点评论:['看清本质，比表象热闹更重要','独立思考，才是稀缺能力','有温度地看世界，理性地做判断'],情感故事:['所有的陪伴，都值得被温柔以待','爱在细节里，也在时间里','有些人来了又走，留下的都是温暖'],工作总结:['没有白走的路，每一步都算数','把简单的事做好，就是不简单','成长，就是和昨天的自己告别']};
+const outline={华章:{
+'随笔散文':['开头：由一个小场景切入','正文：展开细节描写与内心感悟','结尾：升华主题，回归平静'],
+'干货文章':['开头：抛出痛点与结论','正文：分3点讲清方法','结尾：总结行动清单'],
+'观点评论':['开头：引出话题','正文：分层论述观点','结尾：给出建设性结论'],
+'情感故事':['开头：制造悬念','正文：推进情节冲突','结尾：情感落点'],
+'工作总结':['开头：概括阶段情况','正文：成绩+不足','结尾：展望与计划']}};
+function rand(a){return a[Math.floor(Math.random()*a.length)];}
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 写作灵感库 | AgentGongju.com'))return;
+const topic=document.getElementById('topic').value.trim();
+const genre=document.getElementById('genre').value;
+const need=document.getElementById('need').value;
+if(!topic){alert('请先填写写作主题');return;}
+let html='';
+if(need==='全部'||need==='开头'){html+='<div class="section"><div class="st">✍️ 文章开头</div><div class="bd">1. '+rand(openerPool[genre])+'（围绕"'+topic+'"展开）\n2. '+rand(openerPool[genre])+'</div></div>';}
+if(need==='全部'||need==='金句'){html+='<div class="section"><div class="st">💬 金句灵感</div><div class="bd">“'+rand(quotePool[genre])+'” 可放在文中作为点题句，升华“'+topic+'”的主题。</div></div>';}
+if(need==='全部'||need==='大纲'){const outs=outline.华章[genre];html+='<div class="section"><div class="st">📑 结构大纲</div><div class="bd">'+outs.map(x=>'· '+x).join('\n')+'</div></div>';}
+if(need==='全部'){html+='<div class="section"><div class="st">🚀 进阶建议</div><div class="bd">· 用具体细节代替抽象概括，读者更有代入感。\n· 每段留一句"钩子"，引导读者读下去。\n· 结尾给读者一个"收藏理由"。</div></div>';}
+document.getElementById('out').innerHTML=html;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyAll(){const t=document.getElementById('out').innerText;navigator.clipboard.writeText(t).then(()=>alert('✅ 灵感已复制！'))}
+</script>
+</body>
+</html>

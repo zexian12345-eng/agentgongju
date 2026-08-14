@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI 周公解梦 | AgentGongju.com</title>
-<meta name="description" content="AI周公解梦，输入你的梦境关键词，结合传统解梦文化与心理学视角，解读梦境象征与潜在暗示，仅供娱乐参考">
-<meta name="keywords" content="解梦,周公解梦,梦境解读,梦境预兆,心理分析">
-<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
+<title>AI 解梦大师 | AgentGongju.com</title>
+<meta name="description" content="AI周公解梦，输入梦境关键词，智能解析象征含义与心理暗示，帮助你理解潜意识">
+<meta name="keywords" content="AI解梦,周公解梦,梦见,梦境解析,心理暗示">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -13,15 +13,14 @@
 .card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
 .card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
 select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
-textarea{min-height:90px;resize:vertical}
+textarea{min-height:80px;resize:vertical}
 input:focus,select:focus,textarea:focus{border-color:#6366f1}
 .param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 .btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
 .btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
 .result-area{display:none;margin-top:20px}
 .result-area.active{display:block}
-.seg{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.25);border-radius:12px;padding:18px;margin-bottom:14px;color:#e2e8f0;line-height:1.9;font-size:.9rem}
-.seg .h{color:#a855f7;font-weight:700;margin-bottom:8px;font-size:.95rem}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
 .copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
 .copy-btn:hover{background:rgba(99,102,241,0.25)}
 @media(max-width:600px){.param-row{grid-template-columns:1fr}}
@@ -30,83 +29,69 @@ input:focus,select:focus,textarea:focus{border-color:#6366f1}
 <body>
 <nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
 <div class="tool-container">
-<div class="tool-header"><h1>🌙 AI 周公解梦</h1><p>传统解梦 × 心理学视角，倾听潜意识的低语</p></div>
+<div class="tool-header"><h1>🌙 AI 解梦大师</h1><p>解读梦境背后的象征寓意与潜意识暗示</p></div>
 
 <div class="card">
-<label>💤 描述你的梦境</label>
-<textarea id="dream" placeholder="例如：我梦到自己坐电梯一直往上，却怎么也到不了顶层，门开了是一望无际的海。"></textarea>
+<label>🌠 描述你的梦境（用几个关键词即可）</label>
+<textarea id="dream" placeholder="例如：梦见自己在大海里游泳，水很清澈，还有鲸鱼"></textarea>
 <div class="param-row">
-<div><label>🗣️ 解读视角</label>
-<select id="view">
-<option value="传统">🏮 传统周公解梦</option>
-<option value="心理">🧠 心理学解析</option>
-<option value="综合">🌟 综合解读</option>
-</select></div>
-<div><label>🌡️ 梦境感受</label>
-<select id="feel">
-<option value="平静">😌 平静</option>
-<option value="焦虑">😰 焦虑</option>
-<option value="兴奋">😆 兴奋</option>
-<option value="恐惧">😨 恐惧</option>
-<option value="美好">🌸 美好</option>
-</select></div>
+<div><label>🎯 解析角度</label>
+<select id="angle"><option value="综合解析">🌐 综合解析</option><option value="心理暗示">🧠 心理暗示</option><option value="运势征兆">🔮 运势征兆</option><option value="旧梦新解">📚 传统文化解析</option></select></div>
+<div><label>✨ 解读深度</label>
+<select id="depth"><option value="简洁" >简洁版</option><option value="详细" selected>详细版</option></select></div>
 </div>
-<button class="btn-gen" id="genBtn">🔮 解读梦境</button>
+<button class="btn-gen" id="genBtn">✨ 解读梦境</button>
 </div>
 
 <div class="result-area" id="resultArea">
 <div class="card">
-<div id="segsBox"></div>
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🔮 梦境解析结果</div>
+<div class="output-box" id="outputBox"></div>
 <button class="copy-btn" onclick="copyResult()">📋 复制解梦结果</button>
 </div>
 </div>
 </div>
 <footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
 <script>
-const symbols={
-'蛇':['传统：梦蛇主财，往往预示转运或潜在机遇','心理：蛇象征本能的欲望、恐惧或蜕变的力量'],
-'水':['传统：水主财，见水多主进财之象','心理：水代表情绪与潜意识，水面状态反映内心波动'],
-'飞':['传统：梦飞翔主志意高远，事业腾达','心理：飞翔常象征摆脱束缚、渴望自由或自信高涨'],
-'掉牙':['传统：主亲人安康，也暗示口舌是非','心理：掉牙常反映焦虑与对外貌、失控的担忧'],
-'追':['传统：被追多有惊无险，主有小人或压力','心理：被追逐常代表逃避内心某种问题或责任'],
-'考试':['传统：主进取得名，学业事业有进展','心理：考试梦多源于现实压力与自我质疑'],
-'海':['传统：水象主大财或大变动','心理：海代表广袤潜意识，风浪映射内心起伏'],
-'电梯':['传统：主升降起落，随其上下而断吉凶','心理：象征职场或人生的进展节奏与方向'],
-'鬼':['传统：有小人背后作祟，宜防口舌','心理：鬼多象征压抑的恐惧或未解的心结'],
-'结婚':['传统：未婚主桃花，已婚主合作喜事','心理：象征关系整合或对归属感的渴望'],
-'死亡':['传统：主有新生与转运，逢凶化吉','心理：常象征某段状态的终结与自我重生'],
-'钱':['传统：梦钱主财气流动，多主进益','心理：钱象征价值感、安全感与资源的分配'],
-'龙':['传统：青龙主贵人大吉之兆','心理：龙象征力量、野心与对成就的向往'],
-'桥':['传统：主有贵人相助、渡难过关','心理：桥代表连接与人生的过渡阶段']};
-function rand(a){return a[Math.floor(Math.random()*a.length)]}
-const feelOpen={平静:'你的梦整体基调平和，说明近期心态较为安稳。',焦虑:'梦境透出淡淡的紧张，或许与近期的压力有关。',兴奋:'这场梦带着愉悦与冲劲，预示你有股向上的能量。',恐惧:'梦境中的不安在向你发出信号，提醒你留心近期变化。',美好:'如此美好的梦境，是潜意识给你的一份温柔馈赠。'};
+const dict={
+'水':{sym:'情绪与情感的流动',psy:'提示你最近情绪丰富，内心有未被表达的感想',luck:'象征事业如流水顺势，宜顺势而为'},
+'海':{sym:'广阔的生命可能',psy:'巨大的海洋暗示你内心渴望更广阔的舞台',luck:'预示近期将有机会，把握可获发展'},
+'飞':{sym:'自由与向上的渴望',psy:'飞升反映你对现状突破的强烈愿望',luck:'上升之象，事业或学业有进步'},
+'蛇':{sym:'潜藏的智慧或危机',psy:'蛇常象征内心深处的直觉与潜藏压力',luck:'警示需留心身边的人际变化'},
+'钱':{sym:'价值与成就的衡量',psy:'金钱梦反映你对安全感的追求',luck:'财运转旺之兆，但求财需正道'},
+'火':{sym:'能量与激情',psy:'火焰代表强烈的情绪或创作热情',luck:'有兴旺之象，但需防急进冒失'},
+'雨':{sym:'洗涤与新生',psy:'雨水暗示情绪的释放与内心的净化',luck:'雨后初晴，困难将逐渐化解'},
+'猫':{sym:'独立与神秘',psy:'猫的灵性提醒你关注内心的柔软',luck:'有小贵人相助之象'},
+'狗':{sym:'忠诚与守护',psy:'狗象征可靠的情谊与安全感',luck:'人缘佳，得朋友之助'},
+'死人':{sym:'旧阶段的结束',psy:'告别梦里的"逝去"代表放下过去',luck:'旧去新来，是转变与前行的信号'},
+'掉牙':{sym:'成长的阵痛',psy:'掉牙常与压力、失控感或形象焦虑相关',luck:'提醒注意身体与沟通，宜稳'},
+'考试':{sym:'检验与自我审视',psy:'考试梦反映对能力被评价的焦虑',luck:'借机自查，准备越充分心越安'},
+'结婚':{sym:'结合与圆满',psy:'婚礼象征内心的圆满或事业整合',luck:'诸事顺遂，合作易成'},
+'迷路':{sym:'方向感的暂时迷失',psy:'迷路提示当前对选择有些迷茫',luck:'静心辨方向，勿急勿躁'},
+'猫生怪':{sym:'变化与新生',psy:'新生命象征创意与希望的孕育',luck:'有新项目、新机遇出现的可能'}
+};
+const common=['梦里照见的，往往不是预兆，而是你心事最柔软的那一角。今夜记下它，明天带着觉察生活。','梦境是潜意识的来信，读懂它，也就更懂了自己。','梦醒之后，愿你带着这份启示，从容面对白天的生活。'];
 document.getElementById('genBtn').addEventListener('click',()=>{
-if(!Paywall.countUse('AI 周公解梦 | AgentGongju.com'))return;
+if(!Paywall.countUse('AI 解梦大师 | AgentGongju.com'))return;
 const dream=document.getElementById('dream').value.trim();
+const angle=document.getElementById('angle').value;
+const depth=document.getElementById('depth').value;
 if(!dream){alert('请先描述你的梦境');return;}
-const view=document.getElementById('view').value;
-const feel=document.getElementById('feel').value;
-const box=document.getElementById('segsBox');box.innerHTML='';
-const matched=[];
-Object.keys(symbols).forEach(k=>{if(dream.includes(k))matched.push(k);});
-const segs=[];
-segs.push(`<div class="h">🌛 ${feelOpen[feel]}</div>${feel==='平静'?'梦境通常反映近期较平稳的心理状态，宜顺其自然。':'这份情绪背后，往往藏着你近期最真实的内心需求。'}`);
-if(matched.length===0){
-const kw=dream.split(/[，。！？\s]/).filter(x=>x.length>1).slice(0,3);
-segs.push(`<div class="h">🔎 核心意象捕捉</div>主要意象：${kw.length?kw.join('、'):'你的梦境'}。这些元素组合在一起，提示你近期的关注点集中在「方向选择」与「关系变化」上。`);
-segs.push(`<div class="h">🧠 潜意思维提示</div>试着回想梦里的第一感受——那往往是你内心最真实的直觉。`);
-}else{
-let tr='',ps='';
-matched.forEach(k=>{if(view==='传统'||view==='综合')tr+=symbols[k][0]+'；';if(view==='心理'||view==='综合')ps+=symbols[k][1]+'；';});
-if(tr)segs.push(`<div class="h">🏮 传统解梦</div>${tr}`);
-if(ps)segs.push(`<div class="h">🧠 心理学解析</div>${ps}`);
+const match=Object.keys(dict).find(k=>dream.includes(k));
+const item=match?dict[match]:{sym:'内心深处的思绪',psy:'这个梦或许正反映你近日的所感所想',luck:'保持平和心态，静待好运势'}
+let out='梦境：'+dream+'\n\n';
+out+='【梦境核心意象】\n· '+item.sym+'\n\n';
+out+='【'+(angle==='心理暗示'?'心理层面解读':'象征寓意解读')+'】\n· '+item.psy+'\n';
+if(angle==='运势征兆'){out+='· 运势提示：'+item.luck+'\n';}
+if(angle==='旧梦新解'){out+='· 传统说法：此梦主'+(match?'顺遂之象，宜谋进取':'平安之象，守正则吉')+'\n';}
+if(depth==='详细'){
+out+='\n【给你的行动小建议】\n· '+common[0]+'\n· 试着写下梦境的关键片段，连续记录几日会发现规律。\n';
 }
-segs.push(`<div class="h">💡 小建议</div>梦境是潜意识的来信，不必迷信结果，不妨把它当作一次自我觉察的机会。近期可多关注${rand(['身心健康','人际关系','事业方向','财务状况'])}，保持从容。`);
-box.innerHTML=segs.map(s=>`<div class="seg">${s}</div>`).join('');
-window._dream='【AI 周公解梦】\n梦境：'+dream+'\n\n'+segs.map(s=>s.replace(/<[^>]+>/g,'')).join('\n');
+out+='\n'+(angle==='心理暗示'?common[1]:common[2]);
+document.getElementById('outputBox').innerText=out;
 document.getElementById('resultArea').classList.add('active');
 });
-function copyResult(){navigator.clipboard.writeText(window._dream||document.body.innerText).then(()=>alert('✅ 已复制！'))}
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 解梦结果已复制！'))}
 </script>
 </body>
 </html>

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 诗歌生成器 | AgentGongju.com</title>
+<meta name="description" content="AI古诗词生成器，根据主题、意境与搭配自动生成绝句、律诗等经典古诗">
+<meta name="keywords" content="AI写诗,古诗生成,诗词创作,对联生成,文学工具">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:1rem;text-align:center;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📜 AI 诗歌生成器</h1><p>输入主题意境，一键生成韵味十足的古典诗词</p></div>
+
+<div class="card">
+<label>🌙 诗歌主题 / 意境</label>
+<input type="text" id="theme" placeholder="例如：思乡、春日踏青、毕业送别、月夜独酌">
+<div class="param-row">
+<div><label>📖 体裁</label>
+<select id="type"><option value="五言绝句">五言绝句</option><option value="七言绝句">七言绝句</option><option value="五言律诗">五言律诗</option><option value="七言律诗">七言律诗</option><option value="现代短诗">现代短诗</option></select></div>
+<div><label>🎭 风格</label>
+<select id="tone"><option value="豪放旷达">豪放旷达</option><option value="婉约含蓄">婉约含蓄</option><option value="清新淡雅">清新淡雅</option><option value="沉郁苍凉">沉郁苍凉</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">✨ 生成诗歌</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🏮 为你而作的诗词</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制诗词</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const themeBank={
+'思乡':['天际孤云恋故山','梦回故里小桥湾','残月犹照旧时帆','久客谁言归计晚','他乡草色又经秋','月满西楼思未休','故园风物忆温柔','白头漂泊一沙鸥'],
+'春日踏青':['陌上花开缓缓归','新燕衔泥带雨飞','十里春风拂翠微','桃李争妍映朝晖','踏青人醉绿杨堤','野渡无人舟自欹','杏花疏影弄晴晖','一川烟草接天齐'],
+'毕业送别':['折柳长亭话别离','孤帆远影暮云低','同学少年豪气随','征途万里莫迟疑','挥手各奔山海际','相逢他日话当时','一杯浊酒尽余悲','前程不负少年期'],
+'月夜独酌':['独坐空庭对月明','举杯邀影两三人','桂花浮玉夜风清','醉里不知身是客','星河欲转近三更','露重秋深万籁宁','一樽幽思寄瑶京','闲云野鹤自多情'],
+'山水田园':['青山相对出云间','溪声终日绕柴门','数峰清苦立黄昏','牧童遥指杏花村','竹杖芒鞋任往还','一蓑烟雨钓春山','稻花香里说丰年','闲来无事看青山'],
+'爱情相思':['红豆生南国幽思','月下花前两心知','此情可待成追忆','隔水望穿千万里','青丝缠绕梦魂迷','长夜漫漫人独倚','一世温存作旧诗','愿君怜取眼前时'],
+'时光感悟':['逝水光阴不可留','浮生若梦几春秋','白驹过隙转头空','须臾鹤发又成翁','旧游如梦梦如烟','今朝有酒且从容','岁月如歌逝已远','莫待白头空叹惋']
+};
+const toneLines={豪放旷达:['会当凌绝顶之风','纵马踏遍万重峰','直挂云帆济苍生','笑看风浪自从容'],婉约含蓄:['珠帘半卷暗香回','心如莲子微微苦','无言独上小楼台','一段闲愁剪不开'],清新淡雅:['山光水色两清幽','一池新绿漾轻舟','满窗月色正温柔','花影婆娑扫去留'],沉郁苍凉:['衰柳残杨锁旧愁','寒江寂寞冷沙洲','孤鸿声里过重楼','千秋霸业土一丘']};
+function makeTitle(t){const map={思乡:'思乡怀远',春日踏青:'春日踏青',毕业送别:'赠别同窗',月夜独酌:'月夜独酌',山水田园:'山居闲吟',爱情相思:'长相思',时光感悟:'感怀'};return map[t]||'无题';}
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 诗歌生成器 | AgentGongju.com'))return;
+const theme=document.getElementById('theme').value.trim();
+const type=document.getElementById('type').value;
+const tone=document.getElementById('tone').value;
+if(!theme){alert('请填写诗歌主题');return;}
+const pool=themeBank[theme]||themeBank['时光感悟'];
+const extra=toneLines[tone];
+const shuf=a=>a.slice().sort(()=>Math.random()-0.5);
+const lines=shuf(pool).slice(0,4);
+let poem='《'+(makeTitle(theme))+'》\n\n';
+if(type==='五言绝句'){poem+=lines.map(l=>l.length>5?l.slice(-5):l).join('\n');}
+else if(type==='七言绝句'){poem+=lines.join('\n');}
+else if(type==='五言律诗'){poem+=lines.slice(0,4).map(l=>l.length>5?l.slice(-5):l).join('\n')+'\n\n'+shuf(extra).slice(0,4).map(l=>l.length>5?l.slice(-5):l).join('\n');}
+else if(type==='七言律诗'){poem+=lines.slice(0,4).join('\n')+'\n\n'+shuf(extra).slice(0,4).join('\n');}
+else{poem='《'+(makeTitle(theme))+'》\n\n'+shuf(extra).slice(0,3).join('\n')+'\n'+shuf(pool).slice(0,2).join('\n');}
+document.getElementById('outputBox').innerText=poem;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 诗词已复制！'))}
+</script>
+</body>
+</html>

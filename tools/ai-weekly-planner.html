@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 周计划助手 | AgentGongju.com</title>
+<meta name="description" content="AI一周计划生成器，输入本周目标，自动拆解成每日可执行的日程安排与优先级清单">
+<meta name="keywords" content="AI计划,周计划,日程安排,时间管理,目标拆解,待办清单">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:90px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.day-block{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:14px 16px;margin-bottom:10px}
+.day-block .d{color:#a5b4fc;font-weight:600;margin-bottom:8px}
+.day-block ul{margin:0;padding-left:20px;color:#e2e8f0;line-height:1.9;font-size:.9rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📅 AI 周计划助手</h1><p>把本周目标拆解成每天可落地的执行计划</p></div>
+
+<div class="card">
+<label>🎯 本周目标（可用逗号分开多个）</label>
+<textarea id="goals" placeholder="例如：完成项目上线，学习Python，坚持健身3次，读完一本书"></textarea>
+<div class="param-row">
+<div><label>⏰ 时间预算（每天可投入小时）</label>
+<input type="text" id="hours" placeholder="例如：2"></div>
+<div><label>📌 计划重点</label>
+<select id="focus"><option value="工作首位">💼 工作学习首位</option><option value="生活均衡">🌿 工作生活均衡</option><option value="健康优先">💪 健康优先</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">✨ 生成周计划</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 你的本周计划</div>
+<div id="planOut"></div>
+<button class="copy-btn" onclick="copyPlan()">📋 复制计划</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const days=['周一','周二','周三','周四','周五','周六','周日'];
+const breaks=['休息一下，伸个懒腰','高效时段专注核心任务','劳逸结合，保持状态','列一下明天的待办'];
+function todayStr(){const d=new Date();const w=(d.getDay()+6)%7;const mon=new Date(d);mon.setDate(d.getDate()-w);return `${mon.getMonth()+1}月${mon.getDate()}日`;}
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 周计划助手 | AgentGongju.com'))return;
+const goals=document.getElementById('goals').value.trim();
+const hours=document.getElementById('hours').value.trim();
+const focus=document.getElementById('focus').value;
+if(!goals){alert('请先填写本周目标');return;}
+const arr=goals.split(/[、，,。;；]/).filter(x=>x.trim());
+let html='<div style="color:#94a3b8;font-size:.9rem;margin-bottom:16px">📆 本周（'+todayStr()+' 起）</div>';
+days.forEach((d,i)=>{
+  html+='<div class="day-block"><div class="d">️'+d+'</div><ul>';
+  const primary=arr[i%arr.length];
+  html+='<li><b>核心任务：</b>'+primary.trim()+'（'+(hours||'2')+'小时）</li>';
+  if(i%2===0){html+='<li><b>推进任务：</b>'+arr[(i+1)%arr.length].trim()+'（1小时）</li>';}
+  html+='<li>'+breaks[i%breaks.length]+'</li>';
+  if(focus==='健康优先'){html+='<li><b>运动打卡：</b>30分钟有氧训练</li>';}
+  else if(focus==='生活均衡'){html+='<li><b>放松：</b>散步/阅读30分钟，给生活留白</li>';}
+  html+='</ul></div>';
+});
+html+='<div style="background:rgba(99,102,241,.1);border:1px dashed #6366f1;border-radius:10px;padding:12px 16px;color:#a5b4fc;font-size:.9rem;margin-top:4px">💡 周日晚上回顾计划完成情况，把未完成项顺延到下周，滚动推进。</div>';
+document.getElementById('planOut').innerHTML=html;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyPlan(){const t=document.getElementById('planOut').innerText;navigator.clipboard.writeText(t).then(()=>alert('✅ 计划已复制！'))}
+</script>
+</body>
+</html>

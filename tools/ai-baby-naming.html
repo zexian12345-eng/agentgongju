@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI 宝宝起名 | AgentGongju.com</title>
-<meta name="description" content="AI宝宝起名，结合生辰、五行、寓意与音律，一键生成好听有内涵的好名字，附名字寓意与建议，宝宝取名必备">
-<meta name="keywords" content="宝宝起名,取名,名字寓意,五行,生辰八字,姓名">
-<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
+<title>AI 起名助手 | AgentGongju.com</title>
+<meta name="description" content="AI宝宝起名/网名起名，根据姓氏、性别、寓意与五行自动生成多个好听有内涵的名字建议">
+<meta name="keywords" content="AI起名,宝宝起名,取名,姓名建议,网名生成,五行取名">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -12,109 +12,77 @@
 .tool-header p{color:#94a3b8}
 .card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
 .card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
-select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
-textarea{min-height:60px;resize:vertical}
-input:focus,select:focus,textarea:focus{border-color:#6366f1}
+input[type=text],input[type=number],select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px;box-sizing:border-box}
+input:focus,select:focus{border-color:#6366f1}
 .param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 .btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
 .btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
 .result-area{display:none;margin-top:20px}
 .result-area.active{display:block}
-.name-card{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.25);border-radius:12px;padding:20px;margin-bottom:14px}
-.name-card .nm{font-size:1.5rem;font-weight:700;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:6px}
-.name-card .py{color:#94a3b8;font-size:.85rem;margin-bottom:8px}
-.name-card .means{color:#e2e8f0;line-height:1.9;font-size:.9rem;white-space:pre-wrap}
-.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
-.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.name-item{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:8px;margin-bottom:10px}
+.name-item .nm{font-size:1.1rem;color:#a5b4fc;font-weight:600}
+.name-item .mn{color:#94a3b8;font-size:.85rem}
+.name-item .cp{cursor:pointer;color:#22c55e;font-size:.8rem}
+.name-item .cp:hover{text-decoration:underline}
 @media(max-width:600px){.param-row{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 <nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
 <div class="tool-container">
-<div class="tool-header"><h1>👶 AI 宝宝起名</h1><p>结合五行字义与音律，帮你挑出一个好名字</p></div>
+<div class="tool-header"><h1>👶 AI 起名助手</h1><p>按姓氏、性别与寓意，生成好听又有内涵的名字</p></div>
 
 <div class="card">
-<label>🧒 宝宝姓（必填）</label>
-<input type="text" id="surname" placeholder="例如：王、李、张、刘 ">
+<label>🈷️ 姓氏</label>
+<input type="text" id="surname" placeholder="请输入姓氏，例如：李、王、陈">
 <div class="param-row">
-<div><label>👶 宝宝性别</label>
-<select id="gender">
-<option value="男">👦 男孩</option>
-<option value="女">👧 女孩</option>
-<option value="中性">🌈 中性</option>
-</select></div>
-<div><label>🧲 五行喜用（可选）</label>
-<select id="wuxing">
-<option value="auto">✨ 自动分析</option>
-<option value="金">金</option>
-<option value="木">木</option>
-<option value="水">水</option>
-<option value="火">火</option>
-<option value="土">土</option>
-</select></div>
+<div><label>🧑 性别</label>
+<select id="gender"><option value="男孩">👦 男孩</option><option value="女孩">👧 女孩</option><option value="不限">✨ 不限</option></select></div>
+<div><label>🎯 五行喜用（可选）</label>
+<select id="wuxing"><option value="不限">不限</option><option value="金">金</option><option value="木">木</option><option value="水">水</option><option value="火">火</option><option value="土">土</option></select></div>
 </div>
-<div class="param-row">
-<div><label>🎨 名字风格</label>
-<select id="style">
-<option value="文雅">📖 文雅诗意</option>
-<option value="大气">🌅 大气阳刚</option>
-<option value="现代">💼 现代简约</option>
-<option value="传统">🏮 传统吉祥</option>
-</select></div>
-<div><label>✍️ 期望字（可选）</label>
-<input type="text" id="want" placeholder="例如：想要带'宇'或'涵'"></div>
-</div>
-<button class="btn-gen" id="genBtn">✨ 生成好名字</button>
+<label>🌟 期望寓意方向</label>
+<select id="meaning" style="width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px"><option value="智慧才学">🧠 智慧才学</option><option value="健康平安">💪 健康平安</option><option value="富贵顺遂">💰 富贵顺遂</option><option value="温婉大气">🌸 温婉大气</option><option value="阳光活泼">☀️ 阳光活泼</option></select>
+<label>🔢 生成数量</label>
+<input type="number" id="count" value="8" min="4" max="12">
+<button class="btn-gen" id="genBtn">✨ 生成名字</button>
 </div>
 
-<div class="result-area" id="resultArea">
-<div class="card">
-<div style="color:#a855f7;font-weight:600;margin-bottom:16px">🎁 推荐名字（即可根据音形义挑选）</div>
-<div id="namesBox"></div>
-<button class="copy-btn" onclick="copyResult()">📋 复制全部名字方案</button>
-</div>
-</div>
+<div class="result-area" id="resultArea"><div class="card"><div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 名字建议</div>
+<div id="namesOut"></div></div></div>
 </div>
 <footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
 <script>
-function rand(a){return a[Math.floor(Math.random()*a.length)]}
-function fmt(num){return num<10?'0'+num:''+num}
-const boy=[['之恒','zhī héng','恒久安定，寓意持之以恒、稳重可靠'],['宇轩','yǔ xuān','气宇轩昂，心胸开阔、志向远大'],['子墨','zǐ mò','文墨书香，才思敏捷、温润如玉'],['睿泽','ruì zé','睿智恩泽，聪慧过人、仁厚守信'],['承宇','chéng yǔ','承继宇量，担当大气、胸怀宽广'],['嘉树','jiā shù','美好佳木，像栋梁一样成长']];
-const girl=[['语嫣','yǔ yān','笑语嫣然，温婉灵动、谈吐不凡'],['汐玥','xī yuè','潮汐明月，温柔清澈、气质优雅'],['婉清','wǎn qīng','婉约清雅，知书达理、恬静美好'],['梓萱','zǐ xuān','才艺温暖，聪颖活波、吉祥幸福'],['若曦','ruò xī','若晨光曦微，明媚温暖、朝气蓬勃'],['灵犀','líng xī','心有灵犀，聪慧有灵气、善解人意']];
-const neutral=[['安然','ān rán','平安泰然，一生顺遂、心性从容'],['沐阳','mù yáng','沐浴阳光，积极开朗、温暖明亮'],['一诺','yī nuò','一诺千金，诚信正直、言出必行'],['清欢','qīng huān','人间清欢，淡泊宁静、幸福自在']];
-const wuxingChar={金:['铭','锐','钧','钧','旗'],木:['荣','桦','栩','恺','桢'],水:['润','溪','澜','沛','淼'],火:['煜','烨','灵','焕','然'],土:['坤','堃','垚','懿','垚']};
-const styleAdv={文雅:'注重韵律与书卷气',大气:'选用寓意恢弘开阔的字',现代:'简约时尚、好写好听',传统:'取吉祥福气的传统字眼'};
+const meaningDict={
+'男孩':{'智慧才学':['思远','书墨','知远','梓铭','睿晟','博文','景行','修竹','明哲','启航'],'健康平安':['康安','泰然','怀安','靖平','颐安','康远','佑安','卓然'],'富贵顺遂':['伟业','承恩','锦程','纬业','鸿图','琅玕','荣轩','丰泽'],'温婉大气':['温润','谦谦','彦和','世安','志恒','彦博','景云','怀瑾'],'阳光活泼':['向阳','乐安','煜辰','晨熙','明昊','峻熙','远航','嘉乐']},
+'女孩':{'智慧才学':['书妍','知微','诗涵','语嫣','慧心','梓琪','砚秋','洛书'],'健康平安':['安雅','沁怡','安之','清和','静宜','安然','栖月','穗芳'],'富贵顺遂':['锦瑟','婉宁','若曦','可心','如初','熙然','采薇','无双'],'温婉大气':['婉清','舒窈','雪容','语桐','惠妍','温言','慕青','思渺'],'阳光活泼':['乐瑶','星澜','悦然','澄心','熙妍','光凝','兮悦','笑颜']},
+'不限':{'智慧才学':['思远','书然','知远','语萱','慧中','明扬'],'健康平安':['安正','泰之','怀瑾','安然','康达'],'富贵顺遂':['承泽','锦程','鸿飞','达观','嘉树'],'温婉大气':['清和','温润','彦和','静姝','怀瑾'],'阳光活泼':['向阳','乐之','晨光','熙和','悦心']}
+};
+const wuxingWords={金:['铭','锐','钧','锦'],木:['楠','柏','荣','桐'],水:['泽','涵','澄','沐'],火:['煜','灿','曦','炯'],土:['坤','宸','垚','培']};
+const shu=['数','大','之','若','景','亦','元','子','以','尔','一','云','北','示','谷','之','川','成','弘','亦'];
+function copyText(t){navigator.clipboard.writeText(t).then(()=>alert('✅ 已复制：'+t))}
 document.getElementById('genBtn').addEventListener('click',()=>{
-if(!Paywall.countUse('AI 宝宝起名 | AgentGongju.com'))return;
+if(!Paywall.countUse('AI 起名助手 | AgentGongju.com'))return;
 const surname=document.getElementById('surname').value.trim();
-if(!surname){alert('请先填写姓氏');return;}
 const gender=document.getElementById('gender').value;
-const wuxing=document.getElementById('wuxing').value;
-const style=document.getElementById('style').value;
-const want=document.getElementById('want').value.trim();
-let pool=gender==='男'?boy.slice():gender==='女'?girl.slice():neutral.slice();
-// 打乱
-for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}
-const chosen=pool.slice(0,6);
-const box=document.getElementById('namesBox');box.innerHTML='';
-let full=`【AI 宝宝起名方案】姓${surname} · ${gender}宝宝 · 五行参考：${wuxing==='auto'?'自动分析':wuxing} · ${styleAdv[style]}\n\n`;
-chosen.forEach((n,i)=>{
-const div=document.createElement('div');div.className='name-card';
-let el='';
-if(wuxing!=='auto'){el+=`<div style="color:#a855f7;font-size:.8rem;margin-bottom:4px">五行补「${wuxing}」· 字：${wuxingChar[wuxing].slice(0,3).join('、')}</div>`;}
-div.innerHTML=`<div class="nm">${surname}${n[0]}</div><div class="py">拼音：${surname} ${n[1]}</div>${el}<div class="means">寓意：${n[2]}</div>`;
-box.appendChild(div);
-full+=`${i+1}. ${surname}${n[0]}（${n[1]}）寓意：${n[2]}\n`;
-});
-if(want){const hintDiv=document.createElement('div');hintDiv.className='name-card';
-hintDiv.innerHTML=`<div class="py">💡 您期望含「${want}」：可在上面方案基础上替换第二字为「${want}」中的首选字，或用之叠加寓意。实际取名建议多读几遍、查重避讳。</div>`;
-box.appendChild(hintDiv);
-full+=`\n期望语：${want}\n`;}
-window._full='【AI 宝宝起名】\n'+full+'\n提示：正式取名建议结合完整生辰做八字排盘，并核对音形义与家族辈分。';
+const wx=document.getElementById('wuxing').value;
+const meaning=document.getElementById('meaning').value;
+const n=Math.min(12,Math.max(4,parseInt(document.getElementById('count').value)||8));
+if(!surname){alert('请先输入姓氏');return;}
+const pool=meaningDict[gender][meaning];
+const used=new Set();let html='';
+const wxw=wx!=='不限'?wuxingWords[wx]:[];
+for(let i=0;i<n;i++){
+  let given;
+  do{given=pool[Math.floor(Math.random()*pool.length)];if(Math.random()>0.5&&pool.length>2){given+=shu[Math.floor(Math.random()*shu.length)];}if(Math.random()>0.7&&wxw.length){given=(surname.length>1?'':wxw[Math.floor(Math.random()*wxw.length)])+given;}}while(used.has(surname+given));
+  used.add(surname+given);
+  const full=surname+given;
+  const note=(meaning==='智慧才学'?'寄寓聪慧明达、才思敏捷':meaning==='健康平安'?'愿你一生平安顺遂':meaning==='富贵顺遂'?'寓意前程顺遂、富贵绵长':meaning==='温婉大气'?'气质温婉、落落大方':'阳光开朗、乐观向上')+(wx!=='不限'?('，补益'+wx+'行'):'');
+  html+='<div class="name-item"><span class="nm">'+full+'</span><span class="mn">'+note+'</span><span class="cp" onclick="copyText(\''+full+'\')">复制</span></div>';
+}
 document.getElementById('resultArea').classList.add('active');
+document.getElementById('namesOut').innerHTML=html;
 });
-function copyResult(){navigator.clipboard.writeText(window._full||document.body.innerText).then(()=>alert('✅ 已复制！'))}
 </script>
 </body>
 </html>
