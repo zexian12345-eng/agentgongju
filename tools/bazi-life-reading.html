@@ -11,6 +11,12 @@
 <style>
 .tool-container{max-width:900px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:36px}
+/* 中英切换按钮 */
+.lang-bar{position:fixed;top:74px;right:16px;z-index:9999;display:flex;align-items:center;gap:8px}
+.lang-btn{background:linear-gradient(135deg,#6366f1,#a855f7);color:#fff;border:none;border-radius:999px;padding:9px 18px;font-size:.88rem;font-weight:700;cursor:pointer;box-shadow:0 4px 16px rgba(99,102,241,.45);transition:all .25s;font-family:inherit;letter-spacing:.3px}
+.lang-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(99,102,241,.6)}
+.lang-btn:active{transform:translateY(0)}
+@media(max-width:640px){.lang-bar{top:64px;right:10px}.lang-btn{padding:8px 14px;font-size:.8rem}}
 .tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
 .tool-header p{color:#94a3b8}
 .card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:26px 30px;margin-bottom:22px}
@@ -116,50 +122,51 @@ textarea#inEvents:focus{outline:none;border-color:rgba(167,139,250,0.6)}
 <body>
 <nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
 <div class="tool-container">
+<div class="lang-bar"><button id="langBtn" class="lang-btn" onclick="toggleLang()">🌐 English</button></div>
 <div class="tool-header">
-<h1>📜 八字命理详批</h1>
-<p>真太阳时校正 · 节气定月 · 大运流年 · 人生事件推断 —— 输入出生信息，一键生成完整命书</p>
+<h1 data-i18n="📜 八字命理详批">📜 八字命理详批</h1>
+<p data-i18n="真太阳时校正 · 节气定月 · 大运流年 · 人生事件推断 —— 输入出生信息，一键生成完整命书">真太阳时校正 · 节气定月 · 大运流年 · 人生事件推断 —— 输入出生信息，一键生成完整命书</p>
 </div>
 
 <div class="card">
 <div class="param-row">
-<div><label>🧑 姓名（选填）</label><input type="text" id="inName" placeholder="用于报告抬头"></div>
-<div><label>⚥ 性别</label>
-<select id="inGender"><option value="male">男</option><option value="female">女</option></select></div>
+<div><label data-i18n="🧑 姓名（选填）">🧑 姓名（选填）</label><input type="text" id="inName" data-i18n-ph="用于报告抬头" placeholder="用于报告抬头"></div>
+<div><label data-i18n="⚥ 性别">⚥ 性别</label>
+<select id="inGender"><option value="male" data-i18n="男">男</option><option value="female" data-i18n="女">女</option></select></div>
 </div>
 <div class="param-row" style="margin-top:12px">
-<div><label>📅 历法</label>
-<select id="inCalendar" onchange="toggleLunar()"><option value="solar">公历</option><option value="lunar">农历</option></select></div>
-<div id="lunarLeapWrap" style="display:none"><label>🌙 闰月</label>
-<select id="inLunarLeap"><option value="0">非闰月</option><option value="1">闰月</option></select></div>
+<div><label data-i18n="📅 历法">📅 历法</label>
+<select id="inCalendar" onchange="toggleLunar()"><option value="solar" data-i18n="公历">公历</option><option value="lunar" data-i18n="农历">农历</option></select></div>
+<div id="lunarLeapWrap" style="display:none"><label data-i18n="🌙 闰月">🌙 闰月</label>
+<select id="inLunarLeap"><option value="0" data-i18n="非闰月">非闰月</option><option value="1" data-i18n="闰月">闰月</option></select></div>
 </div>
 <div class="param-row" style="margin-top:12px">
-<div><label>🎂 出生日期</label><input type="date" id="inDate" value="1990-06-15"></div>
-<div><label>🕐 出生时间</label><input type="time" id="inTime" value="08:30"></div>
+<div><label data-i18n="🎂 出生日期">🎂 出生日期</label><input type="date" id="inDate" value="1990-06-15"></div>
+<div><label data-i18n="🕐 出生时间">🕐 出生时间</label><input type="time" id="inTime" value="08:30"></div>
 </div>
 <div style="margin-top:12px">
-<label>📍 出生地</label>
-<input type="text" id="inCity" list="cityList" placeholder="输入城市名，如：北京、上海、纽约、伦敦…" autocomplete="off">
+<label data-i18n="📍 出生地">📍 出生地</label>
+<input type="text" id="inCity" list="cityList" data-i18n-ph="输入城市名，如：北京、上海、纽约、伦敦…" placeholder="输入城市名，如：北京、上海、纽约、伦敦…" autocomplete="off">
 <datalist id="cityList"></datalist>
-<div class="city-hint">支持全球城市；选择后自动获取经纬度与时区，用于真太阳时校正。也可在下方手动输入经纬度。</div>
+<div class="city-hint" data-i18n="支持全球城市；选择后自动获取经纬度与时区，用于真太阳时校正。也可在下方手动输入经纬度。">支持全球城市；选择后自动获取经纬度与时区，用于真太阳时校正。也可在下方手动输入经纬度。</div>
 </div>
 <div class="param-row" style="margin-top:10px">
-<div><label>🧭 经度（东正西负，选城市后自动填充）</label><input type="number" id="inLon" step="0.0001" placeholder="如 116.4074"></div>
-<div><label>🌐 时区（UTC偏移，小时）</label><input type="number" id="inTz" step="0.5" value="8" placeholder="如 8"></div>
+<div><label data-i18n="🧭 经度（东正西负，选城市后自动填充）">🧭 经度（东正西负，选城市后自动填充）</label><input type="number" id="inLon" step="0.0001" data-i18n-ph="如 116.4074" placeholder="如 116.4074"></div>
+<div><label data-i18n="🌐 时区（UTC偏移，小时）">🌐 时区（UTC偏移，小时）</label><input type="number" id="inTz" step="0.5" value="8" data-i18n-ph="如 8" placeholder="如 8"></div>
 </div>
 <div style="margin-top:14px">
-<label>⚙️ 高级选项</label>
+<label data-i18n="⚙️ 高级选项">⚙️ 高级选项</label>
 <div class="opt-toggle">
-<label><input type="checkbox" id="optTrueSolar" checked> 真太阳时校正（经度修正+均时差）</label>
-<label><input type="checkbox" id="optZishi" checked> 晚子时（23点后）按次日排盘</label>
+<label><input type="checkbox" id="optTrueSolar" checked data-i18n="真太阳时校正（经度修正+均时差）"> 真太阳时校正（经度修正+均时差）</label>
+<label><input type="checkbox" id="optZishi" checked data-i18n="晚子时（23点后）按次日排盘"> 晚子时（23点后）按次日排盘</label>
 </div>
 </div>
 <div style="margin-top:14px">
-<label>📝 您已发生的大事（选填，越准越贴合您本人）</label>
-<textarea id="inEvents" rows="4" placeholder="每行一条：年份 + 事件，例如：&#10;1998参军&#10;2005结婚&#10;2011转业&#10;2014生女儿&#10;2018投资失败"></textarea>
-<div class="city-hint">填上后，报告会先核验这些事和命盘是否吻合，再围绕您本人展开分析。事件关键词：参军 / 转业 / 结婚 / 生子 / 换工作 / 升职 / 破财 / 伤病 / 搬家 / 买房 / 创业 / 考试</div>
+<label data-i18n="📝 您已发生的大事（选填，越准越贴合您本人）">📝 您已发生的大事（选填，越准越贴合您本人）</label>
+<textarea id="inEvents" rows="4" data-i18n-ph="每行一条：年份 + 事件，例如：&#10;1998参军&#10;2005结婚&#10;2011转业&#10;2014生女儿&#10;2018投资失败" placeholder="每行一条：年份 + 事件，例如：&#10;1998参军&#10;2005结婚&#10;2011转业&#10;2014生女儿&#10;2018投资失败"></textarea>
+<div class="city-hint" data-i18n="填上后，报告会先核验这些事和命盘是否吻合，再围绕您本人展开分析。事件关键词：参军 / 转业 / 结婚 / 生子 / 换工作 / 升职 / 破财 / 伤病 / 搬家 / 买房 / 创业 / 考试">填上后，报告会先核验这些事和命盘是否吻合，再围绕您本人展开分析。事件关键词：参军 / 转业 / 结婚 / 生子 / 换工作 / 升职 / 破财 / 伤病 / 搬家 / 买房 / 创业 / 考试</div>
 </div>
-<button class="btn-gen" onclick="run()">🔮 开始排盘</button>
+<button class="btn-gen" onclick="run()" data-i18n="🔮 开始排盘">🔮 开始排盘</button>
 </div>
 
 <div class="result-area" id="resultArea"></div>
@@ -181,6 +188,720 @@ if (typeof module !== "undefined") module.exports = VSOP87_L;
 
 
 "use strict";
+// ==================== 国际化 i18n（中英互译） ====================
+let LANG = "zh";
+try{
+  const saved = localStorage.getItem("bazi_lang");
+  if(saved === "en" || saved === "zh") LANG = saved;
+  else if(navigator.language && navigator.language.toLowerCase().startsWith("en")) LANG = "en";
+}catch(e){}
+
+// ---------- 五行 / 天干 / 地支 英文 ----------
+const WX_EN = {金:"Metal",木:"Wood",水:"Water",火:"Fire",土:"Earth"};
+const GAN_PY = {甲:"Jia",乙:"Yi",丙:"Bing",丁:"Ding",戊:"Wu",己:"Ji",庚:"Geng",辛:"Xin",壬:"Ren",癸:"Gui"};
+const GAN_WX = {甲:"Wood",乙:"Wood",丙:"Fire",丁:"Fire",戊:"Earth",己:"Earth",庚:"Metal",辛:"Metal",壬:"Water",癸:"Water"};
+const ZHI_PY = {子:"Zi",丑:"Chou",寅:"Yin",卯:"Mao",辰:"Chen",巳:"Si",午:"Wu",未:"Wei",申:"Shen",酉:"You",戌:"Xu",亥:"Hai"};
+const ZHI_WX = {子:"Water",丑:"Earth",寅:"Wood",卯:"Wood",辰:"Earth",巳:"Fire",午:"Fire",未:"Earth",申:"Metal",酉:"Metal",戌:"Earth",亥:"Water"};
+const YY_EN = {阳:"Yang",阴:"Yin"};
+const NAYIN_EN = {海中金:"Sea Metal",炉中火:"Furnace Fire",大林木:"Forest Wood",路旁土:"Road Earth",剑锋金:"Sword Metal",山头火:"Hill Fire",涧下水:"Ravine Water",城头土:"City Earth",白蜡金:"Wax Metal",杨柳木:"Willow Wood",泉中水:"Spring Water",屋上土:"Roof Earth",霹雳火:"Thunder Fire",松柏木:"Pine Wood",长流水:"Flowing Water",沙中金:"Sand Metal",山下火:"Mountain Fire",平地木:"Plain Wood",壁上土:"Wall Earth",金箔金:"Gold Foil Metal",覆灯火:"Lamp Fire",天河水:"Sky River Water",大驿土:"Highway Earth",钗钏金:"Hairpin Metal",桑柘木:"Mulberry Wood",大溪水:"Stream Water",沙中土:"Sand Earth",天上火:"Sky Fire",石榴木:"Pomegranate Wood",大海水:"Ocean Water"};
+const SS_EN = {比肩:"Peer (Bi Jian)",劫财:"Rob Wealth (Jie Cai)",食神:"Eating God (Shi Shen)",伤官:"Hurting Officer (Shang Guan)",偏财:"Indirect Wealth (Pian Cai)",正财:"Direct Wealth (Zheng Cai)",偏印:"Indirect Resource (Pian Yin)",正印:"Direct Resource (Zheng Yin)",七杀:"Seven Killings (Qi Sha)",正官:"Direct Officer (Zheng Guan)"};
+const SHEN_EN = {天乙贵人:"Heavenly Noble",文昌:"Wen Chang (Scholar Star)",桃花:"Peach Blossom (Romance)",驿马:"Travel Horse (Movement)",华盖:"Hua Gai (Solitude & Wisdom)",魁罡:"Kui Gang (Firm Will)",红鸾:"Hong Luan (Wedding Star)",羊刃:"Yang Ren (Blade Star)",将星:"General Star",丧门:"Sang Men (Mourning)",吊客:"Diao Ke (Bereavement)",月德:"Monthly Virtue"};
+const REL_EN = {冲:"Clash",合:"Combination",刑:"Punishment",害:"Harm",破:"Break"};
+const SANHE_EN = {水局:"Water Bureau",火局:"Fire Bureau",金局:"Metal Bureau",木局:"Wood Bureau"};
+const LUNAR_MONTH_EN = {正:"1st",二:"2nd",三:"3rd",四:"4th",五:"5th",六:"6th",七:"7th",八:"8th",九:"9th",十:"10th",冬:"11th",腊:"12th"};
+
+// ---------- 中→英 直查表（静态文案） ----------
+const EN_MAP = {
+  // 标题/副标题
+  "📜 八字命理详批":"📜 BaZi Fortune Reading (八字)",
+  "真太阳时校正 · 节气定月 · 大运流年 · 人生事件推断 —— 输入出生信息，一键生成完整命书":"True Solar Time · Solar-Term Months · Luck Cycles · Life Event Analysis — enter your birth details and get a complete fortune report",
+  // UI 表单
+  "🧑 姓名（选填）":"🧑 Name (optional)",
+  "用于报告抬头":"Shown in the report title",
+  "⚥ 性别":"⚥ Gender",
+  "男":"Male",
+  "女":"Female",
+  "📅 历法":"📅 Calendar",
+  "公历":"Gregorian",
+  "农历":"Lunar",
+  "🌙 闰月":"🌙 Leap Month",
+  "非闰月":"Not a leap month",
+  "闰月":"Leap month",
+  "🎂 出生日期":"🎂 Birth Date",
+  "🕐 出生时间":"🕐 Birth Time",
+  "📍 出生地":"📍 Birthplace",
+  "输入城市名，如：北京、上海、纽约、伦敦…":"Type a city, e.g. Beijing, Shanghai, New York, London...",
+  "支持全球城市；选择后自动获取经纬度与时区，用于真太阳时校正。也可在下方手动输入经纬度。":"Worldwide cities supported. Longitude & time zone are auto-filled for True Solar Time correction. You can also enter them manually below.",
+  "🧭 经度（东正西负，选城市后自动填充）":"🧭 Longitude (east positive, west negative; auto-filled)",
+  "如 116.4074":"e.g. 116.4074",
+  "🌐 时区（UTC偏移，小时）":"🌐 Time Zone (UTC offset in hours)",
+  "如 8":"e.g. 8",
+  "⚙️ 高级选项":"⚙️ Advanced Options",
+  "真太阳时校正（经度修正+均时差）":"True Solar Time correction (longitude + equation of time)",
+  "晚子时（23点后）按次日排盘":"Late Zi hour (after 23:00) counts as next day",
+  "📝 您已发生的大事（选填，越准越贴合您本人）":"📝 Major life events you've experienced (optional — more accurate results)",
+  "每行一条：年份 + 事件，例如：":"One per line: year + event, e.g.:",
+  "1998参军":"1998 joined the army",
+  "2005结婚":"2005 got married",
+  "2011转业":"2011 transferred from military",
+  "2014生女儿":"2014 daughter born",
+  "2018投资失败":"2018 investment loss",
+  "填上后，报告会先核验这些事和命盘是否吻合，再围绕您本人展开分析。事件关键词：参军 / 转业 / 结婚 / 生子 / 换工作 / 升职 / 破财 / 伤病 / 搬家 / 买房 / 创业 / 考试":"After you fill these in, the report verifies them against your chart first, then analyzes around your real life. Keywords: army / transfer / marriage / childbirth / job change / promotion / money loss / injury / moving / buying a house / business / exam",
+  "🔮 开始排盘":"🔮 Generate My BaZi Chart",
+  "请填写出生日期和时间":"Please enter your birth date and time",
+  "请选择出生地或填写经度":"Please choose a birthplace or enter longitude",
+  "农历日期转换失败，请检查日期是否正确":"Lunar date conversion failed. Please check the date.",
+  "排盘出错：":"Error: ",
+  // 报告
+  "📋 基本信息":"📋 Basic Information",
+  "输入回显":"Input summary",
+  "姓名：":"Name: ",
+  "性别：":"Gender: ",
+  "出生时间：":"Birth time: ",
+  "出生地：":"Birthplace: ",
+  "（经度 ":" (longitude ",
+  "真太阳时：":"True Solar Time: ",
+  "均时差：":"Equation of time: ",
+  " 分钟":" min",
+  "经度修正：":"Longitude correction: ",
+  "排盘规则：":"Chart rules: ",
+  "真太阳时校正":"True Solar Time corrected",
+  "北京时间":"Beijing time",
+  "晚子时归次日":"Late Zi hour → next day",
+  "晚子时归当日":"Late Zi hour → same day",
+  "🧱 八字四柱":"🧱 The Four Pillars",
+  "（祖上·早年）":"(Ancestors · Early years)",
+  "（父母·根基）":"(Parents · Foundation)",
+  "（自身·配偶）":"(Self · Spouse)",
+  "（子女·晚年）":"(Children · Later years)",
+  "年柱":"Year Pillar",
+  "月柱":"Month Pillar",
+  "日柱":"Day Pillar",
+  "时柱":"Hour Pillar",
+  "藏干：":"Hidden stems: ",
+  "纳音：":"Na Yin: ",
+  "✨ 命里带的星（神煞）":"✨ Special Stars in Your Chart (Shen Sha)",
+  "这些是命里带的'特殊星'：天乙贵人是贵人星、文昌是聪明星、桃花是异性缘、驿马是奔波星、华盖主孤独智慧……您对应的每个星在白话总结里都有解释。":"These are special stars in your chart: Heavenly Noble = helping people; Wen Chang = intelligence; Peach Blossom = charm/romance; Travel Horse = movement; Hua Gai = solitude & wisdom... Each is explained in your summary below.",
+  "🧭 命主总评":"🧭 Life Summary",
+  "大白话总结":"Plain-language overview",
+  "五行强弱排序：":"Five Elements (strong → weak): ",
+  "五行所缺：":"Missing elements: ",
+  "无明显缺失":"None missing",
+  "🚀 起运与大运":"🚀 Luck Cycles (Da Yun)",
+  "阳男/阴女顺排":"Yang male / Yin female — forward order",
+  "阴男/阳女逆排":"Yin male / Yang female — reverse order",
+  "大运":"Luck Cycle",
+  "主事":"Main Theme",
+  "年龄段":"Age Range",
+  "公历年份":"Years",
+  "这步运的主题":"Theme",
+  "岁":"",
+  "起运":"starts",
+  "年":"y",
+  "个月":"m",
+  "天":"d",
+  "（":" (",
+  "）":")",
+  "虚岁":"age ",
+  "幼年":"early childhood",
+  "交第一步大运":"when the first Luck Cycle begins",
+  "📅 ":"📅 ",
+  "的一生大事":"'s Life Events",
+  "哪年发生什么事 · 精准到年":"What happens in which year — precise to the year",
+  "下面按时间顺序把这一生的大事一件一件列出来：哪年参军、哪年结婚、哪年生孩子、哪年换工作、哪年破财，每件事只标最有可能的那一年。您填过的已发生大事会优先核验；没填的就看命理信号。这是传统命理推法，说的是可能性，不是定数，供您参考。":"Here are the major events of your life in chronological order: which year you may join the army, marry, have children, change jobs, or face money loss — each event marked at its most likely year. Events you entered are verified first; the rest come from chart signals. This follows traditional Chinese BaZi methods: it's about possibilities, not certainties. For reference only.",
+  "✅ 您填的大事 · 命理核验":"✅ Your Events · Chart Verification",
+  "✓ 命理吻合":"✓ Matches the chart",
+  "△ 信号不明显":"△ Weak signal",
+  "这年命盘信号不强，可能跟出生时辰不准或大运边界有关，也可能属个人主动选择。可核对一下出生时间是否准确。":"The chart signal for this year is weak — could be due to an inaccurate birth hour, luck-cycle boundaries, or a personal choice. You may want to double-check your birth time.",
+  "📌 一生大事（按时间排）":"📌 Major Life Events (in order)",
+  "✔已发生":"✔ confirmed",
+  "未发现明显大事信号，请核对出生时间。":"No strong event signals found. Please verify your birth time.",
+  "🔭 往后看":"🔭 Looking Ahead",
+  "未来几年重点":"Key years ahead",
+  "把握度：":"Confidence: ",
+  "高":"High",
+  "中":"Medium",
+  "参考":"Reference",
+  "往后暂无高信号年份，平稳为主，安心过日子。":"No high-signal years ahead — a stable period. Enjoy a peaceful life.",
+  "📖 说明":"📖 Notes",
+  "① 排盘算法：节气采用 VSOP87 高精度天文算法（误差约1分钟内，已含ΔT时差修正），真太阳时含经度修正（每度4分钟，以东经120°为基准）与均时差，日柱以儒略日推算，年柱以立春为界、月柱以节气为界、时柱五鼠遁。":"① Algorithm: solar terms computed with the high-precision VSOP87 astronomy model (error ~1 min, incl. ΔT correction); True Solar Time includes longitude correction (4 min per degree, based on 120°E) and equation of time; Day Pillar from Julian day; Year Pillar bounded by Li Chun; Month Pillar by solar terms; Hour Pillar by the Five Rats method.",
+  "② 若出生时刻恰逢节气交界（前后数分钟），月柱/年柱可能受影响，请核对出生证明时间。":"② If you were born near a solar-term boundary (within minutes), the Month/Year Pillar may shift — verify with your birth certificate time.",
+  "③ 事件推断基于传统命理规则（十神事象、宫位、神煞、刑冲合害）的统计性提示，仅供文化娱乐与自我参考，切勿作为决策依据。":"③ Event predictions are statistical hints based on traditional rules (Ten Gods, palaces, special stars, clashing/combining) for cultural entertainment and self-reflection only — not a basis for real decisions.",
+  "④ 本工具不涉及任何医疗、法律、投资建议。":"④ This tool offers no medical, legal, or investment advice.",
+  // 大运表格主事
+  "事业名望":"Career & reputation",
+  "压力闯荡":"Pressure & ambition",
+  "正财运":"Wealth luck",
+  "偏财运":"Windfall luck",
+  "学习贵人":"Study & mentors",
+  "偏门钻研":"Specialized study",
+  "才艺口福":"Talent & enjoyment",
+  "才华口舌":"Expression & caution",
+  "朋友自立":"Friends & independence",
+  "竞争破财":"Competition & spending",
+  // 事件类别
+  "💼 事业":"💼 Career",
+  "💰 财运":"💰 Wealth",
+  "❤️ 感情":"❤️ Love",
+  "🏥 健康":"🏥 Health",
+  "🏠 家庭":"🏠 Family",
+  "📌 其他":"📌 Other",
+  // 其他小文案
+  "命主":"Subject",
+  "自定义":"Custom",
+  "选填":"optional",
+  "自定义":"Custom"
+};
+
+// ---------- 事件 sub 英文标签 ----------
+const EN_SUBCAT = {
+  "收入提升":"💰 Income Rise",
+  "偏财进账":"🎲 Windfall Gain",
+  "破财":"⚠️ Money Loss",
+  "升职加薪":"🏆 Promotion & Raise",
+  "工作变动":"🔄 Job Change",
+  "创业契机":"🚀 Business Start",
+  "考试升学":"📚 Exams & Study",
+  "置业买房":"🏠 Buying Property",
+  "恋爱缘":"💘 Romance",
+  "婚喜":"💍 Marriage",
+  "感情波动":"💔 Relationship Waves",
+  "怀孕生子":"👶 Childbirth",
+  "子女缘":"👪 Children",
+  "长辈健康":"🕯️ Elderly Health",
+  "丧事":"🕯️ Bereavement",
+  "伤病":"🏥 Injury & Illness",
+  "口舌官非":"⚖️ Disputes & Legal",
+  "合伙合作":"🤝 Partnership",
+  "竞争破财":"🥊 Competition & Loss",
+  "贵人相助":"🙏 Help from Noble People",
+  "出行迁居":"🧳 Travel & Moving",
+  "进修独处":"🧘 Study & Solitude",
+  "人际应酬":"🍻 Socializing",
+  "才华输出":"🎨 Talent Shines",
+  "和合":"🤗 Harmony & Success",
+  "摩擦口角":"😤 Friction & Quarrels",
+  "暗耗谨防":"🌫️ Hidden Drains",
+  "车祸意外":"🚗 Accident Risk",
+  "出轨":"💔 Infidelity Risk",
+  "当兵入伍":"🎖️ Joining the Military",
+  "转业":"🔄 Leaving the Military",
+  "二次择业":"🔁 Changing Careers"
+};
+
+// ---------- 事件 sub 英文描述模板 ----------
+const EN_PLAIN = {
+  "收入提升":"Income (salary, business revenue, stable earnings) is on the rise this year — a great time to earn more and save.",
+  "偏财进账":"Windfall opportunities (bonuses, side income, investment returns) may appear — they come fast, so take profits early and don't get greedy.",
+  "破财":"High risk of money loss this year. Be careful with investments, lending, and guarantees; guard your wallet.",
+  "升职加薪":"Career star is strong: your boss may notice you, promotions and raises are likely. Take the initiative.",
+  "工作变动":"Workplace changes are indicated: possible transfer, job switch, or a new role with heavier duties.",
+  "创业契机":"A year with bold energy — suitable for starting a business or exploring a new path, especially with wealth stars active.",
+  "考试升学":"Study luck is strong: exams, certifications, and applications should go smoothly. Your mind is sharp.",
+  "置业买房":"A good year for property: saving, buying a house, renovation, or moving into a new home.",
+  "恋爱缘":"Romance luck is active: you may meet someone attractive, flirt, or enjoy a romantic encounter.",
+  "婚喜":"Marriage star is lit: a strong signal for engagement, wedding, or confirming a relationship this year.",
+  "感情波动":"Relationship waves this year: avoid stubbornness, communicate more, and don't let small fights grow.",
+  "怀孕生子":"Strong signal of childbirth: the family may welcome a baby this year.",
+  "子女缘":"Children-related news or a closer bond with your kids this year.",
+  "长辈健康":"Pay attention to the health of elderly family members; arrange check-ups and show more care.",
+  "丧事":"Be cautious about bereavement or serious illness among relatives; keep an eye on family matters.",
+  "伤病":"Be careful with your health: watch for exhaustion, injury, or accidents. Rest more.",
+  "口舌官非":"Guard your words: disputes, gossip, or contract troubles are possible. Read documents carefully before signing.",
+  "合伙合作":"Partnership opportunities are plenty: working together with friends or colleagues looks favorable.",
+  "竞争破财":"Competition is fierce: someone may compete for your opportunities or money. Watch for being undercut.",
+  "贵人相助":"A noble person appears at the critical moment to help you — problems may be resolved with support.",
+  "出行迁居":"Movement star is active: business trips, travel, moving house, or changing cities — mobility brings gains.",
+  "进修独处":"A good year for quiet study and reflection. Solitude can be fruitful if you endure it.",
+  "人际应酬":"Social activities increase: more gatherings and a wider network this year.",
+  "才华输出":"Your talent shines: perfect for creative work, showing skills, and enjoying life.",
+  "和合":"Harmonious combinations: relationships go well, cooperation succeeds, things move smoothly.",
+  "摩擦口角":"Minor frictions and quarrels possible: watch your tone and don't let small issues escalate.",
+  "暗耗谨防":"Hidden drains: sneaky people may cause trouble; money and energy leak quietly. Guard against scams.",
+  "车祸意外":"High risk of accidents (blade star + travel horse + clash): be extra careful driving, cycling, and walking. Slow down.",
+  "出轨":"Romance temptation year: keep boundaries strong if married; if single, beware of entangled or taken partners.",
+  "当兵入伍":"A classic military signal (Seven Killings + General/Blade/Travel stars): highly likely to join the army, military academy, or police this year.",
+  "转业":"After years of service, stars indicate leaving the military and returning to civilian work — a turning point that opens a new path.",
+  "二次择业":"Career palace is activated: a strong year to switch industries, change direction, or start a second career."
+};
+
+// ---------- 规则 desc 英文 ----------
+const EN_DESC = {
+  "流年天干正财透出":"Flow-year stem reveals Direct Wealth",
+  "正财主不动产积蓄":"Direct Wealth governs property & savings",
+  "男命正财主妻缘":"Direct Wealth = wife star for men",
+  "流年天干偏财透出":"Flow-year stem reveals Indirect Wealth",
+  "偏财主异性缘":"Indirect Wealth governs romance",
+  "偏财为父星":"Indirect Wealth = father star",
+  "流年天干正官透出":"Flow-year stem reveals Direct Officer",
+  "官星过旺防官非":"Strong Officer star — guard against disputes",
+  "女命正官主夫缘":"Direct Officer = husband star for women",
+  "流年天干七杀透出":"Flow-year stem reveals Seven Killings",
+  "七杀攻身防伤病":"Seven Killings attacking — watch health",
+  "七杀主是非":"Seven Killings govern disputes",
+  "七杀主开拓":"Seven Killings drive pioneering",
+  "流年天干正印透出":"Flow-year stem reveals Direct Resource",
+  "印星主房产":"Resource star governs property",
+  "印星主贵人":"Resource star governs noble helpers",
+  "流年天干偏印透出":"Flow-year stem reveals Indirect Resource",
+  "偏印主钻研":"Indirect Resource governs research",
+  "流年天干食神透出":"Flow-year stem reveals Eating God",
+  "食神主子女":"Eating God governs children",
+  "女命食神主子女":"Eating God = children star for women",
+  "流年天干伤官透出":"Flow-year stem reveals Hurting Officer",
+  "伤官主口舌":"Hurting Officer governs disputes",
+  "女命伤官主子女":"Hurting Officer = children star for women",
+  "流年天干比肩透出":"Flow-year stem reveals Peer",
+  "比肩主朋友":"Peer governs friends",
+  "流年天干劫财透出":"Flow-year stem reveals Rob Wealth",
+  "劫财主竞争":"Rob Wealth governs competition",
+  "冲日支配偶宫":"Clashing the Spouse Palace",
+  "合日支配偶宫":"Combining the Spouse Palace",
+  "半合配偶宫":"Half-combination with Spouse Palace",
+  "三合配偶宫":"Trine with Spouse Palace",
+  "红鸾星动":"Hong Luan (wedding star) activated",
+  "桃花星现":"Peach Blossom star appears",
+  "驿马逢动":"Travel Horse star activated",
+  "丧门入命":"Sang Men star enters",
+  "吊客临年":"Diao Ke star arrives",
+  "羊刃逢值":"Blade star in force",
+  "天乙贵人临年":"Heavenly Noble arrives",
+  "华盖入命":"Hua Gai star enters",
+  "正官/七杀+天乙贵人":"Officer + Heavenly Noble",
+  "财星+驿马":"Wealth + Travel Horse",
+  "伤官/七杀+羊刃":"Hurting Officer/Seven Killings + Blade",
+  "食伤星动+婚喜星":"Children star + wedding star",
+  "财星+红鸾":"Wealth + Hong Luan",
+  "印星+冲月柱":"Resource + clashing Month Pillar",
+  "财星+冲月柱":"Wealth + clashing Month Pillar",
+  "比肩+合":"Peer + combination",
+  "劫财+冲":"Rob Wealth + clash",
+  "劫财运遇财星":"Rob-Wealth cycle meets Wealth year",
+  "伤官运见官星":"Hurting-Officer cycle meets Officer year",
+  "比肩运遇财星":"Peer cycle meets Wealth year",
+  "杀印相生":"Killings transformed by Resource",
+  "枭神夺食":"Resource robbing Eating God",
+  "流年刑日支":"Punishment on Day Branch",
+  "财运+刑冲日支":"Wealth + punishment/clash on Day Branch",
+  "合身+财被刑冲":"Stem combining self + wealth punished",
+  "子女宫动+食伤":"Children palace + Eating God/Hurting Officer",
+  "子女宫动+官杀":"Children palace + Officer stars",
+  "食伤+财地/桃花":"Children star + wealth/romance",
+  "羊刃+驿马+冲/七杀":"Blade + Travel Horse + Clash/Seven Killings",
+  "桃花+财杀/冲日支":"Peach Blossom + wealth/killings/clash",
+  "七杀+将星/羊刃+驿马":"Seven Killings + General/Blade/Travel",
+  "官杀+羊刃驿马":"Officer stars + Blade/Travel Horse",
+  "冲月柱+偏印/伤官":"Clash Month Pillar + Indirect Resource/Hurting Officer",
+  "当兵→转业链":"Military → transfer chain"
+};
+
+// ---------- 十神 / 神煞 / 关系 英文含义 ----------
+const EN_SS_MEANING = {
+  "正财":"Stable wealth, salary, property savings; for men also the wife star",
+  "偏财":"Windfall, investment, business money; also father and romance",
+  "正官":"Career position, reputation, rules; for women also the husband star",
+  "七杀":"Pressure, competition, power changes; unmanaged → injury & disputes",
+  "正印":"Education, certificates, property, noble elders; protective energy",
+  "偏印":"Niche knowledge, deep thinking, unconventional skills; also change",
+  "食神":"Talent, enjoyment, children; gentle output",
+  "伤官":"Bright talent, creativity, outspokenness; for women also children",
+  "比肩":"Friends, brothers, partnership, independence; also rivalry",
+  "劫财":"Loss, competition, money shared; guard against financial drains"
+};
+
+const EN_PLAIN_SS = {
+  "正财":"Direct Wealth = honest, visible money: salary, business income, steady earnings. For men it also represents the wife.",
+  "偏财":"Indirect Wealth = unexpected money: bonuses, side income, investment returns, windfalls. Also represents father and romance.",
+  "正官":"Direct Officer = position, reputation, and rules. Officer luck means career recognition and authority; for women it also represents the husband.",
+  "七杀":"Seven Killings = pressure, competition, and challenges. Conquer it → power and promotion; fail → exhaustion, injury, and disputes.",
+  "正印":"Direct Resource = diplomas, certificates, housing, nobles, and elders. Good for exams, buying property, and getting help from seniors.",
+  "偏印":"Indirect Resource = niche knowledge, unique skills, unconventional expertise. Great for learning and research; also overthinking and change.",
+  "食神":"Eating God = talent, enjoyment, and children. Gentle, productive output; a comfortable, happy life.",
+  "伤官":"Hurting Officer = expressive talent, sharp tongue, creativity. Great results but easy to offend; for women also children.",
+  "比肩":"Peer = brothers, friends, partners. Working together and helping each other; also equals-level rivals.",
+  "劫财":"Rob Wealth = spending, loss, money being taken by others. Be careful in partnerships; money disputes with friends possible."
+};
+
+const EN_PLAIN_REL = {
+  "冲":"Clash = direct collision: change and sudden events — moving, job change, relationship waves. Good or bad, things happen fast.",
+  "合":"Combination = bonding and attraction: relationships deepen, deals close, romance appears, matters go smoothly.",
+  "刑":"Punishment = friction: quarrels and small annoyances that can escalate. Mind your words.",
+  "害":"Harm = hidden sabotage: petty people, silent drains, being deceived. Money and energy vanish quietly."
+};
+
+const EN_PLAIN_SHEN = {
+  "红鸾":"Hong Luan is the wedding star: engagement, marriage, license, happy ceremonies.",
+  "桃花":"Peach Blossom = charm and romance: singles may find love; married people should guard against affairs.",
+  "驿马":"Travel Horse = movement: business trips, moving, changing locations, long journeys — gain through motion.",
+  "丧门":"Sang Men relates to mourning — watch the health of elderly relatives.",
+  "吊客":"Diao Ke also relates to bereavement — be alert for illness or loss among relatives.",
+  "羊刃":"Blade is a fierce star: injury, blood, accidents, hot temper, and conflict.",
+  "天乙贵人":"Heavenly Noble is the great helper: someone pulls you through at the critical moment — disaster turns to fortune.",
+  "华盖":"Hua Gai = solitude and wisdom: good for quiet study and thought, but you may feel lonely."
+};
+
+// 中国主要城市英文名
+const CITY_EN_CN = {
+  "北京":"Beijing",
+  "上海":"Shanghai",
+  "广州":"Guangzhou",
+  "深圳":"Shenzhen",
+  "天津":"Tianjin",
+  "重庆":"Chongqing",
+  "杭州":"Hangzhou",
+  "南京":"Nanjing",
+  "苏州":"Suzhou",
+  "成都":"Chengdu",
+  "武汉":"Wuhan",
+  "西安":"Xi'an",
+  "青岛":"Qingdao",
+  "大连":"Dalian",
+  "厦门":"Xiamen",
+  "长沙":"Changsha",
+  "郑州":"Zhengzhou",
+  "沈阳":"Shenyang",
+  "哈尔滨":"Harbin",
+  "长春":"Changchun",
+  "昆明":"Kunming",
+  "香港":"Hong Kong",
+  "澳门":"Macau",
+  "台北":"Taipei",
+  "高雄":"Kaohsiung",
+  "台中":"Taichung",
+  "三亚":"Sanya",
+  "桂林":"Guilin",
+  "丽江":"Lijiang",
+  "拉萨":"Lhasa",
+  "乌鲁木齐":"Urumqi",
+  "呼和浩特":"Hohhot",
+  "兰州":"Lanzhou",
+  "西宁":"Xining",
+  "银川":"Yinchuan",
+  "宁波":"Ningbo",
+  "无锡":"Wuxi",
+  "福州":"Fuzhou",
+  "济南":"Jinan",
+  "合肥":"Hefei",
+  "南昌":"Nanchang",
+  "贵阳":"Guiyang",
+  "石家庄":"Shijiazhuang",
+  "太原":"Taiyuan",
+  "南宁":"Nanning",
+  "海口":"Haikou",
+  "珠海":"Zhuhai",
+  "佛山":"Foshan",
+  "东莞":"Dongguan",
+  "温州":"Wenzhou",
+  "泉州":"Quanzhou",
+  "烟台":"Yantai",
+  "洛阳":"Luoyang",
+  "嘉兴":"Jiaxing",
+  "绍兴":"Shaoxing",
+  "徐州":"Xuzhou",
+  "常州":"Changzhou",
+  "南通":"Nantong",
+  "扬州":"Yangzhou",
+  "镇江":"Zhenjiang",
+  "台州":"Taizhou",
+  "金华":"Jinhua",
+  "潍坊":"Weifang",
+  "淄博":"Zibo",
+  "临沂":"Linyi",
+  "保定":"Baoding",
+  "唐山":"Tangshan",
+  "邯郸":"Handan",
+  "大同":"Datong",
+  "包头":"Baotou",
+  "吉林":"Jilin",
+  "大庆":"Daqing",
+  "咸阳":"Xianyang",
+  "绵阳":"Mianyang",
+  "宜昌":"Yichang",
+  "襄阳":"Xiangyang",
+  "衡阳":"Hengyang",
+  "株洲":"Zhuzhou",
+  "湘潭":"Xiangtan",
+  "惠州":"Huizhou",
+  "中山":"Zhongshan",
+  "江门":"Jiangmen",
+  "汕头":"Shantou",
+  "湛江":"Zhanjiang",
+  "肇庆":"Zhaoqing",
+  "柳州":"Liuzhou",
+  "梧州":"Wuzhou",
+  "北海":"Beihai",
+  "大理":"Dali",
+  "黄山":"Huangshan",
+  "张家界":"Zhangjiajie",
+  "凤凰":"Fenghuang",
+  "敦煌":"Dunhuang",
+  "吐鲁番":"Turpan",
+  "喀什":"Kashgar",
+  "伊宁":"Yining",
+  "满洲里":"Manzhouli",
+  "绥芬河":"Suifenhe",
+  "景德镇":"Jingdezhen",
+  "平遥":"Pingyao",
+};
+
+const CITY_EN = Object.assign({
+  "东京":"Tokyo",
+  "大阪":"Osaka",
+  "名古屋":"Nagoya",
+  "札幌":"Sapporo",
+  "福冈":"Fukuoka",
+  "首尔":"Seoul",
+  "釜山":"Busan",
+  "平壤":"Pyongyang",
+  "新加坡":"Singapore",
+  "吉隆坡":"Kuala Lumpur",
+  "曼谷":"Bangkok",
+  "清迈":"Chiang Mai",
+  "河内":"Hanoi",
+  "胡志明市":"Ho Chi Minh City",
+  "马尼拉":"Manila",
+  "雅加达":"Jakarta",
+  "巴厘岛":"Bali",
+  "金边":"Phnom Penh",
+  "仰光":"Yangon",
+  "万象":"Vientiane",
+  "达卡":"Dhaka",
+  "加德满都":"Kathmandu",
+  "科伦坡":"Colombo",
+  "新德里":"New Delhi",
+  "孟买":"Mumbai",
+  "加尔各答":"Kolkata",
+  "班加罗尔":"Bangalore",
+  "伊斯兰堡":"Islamabad",
+  "卡拉奇":"Karachi",
+  "德黑兰":"Tehran",
+  "迪拜":"Dubai",
+  "阿布扎比":"Abu Dhabi",
+  "利雅得":"Riyadh",
+  "伊斯坦布尔":"Istanbul",
+  "安卡拉":"Ankara",
+  "特拉维夫":"Tel Aviv",
+  "耶路撒冷":"Jerusalem",
+  "巴格达":"Baghdad",
+  "伦敦":"London",
+  "曼彻斯特":"Manchester",
+  "爱丁堡":"Edinburgh",
+  "巴黎":"Paris",
+  "马赛":"Marseille",
+  "里昂":"Lyon",
+  "柏林":"Berlin",
+  "慕尼黑":"Munich",
+  "汉堡":"Hamburg",
+  "法兰克福":"Frankfurt",
+  "科隆":"Cologne",
+  "罗马":"Rome",
+  "米兰":"Milan",
+  "威尼斯":"Venice",
+  "佛罗伦萨":"Florence",
+  "马德里":"Madrid",
+  "巴塞罗那":"Barcelona",
+  "里斯本":"Lisbon",
+  "阿姆斯特丹":"Amsterdam",
+  "布鲁塞尔":"Brussels",
+  "苏黎世":"Zurich",
+  "日内瓦":"Geneva",
+  "维也纳":"Vienna",
+  "布拉格":"Prague",
+  "布达佩斯":"Budapest",
+  "华沙":"Warsaw",
+  "斯德哥尔摩":"Stockholm",
+  "哥本哈根":"Copenhagen",
+  "奥斯陆":"Oslo",
+  "赫尔辛基":"Helsinki",
+  "莫斯科":"Moscow",
+  "圣彼得堡":"St. Petersburg",
+  "基辅":"Kyiv",
+  "雅典":"Athens",
+  "都柏林":"Dublin",
+  "纽约":"New York",
+  "洛杉矶":"Los Angeles",
+  "旧金山":"San Francisco",
+  "芝加哥":"Chicago",
+  "休斯顿":"Houston",
+  "波士顿":"Boston",
+  "西雅图":"Seattle",
+  "华盛顿":"Washington",
+  "亚特兰大":"Atlanta",
+  "迈阿密":"Miami",
+  "丹佛":"Denver",
+  "多伦多":"Toronto",
+  "温哥华":"Vancouver",
+  "蒙特利尔":"Montreal",
+  "卡尔加里":"Calgary",
+  "墨西哥城":"Mexico City",
+  "圣保罗":"Sao Paulo",
+  "里约热内卢":"Rio de Janeiro",
+  "布宜诺斯艾利斯":"Buenos Aires",
+  "圣地亚哥":"Santiago",
+  "利马":"Lima",
+  "波哥大":"Bogota",
+  "加拉加斯":"Caracas",
+  "哈瓦那":"Havana",
+  "悉尼":"Sydney",
+  "墨尔本":"Melbourne",
+  "布里斯班":"Brisbane",
+  "珀斯":"Perth",
+  "阿德莱德":"Adelaide",
+  "堪培拉":"Canberra",
+  "奥克兰":"Auckland",
+  "惠灵顿":"Wellington",
+  "基督城":"Christchurch",
+  "开罗":"Cairo",
+  "约翰内斯堡":"Johannesburg",
+  "开普敦":"Cape Town",
+  "内罗毕":"Nairobi",
+  "拉各斯":"Lagos",
+  "卡萨布兰卡":"Casablanca",
+  "亚的斯亚贝巴":"Addis Ababa"
+}, CITY_EN_CN);
+const COUNTRY_EN = {
+  "中国":"China",
+  "日本":"Japan",
+  "韩国":"South Korea",
+  "朝鲜":"North Korea",
+  "新加坡":"Singapore",
+  "马来西亚":"Malaysia",
+  "泰国":"Thailand",
+  "越南":"Vietnam",
+  "菲律宾":"Philippines",
+  "印度尼西亚":"Indonesia",
+  "柬埔寨":"Cambodia",
+  "缅甸":"Myanmar",
+  "老挝":"Laos",
+  "孟加拉国":"Bangladesh",
+  "尼泊尔":"Nepal",
+  "斯里兰卡":"Sri Lanka",
+  "印度":"India",
+  "巴基斯坦":"Pakistan",
+  "伊朗":"Iran",
+  "阿联酋":"UAE",
+  "沙特阿拉伯":"Saudi Arabia",
+  "土耳其":"Turkey",
+  "以色列":"Israel",
+  "伊拉克":"Iraq",
+  "英国":"UK",
+  "法国":"France",
+  "德国":"Germany",
+  "意大利":"Italy",
+  "西班牙":"Spain",
+  "葡萄牙":"Portugal",
+  "荷兰":"Netherlands",
+  "比利时":"Belgium",
+  "瑞士":"Switzerland",
+  "奥地利":"Austria",
+  "捷克":"Czechia",
+  "匈牙利":"Hungary",
+  "波兰":"Poland",
+  "瑞典":"Sweden",
+  "丹麦":"Denmark",
+  "挪威":"Norway",
+  "芬兰":"Finland",
+  "俄罗斯":"Russia",
+  "乌克兰":"Ukraine",
+  "希腊":"Greece",
+  "爱尔兰":"Ireland",
+  "美国":"USA",
+  "加拿大":"Canada",
+  "墨西哥":"Mexico",
+  "巴西":"Brazil",
+  "阿根廷":"Argentina",
+  "智利":"Chile",
+  "秘鲁":"Peru",
+  "哥伦比亚":"Colombia",
+  "委内瑞拉":"Venezuela",
+  "古巴":"Cuba",
+  "澳大利亚":"Australia",
+  "新西兰":"New Zealand",
+  "埃及":"Egypt",
+  "南非":"South Africa",
+  "肯尼亚":"Kenya",
+  "尼日利亚":"Nigeria",
+  "摩洛哥":"Morocco",
+  "埃塞俄比亚":"Ethiopia",
+};
+// ---------- 功能函数 ----------
+function T(s, vars){
+  if(LANG === "zh") return s;
+  let en = EN_MAP[s] || s;
+  if(vars) for(const k in vars) en = en.split("{"+k+"}").join(vars[k]);
+  return en;
+}
+function wxName(wx){ return LANG==="zh" ? wx : (WX_EN[wx]||wx); }
+function ssName(ss){ return LANG==="zh" ? ss : (SS_EN[ss]||ss); }
+function ssShort(ss){ return LANG==="zh" ? (SS_SHORT[ss]||ss) : (EN_SUBCAT_SHORT[ss]||SS_EN[ss]||ss); }
+const SS_SHORT = {"正官":"事业名望","七杀":"压力闯荡","正财":"正财运","偏财":"偏财运","正印":"学习贵人","偏印":"偏门钻研","食神":"才艺口福","伤官":"才华口舌","比肩":"朋友自立","劫财":"竞争破财"};
+const EN_SUBCAT_SHORT = {"正官":"Career","七杀":"Ambition","正财":"Wealth","偏财":"Windfall","正印":"Study & mentors","偏印":"Research","食神":"Talent","伤官":"Expression","比肩":"Friends","劫财":"Competition"};
+function subLabel(sub){
+  if(LANG==="zh") return SUBCAT[sub]||sub;
+  return EN_SUBCAT[sub]||sub;
+}
+function relName(r){ return LANG==="zh" ? r : (REL_EN[r]||r); }
+function sanheName(v){ return LANG==="zh" ? v : (SANHE_EN[v]||v); }
+function nayinName(n){ return LANG==="zh" ? n : (NAYIN_EN[n]||n); }
+function shenName(s){ return LANG==="zh" ? s : (SHEN_EN[s]||s); }
+function gzDisplay(gz){
+  if(LANG==="zh") return gz;
+  const g = gz[0], z = gz[1];
+  return g + z + " <span style='font-size:.62rem;opacity:.75'>(" + GAN_PY[g] + " " + GAN_WX[g] + " · " + ZHI_PY[z] + " " + ZHI_WX[z] + ")</span>";
+}
+function gzText(gz){
+  if(LANG==="zh") return gz;
+  const g = gz[0], z = gz[1];
+  return g + z + " (" + GAN_PY[g] + " " + GAN_WX[g] + ", " + ZHI_PY[z] + " " + ZHI_WX[z] + ")";
+}
+function cangDisplay(arr){
+  if(LANG==="zh") return arr.join(" ");
+  return arr.map(c=>c+" "+GAN_WX[c]).join(" ");
+}
+function wxStatsLine(wx){
+  // wx: {金:x,木:x,...} 返回排序字符串
+  const wxNames = LANG==="zh" ? {金:"金",木:"木",水:"水",火:"火",土:"土"} : {金:"Metal",木:"Wood",水:"Water",火:"Fire",土:"Earth"};
+  const sorted = Object.entries(wx).sort((a,b)=>b[1]-a[1]);
+  return sorted.map(([k,v])=>wxNames[k]+" "+v.toFixed(1)).join(" · ");
+}
+function monthDescEn(mz){
+  const map = {子:"deep winter (11th lunar month)",丑:"late winter (12th month)",寅:"early spring (1st month)",卯:"mid spring (2nd month)",辰:"late spring (3rd month)",巳:"early summer (4th month)",午:"midsummer (5th month)",未:"late summer (6th month)",申:"early autumn (7th month)",酉:"mid autumn (8th month)",戌:"late autumn (9th month)",亥:"early winter (10th month)"};
+  return map[mz]||mz;
+}
+
+const PAREN_EN = {"日干起":"by Day stem","年干起":"by Year stem","日支起":"by Day branch","年支起":"by Year branch","月支起":"by Month branch","时支起":"by Hour branch","日柱旬":"of the Day Pillar cycle","日柱":"Day pillar","月支":"Month branch","年支":"Year branch","日干":"Day stem","年干":"Year stem","日支":"Day branch","时支":"Hour branch","旬":"cycle"};
+
+// ---------- 语言切换 UI ----------
+function setLang(l){
+  LANG = (l==="en") ? "en" : "zh";
+  try{ localStorage.setItem("bazi_lang", LANG); }catch(e){}
+  applyLang();
+  const area = document.getElementById("resultArea");
+  if(area && area.classList.contains("active") && window.__lastBazi && window.__lastInput){
+    renderReport(window.__lastBazi, window.__lastInput);
+  }
+}
+function toggleLang(){
+  setLang(LANG==="zh"?"en":"zh");
+}
+function applyLang(){
+  const btn = document.getElementById("langBtn");
+  if(btn) btn.textContent = (LANG==="zh") ? "🌐 English" : "🌐 中文";
+  document.documentElement.lang = (LANG==="zh") ? "zh-CN" : "en";
+  // 替换静态文本
+  document.querySelectorAll("[data-i18n]").forEach(el=>{
+    const zh = el.getAttribute("data-i18n");
+    el.textContent = T(zh);
+  });
+  document.querySelectorAll("[data-i18n-ph]").forEach(el=>{
+    const zh = el.getAttribute("data-i18n-ph");
+    el.setAttribute("placeholder", T(zh));
+  });
+  document.title = (LANG==="zh") ? "八字命理详批 | AgentGongju.com" : "BaZi Fortune Reading | AgentGongju.com";
+  const metaDesc = document.querySelector('meta[name="description"]');
+  if(metaDesc) metaDesc.setAttribute("content", LANG==="zh" ? "专业八字排盘：真太阳时校正、节气定月、四柱十神、大运流年、人生事件推断。输入出生年月日时与出生地，一键生成完整命书。" : "Professional BaZi (Chinese astrology) chart reading: True Solar Time, Four Pillars, Ten Gods, Luck Cycles, and life event analysis. Enter your birth info for a complete fortune report.");
+}
+
 // ==================== 基础常量 ====================
 const GAN = ["甲","乙","丙","丁","戊","己","庚","辛","壬","癸"];
 const ZHI = ["子","丑","寅","卯","辰","巳","午","未","申","酉","戌","亥"];
@@ -642,56 +1363,62 @@ function flowShensha(lz, bazi){
   return out;
 }
 
-// 大运主题（术语版）
+// 大运主题（双语）
 function dayunTheme(ssG, ssZ){
   const g = ssG||"", z = ssZ||"";
   const s = g+z;
-  if(s.includes("正官")||s.includes("七杀")) return "事业运：职位、名望、责任压力成为主线，宜进取亦需稳健";
-  if(s.includes("正财")||s.includes("偏财")) return "财运年段：财星当运，收入机会增多，理财与开源是重点";
-  if(s.includes("正印")||s.includes("偏印")) return "学习贵人运：文书、证书、房产、长辈助力明显，宜进修沉淀";
-  if(s.includes("食神")||s.includes("伤官")) return "才艺输出运：才华展现、创作表达、子女缘分，注意口舌";
-  if(s.includes("比肩")||s.includes("劫财")) return "人际竞争运：朋友合作增多，防竞争破财，合伙需谨慎";
-  return "平稳过渡期：运势平顺，按部就班积累";
+  const zh = LANG==="zh";
+  if(s.includes("正官")||s.includes("七杀")) return zh? "事业运：职位、名望、责任压力成为主线，宜进取亦需稳健" : "Career luck: position, reputation, responsibility & pressure lead — advance but stay steady";
+  if(s.includes("正财")||s.includes("偏财")) return zh? "财运年段：财星当运，收入机会增多，理财与开源是重点" : "Wealth period: wealth stars in power, more income opportunities — focus on saving and earning";
+  if(s.includes("正印")||s.includes("偏印")) return zh? "学习贵人运：文书、证书、房产、长辈助力明显，宜进修沉淀" : "Study & mentor luck: documents, certificates, property, elder support — good time to study and settle";
+  if(s.includes("食神")||s.includes("伤官")) return zh? "才艺输出运：才华展现、创作表达、子女缘分，注意口舌" : "Talent output luck: creativity, expression, children — mind your words";
+  if(s.includes("比肩")||s.includes("劫财")) return zh? "人际竞争运：朋友合作增多，防竞争破财，合伙需谨慎" : "Social & rivalry luck: more partnerships — guard against competition loss, be careful in joint ventures";
+  return zh? "平稳过渡期：运势平顺，按部就班积累" : "Steady transition: smooth luck — accumulate step by step";
 }
 
-// 大运大白话总评（带少年版措辞）
+// 大运大白话总评（双语，带少年版措辞）
 function dayunPlain(ssG, ssZ, gender, startAge){
   const gz = (ssG||"")+(ssZ||"");
   const young = (startAge!==undefined && startAge < 18);
+  const zh = LANG==="zh";
   const s = [];
   if(young){
-    if(gz.includes("正官")||gz.includes("七杀")) s.push("这十年是打基础、受管束的阶段（上学、学徒或刚入行）：规矩多、压力不小，但管得住自己、肯吃苦，以后才有出息。");
-    if(gz.includes("正印")||gz.includes("偏印")) s.push("这十年是读书学习的好时候，长辈、老师的帮衬多，专心念书、学本事最划算，考个好学校、学门好手艺都是本钱。");
-    if(gz.includes("正财")||gz.includes("偏财")) s.push("这十年开始接触钱，学会攒钱、理财、别乱花，养成好习惯受益一辈子。");
-    if(gz.includes("食神")||gz.includes("伤官")) s.push("这十年聪明劲足、爱表现，成绩和才艺容易冒尖，但也要管住嘴，别顶撞长辈老师。");
-    if(gz.includes("比肩")||gz.includes("劫财")) s.push("这十年朋友同学多、讲义气，但别跟人攀比乱花钱，也别讲义气替人背锅。");
-    if(!s.length) s.push("这十年是积累成长的关键期，打牢基础、学好本事最重要。");
+    if(gz.includes("正官")||gz.includes("七杀")) s.push(zh?"这十年是打基础、受管束的阶段（上学、学徒或刚入行）：规矩多、压力不小，但管得住自己、肯吃苦，以后才有出息。":"This decade is about building foundations under guidance (school, apprenticeship, or a first job): many rules and some pressure, but self-discipline and hard work now pay off later.");
+    if(gz.includes("正印")||gz.includes("偏印")) s.push(zh?"这十年是读书学习的好时候，长辈、老师的帮衬多，专心念书、学本事最划算，考个好学校、学门好手艺都是本钱。":"A great decade for study — elders and teachers help a lot. Focus on learning; a good school or a solid skill is real capital.");
+    if(gz.includes("正财")||gz.includes("偏财")) s.push(zh?"这十年开始接触钱，学会攒钱、理财、别乱花，养成好习惯受益一辈子。":"You begin handling money this decade: learn to save, budget, and avoid waste — good habits benefit you for life.");
+    if(gz.includes("食神")||gz.includes("伤官")) s.push(zh?"这十年聪明劲足、爱表现，成绩和才艺容易冒尖，但也要管住嘴，别顶撞长辈老师。":"Bright and expressive this decade — grades and talents may shine, but mind your tongue and respect elders and teachers.");
+    if(gz.includes("比肩")||gz.includes("劫财")) s.push(zh?"这十年朋友同学多、讲义气，但别跟人攀比乱花钱，也别讲义气替人背锅。":"Many friends and strong loyalty this decade — but don't overspend to keep up, and don't take the blame for others.");
+    if(!s.length) s.push(zh?"这十年是积累成长的关键期，打牢基础、学好本事最重要。":"A key decade of growth — building a solid foundation and learning skills matters most.");
     return s.join("");
   }
-  if(gz.includes("正财")||gz.includes("偏财")) s.push("这十年是财运当令的十年，挣钱的机会明显比别的运多：正财管稳定进账，偏财管意外之财，适合开源节流、置业攒钱，但也别贪大，见好就收。");
-  if(gz.includes("正官")||gz.includes("七杀")) s.push("这十年事业是重头戏：官杀主职位和压力，扛得住就是升职掌权、名声在外，扛不住就是劳累和是非，宜积极进取，也要守规矩、防小人。");
-  if(gz.includes("正印")||gz.includes("偏印")) s.push("这十年贵人长辈运好，适合读书、考证、进修、买房置业，靠文凭、证书和长辈助力能上一个台阶，是沉淀充电的好时候。");
-  if(gz.includes("食神")||gz.includes("伤官")) s.push("这十年才华往外冒，适合搞创作、做手艺、做生意、表现自己，容易出成果，但嘴巴要管住，防口舌是非。");
-  if(gz.includes("比肩")||gz.includes("劫财")) s.push("这十年朋友多、应酬多、合伙机会多，但钱也容易被分走，合伙务必白纸黑字、亲兄弟明算账，防竞争防破财。");
-  if(!s.length) s.push("这十年运势平稳过渡，按部就班积累实力，稳中求进就好。");
-  if((gz.includes("正财")||gz.includes("偏财"))&&gender==="male") s.push("男命财星也主妻缘，这十年感情婚姻上也会有动静。");
-  if(gz.includes("正官")&&gender==="female") s.push("女命官星为夫星，这十年感情婚姻上有机遇，适合定下来。");
+  if(gz.includes("正财")||gz.includes("偏财")) s.push(zh?"这十年是财运当令的十年，挣钱的机会明显比别的运多：正财管稳定进账，偏财管意外之财，适合开源节流、置业攒钱，但也别贪大，见好就收。":"This is a wealth decade: earning opportunities clearly outnumber other periods. Direct Wealth = stable income; Indirect Wealth = windfalls. Good for saving, property, and broadening income — but don't get greedy; take profits.");
+  if(gz.includes("正官")||gz.includes("七杀")) s.push(zh?"这十年事业是重头戏：官杀主职位和压力，扛得住就是升职掌权、名声在外，扛不住就是劳累和是非，宜积极进取，也要守规矩、防小人。":"Career dominates this decade: Officer stars rule position and pressure. Endure and you gain promotion, power, and reputation; fail and you get exhaustion and disputes. Push forward, but follow rules and watch for rivals.");
+  if(gz.includes("正印")||gz.includes("偏印")) s.push(zh?"这十年贵人长辈运好，适合读书、考证、进修、买房置业，靠文凭、证书和长辈助力能上一个台阶，是沉淀充电的好时候。":"Strong mentor and elder luck: ideal for study, certifications, further training, and buying property. Diplomas and elder support lift you a level — a good time to recharge.");
+  if(gz.includes("食神")||gz.includes("伤官")) s.push(zh?"这十年才华往外冒，适合搞创作、做手艺、做生意、表现自己，容易出成果，但嘴巴要管住，防口舌是非。":"Your talent bursts out this decade: creation, crafts, business, self-expression bring results. But watch your mouth to avoid disputes.");
+  if(gz.includes("比肩")||gz.includes("劫财")) s.push(zh?"这十年朋友多、应酬多、合伙机会多，但钱也容易被分走，合伙务必白纸黑字、亲兄弟明算账，防竞争防破财。":"Many friends, gatherings, and partnership chances this decade — but money can be split away. Put everything in writing; settle accounts clearly even with brothers; guard against rivalry and loss.");
+  if(!s.length) s.push(zh?"这十年运势平稳过渡，按部就班积累实力，稳中求进就好。":"A steady decade — accumulate strength step by step and advance cautiously.");
+  if((gz.includes("正财")||gz.includes("偏财"))&&gender==="male") s.push(zh?"男命财星也主妻缘，这十年感情婚姻上也会有动静。":"For a male chart, Wealth also rules the wife — romance and marriage may stir this decade.");
+  if(gz.includes("正官")&&gender==="female") s.push(zh?"女命官星为夫星，这十年感情婚姻上有机遇，适合定下来。":"For a female chart, Officer is the husband star — love and marriage opportunities arise; a good time to settle down.");
   return s.join("");
 }
 
-// 六亲星（男/女命）
+// 六亲星（男/女命，双语）
 function sixQin(ss, gender){
+  const zh = LANG==="zh";
   const map = {
-    "正印":"母亲/长辈/文书房产", "偏印":"继母/偏门长辈",
-    "正财": gender==="male"?"妻子/钱财":"钱财/父亲",
-    "偏财": gender==="male"?"父亲/情缘/偏财":"父亲/偏财",
-    "正官": gender==="female"?"丈夫/事业":"事业/名声",
-    "七杀": gender==="female"?"男友/情人/事业压力":"事业压力/竞争",
-    "食神": gender==="female"?"子女":"子女/才华",
-    "伤官": gender==="female"?"子女":"子女/才华",
-    "比肩":"兄弟朋友", "劫财":"朋友/竞争者"
+    "正印": ["母亲/长辈/文书房产","Mother / elders / documents & property"],
+    "偏印": ["继母/偏门长辈","Stepmother / unconventional elders"],
+    "正财": gender==="male"? ["妻子/钱财","Wife / money"] : ["钱财/父亲","Money / father"],
+    "偏财": gender==="male"? ["父亲/情缘/偏财","Father / romance / windfall"] : ["父亲/偏财","Father / windfall"],
+    "正官": gender==="female"? ["丈夫/事业","Husband / career"] : ["事业/名声","Career / reputation"],
+    "七杀": gender==="female"? ["男友/情人/事业压力","Boyfriend / lover / career pressure"] : ["事业压力/竞争","Career pressure / rivalry"],
+    "食神": gender==="female"? ["子女","Children"] : ["子女/才华","Children / talent"],
+    "伤官": gender==="female"? ["子女","Children"] : ["子女/才华","Children / talent"],
+    "比肩": ["兄弟朋友","Brothers & friends"],
+    "劫财": ["朋友/竞争者","Friends / rivals"]
   };
-  return map[ss]||"";
+  const v = map[ss];
+  return v ? v[zh?0:1] : "";
 }
 
 // 单流年分析（细分事件 + 大白话）
@@ -722,7 +1449,7 @@ function analyzeYear(yy, bazi, step, age){
     }
     if(!strong && (sub==="伤病"||sub==="口舌官非")) w2 = w*1.25;
     if(strong && (sub==="竞争破财"||sub==="破财")) w2 = w*1.2;
-    sig.points[sub]=(sig.points[sub]||0)+w2; sig.bases.push({sub, plain:p2, desc});
+    sig.points[sub]=(sig.points[sub]||0)+w2; sig.bases.push({sub, plain:p2, desc, plainEn: EN_PLAIN[sub]||p2, descEn: EN_DESC[desc]||desc});
   };
 
   // 1. 流年天干十神 → 细分事件
@@ -1009,22 +1736,22 @@ function aggregateSection(sec, bazi){
   return trimmed;
 }
 
-// 用户输入事件关键词 → 事件类型
+// 用户输入事件关键词 → 事件类型（中英文）
 function mapUserEvent(text){
   const t = String(text||"");
-  if(/参军|入伍|当兵|军校|警队|从军/.test(t)) return "当兵入伍";
-  if(/转业|退伍|退役|复员/.test(t)) return "转业";
-  if(/结婚|领证|成家|订婚/.test(t)) return "婚喜";
-  if(/生|孩子|女儿|儿子|添丁|二胎|生育|怀孕/.test(t)) return "怀孕生子";
-  if(/换工作|跳槽|转行|换行|换行业|调岗|调动|换岗/.test(t)) return "工作变动";
-  if(/升职|晋升|提拔|提干|升官|升迁/.test(t)) return "升职加薪";
-  if(/破财|亏|损失|投资失败|赔/.test(t)) return "破财";
-  if(/病|住院|手术|受伤|伤/.test(t)) return "伤病";
-  if(/车祸|事故|撞/.test(t)) return "车祸意外";
-  if(/买房|置业|购房|安家/.test(t)) return "置业买房";
-  if(/搬家|迁居|换城市|搬迁/.test(t)) return "出行迁居";
-  if(/创业|开店|开公司|办厂/.test(t)) return "创业契机";
-  if(/考试|升学|高考|考研|考证/.test(t)) return "考试升学";
+  if(/参军|入伍|当兵|军校|警队|从军|army|military|enlist|joined|join the|conscription|draft/.test(t)) return "当兵入伍";
+  if(/转业|退伍|退役|复员|discharge|transfer (from|out)|veteran|leave the (army|military|service)/.test(t)) return "转业";
+  if(/结婚|领证|成家|订婚|marry|marriage|wedding|engaged|got married/.test(t)) return "婚喜";
+  if(/生|孩子|女儿|儿子|添丁|二胎|生育|怀孕|birth|baby|child|pregnan|daughter|son|born/.test(t)) return "怀孕生子";
+  if(/换工作|跳槽|转行|换行|换行业|调岗|调动|换岗|job change|switch job|new job|changed job|career change|transfer/.test(t)) return "工作变动";
+  if(/升职|晋升|提拔|提干|升官|升迁|promot|raise|advance/.test(t)) return "升职加薪";
+  if(/破财|亏|损失|投资失败|赔|money loss|lost money|investment fail|loss|bankrupt|broke/.test(t)) return "破财";
+  if(/病|住院|手术|受伤|伤|hospital|surgery|injur|sick|illness/.test(t)) return "伤病";
+  if(/车祸|事故|撞|accident|crash/.test(t)) return "车祸意外";
+  if(/买房|置业|购房|安家|house|property|apartment|bought a house|home/.test(t)) return "置业买房";
+  if(/搬家|迁居|换城市|搬迁|move|relocat/.test(t)) return "出行迁居";
+  if(/创业|开店|开公司|办厂|business|startup|company|entrepreneur/.test(t)) return "创业契机";
+  if(/考试|升学|高考|考研|考证|exam|study|university|college|graduate|school/.test(t)) return "考试升学";
   return null;
 }
 
@@ -1118,40 +1845,53 @@ function toggleLunar(){
 }
 (function initCityList(){
   const dl = document.getElementById("cityList");
-  for(const c of CITIES) dl.insertAdjacentHTML("beforeend", `<option value="${c.name}（${c.country}）">`);
+  for(const c of CITIES){
+    const enName = CITY_EN[c.name]||c.name, enCn = COUNTRY_EN[c.country]||c.country;
+    dl.insertAdjacentHTML("beforeend", `<option value="${c.name}（${c.country}）">`);
+    dl.insertAdjacentHTML("beforeend", `<option value="${enName} (${enCn})">`);
+  }
   const inp = document.getElementById("inCity");
-  inp.addEventListener("change", function(){
-    const v = inp.value.replace(/（.*/,"").trim();
-    const c = CITIES.find(x=>x.name===v);
+  function findCity(v){
+    let c = CITIES.find(x=>x.name===v);
+    if(!c){
+      const cn = Object.keys(CITY_EN).find(k=>CITY_EN[k].toLowerCase()===v.toLowerCase());
+      if(cn) c = CITIES.find(x=>x.name===cn);
+    }
+    return c;
+  }
+  function fill(v){
+    const c = findCity(v);
     if(c){ document.getElementById("inLon").value = c.lon; document.getElementById("inTz").value = c.tz; }
+  }
+  inp.addEventListener("change", function(){
+    fill(inp.value.replace(/（.*|\(.*/,"").trim());
   });
   inp.addEventListener("input", function(){
-    const v = inp.value.replace(/（.*/,"").trim();
-    const c = CITIES.find(x=>x.name===v);
-    if(c){ document.getElementById("inLon").value = c.lon; document.getElementById("inTz").value = c.tz; }
+    fill(inp.value.replace(/（.*|\(.*/,"").trim());
   });
 })();
 function pad2(n){return String(n).padStart(2,"0");}
 function gzName(idx){return GAN[idx%10]+ZHI[idx%12];}
 
-// 日主五行性格
+// 日主五行性格（双语）
 function personality(dayGan){
   const map = {
-    "甲": "甲木是参天大树命，性格正直向上、有担当、重原则，有时认死理，有当头的潜质。",
-    "乙": "乙木是花草藤蔓命，性格柔韧灵活、会变通、适应力强，重感情，有时优柔寡断。",
-    "丙": "丙火是太阳火命，性格热情开朗、光明磊落，感染力强，脾气急、爱面子。",
-    "丁": "丁火是灯烛火命，性格细腻敏锐、外柔内刚，看得透人心，心思重、容易多愁善感。",
-    "戊": "戊土是高山厚土命，性格稳重诚信、能包容，踏实可靠，有时过于保守。",
-    "己": "己土是田园土命，性格温和细心、会过日子，善于精打细算，有时想得多。",
-    "庚": "庚金是刀剑金命，性格刚毅果断、讲义气、行动力强，说话直，容易得罪人。",
-    "辛": "辛金是珠玉金命，性格精致、追求完美、有品位，眼光高，有时清高。",
-    "壬": "壬水是江河大水平，性格豁达聪明、脑子活、交游广，想法多、不太安定。",
-    "癸": "癸水是雨露水命，性格温柔细腻、直觉准，含蓄内敛，有时想太多。"
+    "甲": ["甲木是参天大树命，性格正直向上、有担当、重原则，有时认死理，有当头的潜质。", "Jia Wood is the towering tree: upright, responsible, principled, occasionally stubborn — natural leadership potential."],
+    "乙": ["乙木是花草藤蔓命，性格柔韧灵活、会变通、适应力强，重感情，有时优柔寡断。", "Yi Wood is the vine: flexible, adaptable, deeply emotional, sometimes indecisive."],
+    "丙": ["丙火是太阳火命，性格热情开朗、光明磊落，感染力强，脾气急、爱面子。", "Bing Fire is the sun: warm, outgoing, charismatic; quick-tempered and prideful."],
+    "丁": ["丁火是灯烛火命，性格细腻敏锐、外柔内刚，看得透人心，心思重、容易多愁善感。", "Ding Fire is the candle: perceptive, gentle outside but firm inside; thoughtful, sometimes melancholic."],
+    "戊": ["戊土是高山厚土命，性格稳重诚信、能包容，踏实可靠，有时过于保守。", "Wu Earth is the mountain: steady, trustworthy, tolerant, reliable; at times overly conservative."],
+    "己": ["己土是田园土命，性格温和细心、会过日子，善于精打细算，有时想得多。", "Ji Earth is the field: gentle, meticulous, good with money; tends to overthink."],
+    "庚": ["庚金是刀剑金命，性格刚毅果断、讲义气、行动力强，说话直，容易得罪人。", "Geng Metal is the blade: decisive, loyal, action-oriented; blunt speech can offend."],
+    "辛": ["辛金是珠玉金命，性格精致、追求完美、有品位，眼光高，有时清高。", "Xin Metal is the jewel: refined, perfectionist, tasteful, sharp-eyed; sometimes aloof."],
+    "壬": ["壬水是江河大水平，性格豁达聪明、脑子活、交游广，想法多、不太安定。", "Ren Water is the great river: broad-minded, clever, sociable, full of ideas; restless."],
+    "癸": ["癸水是雨露水命，性格温柔细腻、直觉准，含蓄内敛，有时想太多。", "Gui Water is the gentle rain: soft, intuitive, reserved; sometimes overthinks."]
   };
-  return map[dayGan] || "";
+  const v = map[dayGan];
+  return v ? v[LANG==="zh"?0:1] : "";
 }
 
-// ===== 精准总结（白话·去套话）=====
+// ===== 精准总结（白话·去套话·双语）=====
 function preciseSummary(bazi){
   const p = bazi.pillars;
   const dg = p.day.g;
@@ -1165,62 +1905,79 @@ function preciseSummary(bazi){
   const missing = Object.entries(wx).filter(x=>x[1]<0.5).map(x=>x[0]);
   const ssList = Object.entries(bazi.shensha).map(([k])=>k.replace(/（.*/,""));
   const out = [];
+  const zh = LANG==="zh";
   // 1. 日主+季节寒暖
   const monthDesc = {子:"寒冬十一月",丑:"寒冬腊月",寅:"早春正月",卯:"仲春二月",辰:"暮春三月",巳:"初夏四月",午:"盛夏五月",未:"盛夏六月",申:"初秋七月",酉:"仲秋八月",戌:"暮秋九月",亥:"初冬十月"};
   const coldWarm = (mz==="亥"||mz==="子"||mz==="丑"||mz==="寅"||mz==="卯") ? "寒" : (mz==="巳"||mz==="午"||mz==="未"||mz==="申"||mz==="酉") ? "热" : "平";
-  out.push(`你生在${monthDesc[mz]||mz+"月"}，${dw}命。${personality(dg)}`);
+  out.push([`你生在${monthDesc[mz]||mz+"月"}，${dw}命。${personality(dg)}`,
+            `You were born in ${monthDescEn(mz)}, a ${WX_EN[dw]} (${dw}) person. ${personality(dg)}`]);
   // 2. 旺衰性格
-  if(sa.strong) out.push(`你的${dw}气很旺，是个主意正、能扛事的人，遇事自己拿主意，适合闯荡、担责任，但也容易固执、听不进劝。`);
-  else out.push(`你的${dw}气偏弱，性格偏含蓄内敛，遇事容易多想、需要有人撑腰，多借贵人长辈之力才能成事。`);
+  if(sa.strong) out.push([`你的${dw}气很旺，是个主意正、能扛事的人，遇事自己拿主意，适合闯荡、担责任，但也容易固执、听不进劝。`,
+                          `Your ${WX_EN[dw]} energy is very strong: decisive and dependable, you take charge in trouble — suited to bold moves and responsibility, but prone to stubbornness.`]);
+  else out.push([`你的${dw}气偏弱，性格偏含蓄内敛，遇事容易多想、需要有人撑腰，多借贵人长辈之力才能成事。`,
+                 `Your ${WX_EN[dw]} energy is on the weaker side: reserved and thoughtful, you succeed by leaning on mentors and elders.`]);
   // 3. 寒暖调候提示
-  if(dw==="火"&&coldWarm==="寒") out.push(`你是火命却生在寒天，天生需要温暖——适合在南方、靠近暖的地方发展，做事需要有人捧场鼓劲，越被认可越有干劲。`);
-  if(dw==="水"&&coldWarm==="热") out.push(`你是水命却生在热天，心思活泛但容易急躁，适合做需要冷静沉住气的事，越沉稳越有财运。`);
-  if(dw==="金"&&coldWarm==="寒") out.push(`你是金命生在寒天，性格里带着冷和硬，容易孤独要强，多与人走动、沾点烟火气反而旺你。`);
-  if(dw==="木"&&coldWarm==="寒") out.push(`你是木命生在寒天，扎根慢、起步晚，但后劲足，年轻时多积累，中年后越走越顺。`);
+  if(dw==="火"&&coldWarm==="寒") out.push([`你是火命却生在寒天，天生需要温暖——适合在南方、靠近暖的地方发展，做事需要有人捧场鼓劲，越被认可越有干劲。`,
+    `You are Fire born in cold season: you naturally need warmth — develop in the south or warmer places; you thrive on recognition and encouragement.`]);
+  if(dw==="水"&&coldWarm==="热") out.push([`你是水命却生在热天，心思活泛但容易急躁，适合做需要冷静沉住气的事，越沉稳越有财运。`,
+    `You are Water born in hot season: quick-minded but impatient — calm, patient work brings wealth.`]);
+  if(dw==="金"&&coldWarm==="寒") out.push([`你是金命生在寒天，性格里带着冷和硬，容易孤独要强，多与人走动、沾点烟火气反而旺你。`,
+    `You are Metal born in cold season: cool and tough, prone to lonely pride — stay socially active; human warmth benefits you.`]);
+  if(dw==="木"&&coldWarm==="寒") out.push([`你是木命生在寒天，扎根慢、起步晚，但后劲足，年轻时多积累，中年后越走越顺。`,
+    `You are Wood born in cold season: slow to root and start, but with strong endurance — accumulate early, and midlife gets smoother.`]);
   // 4. 月令主线（月支十神定人生主线）
   const mzSS = shishen(dg, CANG[mz][0]);
   const mainLine = {
-    "正官":"月令正官，你一生主线在'名分'：适合在单位、体制里求职位，走稳当路，最怕走歪门邪道。",
-    "七杀":"月令七杀，你一生主线在'闯'：压力大、竞争多，但扛得住就能掌权，适合军警、管理、开拓类工作。",
-    "正财":"月令正财，你一生主线在'正财'：靠正经本事挣钱，踏踏实实做实业、攒家底是你的命。",
-    "偏财":"月令偏财，你一生主线在'偏财'：做生意、跑业务、搞投资的命，钱来得活，但守财要下功夫。",
-    "正印":"月令正印，你一生主线在'学'：靠文凭、证书、技术吃饭，长辈庇荫重，适合教育、文职、科研。",
-    "偏印":"月令偏印，你一生主线在'偏门'：有特殊才艺或偏门手艺，靠独门绝活吃饭，想法独特。",
-    "食神":"月令食神，你一生主线在'才'：靠才华口福吃饭，适合手艺、创作、餐饮美食，日子过得滋润。",
-    "伤官":"月令伤官，你一生主线在'秀'：聪明外露、才华横溢，适合技术、艺术、口才类，但管住嘴才有大出息。",
-    "比肩":"月令比肩，你一生主线在'自立'：凡事靠自己，朋友兄弟多，适合合伙、体育、武职。",
-    "劫财":"月令劫财，你一生主线在'争'：身边竞争多、花钱快，要学会守财，防朋友分财。"
+    "正官":["月令正官，你一生主线在'名分'：适合在单位、体制里求职位，走稳当路，最怕走歪门邪道。","Month-branch Direct Officer: your life theme is 'position & honor' — pursue rank within organizations, walk the steady path."],
+    "七杀":["月令七杀，你一生主线在'闯'：压力大、竞争多，但扛得住就能掌权，适合军警、管理、开拓类工作。","Month-branch Seven Killings: your theme is 'conquest' — heavy pressure and rivalry, but endure and you command; suited to military, management, pioneering roles."],
+    "正财":["月令正财，你一生主线在'正财'：靠正经本事挣钱，踏踏实实做实业、攒家底是你的命。","Month-branch Direct Wealth: your theme is 'honest wealth' — earning through solid skills and building real assets."],
+    "偏财":["月令偏财，你一生主线在'偏财'：做生意、跑业务、搞投资的命，钱来得活，但守财要下功夫。","Month-branch Indirect Wealth: your theme is 'flexible wealth' — business, sales, investment; money flows in, but guarding it takes discipline."],
+    "正印":["月令正印，你一生主线在'学'：靠文凭、证书、技术吃饭，长辈庇荫重，适合教育、文职、科研。","Month-branch Direct Resource: your theme is 'learning' — live by degrees, certificates, and skills; strong elder support; suited to education, clerical, research."],
+    "偏印":["月令偏印，你一生主线在'偏门'：有特殊才艺或偏门手艺，靠独门绝活吃饭，想法独特。","Month-branch Indirect Resource: your theme is 'the niche' — unique talents and unconventional skills are your bread and butter."],
+    "食神":["月令食神，你一生主线在'才'：靠才华口福吃饭，适合手艺、创作、餐饮美食，日子过得滋润。","Month-branch Eating God: your theme is 'talent' — crafts, creation, and culinary arts bring a comfortable life."],
+    "伤官":["月令伤官，你一生主线在'秀'：聪明外露、才华横溢，适合技术、艺术、口才类，但管住嘴才有大出息。","Month-branch Hurting Officer: your theme is 'brilliance' — technology, arts, and eloquence; mind your tongue for real success."],
+    "比肩":["月令比肩，你一生主线在'自立'：凡事靠自己，朋友兄弟多，适合合伙、体育、武职。","Month-branch Peer: your theme is 'independence' — rely on yourself; many friends; suited to partnership, sports, and martial roles."],
+    "劫财":["月令劫财，你一生主线在'争'：身边竞争多、花钱快，要学会守财，防朋友分财。","Month-branch Rob Wealth: your theme is 'rivalry' — much competition and fast spending; guard your money against being divided by friends."]
   };
-  out.push(mainLine[mzSS]||"");
+  out.push(mainLine[mzSS]||["",""]);
   // 5. 五行分布提示
   if(missing.length){
-    const missHint = {金:"缺金：财星不显，理财要主动，多学点金融知识补短板。",木:"缺木：人脉和靠山弱，凡事多靠自己。",水:"缺水：脑子里的弯弯绕少，做事直接，但缺灵活。",火:"缺火：性格偏冷，缺乏热情和冲劲，要多晒太阳多运动。",土:"缺土：根基不稳，容易漂泊，早点置业安家对你有利。"};
-    out.push(`你五行缺${missing.join("、")}。${missing.map(m=>missHint[m]||"").join("")}`);
+    const missHint = {
+      金:["缺金：财星不显，理财要主动，多学点金融知识补短板。","Missing Metal: wealth star is dim — manage money actively and learn some finance."],
+      木:["缺木：人脉和靠山弱，凡事多靠自己。","Missing Wood: weak network and backing — rely mostly on yourself."],
+      水:["缺水：脑子里的弯弯绕少，做事直接，但缺灵活。","Missing Water: straightforward thinking, but lacking flexibility."],
+      火:["缺火：性格偏冷，缺乏热情和冲劲，要多晒太阳多运动。","Missing Fire: cooler temperament, less passion and drive — get more sun and exercise."],
+      土:["缺土：根基不稳，容易漂泊，早点置业安家对你有利。","Missing Earth: unstable foundation, prone to drifting — settle down with property early."]
+    };
+    out.push([`你五行缺${missing.join("、")}。${missing.map(m=>missHint[m]?missHint[m][0]:"").join("")}`,
+              `You are missing ${missing.join(", ")}. ${missing.map(m=>missHint[m]?missHint[m][1]:"").join("")}`]);
   } else {
-    out.push(`你五行俱全，性格比较均衡，人生起伏相对平缓。`);
+    out.push(["你五行俱全，性格比较均衡，人生起伏相对平缓。","All five elements are balanced: an even temperament and a relatively smooth life path."]);
   }
   // 6. 神煞点睛
-  if(ssList.includes("天乙贵人")) out.push(`你命中带天乙贵人，一辈子有贵人帮，关键时刻总有人拉你一把，遇事别硬扛。`);
-  if(ssList.includes("文昌")) out.push(`你命中带文昌，脑子好使，读书考试、学东西都比别人快。`);
-  if(ssList.includes("桃花")) out.push(`你命中带桃花，异性缘好，人也讨喜，但感情上要防烂桃花。`);
-  if(ssList.includes("驿马")) out.push(`你命中带驿马，是个闲不住爱跑的命，出外发展、跑业务比守在家里强。`);
-  if(ssList.includes("华盖")) out.push(`你命中带华盖，骨子里有点孤独，适合钻研一门学问或技艺，耐得住寂寞就有成就。`);
-  if(ssList.includes("魁罡")) out.push(`你命中带魁罡，性格刚直、眼里不揉沙子，有领导范儿，但脾气要收着点。`);
-  return out.filter(x=>x).join("");
+  if(ssList.includes("天乙贵人")) out.push(["你命中带天乙贵人，一辈子有贵人帮，关键时刻总有人拉你一把，遇事别硬扛。","You carry the Heavenly Noble star: helpers appear at critical moments — don't bear burdens alone."]);
+  if(ssList.includes("文昌")) out.push(["你命中带文昌，脑子好使，读书考试、学东西都比别人快。","You carry the Wen Chang star: a sharp mind — you learn and pass exams faster than most."]);
+  if(ssList.includes("桃花")) out.push(["你命中带桃花，异性缘好，人也讨喜，但感情上要防烂桃花。","You carry the Peach Blossom star: charming with good romance luck — but guard against bad partners."]);
+  if(ssList.includes("驿马")) out.push(["你命中带驿马，是个闲不住爱跑的命，出外发展、跑业务比守在家里强。","You carry the Travel Horse star: born to move — developing away from home or in business travel beats staying put."]);
+  if(ssList.includes("华盖")) out.push(["你命中带华盖，骨子里有点孤独，适合钻研一门学问或技艺，耐得住寂寞就有成就。","You carry the Hua Gai star: a solitary soul — deep study of one craft rewards your patience."]);
+  if(ssList.includes("魁罡")) out.push(["你命中带魁罡，性格刚直、眼里不揉沙子，有领导范儿，但脾气要收着点。","You carry the Kui Gang star: upright and sharp-eyed with a leader's air — keep your temper in check."]);
+  return out.filter(x=>x&&x[0]).map(x=>x[zh?0:1]).join("");
 }
 
-// ===== 事件白话·结合喜忌（去套话）=====
+// ===== 事件白话·结合喜忌（双语）=====
 function refinePlain(sub, plain, bazi){
   const sa = strengthAnalysis(bazi);
   const strong = sa.strong;
+  const zh = LANG==="zh";
   const tweaks = {
-    "收入提升": strong? "你身旺担得住财，这钱能接住、能攒下，放心挣。" : "你身弱财旺，钱来得费劲，见好就收，别贪大。",
-    "偏财进账": strong? "你担得起，有机会就抓，能落袋。" : "你身弱守不住，小赚即走，别恋战。",
-    "破财": strong? "你身旺不怕破，但也不该花的别乱花。" : "你身弱，破财伤身，这年管住钱包最重要。",
-    "升职加薪": strong? "你有底气，职位上大胆争取。" : "你身弱，职务是压力，能守则守，别硬扛。",
-    "考试升学": strong? "你状态好，考运在线，正常发挥就成。" : "你状态偏软，要多下功夫，别指望临场运气。"
+    "收入提升": strong? ["你身旺担得住财，这钱能接住、能攒下，放心挣。","Your strong self can hold this wealth — earn with confidence and save it."] : ["你身弱财旺，钱来得费劲，见好就收，别贪大。","Your weaker self strains under wealth — take profits and don't overreach."],
+    "偏财进账": strong? ["你担得起，有机会就抓，能落袋。","You can handle it — seize the chance and bank the gains."] : ["你身弱守不住，小赚即走，别恋战。","You can't hold much — take small gains and walk away."],
+    "破财": strong? ["你身旺不怕破，但也不该花的别乱花。","Your strong self survives losses, but still avoid unnecessary spending."] : ["你身弱，破财伤身，这年管住钱包最重要。","Losses hurt you more — guarding your wallet is priority this year."],
+    "升职加薪": strong? ["你有底气，职位上大胆争取。","You have the foundation — boldly pursue the position."] : ["你身弱，职务是压力，能守则守，别硬扛。","A higher post means more pressure for you — keep what you have."],
+    "考试升学": strong? ["你状态好，考运在线，正常发挥就成。","You're in good form — normal performance is enough."] : ["你状态偏软，要多下功夫，别指望临场运气。","Your form is soft — put in extra effort, don't rely on luck."]
   };
-  return plain + (tweaks[sub]||"");
+  const tw = tweaks[sub];
+  return (zh?plain:(EN_PLAIN[sub]||plain)) + (tw?tw[zh?0:1]:"");
 }
 // 五行旺衰简评 + 喜用神（简化规则：按月令旺相休囚死 + 得地通根）
 function strengthAnalysis(bazi){
@@ -1241,9 +1998,9 @@ function strengthAnalysis(bazi){
     const s1 = shishen(dg, p.g);
     if(sameWx.includes(s1)) same++; else diff++;
   }
-  const verdict = strong ? "偏强" : "偏弱";
-  const xi = strong ? "克泄耗（官杀、食伤、财星）" : "生扶（印星、比劫）";
-  const ji = strong ? "印比" : "财官食伤";
+  const verdict = strong ? (LANG==="zh"?"偏强":"Slightly Strong") : (LANG==="zh"?"偏弱":"Slightly Weak");
+  const xi = strong ? (LANG==="zh"?"克泄耗（官杀、食伤、财星）":"Draining elements (Officer, Output, Wealth)") : (LANG==="zh"?"生扶（印星、比劫）":"Supporting elements (Resource, Peer)");
+  const ji = strong ? (LANG==="zh"?"印比":"Resource & Peer") : (LANG==="zh"?"财官食伤":"Wealth, Officer & Output");
   return {score, strong, verdict, xi, ji, same, diff, season: mw, seasonRank};
 }
 // 五行缺补
@@ -1258,74 +2015,90 @@ function wuxingStats(bazi){
 
 function renderReport(bazi, input){
   const h = [];
-  const name = input.name || "命主";
-  h.push(`<div class="rp-card"><h2>📋 基本信息 <span class="tag">输入回显</span></h2>`);
+  const zh = LANG==="zh";
+  const name = input.name || T("命主");
+  const cityShow = (!zh && CITY_EN[input.city]) ? CITY_EN[input.city] : input.city;
+  const yS = (y)=> zh ? y+"年" : String(y);
+  const aS = (a)=> zh ? a+"岁" : "Age "+a;
+  h.push(`<div class="rp-card"><h2>${T("📋 基本信息")} <span class="tag">${T("输入回显")}</span></h2>`);
   h.push(`<div class="info-grid">`);
-  h.push(`<div><span class="k">姓名：</span><span class="v">${name}</span></div>`);
-  h.push(`<div><span class="k">性别：</span><span class="v">${input.gender==="male"?"男":"女"}</span></div>`);
-  h.push(`<div><span class="k">出生时间：</span><span class="v">${input.calendar==="lunar"?"农历":"公历"} ${input.dateStr} ${input.timeStr}</span></div>`);
-  h.push(`<div><span class="k">出生地：</span><span class="v">${input.city}（经度 ${input.lon}°，UTC${input.tz>=0?"+":""}${input.tz}）</span></div>`);
+  h.push(`<div><span class="k">${T("姓名：")}</span><span class="v">${name}</span></div>`);
+  h.push(`<div><span class="k">${T("性别：")}</span><span class="v">${input.gender==="male"?T("男"):T("女")}</span></div>`);
+  h.push(`<div><span class="k">${T("出生时间：")}</span><span class="v">${input.calendar==="lunar"?T("农历"):T("公历")} ${input.dateStr} ${input.timeStr}</span></div>`);
+  h.push(`<div><span class="k">${T("出生地：")}</span><span class="v">${cityShow}${zh?`（经度 ${input.lon}°，UTC${input.tz>=0?"+":""}${input.tz}）`:` (lon ${input.lon}°, UTC${input.tz>=0?"+":""}${input.tz})`}</span></div>`);
   const ts = bazi.trueSolar;
-  h.push(`<div><span class="k">真太阳时：</span><span class="v">${ts.y}年${ts.m}月${ts.d}日 ${pad2(ts.h)}:${pad2(ts.mi)}:${pad2(ts.s||0)}</span></div>`);
-  h.push(`<div><span class="k">均时差：</span><span class="v">${bazi.eot>=0?"+":""}${bazi.eot.toFixed(1)} 分钟</span></div>`);
-  h.push(`<div><span class="k">经度修正：</span><span class="v">${((input.lon-120)*4)>=0?"+":""}${((input.lon-120)*4).toFixed(1)} 分钟</span></div>`);
-  h.push(`<div><span class="k">排盘规则：</span><span class="v">${input.useTrueSolar?"真太阳时校正":"北京时间"} · ${input.lateZishi?"晚子时归次日":"晚子时归当日"}</span></div>`);
+  h.push(`<div><span class="k">${T("真太阳时：")}</span><span class="v">${zh?`${ts.y}年${ts.m}月${ts.d}日`:`${ts.y}-${pad2(ts.m)}-${pad2(ts.d)}`} ${pad2(ts.h)}:${pad2(ts.mi)}:${pad2(ts.s||0)}</span></div>`);
+  h.push(`<div><span class="k">${T("均时差：")}</span><span class="v">${bazi.eot>=0?"+":""}${bazi.eot.toFixed(1)} ${T(" 分钟")}</span></div>`);
+  h.push(`<div><span class="k">${T("经度修正：")}</span><span class="v">${((input.lon-120)*4)>=0?"+":""}${((input.lon-120)*4).toFixed(1)} ${T(" 分钟")}</span></div>`);
+  h.push(`<div><span class="k">${T("排盘规则：")}</span><span class="v">${input.useTrueSolar?T("真太阳时校正"):T("北京时间")} · ${input.lateZishi?T("晚子时归次日"):T("晚子时归当日")}</span></div>`);
   h.push(`</div></div>`);
 
   // 四柱
   const p = bazi.pillars;
-  const pillars = [["年柱",p.year,"祖上·早年"],["月柱",p.month,"父母·根基"],["日柱",p.day,"自身·配偶"],["时柱",p.hour,"子女·晚年"]];
-  h.push(`<div class="rp-card"><h2>🧱 八字四柱</h2><div class="bazi-grid">`);
+  const pillars = [["年柱",p.year,"（祖上·早年）"],["月柱",p.month,"（父母·根基）"],["日柱",p.day,"（自身·配偶）"],["时柱",p.hour,"（子女·晚年）"]];
+  h.push(`<div class="rp-card"><h2>${T("🧱 八字四柱")}</h2><div class="bazi-grid">`);
   for(const [pl, col, note] of pillars){
     const dg = p.day.g;
     const gzss = shishen(dg, col.g);
     const zhiMainSS = shishen(dg, CANG[col.z][0]);
     h.push(`<div class="bazi-pillar">`);
-    h.push(`<div class="pl">${pl}（${note}）</div>`);
-    h.push(`<div class="gz">${col.g}${col.z}</div>`);
-    h.push(`<div class="wuxing">${WX_GAN[col.g]}${col.z} · ${YY_GAN[col.g]}${YY_GAN[col.g]}</div>`);
-    h.push(`<div class="ss">${gzss} <span style="opacity:.7">/ ${zhiMainSS}</span></div>`);
-    h.push(`<div class="cang">藏干：${CANG[col.z].join(" ")}</div>`);
-    h.push(`<div class="nayin">纳音：${NAYIN[Math.floor(col.idx/2)]}</div>`);
-    h.push(`<div class="ss-god">${shishen(dg, col.g)}(${WX_GAN[col.g]})</div>`);
+    h.push(`<div class="pl">${T(pl)}${T(note)}</div>`);
+    h.push(`<div class="gz">${gzDisplay(col.g+col.z)}</div>`);
+    h.push(`<div class="wuxing">${zh?WX_GAN[col.g]+col.z+" · "+YY_GAN[col.g]+YY_GAN[col.g] : GAN_WX[col.g]+" "+ZHI_WX[col.z]+" · "+YY_EN[YY_GAN[col.g]]}</div>`);
+    h.push(`<div class="ss">${ssName(gzss)} <span style="opacity:.7">/ ${ssName(zhiMainSS)}</span></div>`);
+    h.push(`<div class="cang">${T("藏干：")}${cangDisplay(CANG[col.z])}</div>`);
+    h.push(`<div class="nayin">${T("纳音：")}${nayinName(NAYIN[Math.floor(col.idx/2)])}</div>`);
+    h.push(`<div class="ss-god">${ssName(shishen(dg, col.g))}(${wxName(WX_GAN[col.g])})</div>`);
     h.push(`</div>`);
   }
   h.push(`</div>`);
   // 神煞
   const ssList = Object.entries(bazi.shensha);
   if(ssList.length){
-    h.push(`<div class="section-title">✨ 命里带的星（神煞）</div>`);
-    for(const [k,v] of ssList) h.push(`<span class="tag-badge">${k} → ${v}</span>`);
-    h.push(`<div style="color:#64748b;font-size:.76rem;margin-top:8px;line-height:1.7">这些是命里带的'特殊星'：天乙贵人是贵人星、文昌是聪明星、桃花是异性缘、驿马是奔波星、华盖主孤独智慧……您对应的每个星在白话总结里都有解释。</div>`);
+    h.push(`<div class="section-title">${T("✨ 命里带的星（神煞）")}</div>`);
+    const COL_EN = {年支:"Year branch",月支:"Month branch",日支:"Day branch",时支:"Hour branch",日柱:"Day pillar",日干:"Day stem",年干:"Year stem"};
+    for(const [k,v] of ssList){
+      if(zh) h.push(`<span class="tag-badge">${k} → ${v}</span>`);
+      else {
+        const core = k.replace(/[（(].*/,"");
+        const paren = k.match(/[（(]([^）)]*)[）)]/);
+        const vEn = COL_EN[v]||v;
+        h.push(`<span class="tag-badge">${shenName(core)}${paren?` (${PAREN_EN[paren[1]]||paren[1]})`:""} → ${vEn}</span>`);
+      }
+    }
+    h.push(`<div style="color:#64748b;font-size:.76rem;margin-top:8px;line-height:1.7">${T("这些是命里带的'特殊星'：天乙贵人是贵人星、文昌是聪明星、桃花是异性缘、驿马是奔波星、华盖主孤独智慧……您对应的每个星在白话总结里都有解释。")}</div>`);
   }
   h.push(`</div>`);
 
   // 命主总评（白话·精准）
-  h.push(`<div class="rp-card"><h2>🧭 命主总评 <span class="tag">大白话总结</span></h2>`);
+  h.push(`<div class="rp-card"><h2>${T("🧭 命主总评")} <span class="tag">${T("大白话总结")}</span></h2>`);
   h.push(`<div class="plain-block" style="line-height:2">${preciseSummary(bazi)}</div>`);
   const wx = wuxingStats(bazi);
-  const wxNames = {金:"金",木:"木",水:"水",火:"火",土:"土"};
+  const wxNames = zh ? {金:"金",木:"木",水:"水",火:"火",土:"土"} : {金:"Metal",木:"Wood",水:"Water",火:"Fire",土:"Earth"};
   const wxSorted = Object.entries(wx).sort((a,b)=>b[1]-a[1]);
   const missing = Object.entries(wx).filter(x=>x[1]<0.5).map(x=>wxNames[x[0]]);
   h.push(`<div class="info-grid">`);
-  h.push(`<div><span class="k">五行强弱排序：</span><span class="v">${wxSorted.map(([k,v])=>wxNames[k]+" "+v.toFixed(1)).join(" · ")}</span></div>`);
-  h.push(`<div><span class="k">五行所缺：</span><span class="v">${missing.length?missing.join("、"):"无明显缺失"}</span></div>`);
+  h.push(`<div><span class="k">${T("五行强弱排序：")}</span><span class="v">${wxSorted.map(([k,v])=>wxNames[k]+" "+v.toFixed(1)).join(" · ")}</span></div>`);
+  h.push(`<div><span class="k">${T("五行所缺：")}</span><span class="v">${missing.length?missing.join(zh?"、":", "):T("无明显缺失")}</span></div>`);
   h.push(`</div>`);
   h.push(`</div>`);
 
   // 大运
   const qy = bazi.dayun.qiYun;
-  h.push(`<div class="rp-card"><h2>🚀 起运与大运</h2>`);
-  h.push(`<div class="theme-line">${bazi.forward?"阳男/阴女顺排":"阴男/阳女逆排"}大运。出生后约 <b>${qy[0]}年${qy[1]}个月${qy[2]}天</b> 起运（${qy[0]>=1?"虚岁"+(qy[0]+1):"幼年"}交第一步大运）。</div>`);
-  h.push(`<table class="dayun-table"><tr><th>大运</th><th>主事</th><th>年龄段</th><th>公历年份</th><th>这步运的主题</th></tr>`);
-  const SS_SHORT = {"正官":"事业名望","七杀":"压力闯荡","正财":"正财运","偏财":"偏财运","正印":"学习贵人","偏印":"偏门钻研","食神":"才艺口福","伤官":"才华口舌","比肩":"朋友自立","劫财":"竞争破财"};
+  h.push(`<div class="rp-card"><h2>${T("🚀 起运与大运")}</h2>`);
+  if(zh){
+    h.push(`<div class="theme-line">${bazi.forward?"阳男/阴女顺排":"阴男/阳女逆排"}大运。出生后约 <b>${qy[0]}年${qy[1]}个月${qy[2]}天</b> 起运（${qy[0]>=1?"虚岁"+(qy[0]+1):"幼年"}交第一步大运）。</div>`);
+  } else {
+    h.push(`<div class="theme-line">${bazi.forward?"Yang male / Yin female":"Yin male / Yang female"} — ${bazi.forward?"forward":"reverse"} order. Luck starts about <b>${qy[0]}y ${qy[1]}m ${qy[2]}d</b> after birth (${qy[0]>=1?"age "+(qy[0]+1):"early childhood"}).</div>`);
+  }
+  h.push(`<table class="dayun-table"><tr><th>${T("大运")}</th><th>${T("主事")}</th><th>${T("年龄段")}</th><th>${T("公历年份")}</th><th>${T("这步运的主题")}</th></tr>`);
   for(const s of bazi.dayun.steps){
     const sG = s.gz[0];
     const ss = shishen(p.day.g, sG);
     const theme = dayunTheme(ss, shishen(p.day.g, CANG[s.gz[1]][0]));
     const sy = bazi.birthYear + Math.round(s.start);
     const ey = bazi.birthYear + Math.round(s.end);
-    h.push(`<tr><td class="gz-cell">${s.gz}</td><td>${SS_SHORT[ss]||ss}</td><td>${s.start}—${s.end}岁</td><td>${sy}—${ey}年</td><td style="font-size:.78rem;color:#94a3b8">${theme.split("：")[0]}</td></tr>`);
+    h.push(`<tr><td class="gz-cell">${gzDisplay(s.gz)}</td><td>${ssShort(ss)}</td><td>${zh?`${s.start}—${s.end}岁`:`Age ${s.start}–${s.end}`}</td><td>${zh?`${sy}—${ey}年`:sy+"–"+ey}</td><td style="font-size:.78rem;color:#94a3b8">${zh?theme.split("：")[0]:theme}</td></tr>`);
   }
   h.push(`</table></div>`);
 
@@ -1333,22 +2106,21 @@ function renderReport(bazi, input){
   const userEvents = parseUserEvents(input.userEvents);
   const verifyRes = userEvents.length ? verifyUserEvents(bazi, userEvents) : [];
   const lifeEvents = buildLifeEvents(bazi, input.userEvents);
-  const MAJOR_SHOW = {婚喜:"💍 婚喜", 怀孕生子:"👶 添丁", 当兵入伍:"🎖️ 参军", 转业:"🔄 转业", 二次择业:"🔁 换行业", 工作变动:"🔄 换工作", 升职加薪:"🏆 升职", 破财:"⚠️ 破财", 伤病:"🏥 伤病", 车祸意外:"🚗 车祸磕碰", 置业买房:"🏠 买房", 出行迁居:"🧳 搬家", 创业契机:"🚀 创业", 偏财进账:"🎲 进财"};
-  h.push(`<div class="rp-card"><h2>📅 ${name}的一生大事 <span class="tag">哪年发生什么事 · 精准到年</span></h2>`);
-  h.push(`<div class="warn" style="border-color:rgba(99,102,241,.3);background:rgba(99,102,241,.06);color:#c7d2fe">下面按时间顺序把这一生的大事一件一件列出来：哪年参军、哪年结婚、哪年生孩子、哪年换工作、哪年破财，每件事只标最有可能的那一年。您填过的已发生大事会优先核验；没填的就看命理信号。这是传统命理推法，说的是可能性，不是定数，供您参考。</div>`);
+  h.push(`<div class="rp-card"><h2>${zh?"📅 "+name+"的一生大事":"📅 "+name+"'s Life Events"} <span class="tag">${T("哪年发生什么事 · 精准到年")}</span></h2>`);
+  h.push(`<div class="warn" style="border-color:rgba(99,102,241,.3);background:rgba(99,102,241,.06);color:#c7d2fe">${T("下面按时间顺序把这一生的大事一件一件列出来：哪年参军、哪年结婚、哪年生孩子、哪年换工作、哪年破财，每件事只标最有可能的那一年。您填过的已发生大事会优先核验；没填的就看命理信号。这是传统命理推法，说的是可能性，不是定数，供您参考。")}</div>`);
   // 已发生大事核验
   if(verifyRes.length){
-    h.push(`<div class="section-title">✅ 您填的大事 · 命理核验</div>`);
+    h.push(`<div class="section-title">${T("✅ 您填的大事 · 命理核验")}</div>`);
     for(const v of verifyRes){
       if(v.matched){
-        h.push(`<div class="verify-item ok"><div class="v-head"><span class="v-year">${v.raw}</span><span class="v-badge-ok">✓ 命理吻合</span></div><div class="v-plain">${v.match.plain}</div></div>`);
+        h.push(`<div class="verify-item ok"><div class="v-head"><span class="v-year">${v.raw}</span><span class="v-badge-ok">${T("✓ 命理吻合")}</span></div><div class="v-plain">${zh?v.match.plain:(EN_PLAIN[v.sub]||v.match.plain)}</div></div>`);
       } else {
-        h.push(`<div class="verify-item no"><div class="v-head"><span class="v-year">${v.raw}</span><span class="v-badge-no">△ 信号不明显</span></div><div class="v-plain">这年命盘信号不强，可能跟出生时辰不准或大运边界有关，也可能属个人主动选择。可核对一下出生时间是否准确。</div></div>`);
+        h.push(`<div class="verify-item no"><div class="v-head"><span class="v-year">${v.raw}</span><span class="v-badge-no">${T("△ 信号不明显")}</span></div><div class="v-plain">${T("这年命盘信号不强，可能跟出生时辰不准或大运边界有关，也可能属个人主动选择。可核对一下出生时间是否准确。")}</div></div>`);
       }
     }
   }
   // 一生大事列表
-  h.push(`<div class="section-title">📌 一生大事（按时间排）</div>`);
+  h.push(`<div class="section-title">${T("📌 一生大事（按时间排）")}</div>`);
   const confirmedYears = {};
   for(const v of verifyRes) if(v.matched) confirmedYears[v.match.year+"_"+v.sub] = 1;
   if(lifeEvents.length){
@@ -1356,44 +2128,39 @@ function renderReport(bazi, input){
     for(const ev of lifeEvents){
       const year = ev.year, age = year - bazi.birthYear;
       h.push(`<div class="big-item">`);
-      h.push(`<div class="big-left"><span class="big-year">${year}年</span><span class="big-age">${age}岁</span></div>`);
+      h.push(`<div class="big-left"><span class="big-year">${yS(year)}</span><span class="big-age">${aS(age)}</span></div>`);
       h.push(`<div class="big-right">`);
-      h.push(`<div class="big-label">${ev.list.map(t=>(MAJOR_SHOW[t.sub]||t.sub)+(confirmedYears[year+"_"+t.sub]?' <span class="v-badge-ok" style="margin-left:2px">✔已发生</span>':'')).join(' · ')}</div>`);
+      h.push(`<div class="big-label">${ev.list.map(t=>subLabel(t.sub)+(confirmedYears[year+"_"+t.sub]?` <span class="v-badge-ok" style="margin-left:2px">${T("✔已发生")}</span>`:"")).join(' · ')}</div>`);
       h.push(`<div class="big-plain">${ev.list.map(t=>refinePlain(t.sub, t.plain, bazi)).join('')}</div>`);
       h.push(`</div></div>`);
     }
     h.push(`</div>`);
   } else {
-    h.push(`<div style="color:#64748b;font-size:.85rem">未发现明显大事信号，请核对出生时间。</div>`);
+    h.push(`<div style="color:#64748b;font-size:.85rem">${T("未发现明显大事信号，请核对出生时间。")}</div>`);
   }
   h.push(`</div>`);
 
   // ===== 往后看 =====
   const future = lifeEvents.filter(ev=>ev.year>=2026);
-  h.push(`<div class="rp-card"><h2>🔭 往后看 <span class="tag">未来几年重点</span></h2>`);
+  h.push(`<div class="rp-card"><h2>${T("🔭 往后看")} <span class="tag">${T("未来几年重点")}</span></h2>`);
   if(future.length){
     for(const ev of future.slice(0,4)){
       const top = ev.list[0];
       const confCls = top.raw>=7?"conf-high":top.raw>=4.5?"conf-mid":"conf-ref";
       h.push(`<div class="ev-item">`);
-      h.push(`<div class="ev-head"><span class="ev-cat">${MAJOR_SHOW[top.sub]||top.sub}</span><span class="${confCls}" style="font-size:.78rem">把握度：${top.raw>=7?"高":top.raw>=4.5?"中":"参考"}</span></div>`);
-      h.push(`<div class="ev-when">🎯 ${ev.year}年（${ev.year-bazi.birthYear}岁）</div>`);
+      h.push(`<div class="ev-head"><span class="ev-cat">${subLabel(top.sub)}</span><span class="${confCls}" style="font-size:.78rem">${T("把握度：")}${top.raw>=7?T("高"):top.raw>=4.5?T("中"):T("参考")}</span></div>`);
+      h.push(`<div class="ev-when">🎯 ${zh?`${ev.year}年（${ev.year-bazi.birthYear}岁）`:`${ev.year} (age ${ev.year-bazi.birthYear})`}</div>`);
       h.push(`<div class="ev-plain">${refinePlain(top.sub, top.plain, bazi)}</div>`);
       h.push(`</div>`);
     }
   } else {
-    h.push(`<div style="color:#64748b;font-size:.85rem">往后暂无高信号年份，平稳为主，安心过日子。</div>`);
+    h.push(`<div style="color:#64748b;font-size:.85rem">${T("往后暂无高信号年份，平稳为主，安心过日子。")}</div>`);
   }
   h.push(`</div>`);
 
   // 免责
-  h.push(`<div class="rp-card"><h2>📖 说明</h2>`);
-  h.push(`<div class="disclaimer">
-① 排盘算法：节气采用 VSOP87 高精度天文算法（误差约1分钟内，已含ΔT时差修正），真太阳时含经度修正（每度4分钟，以东经120°为基准）与均时差，日柱以儒略日推算，年柱以立春为界、月柱以节气为界、时柱五鼠遁。
-② 若出生时刻恰逢节气交界（前后数分钟），月柱/年柱可能受影响，请核对出生证明时间。
-③ 事件推断基于传统命理规则（十神事象、宫位、神煞、刑冲合害）的统计性提示，仅供文化娱乐与自我参考，切勿作为决策依据。
-④ 本工具不涉及任何医疗、法律、投资建议。
-</div>`);
+  h.push(`<div class="rp-card"><h2>${T("📖 说明")}</h2>`);
+  h.push(`<div class="disclaimer">${T("① 排盘算法：节气采用 VSOP87 高精度天文算法（误差约1分钟内，已含ΔT时差修正），真太阳时含经度修正（每度4分钟，以东经120°为基准）与均时差，日柱以儒略日推算，年柱以立春为界、月柱以节气为界、时柱五鼠遁。")}<br>${T("② 若出生时刻恰逢节气交界（前后数分钟），月柱/年柱可能受影响，请核对出生证明时间。")}<br>${T("③ 事件推断基于传统命理规则（十神事象、宫位、神煞、刑冲合害）的统计性提示，仅供文化娱乐与自我参考，切勿作为决策依据。")}<br>${T("④ 本工具不涉及任何医疗、法律、投资建议。")}</div>`);
   h.push(`</div>`);
 
   document.getElementById("resultArea").innerHTML = h.join("");
@@ -1414,27 +2181,34 @@ function run(){
     const tz = parseFloat(document.getElementById("inTz").value);
     const useTrueSolar = document.getElementById("optTrueSolar").checked;
     const lateZishi = document.getElementById("optZishi").checked;
-    if(!dateStr || !timeStr){ alert("请填写出生日期和时间"); return; }
-    if(isNaN(lon)){ alert("请选择出生地或填写经度"); return; }
+    if(!dateStr || !timeStr){ alert(T("请填写出生日期和时间")); return; }
+    if(isNaN(lon)){ alert(T("请选择出生地或填写经度")); return; }
     const [yy, mm, dd] = dateStr.split("-").map(Number);
     const [hh, mi] = timeStr.split(":").map(Number);
     let solar = {y:yy, m:mm, d:dd};
     if(calendar === "lunar"){
       const leap = document.getElementById("inLunarLeap").value === "1";
       const g = lunarToGregorian(yy, mm, dd, leap);
-      if(!g){ alert("农历日期转换失败，请检查日期是否正确"); return; }
+      if(!g){ alert(T("农历日期转换失败，请检查日期是否正确")); return; }
       solar = {y:g.y, m:g.m, d:g.d};
     }
-    const cityName = cityInput.replace(/（.*/,"").trim();
+    let cityName = cityInput.replace(/（.*|\(.*/,"").trim();
+    if(!CITIES.find(x=>x.name===cityName)){
+      const cn = Object.keys(CITY_EN).find(k=>CITY_EN[k].toLowerCase()===cityName.toLowerCase());
+      if(cn) cityName = cn;
+    }
     const bazi = buildBazi({y:solar.y, m:solar.m, d:solar.d, h:hh, mi:mi}, lon, tz, gender, useTrueSolar, lateZishi);
     const userEventsText = (document.getElementById("inEvents")||{}).value||"";
-    renderReport(bazi, {name, gender, calendar, dateStr, timeStr, city: cityName||"自定义", lon, tz, useTrueSolar, lateZishi, userEvents: userEventsText});
+    window.__lastBazi = bazi;
+    window.__lastInput = {name, gender, calendar, dateStr, timeStr, city: cityName||T("自定义"), lon, tz, useTrueSolar, lateZishi, userEvents: userEventsText};
+    renderReport(bazi, window.__lastInput);
   }catch(e){
     console.error(e);
-    alert("排盘出错：" + e.message);
+    alert(T("排盘出错：") + e.message);
   }
 }
 
+applyLang();
 </script>
 </body>
 </html>
