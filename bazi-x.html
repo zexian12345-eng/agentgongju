@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>This ancient BaZi tool predicted my whole life 🤯 | AgentGongju</title>
+<meta name="description" content="A free Chinese BaZi (Four Pillars) fortune reading tool with NASA-precision astronomy. It predicted my career change year. Try it free.">
+<meta property="og:title" content="This ancient BaZi tool predicted my whole life 🤯">
+<meta property="og:description" content="Free Chinese BaZi fortune reading — Four Pillars, luck cycles, life events. NASA-precision solar terms. Try it free.">
+<meta property="og:image" content="https://agentgongju.com/img/bazi-report-en.png">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#000;color:#e7e9ea;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.5;-webkit-font-smoothing:antialiased}
+a{color:#1d9bf0;text-decoration:none}
+/* 顶栏（X 风格） */
+.topbar{position:sticky;top:0;z-index:100;background:rgba(0,0,0,.85);backdrop-filter:blur(12px);border-bottom:1px solid #2f3336;display:flex;align-items:center;gap:16px;padding:10px 20px}
+.topbar .x-logo{width:26px;height:26px;fill:#e7e9ea;flex-shrink:0}
+.topbar .tb-title{font-size:1.05rem;font-weight:700;letter-spacing:.2px}
+.topbar .tb-tag{font-size:.75rem;color:#71767b}
+.topbar .tb-right{margin-left:auto;font-size:.8rem;color:#71767b}
+.wrap{max-width:600px;margin:0 auto;padding:0 0 120px}
+/* 主推文 */
+.tweet{padding:16px 20px;border-bottom:1px solid #2f3336;cursor:pointer;transition:background .15s}
+.tweet:hover{background:#080808}
+.t-head{display:flex;gap:12px}
+.avatar{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#1d9bf0,#7c3aed);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;color:#fff}
+.avatar svg{width:24px;height:24px;fill:#fff}
+.t-user{flex:1;min-width:0}
+.t-name{font-weight:700;font-size:.95rem;display:flex;align-items:center;gap:4px}
+.blue-check{width:17px;height:17px;fill:#1d9bf0;flex-shrink:0}
+.t-handle{color:#71767b;font-size:.9rem}
+.t-badge{display:inline-flex;align-items:center;gap:4px;margin-left:6px;background:rgba(29,155,240,.12);color:#1d9bf0;border:1px solid rgba(29,155,240,.25);border-radius:999px;padding:1px 10px;font-size:.72rem;font-weight:600}
+.t-more{margin-left:auto;color:#71767b;font-size:1.1rem;cursor:pointer}
+.t-body{padding:8px 0 4px 56px;font-size:.98rem;white-space:pre-line}
+.t-body .hl{color:#1d9bf0}
+.t-media{margin:10px 0 6px 56px;border-radius:16px;overflow:hidden;border:1px solid #2f3336;background:#0a0a0a}
+.t-media img{width:100%;display:block}
+.t-media .m-cap{display:flex;align-items:center;gap:8px;padding:10px 14px;border-top:1px solid #2f3336;font-size:.85rem;color:#71767b}
+.t-media .m-cap .m-url{color:#1d9bf0;font-size:.85rem;font-weight:600}
+.t-time{padding:4px 0 8px 56px;font-size:.88rem;color:#71767b}
+.t-actions{display:flex;justify-content:space-between;max-width:440px;margin-left:56px;padding-top:6px;border-top:1px solid #2f3336}
+.t-actions .act{display:flex;align-items:center;gap:8px;color:#71767b;font-size:.85rem;padding:6px 10px;border-radius:999px;transition:all .15s;cursor:pointer}
+.t-actions .act:hover{background:rgba(29,155,240,.1);color:#1d9bf0}
+.t-actions .act.re:hover{background:rgba(0,186,124,.1);color:#00ba7c}
+.t-actions .act.like:hover{background:rgba(249,24,128,.1);color:#f91880}
+.t-actions .act svg{width:17px;height:17px;fill:currentColor}
+.t-actions .act .num{font-weight:600}
+/* 回复区 */
+.replies{padding:0 20px}
+.reply-title{display:flex;align-items:center;gap:10px;padding:14px 0;border-bottom:1px solid #2f3336;font-size:.95rem;font-weight:700}
+.reply-title .tab-active{color:#e7e9ea;border-bottom:2px solid #1d9bf0;padding-bottom:13px;font-weight:700}
+.reply-title .tab{color:#71767b;padding-bottom:13px}
+.reply{padding:14px 0 14px 8px;border-bottom:1px solid #2f3336;display:flex;gap:12px}
+.reply .avatar{width:38px;height:38px;font-size:18px}
+.reply .avatar svg{width:20px;height:20px}
+.r-body{flex:1;min-width:0}
+.r-text{font-size:.93rem;margin-top:2px}
+.r-text b{color:#1d9bf0;font-weight:600}
+.r-text .emoji{font-style:normal}
+.r-time{font-size:.8rem;color:#71767b;margin-top:3px}
+.r-actions{display:flex;gap:24px;margin-top:8px;color:#71767b}
+.r-actions span{display:flex;align-items:center;gap:6px;font-size:.8rem}
+.r-actions svg{width:15px;height:15px;fill:currentColor}
+.r-like{color:#f91880 !important}
+.r-like .num{font-weight:700}
+.r-verified{width:14px;height:14px;fill:#1d9bf0;display:inline-block;vertical-align:-2px}
+/* 底部 CTA */
+.cta{position:fixed;bottom:0;left:0;right:0;z-index:100;background:rgba(0,0,0,.92);backdrop-filter:blur(12px);border-top:1px solid #2f3336;padding:12px 20px;display:flex;align-items:center;gap:14px;justify-content:center}
+.cta-info{color:#e7e9ea}
+.cta-info .c1{font-size:.9rem;font-weight:700}
+.cta-info .c2{font-size:.75rem;color:#71767b}
+.cta-btn{background:#1d9bf0;color:#fff;font-weight:700;font-size:.95rem;padding:10px 26px;border-radius:999px;white-space:nowrap;transition:background .2s}
+.cta-btn:hover{background:#1a8cd8}
+.cta-btn:active{transform:scale(.97)}
+.footer{text-align:center;padding:24px;color:#4b4f52;font-size:.75rem}
+@media(max-width:480px){
+  .t-body,.t-media,.t-time,.t-actions{margin-left:0}
+  .t-actions{max-width:100%}
+  .wrap{padding-bottom:140px}
+  .cta{flex-direction:column;gap:8px;text-align:center}
+}
+</style>
+</head>
+<body>
+
+<!-- 顶栏 -->
+<div class="topbar">
+  <svg class="x-logo" viewBox="0 0 24 24" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+  <div>
+    <div class="tb-title">Post</div>
+  </div>
+  <div class="tb-tag">from X</div>
+  <div class="tb-right">Trending 🔥</div>
+</div>
+
+<div class="wrap">
+
+  <!-- 主推文 -->
+  <div class="tweet">
+    <div class="t-head">
+      <div class="avatar">☯</div>
+      <div class="t-user">
+        <div class="t-name">BaZi Oracle
+          <svg class="blue-check" viewBox="0 0 24 24"><path d="M22.25 12c0-1.43-.88-2.67-2.19-3.34.46-1.39.2-2.9-.81-3.91s-2.52-1.27-3.91-.81c-.66-1.31-1.91-2.19-3.34-2.19s-2.67.88-3.33 2.19c-1.4-.46-2.91-.2-3.92.81s-1.26 2.52-.8 3.91c-1.31.67-2.2 1.91-2.2 3.34s.89 2.67 2.2 3.34c-.46 1.39-.21 2.9.8 3.91s2.52 1.26 3.91.81c.67 1.31 1.91 2.19 3.34 2.19s2.68-.88 3.34-2.19c1.39.45 2.9.2 3.91-.81s1.27-2.52.81-3.91c1.31-.67 2.19-1.91 2.19-3.34zm-11.71 4.2L6.8 12.46l1.41-1.42 2.26 2.26 4.8-5.23 1.47 1.36-6.2 6.77z"/></svg>
+          <span class="t-badge">🔥 Viral</span>
+        </div>
+        <div class="t-handle">@BaZiOracle · Follow</div>
+      </div>
+      <div class="t-more">⋯</div>
+    </div>
+    <div class="t-body">Okay this is terrifying. 🤯
+
+I put my exact birth date &amp; time into this <b>ancient Chinese BaZi calculator</b> and it told me things about my life it should NOT know.
+
+It predicted the year I changed careers. The year I moved. Even warned me about a money loss.
+
+It uses NASA-precision astronomy to calculate your <span class="hl">Four Pillars of Destiny</span> — then maps out your luck cycles &amp; life events year by year.
+
+And it's <b>FREE</b>. I'm genuinely shook. 🔮
+
+<a href="/tools/bazi-life-reading.html">#BaZi</a> <a href="/tools/bazi-life-reading.html">#ChineseAstrology</a> <a href="/tools/bazi-life-reading.html">#FourPillars</a></div>
+    <div class="t-media">
+      <img src="/img/bazi-report-en.png" alt="BaZi fortune reading report example">
+      <div class="m-cap">
+        <span>agentgongju.com</span>
+        <span class="m-url">BaZi Fortune Reading — Free Report →</span>
+      </div>
+    </div>
+    <div class="t-time">2:47 PM · Aug 15, 2026 · <b style="color:#1d9bf0">1.2M</b> Views</div>
+    <div class="t-actions">
+      <div class="act"><svg viewBox="0 0 24 24"><path d="M8.75 21V3h2v18h-2zM18 21V8.5h2V21h-2zM4 21l.004-10h2L6 21H4zm9.248 0v-7h2v7h-2z"/></svg><span class="num">2.4K</span></div>
+      <div class="act re"><svg viewBox="0 0 24 24"><path d="M4.5 3.15l11.793 6.015-11.793 6.015V3.15zm12.207 7.56L19.5 12.6l-2.793 1.425V10.71z"/><path d="M4.5 3.15v12.03l11.793-6.015L4.5 3.15zm12.207 7.56v2.85L19.5 12.6l-2.793-1.44z" opacity="0"/><path d="M3 1.5v15h3V21l4.5-4.5H18L21 13.5v-12H3zm16.5 12l-3 3H10.5L7.5 19.5V16.5H4.5v-13.5h15V13.5z"/></svg><span class="num">8.9K</span></div>
+      <div class="act like"><svg viewBox="0 0 24 24"><path d="M16.697 5.5c-1.222-.06-2.679.51-3.89 2.16l-.805 1.09-.806-1.09C9.984 6.01 8.526 5.44 7.304 5.5c-1.243.07-2.349.78-2.91 1.91-.552 1.12-.633 2.78.479 4.82 1.074 1.97 3.257 4.27 7.129 6.61 3.87-2.34 6.052-4.64 7.126-6.61 1.111-2.04 1.03-3.7.477-4.82-.561-1.13-1.666-1.84-2.908-1.91zm4.187 7.69c-1.351 2.48-4.001 5.12-8.379 7.67l-.503.3-.504-.3c-4.379-2.55-7.029-5.19-8.382-7.67-1.36-2.5-1.41-4.86-.514-6.67.887-1.79 2.647-2.91 4.601-3.01 1.651-.09 3.368.56 4.798 2.01 1.429-1.45 3.146-2.1 4.796-2.01 1.954.1 3.714 1.22 4.601 3.01.896 1.81.846 4.17-.514 6.67z"/></svg><span class="num">45.2K</span></div>
+      <div class="act"><svg viewBox="0 0 24 24"><path d="M8.75 21V3h2v18h-2zM18 21V8.5h2V21h-2zM4 21l.004-10h2L6 21H4zm9.248 0v-7h2v7h-2z"/></svg></div>
+    </div>
+  </div>
+
+  <!-- 回复区 -->
+  <div class="replies">
+    <div class="reply-title">
+      <span class="tab-active">Replies</span>
+      <span class="tab">Reposts</span>
+      <span class="tab">Likes</span>
+      <span class="tab">Views</span>
+    </div>
+
+    <div class="reply">
+      <div class="avatar" style="background:linear-gradient(135deg,#f91880,#ff7a00)">S</div>
+      <div class="r-body">
+        <div class="t-name" style="font-size:.9rem">Sophia Lynn <svg class="r-verified" viewBox="0 0 24 24"><path d="M22.25 12c0-1.43-.88-2.67-2.19-3.34.46-1.39.2-2.9-.81-3.91s-2.52-1.27-3.91-.81c-.66-1.31-1.91-2.19-3.34-2.19s-2.67.88-3.33 2.19c-1.4-.46-2.91-.2-3.92.81s-1.26 2.52-.8 3.91c-1.31.67-2.2 1.91-2.2 3.34s.89 2.67 2.2 3.34c-.46 1.39-.21 2.9.8 3.91s2.52 1.26 3.91.81c.67 1.31 1.91 2.19 3.34 2.19s2.68-.88 3.34-2.19c1.39.45 2.9.2 3.91-.81s1.27-2.52.81-3.91c1.31-.67 2.19-1.91 2.19-3.34zm-11.71 4.2L6.8 12.46l1.41-1.42 2.26 2.26 4.8-5.23 1.47 1.36-6.2 6.77z"/></svg> <span style="color:#71767b;font-weight:400">@SophiaLynn · 2h</span></div>
+        <div class="r-text">Just tried it and it <b>nailed my 2019 job switch</b>. I'm genuinely creeped out 😳🔥</div>
+        <div class="r-actions">
+          <span><svg viewBox="0 0 24 24"><path d="M8.75 21V3h2v18h-2zM18 21V8.5h2V21h-2zM4 21l.004-10h2L6 21H4zm9.248 0v-7h2v7h-2z"/></svg> 312</span>
+          <span><svg viewBox="0 0 24 24"><path d="M4.5 3.15l11.793 6.015-11.793 6.015V3.15zm12.207 7.56L19.5 12.6l-2.793 1.425V10.71z"/></svg> 1.1K</span>
+          <span class="r-like"><svg viewBox="0 0 24 24"><path d="M16.697 5.5c-1.222-.06-2.679.51-3.89 2.16l-.805 1.09-.806-1.09C9.984 6.01 8.526 5.44 7.304 5.5c-1.243.07-2.349.78-2.91 1.91-.552 1.12-.633 2.78.479 4.82 1.074 1.97 3.257 4.27 7.129 6.61 3.87-2.34 6.052-4.64 7.126-6.61 1.111-2.04 1.03-3.7.477-4.82-.561-1.13-1.666-1.84-2.908-1.91z"/></svg> <span class="num">12.4K</span></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="reply">
+      <div class="avatar" style="background:linear-gradient(135deg,#00ba7c,#1d9bf0)">M</div>
+      <div class="r-body">
+        <div class="t-name" style="font-size:.9rem">Mark the Investor <svg class="r-verified" viewBox="0 0 24 24"><path d="M22.25 12c0-1.43-.88-2.67-2.19-3.34.46-1.39.2-2.9-.81-3.91s-2.52-1.27-3.91-.81c-.66-1.31-1.91-2.19-3.34-2.19s-2.67.88-3.33 2.19c-1.4-.46-2.91-.2-3.92.81s-1.26 2.52-.8 3.91c-1.31.67-2.2 1.91-2.2 3.34s.89 2.67 2.2 3.34c-.46 1.39-.21 2.9.8 3.91s2.52 1.26 3.91.81c.67 1.31 1.91 2.19 3.34 2.19s2.68-.88 3.34-2.19c1.39.45 2.9.2 3.91-.81s1.27-2.52.81-3.91c1.31-.67 2.19-1.91 2.19-3.34zm-11.71 4.2L6.8 12.46l1.41-1.42 2.26 2.26 4.8-5.23 1.47 1.36-6.2 6.77z"/></svg> <span style="color:#71767b;font-weight:400">@MarkInvests · 1h</span></div>
+        <div class="r-text">It warned me about a money loss year… <b>I lost money that exact year</b>. This is scary accurate 😅📉</div>
+        <div class="r-actions">
+          <span><svg viewBox="0 0 24 24"><path d="M8.75 21V3h2v18h-2zM18 21V8.5h2V21h-2zM4 21l.004-10h2L6 21H4zm9.248 0v-7h2v7h-2z"/></svg> 208</span>
+          <span><svg viewBox="0 0 24 24"><path d="M4.5 3.15l11.793 6.015-11.793 6.015V3.15zm12.207 7.56L19.5 12.6l-2.793 1.425V10.71z"/></svg> 890</span>
+          <span class="r-like"><svg viewBox="0 0 24 24"><path d="M16.697 5.5c-1.222-.06-2.679.51-3.89 2.16l-.805 1.09-.806-1.09C9.984 6.01 8.526 5.44 7.304 5.5c-1.243.07-2.349.78-2.91 1.91-.552 1.12-.633 2.78.479 4.82 1.074 1.97 3.257 4.27 7.129 6.61 3.87-2.34 6.052-4.64 7.126-6.61 1.111-2.04 1.03-3.7.477-4.82-.561-1.13-1.666-1.84-2.908-1.91z"/></svg> <span class="num">9.8K</span></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="reply">
+      <div class="avatar" style="background:linear-gradient(135deg,#ffd400,#ff7a00)">K</div>
+      <div class="r-body">
+        <div class="t-name" style="font-size:.9rem">Kai Travels <svg class="r-verified" viewBox="0 0 24 24"><path d="M22.25 12c0-1.43-.88-2.67-2.19-3.34.46-1.39.2-2.9-.81-3.91s-2.52-1.27-3.91-.81c-.66-1.31-1.91-2.19-3.34-2.19s-2.67.88-3.33 2.19c-1.4-.46-2.91-.2-3.92.81s-1.26 2.52-.8 3.91c-1.31.67-2.2 1.91-2.2 3.34s.89 2.67 2.2 3.34c-.46 1.39-.21 2.9.8 3.91s2.52 1.26 3.91.81c.67 1.31 1.91 2.19 3.34 2.19s2.68-.88 3.34-2.19c1.39.45 2.9.2 3.91-.81s1.27-2.52.81-3.91c1.31-.67 2.19-1.91 2.19-3.34zm-11.71 4.2L6.8 12.46l1.41-1.42 2.26 2.26 4.8-5.23 1.47 1.36-6.2 6.77z"/></svg> <span style="color:#71767b;font-weight:400">@KaiWanders · 45m</span></div>
+        <div class="r-text">It said I'd <b>move countries at 28</b>… I moved at 28. I don't even believe in this stuff but WOW 🌍✈️</div>
+        <div class="r-actions">
+          <span><svg viewBox="0 0 24 24"><path d="M8.75 21V3h2v18h-2zM18 21V8.5h2V21h-2zM4 21l.004-10h2L6 21H4zm9.248 0v-7h2v7h-2z"/></svg> 156</span>
+          <span><svg viewBox="0 0 24 24"><path d="M4.5 3.15l11.793 6.015-11.793 6.015V3.15zm12.207 7.56L19.5 12.6l-2.793 1.425V10.71z"/></svg> 623</span>
+          <span class="r-like"><svg viewBox="0 0 24 24"><path d="M16.697 5.5c-1.222-.06-2.679.51-3.89 2.16l-.805 1.09-.806-1.09C9.984 6.01 8.526 5.44 7.304 5.5c-1.243.07-2.349.78-2.91 1.91-.552 1.12-.633 2.78.479 4.82 1.074 1.97 3.257 4.27 7.129 6.61 3.87-2.34 6.052-4.64 7.126-6.61 1.111-2.04 1.03-3.7.477-4.82-.561-1.13-1.666-1.84-2.908-1.91z"/></svg> <span class="num">7.2K</span></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="reply">
+      <div class="avatar" style="background:linear-gradient(135deg,#a855f7,#ec4899)">E</div>
+      <div class="r-body">
+        <div class="t-name" style="font-size:.9rem">Emma Rose <svg class="r-verified" viewBox="0 0 24 24"><path d="M22.25 12c0-1.43-.88-2.67-2.19-3.34.46-1.39.2-2.9-.81-3.91s-2.52-1.27-3.91-.81c-.66-1.31-1.91-2.19-3.34-2.19s-2.67.88-3.33 2.19c-1.4-.46-2.91-.2-3.92.81s-1.26 2.52-.8 3.91c-1.31.67-2.2 1.91-2.2 3.34s.89 2.67 2.2 3.34c-.46 1.39-.21 2.9.8 3.91s2.52 1.26 3.91.81c.67 1.31 1.91 2.19 3.34 2.19s2.68-.88 3.34-2.19c1.39.45 2.9.2 3.91-.81s1.27-2.52.81-3.91c1.31-.67 2.19-1.91 2.19-3.34zm-11.71 4.2L6.8 12.46l1.41-1.42 2.26 2.26 4.8-5.23 1.47 1.36-6.2 6.77z"/></svg> <span style="color:#71767b;font-weight:400">@EmmaRose · 30m</span></div>
+        <div class="r-text">My mom used BaZi my whole life. Finally a tool that <b>explains it in plain English</b> 🙏 This is the one, bookmark it.</div>
+        <div class="r-actions">
+          <span><svg viewBox="0 0 24 24"><path d="M8.75 21V3h2v18h-2zM18 21V8.5h2V21h-2zM4 21l.004-10h2L6 21H4zm9.248 0v-7h2v7h-2z"/></svg> 98</span>
+          <span><svg viewBox="0 0 24 24"><path d="M4.5 3.15l11.793 6.015-11.793 6.015V3.15zm12.207 7.56L19.5 12.6l-2.793 1.425V10.71z"/></svg> 415</span>
+          <span class="r-like"><svg viewBox="0 0 24 24"><path d="M16.697 5.5c-1.222-.06-2.679.51-3.89 2.16l-.805 1.09-.806-1.09C9.984 6.01 8.526 5.44 7.304 5.5c-1.243.07-2.349.78-2.91 1.91-.552 1.12-.633 2.78.479 4.82 1.074 1.97 3.257 4.27 7.129 6.61 3.87-2.34 6.052-4.64 7.126-6.61 1.111-2.04 1.03-3.7.477-4.82-.561-1.13-1.666-1.84-2.908-1.91z"/></svg> <span class="num">5.6K</span></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="reply">
+      <div class="avatar" style="background:linear-gradient(135deg,#1d9bf0,#00ba7c)">D</div>
+      <div class="r-body">
+        <div class="t-name" style="font-size:.9rem">David Chen <span style="color:#71767b;font-weight:400">@DavidChen · 18m</span></div>
+        <div class="r-text">The report is actually <b>super detailed</b> — luck cycles, marriage year, career changes, even warns about accident years. And free?? Bro. 🔮⚡</div>
+        <div class="r-actions">
+          <span><svg viewBox="0 0 24 24"><path d="M8.75 21V3h2v18h-2zM18 21V8.5h2V21h-2zM4 21l.004-10h2L6 21H4zm9.248 0v-7h2v7h-2z"/></svg> 76</span>
+          <span><svg viewBox="0 0 24 24"><path d="M4.5 3.15l11.793 6.015-11.793 6.015V3.15zm12.207 7.56L19.5 12.6l-2.793 1.425V10.71z"/></svg> 288</span>
+          <span class="r-like"><svg viewBox="0 0 24 24"><path d="M16.697 5.5c-1.222-.06-2.679.51-3.89 2.16l-.805 1.09-.806-1.09C9.984 6.01 8.526 5.44 7.304 5.5c-1.243.07-2.349.78-2.91 1.91-.552 1.12-.633 2.78.479 4.82 1.074 1.97 3.257 4.27 7.129 6.61 3.87-2.34 6.052-4.64 7.126-6.61 1.111-2.04 1.03-3.7.477-4.82-.561-1.13-1.666-1.84-2.908-1.91z"/></svg> <span class="num">4.1K</span></span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="footer">⚠️ For entertainment &amp; cultural reference only · © 2026 AgentGongju.com · <a href="/tools/bazi-life-reading.html">BaZi Fortune Reading</a></div>
+</div>
+
+<!-- 底部 CTA -->
+<div class="cta">
+  <div class="cta-info">
+    <div class="c1">🔮 BaZi Fortune Reading — Free</div>
+    <div class="c2">Four Pillars · Luck Cycles · Life Events · 60s</div>
+  </div>
+  <a class="cta-btn" href="/tools/bazi-life-reading.html">Try It Free →</a>
+</div>
+
+</body>
+</html>
