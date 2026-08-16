@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI APP 宣传语生成 | AgentGongju.com</title>
+<meta name="description" content="输入你的APP功能与目标用户，AI生成多款精致宣传语，含功能型、情感型、极简型不同风格">
+<meta name="keywords" content="APP宣传语,slogan,产品口号,应用标语,营销文案">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:70px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.outputs{display:grid;gap:14px;margin-bottom:12px}
+.slogan-item{background:rgba(255,255,255,0.03);border:1px solid rgba(168,85,247,0.3);border-radius:12px;padding:18px;text-align:center}
+.slogan-item .big{font-size:1.5rem;font-weight:700;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px}
+.slogan-item .sub{color:#94a3b8;font-size:.85rem}
+.slogan-item .tag{display:inline-block;padding:2px 10px;background:rgba(99,102,241,0.15);border-radius:6px;color:#a5b4fc;font-size:.75rem;margin-bottom:10px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📱 AI APP 宣传语生成</h1><p>一行打动人心，让你的App从第一句就被记住</p></div>
+
+<div class="card">
+<label>🔧 APP 功能一句话</label>
+<textarea id="func" placeholder="例如：一款AI记账App，自动识别账单，帮你轻松养成存钱习惯"></textarea>
+<div class="param-row">
+<div><label>🎯 目标用户</label>
+<select id="user">
+<option value="年轻人">👨 年轻白领</option><option value="学生">🎒 学生</option><option value="家庭用户" selected>👨‍👩‍👧 家庭用户</option><option value="职场人">💼 职场人</option><option value="潮人">🕶 潮人</option>
+</select></div>
+<div><label>😊 宣传语风格</label>
+<select id="style">
+<option value="功能">⚡ 功能直给</option><option value="情感">💗 情感共鸣</option><option value="极简" selected>✨ 极简高级</option><option value="网感">🔥 网感玩梗</option>
+</select></div>
+</div>
+<button class="btn-gen" id="genBtn">💡 生成宣传语</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:16px">🏷 你的 App 宣传语候选</div>
+<div class="outputs" id="outBox"></div>
+<div style="text-align:right"><button class="copy-btn" onclick="copyAll()">📋 复制全部</button></div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function rnd(n){return Math.floor(Math.random()*n)}
+function pick(a){return a[rnd(a.length)]}
+const data={
+功能:{s:['省下的每一分，都在为你打工','记账如此简单','管钱，从今天开始','懂你的每一笔'],n:'直击核心功能，适合应用商店关键词与广告投放'},
+情感:{s:['安心过好每一天','存的不是钱，是底气','让生活更从容','把未来握在手里'],n:'触动情绪，建立品牌与用户的感情连接'},
+极简:{s:['钱有数，心不慌','轻松记账','攒下每一天','省心，省钱'],n:'极简高级感，适合偏高端或注重品牌调性的App'},
+网感:{s:['主打一个存得下','这个App真的绝了','钱包满电状态','谁懂记完账的快乐'],n:'贴合年轻人口语，适合社交裂变与短视频传播'}};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI APP 宣传语生成 | AgentGongju.com'))return;
+const func=document.getElementById('func').value.trim()||'一款提升效率的生活App';
+const user=document.getElementById('user').value;
+const styleTag=document.getElementById('style').value;
+const d=data[styleTag];
+const out=document.getElementById('outBox');out.innerHTML='';
+const pool=[...d.s];
+const picks=[pick(pool),pick(pool),pick(pool),pick(pool)];
+picks.forEach((s,idx)=>{
+const div=document.createElement('div');div.className='slogan-item';
+div.innerHTML=`<span class="tag">${idx===0?'主推款':'备选'}</span><div class="big">“${s}”</div><div class="sub">${d.n} · 适用人群：${user}</div>`;
+out.appendChild(div);
+});
+const useTips={年轻人:'年轻用户看重效率与精致生活，宣传语适合轻松明快。',学生:'学生更看重性价比与实用，口号要朗朗上口。',家庭用户:'家庭用户看重可靠与安心，强调安全感更打动人。',职场人:'职场人时间宝贵，突出省时省心最有效。',潮人:'潮人喜欢个性与态度，传播性强的网感文案更出圈。'};
+const note='';null;
+document.getElementById('resultArea').classList.add('active');
+document.querySelector('.tool-header p').textContent=useTips[user];
+window._copyText='【AI APP 宣传语】\n'+picks.map((s,i)=>`${i+1}. ${s}`).join('\n');
+});
+function copyAll(){navigator.clipboard.writeText(window._copyText||document.body.innerText).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

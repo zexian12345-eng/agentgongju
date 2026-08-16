@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 演讲口才训练 | AgentGongju.com</title>
+<meta name="description" content="输入演讲主题与场景，AI给出开场白、结构框架、金句与临场应变话术，助你自信开口">
+<meta name="keywords" content="演讲训练,口才,开口技巧,发言,临场应对">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:70px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.section{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.25);border-radius:12px;padding:16px 18px;margin-bottom:14px}
+.section .hd{color:#a855f7;font-weight:600;margin-bottom:8px}
+.section p{color:#cbd5e1;line-height:1.9;font-size:.92rem;white-space:pre-wrap}
+.open{background:rgba(168,85,247,0.08);border-color:rgba(168,85,247,0.35)}
+.open .hd{color:#e9d5ff}
+.quote{background:rgba(34,197,94,0.06);border-color:rgba(34,197,94,0.3)}
+.quote .hd{color:#86efac}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🎤 AI 演讲口才训练</h1><p>开场白、结构、金句、应变话术，帮你从容开口</p></div>
+
+<div class="card">
+<label>🎯 演讲主题</label>
+<textarea id="topic" placeholder="例如：作为新人，在部门会上分享自己第一季度的成长心得"></textarea>
+<div class="param-row">
+<div><label>🏟 演讲场合</label>
+<select id="scene">
+<option value="公司内部">🏢 公司内部</option><option value="行业大会" selected>🎪 行业大会</option><option value="对外路演">🚀 对外路演</option><option value="婚礼即兴">💒 婚礼即兴</option><option value="线上分享">💻 线上分享</option>
+</select></div>
+<div><label>⏱ 时长</label>
+<select id="dur">
+<option value="1分钟">1分钟</option><option value="3分钟" selected>3分钟</option><option value="5分钟">5分钟</option><option value="10分钟以上">10分钟以上</option>
+</select></div>
+</div>
+<button class="btn-gen" id="genBtn">🎙 生成口才方案</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:16px">🎤 你的演讲训练方案</div>
+<div class="section open"><div class="hd">🎬 高光开场白</div><p id="openBox"></p></div>
+<div class="section"><div class="hd">🧭 结构框架（三分法）</div><p id="frameBox"></p></div>
+<div class="section"><div class="hd">🗣 金句收尾</div><p id="quoteBox"></p></div>
+<div class="section"><div class="hd">🌀 临场应变话术</div><p id="improvBox"></p></div>
+<div style="text-align:right"><button class="copy-btn" onclick="copyAll()">📋 复制方案</button></div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function rnd(n){return Math.floor(Math.random()*n)}
+const opens={公司内部:['“上次我做这个项目时，其实踩了三个坑……”','“很高兴今天能和大家分享，我从0到1的这段小故事……”'],行业大会:['“接下来三分钟，我想用一个真实案例讲透一个方法论……”','“各位同仁，行业正在变化，我想聊聊我们看到的下一步……”'],对外路演:['“今天我想证明一件事：这个市场，值得被认真对待。”','“先看一组数据，再听我的故事——”'],婚礼即兴:['“第一次见她/他的时候，我没想到……”','“作为他们爱情的见证者，我想讲两个小细节……”'],线上分享:['“屏幕前的你，可能正需要这个方法……”','“我用3个关键词总结今天的分享……”']};
+const quotes={公司内部:['把简单的事做到极致，就是大家口中的优秀','成长，就是不断把不行变成行'],行业大会:['顺势而为，更要造势而起','真正的护城河，是持续创新的能力'],对外路演:['信任，是最贵的流量','今天我们迈出一小步，行业将会前进一大步'],婚礼即兴:['愿你们把每个平凡日子，都过成纪念日','爱不是看对眼，是走到底'],线上分享:['把所学带走，把改变留下','用行动，回应每一个“可能”']};
+const improv=['突然忘词时说： “我再给片刻停顿，让这句话落地，其实我想强调的是……”\n技巧：把忘词变成“刻意停顿”，反而显得从容。','被提问答不上来： “这个问题很关键，我先记下，回头单独和你细聊。”\n技巧：不硬撑，展现负责任的态度。','超时提醒时： “我把核心结论压缩到一句话送给大家……”\n技巧：提前准备好“30秒总结版”。','出现口误时： “抱歉，我换个更准确的说法……”\n技巧：坦然修正，比掩盖更高分。'];
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 演讲口才训练 | AgentGongju.com'))return;
+const topic=document.getElementById('topic').value.trim()||'我的主题分享';
+const scene=document.getElementById('scene').value;
+const dur=document.getElementById('dur').value;
+const o=opens[scene];const q=quotes[scene];
+document.getElementById('openBox').textContent=o[rnd(o.length)];
+document.getElementById('frameBox').textContent=`• 开头（占20%）：用一个反差引子/真实细节快速抓住听众，引出主题「${topic}」\n• 正文（占60%）：围绕3个要点展开，每点配1个例子，用数字与对比增强说服力\n• 结尾（占20%）：回扣开场，抛出一个开放思考，号召行动`;
+document.getElementById('quoteBox').textContent='✓ '+q[rnd(q.length)]+'（可作为收尾金句，配一个停顿+微笑效果佳）';
+document.getElementById('improvBox').textContent=improv[rnd(improv.length)];
+window._copyText=`【AI 演讲口才】${scene}·${dur}\n开场：${document.getElementById('openBox').textContent}\n\n${document.getElementById('frameBox').textContent}\n\n金句：${q[rnd(q.length)]}`;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyAll(){navigator.clipboard.writeText(window._copyText||document.body.innerText).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 成语起名 | AgentGongju.com</title>
+<meta name="description" content="输入喜欢的寓意或姓氏，AI用成语谐音/取意为你起名，既吉祥又有文化底蕴，适合宝宝与品牌">
+<meta name="keywords" content="成语起名,寓意取名,宝宝起名,文化名,谐音取名">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:780px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:50px;resize:vertical}
+input:focus,select:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.name-item{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:18px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+.name-item .nm{font-size:1.5rem;font-weight:700;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.name-item .info{color:#94a3b8;font-size:.85rem;line-height:1.8;max-width:520px}
+.name-item .info b{color:#a5b4fc}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{background:rgba(168,85,247,0.08);border:1px solid rgba(168,85,247,0.3);border-radius:12px;padding:16px;color:#cbd5e1;line-height:1.9;font-size:.88rem;margin-top:14px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🌱 AI 成语起名</h1><p>用成语取意/谐音起名，有文化，有寓意，有格调</p></div>
+
+<div class="card">
+<label>👪 姓氏（可选）</label>
+<input type="text" id="surname" placeholder="例如：王 / 陈 / 李" />
+<label>🎯 期望寓意</label>
+<select id="mean">
+<option value="智慧">🧠 智慧聪慧</option><option value="安康">💪 健康平安</option><option value="成功" selected>🏆 事业有成</option><option value="品格">🌸 品行端正</option><option value="诗意">🍃 温婉诗意</option>
+</select>
+<label>💬 补充想法（可选）</label>
+<textarea id="extra" placeholder="例如：希望名字里能带一点水的意境，男女宝均可"></textarea>
+<button class="btn-gen" id="genBtn">🌱 生成成语名</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:16px">🌟 为你推荐的成语名</div>
+<div id="nameBox"></div>
+<div style="text-align:right"><button class="copy-btn" onclick="copyAll()">📋 复制全部</button></div>
+<div class="tip">💡 成语起名小知识：可取成语中的关键二字直接成名，也可取同音字谐音表达寓意。搭配姓氏反复朗读，注意音律是否顺口、避开生僻字与谐音不佳的组合。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function rnd(n){return Math.floor(Math.random()*n)}
+const banks={
+智慧:[['博闻强识','博、识'],['足智多谋','智、谋'],['敏而好学','敏、学'],['冰雪聪明','慧、敏'],['兰心蕙质','兰蕙']],
+安康:[['健步如飞','健、飞'],['安然无恙','安、然'],['福寿康宁','康、宁'],['喜气洋洋','喜、洋'],['心广体胖','畅、舒']],
+成功:[['马到成功','成、功'],['鹏程万里','鹏、程'],['一飞冲天','一飞'],['扶摇直上','扶摇'],['锦绣前程','锦、程'],['长风破浪','长风']],
+品格:[['虚怀若谷','怀、谷'],['光明磊落','磊、落'],['正直不阿','正、直'],['温润如玉','润、如'],['高风亮节','风、节']],
+诗意:[['月白风清','月、清'],['杨柳依依','依、柳'],['云淡风轻','云、轻'],['花开半夏','夏、花'],['素心如简','心、简'],['一川烟雨','川、雨']]};
+const quality={智慧:'聪慧过人，望你明辨事理',安康:'平安顺遂，身体健康',成功:'事业有成，前程似锦',品格:'品行端正，正直善良',诗意:'温婉从容，气质如诗'};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 成语起名 | AgentGongju.com'))return;
+const surname=document.getElementById('surname').value.trim();
+const mean=document.getElementById('mean').value;
+const bank=banks[mean];
+const used=new Set();const res=[];
+const shuffled=[...bank];for(let i=shuffled.length-1;i>0;i--){const k=rnd(i+1);[shuffled[i],shuffled[k]]=[shuffled[k],shuffled[i]];}
+shuffled.slice(0,4).forEach(([idiom,chars])=>{
+res.push({surname,chars,idiom});
+});
+const box=document.getElementById('nameBox');box.innerHTML='';
+res.forEach(r=>{
+const cArr=r.chars.replace('、','').split('');
+let full=(r.surname||'')+cArr.join('');
+if(full.length<2)full=full+cArr[1];
+const div=document.createElement('div');div.className='name-item';
+div.innerHTML=`<div class="nm">${full}</div><div class="info">取自成语 <b>《${r.idiom}》</b><br>寓意：${quality[mean]}，名中有「${cArr.join('」「')}」，${r.surname?`配${r.surname}姓读音${full}顺口大方`:'无姓氏，可搭配任意顺口姓氏'}。</div><button class="copy-btn" onclick="copyOne('${full}','${r.idiom}')">📋 用这个</button>`;
+box.appendChild(div);
+});
+window._copyText='【AI 成语起名】寓意：'+quality[mean]+'\n'+res.map((r,i)=>{const f=(r.surname||'')+r.chars.replace('、','');return `${i+1}. ${f}（取自《${r.idiom}》）`;}).join('\n');
+document.getElementById('resultArea').classList.add('active');
+});
+function copyOne(n,idm){navigator.clipboard.writeText(`成语名：${n}（取自《${idm}》）`).then(()=>alert('✅ 已复制：'+n))}
+function copyAll(){navigator.clipboard.writeText(window._copyText||document.body.innerText).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

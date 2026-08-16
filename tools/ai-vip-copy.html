@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 会员活动文案 | AgentGongju.com</title>
+<meta name="description" content="输入活动主题与营销目的，AI生成积分、会员日、开卡礼等多种会员营销文案，含主视觉标语+推送话术">
+<meta name="keywords" content="会员营销,活动文案,营销文案,会员日,开卡礼">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:70px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.slogan-box{background:rgba(168,85,247,0.08);border:1px solid rgba(168,85,247,0.3);border-radius:12px;padding:20px;margin-bottom:14px;text-align:center}
+.slogan-box .big{font-size:1.6rem;font-weight:700;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px}
+.slogan-box .small{color:#cbd5e1;font-size:.9rem}
+.copy-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:16px;color:#e2e8f0;line-height:1.9;font-size:.9rem;margin-bottom:18px}
+.copy-box .hd{color:#a855f7;font-weight:600;margin-bottom:8px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🎁 AI 会员活动文案</h1><p>标语+推送话术一条龙，促销活动不加班</p></div>
+
+<div class="card">
+<label>📢 活动主题</label>
+<textarea id="topic" placeholder="例如：门店10周年店庆，会员日全场8折，老带新有礼"></textarea>
+<div class="param-row">
+<div><label>🏷 活动类型</label>
+<select id="type">
+<option value="会员日">会员日</option><option value="开卡礼" selected>开卡礼</option><option value="积分兑换">积分兑换</option><option value="老带新">老带新</option><option value="限时折扣">限时折扣</option><option value="满减活动">满减活动</option>
+</select></div>
+<div><label>💻 商家行业</label>
+<select id="ind">
+<option value="餐饮">🍜 餐饮</option><option value="零售" selected>🛍 零售</option><option value="美业">💆 美业</option><option value="教育">📚 教育</option><option value="健身">💪 健身</option>
+</select></div>
+</div>
+<button class="btn-gen" id="genBtn">🚀 生成活动文案</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:16px">📣 会员活动文案方案</div>
+<div class="slogan-box"><div class="big" id="sloganBig"></div><div class="small" id="sloganSmall"></div></div>
+<div class="copy-box" id="pushBox"><div class="hd">📲 私域推送话术</div></div>
+<div class="copy-box" id="smsBox"><div class="hd">✉️ 短信/海报副文案</div></div>
+<div style="text-align:right"><button class="copy-btn" onclick="copyAll()">📋 复制全部文案</button></div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function rnd(n){return Math.floor(Math.random()*n)}
+const benefit={
+开卡礼:['开卡立减50元','首单立减，充多少送多少','新客尊享双倍积分'],
+会员日:['全场8折','会员专享翻倍积分','每月第二周惊喜不断'],
+积分兑换:['积分当钱花','满额积分直接抵现','签到攒分兑好礼'],
+老带新:['老友有礼，新客有面','邀请好友各得一张优惠券','老带新，双双有惊喜'],
+限时折扣:['限时8折，售完即止','最后3天，错过再等一年','爆款直降，仅此一场'],
+满减活动:['满300减60','满三件打七折','买多省更多']};
+const push={餐饮:['家人们，本月的会员好礼又来啦','饭点福利到，请查收'],零售:['宝子们冲！','下半月会员礼包已上线'],美业:['姐妹们，变美福利来了','项目卡限时膨胀'],教育:['家长们，本期会员权益更新了','学习礼包限量领'],健身:['铁子们开练！','私教体验课限时约']};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 会员活动文案 | AgentGongju.com'))return;
+const topic=document.getElementById('topic').value.trim()||'会员专场活动';
+const type=document.getElementById('type').value;
+const ind=document.getElementById('ind').value;
+const bs=benefit[type];const pu=push[ind];
+const first=bs[rnd(bs.length)];
+document.getElementById('sloganBig').textContent=first+' · '+topic.slice(0,12);
+document.getElementById('sloganSmall').textContent=type+'｜'+ind+'行业 · 精准会员营销';
+const pushBody=`【${topic.slice(0,10)}】来啦！\n✅ ${first}\n✅ 老会员续费享额外叠加\n✅ 活动截止至本月底，先到先得\n👉 ${pu[0]}，${pu[1]}（温馨提示：活动最终解释权归${ind}门店所有）`;
+document.getElementById('pushBox').innerHTML=`<div class="hd">📲 私域推送话术</div><pre style="white-space:pre-wrap;font-family:inherit;color:#e2e8f0">${pushBody}</pre>`;
+const sms=`【${ind}】${first}！${topic.slice(0,10)}，新老会员同享。回复Y查收礼包，退订T。`;
+document.getElementById('smsBox').innerHTML=`<div class="hd">✉️ 短信/海报副文案</div><pre style="white-space:pre-wrap;font-family:inherit;color:#e2e8f0">${sms}</pre>`;
+window._copyText=`【AI 会员活动文案】${type}\n主标语：${first} · ${topic.slice(0,12)}\n\n推送话术：\n${pushBody}\n\n短信版：\n${sms}`;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyAll(){navigator.clipboard.writeText(window._copyText||document.body.innerText).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

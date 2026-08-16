@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 汉字拆分解字 | AgentGongju.com</title>
+<meta name="description" content="输入一个汉字，AI帮你拆解结构、讲解字源、解读寓意，并生成适合起名/签名的解析">
+<meta name="keywords" content="拆字,汉字解析,字源,寓意,起名用字">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:60px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.big-char{font-size:4rem;font-weight:700;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-align:center;margin-bottom:8px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🔤 AI 汉字拆分解字</h1><p>拆解结构、讲解字源、解读寓意，读懂一个汉字的灵魂</p></div>
+
+<div class="card">
+<label>🀄 输入一个汉字</label>
+<input type="text" id="hanzi" maxlength="1" placeholder="例如：晟、瑶、宸、曦、梓" />
+<div class="param-row">
+<div><label>🎯 解析用途</label>
+<select id="use"><option value="起名">起名用字</option><option value="日常理解">日常理解</option><option value="签名艺术">签名艺术</option></select></div>
+<div><label>📚 讲解深度</label>
+<select id="depth"><option value="简洁">简洁版</option><option value="详细" selected>详细版</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">🔍 拆字解析</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:6px">🔮 汉字解析结果</div>
+<div class="big-char" id="bigChar"></div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制解析</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const radicalMap={
+'木':{'形':'左右结构，左"木"为部首','义':'五行属木，象征成长、生机与栋梁之材','寓意':'正直向上，根基深厚，有栋梁之才的气象'},
+'水':{'形':'独体结构，以"氵"或"水"为部件','义':'五行属水，象征智慧、流动与包容','寓意':'聪慧灵动，善谋善断，如水流之通达'},
+'火':{'形':'左右或上下结构，常含"火、灬"','义':'五行属火，象征热情、光明与能量','寓意':'热烈向上，声名显赫，有光照八方的气度'},
+'金':{'形':'含"钅、金"等部件','义':'五行属金，象征刚毅、财富与决断','寓意':'坚毅果敢，行端坐正，有富贵尊荣之象'},
+'土':{'形':'含"土、山"等部件','义':'五行属土，象征稳定、承载与包容','寓意':'稳重踏实，宽厚待人，聚四方之福'},
+'日':{'形':'含"日"部件，独体或合体','义':'象征光明、希望与新生','寓意':'如日方升，前程光明，充满希望与活力'},
+'月':{'形':'含"月"部件','义':'象征温润、圆满与柔和','寓意':'温柔圆满，内敛含蓄，气质清雅'},
+'艹':{'形':'含"艹"草字头','义':'象征草木生机、柔韧与生命力','寓意':'生机盎然，柔中带刚，生命力旺盛'}
+};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 汉字拆分解字 | AgentGongju.com'))return;
+const hanzi=document.getElementById('hanzi').value.trim();
+const use=document.getElementById('use').value;
+const depth=document.getElementById('depth').value;
+if(!hanzi){alert('请先输入一个汉字');return;}
+const found=Object.keys(radicalMap).find(r=>hanzi.includes(r));
+const info=found?radicalMap[found]:{'形':'左右/上下/独体结构之一','义':'表意丰富，需结合具体字形理解','寓意':'蕴含美好祝愿与积极期许'};
+document.getElementById('bigChar').innerText=hanzi;
+let out='【结构拆解】\n· '+info['形']+'\n\n';
+out+='【字源含义】\n· '+info['义']+'\n';
+if(depth==='详细'){
+out+='\n【深层寓意】\n· '+info['寓意']+'\n';
+}
+out+='\n【用字建议 · '+(use==='起名'?'起名视角':use==='签名艺术'?'签名视角':'日常视角')+'】\n';
+if(use==='起名'){out+='· 「'+hanzi+'」作名寓意'+info['寓意']+'，适合追求气质与美好祝愿的命名场景。\n· 若需音韵搭配，可考虑前后字形成"平仄相间"的读感，整体更朗朗上口。\n';}
+else if(use==='签名艺术'){out+='· 「'+hanzi+'」笔画有辨识度，适合在签名中放大/变形，增加个人印记与艺术感。\n';}
+else{out+='· 理解「'+hanzi+'」的'+info['义']+'，可帮助更好地把握它出现在姓名、品牌、成语中的意味。\n';}
+out+='\n💡 汉字是一字一乾坤，拆开看结构，读懂是文化，用起来见心意。';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 汉字解析已复制！'))}
+</script>
+</body>
+</html>

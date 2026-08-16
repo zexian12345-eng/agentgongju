@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 假期旅行规划师 | AgentGongju.com</title>
+<meta name="description" content="输入出发地、目的地、天数与预算，AI一键生成完整的假期旅行行程规划">
+<meta name="keywords" content="旅行规划,行程安排,旅游攻略,假期旅行,目的地推荐">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:70px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>✈️ AI 假期旅行规划师</h1><p>出发地到目的地，一张涵盖每天行程的旅行规划单</p></div>
+
+<div class="card">
+<label>📍 出发地 → 目的地</label>
+<textarea id="route" placeholder="例如：从北京出发，想去成都玩几天，喜欢美食和自然风景"></textarea>
+<div class="param-row">
+<div><label>📅 出行天数</label>
+<input type="number" id="days" min="1" max="30" value="4" /></div>
+<div><label>💰 预算档位</label>
+<select id="budget"><option value="经济">经济型</option><option value="舒适" selected>舒适型</option><option value="高端">高端型</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">🗺 生成旅行规划</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🗺 你的旅行行程</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制行程</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 假期旅行规划师 | AgentGongju.com'))return;
+const route=document.getElementById('route').value.trim();
+const days=parseInt(document.getElementById('days').value)||4;
+const budget=document.getElementById('budget').value;
+if(!route){alert('请先填写出发地和目的地');return;}
+let out='✈️ 行程：「'+route+'」\n📅 天数：'+days+' 天　💰 档位：'+budget+'\n\n';
+out+='【🗺 每日行程概览】\n';
+for(let d=1;d<=Math.min(days,5);d++){
+if(d===1){out+='· Day'+d+'（抵达日）：抵达目的地，安顿入住，'+(budget==='经济'?'在附近吃点当地实惠小吃':'附近商圈/江边散步，尝一顿当地特色晚餐')+'，早点休息。\n';}
+else if(d===days){out+='· Day'+d+'（返程日）：睡到自然醒，买点伴手礼，'+(budget==='高端'?'去一家口碑餐厅做最后打卡':'简单吃个早午餐')+'，从容返程。\n';}
+else{out+='· Day'+d+'（游玩日）：白天安排1-2个核心景点，穿插自由探索；晚上体验'+'当地夜生活/夜景'+'，行程不排太满。\n';}
+}
+if(days>5){out+='· 剩余天数：可安排周边一日游/自然景点/博物馆等，保持每天1-2个点，留出缓冲与休息。\n';}
+out+='\n【🧳 行前 checklist】\n';
+out+='· 提前订好往返大交通和首晚住宿（旺季尤其致命）。\n';
+out+='· 查好当地天气，备好雨具/合适衣物。\n';
+out+='· 出行App提前下载离线地图，重要证件拍照备份。\n\n';
+out+='【💰 '+(budget==='经济'?'省预算':budget==='高端'?'提体验':'控预算')+' 建议】\n';
+if(budget==='经济'){out+='· 交通选错峰时段，住宿挑地铁口附近干净青旅/民宿，美食多去本地人吃的巷子店。\n';}
+else if(budget==='高端'){out+='· 把预算花在"领跑体验"上：好酒店、特色餐饮、小众体验，比纯粹堆景点更有记忆点。\n';}
+else{out+='· 大交通和住宿选"舒适且位置好"的，行程别太赶，省下的辛苦钱花在体验上更值。\n';}
+out+='\n💡 好旅行是"留白"出来的，每天排满反而不快乐。祝你这趟玩得尽兴！';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 旅行行程已复制！'))}
+</script>
+</body>
+</html>

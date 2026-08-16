@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 知识问答卡片 | AgentGongju.com</title>
+<meta name="description" content="选择一个知识主题，AI生成一张自测问答卡，含题目、选项与答案解析，适合复习巩固">
+<meta name="keywords" content="知识卡片,问答,学习自测,闪卡,复习工具">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:720px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:60px;resize:vertical}
+input:focus,select:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.qcard{background:rgba(255,255,255,0.04);border:1px solid rgba(99,102,241,0.35);border-radius:16px;padding:24px;margin-bottom:14px}
+.qcard .q{color:#e2e8f0;font-weight:700;font-size:1.05rem;margin-bottom:14px}
+.qcard .opt{display:block;width:100%;text-align:left;padding:11px 14px;margin:7px 0;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:10px;color:#cbd5e1;font-size:.9rem;cursor:pointer}
+.qcard .opt:hover{border-color:#6366f1}
+.qcard .opt.correct{background:rgba(34,197,94,0.15);border-color:#22c55e;color:#bbf7d0}
+.qcard .opt.wrong{background:rgba(239,68,68,0.12);border-color:#ef4444;color:#fecaca}
+.explain{display:none;background:rgba(168,85,247,0.08);border:1px solid rgba(168,85,247,0.3);border-radius:10px;padding:14px;color:#e9d5ff;line-height:1.8;font-size:.9rem;margin-top:10px}
+.explain.show{display:block}
+.next-row{text-align:right;margin-top:8px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.score{color:#94a3b8;font-size:.85rem;margin-top:10px;text-align:center}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📇 AI 知识问答卡片</h1><p>选个主题，出一张自测卡，答完看解析巩固记忆</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>📚 知识主题</label>
+<select id="cat">
+<option value="历史">🏛 历史</option><option value="科学" selected>🔬 科学</option><option value="地理">🌍 地理</option><option value="文学">📖 文学</option><option value="生活">☕ 生活常识</option><option value="职场">💼 职场</option>
+</select></div>
+<div><label>😉 难度</label>
+<select id="diff">
+<option value="简单">入门</option><option value="中等" selected>进阶</option><option value="困难">挑战</option>
+</select></div>
+</div>
+<label>💬 自定义题目（可选）</label>
+<textarea id="custom" placeholder="例如：核裂变和核聚变的区别"></textarea>
+<button class="btn-gen" id="genBtn">🎴 生成问答卡</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:16px">🎓 今日知识卡</div>
+<div class="qcard" id="qcardBox"></div>
+<div class="next-row"><button class="copy-btn" id="newBtn">🔄 换一道</button> <button class="copy-btn" onclick="copyCard()">📋 复制</button></div>
+<div class="score" id="scoreBox"></div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function rnd(n){return Math.floor(Math.random()*n)}
+const Q={
+历史:[{q:'中国历史上第一个统一的封建王朝是？',opts:['夏朝','秦朝','汉朝','周朝'],ans:1,e:'公元前221年秦始皇统一六国建立秦朝，是中国历史上第一个中央集权的统一王朝。'},
+{q:'四大发明中的“活字印刷术”主要由谁推广？',opts:['蔡伦','毕昇','沈括','张衡'],ans:1,e:'北宋毕昇发明了泥活字印刷术，大幅提高印刷效率。'}],
+科学:[{q:'水的化学式是？',opts:['CO2','H2O','O2','NaCl'],ans:1,e:'水由两个氢原子和一个氧原子组成，化学式为 H2O。'},
+{q:'光在真空中的传播速度约为？',opts:['30万公里/秒','3万公里/秒','30公里/秒','3公里/秒'],ans:0,e:'真空中光速约为每秒30万公里，是宇宙中最快的速度。'}],
+地理:[{q:'世界上面积最大的大陆是？',opts:['非洲大陆','亚欧大陆','南美大陆','北美大陆'],ans:1,e:'亚欧大陆是世界第一大洲。'},
+{q:'我国最长的河流是？',opts:['黄河','长江','珠江','黑龙江'],ans:1,e:'长江全长约6300公里，是中国第一长河。'}],
+文学:[{q:'“床前明月光”的作者是？',opts:['杜甫','李白','白居易','王维'],ans:1,e:'此句出自唐代李白的名篇《静夜思》。'},
+{q:'《红楼梦》的作者是？',opts:['曹雪芹','罗贯中','施耐庵','吴承恩'],ans:0,e:'《红楼梦》由清代曹雪芹所著，是中国古典四大名著之一。'}],
+生活:[{q:'鸡蛋最好放进冰箱的哪个位置？',opts:['冰箱门','中层','冷藏的最冷处','冷冻室'],ans:2,e:'放在最冷处可减少温度波动，延长保质期；冰箱门温度波动大。'},
+{q:'饭后立即剧烈运动容易引起？',opts:['头痛','消化不良','眼干','耳鸣'],ans:1,e:'饭后血液集中于消化系统，剧烈运动易引起消化不良。'}],
+职场:[{q:'面试中最常见的“自我介绍”一般建议控制在多久？',opts:['5分钟以上','1-2分钟','30秒以内','越久越好'],ans:1,e:'1-2分钟的凝练自我介绍最能抓住面试官注意。'},
+{q:'写在简历上更高分的一项通常是？',opts:['用数据量化成果','堆砌岗位职责','大量形容词','尽量写长'],ans:0,e:'用具体数字和成果量化，比罗列职责更有说服力。'}]};
+let answered=false;
+function render(){
+const cat=document.getElementById('cat').value;
+const custom=document.getElementById('custom').value.trim();
+let card;
+const pool=Q[cat];
+if(custom){card={q:custom,opts:['A. 让我再想想','B. 我需要解析','C. 已掌握','D. 暂不确定'],ans:0,e:'这是自定义题，建议结合资料补充答案并反复巩固。'};}
+else{card=pool[rnd(pool.length)];}
+const box=document.getElementById('qcardBox');
+box.innerHTML=`<div class="q">${cat} · <span id="diffLabel">${document.getElementById('diff').value}</span><br>❓ ${card.q}</div>`+card.opts.map((o,i)=>`<button class="opt" data-i="${i}">${String.fromCharCode(65+i)}. ${o}</button>`).join('')+`<div class="explain" id="exp"><b>💡 解析：</b>${card.e}</div>`;
+answered=false;
+box.querySelectorAll('.opt').forEach(o=>{
+o.onclick=()=>{
+if(answered)return;answered=true;
+const ci=parseInt(o.dataset.i);
+box.querySelectorAll('.opt').forEach(x=>x.classList.remove('correct','wrong'));
+const exp=box.querySelector('#exp');
+if(ci===card.ans){o.classList.add('correct');}
+if(ci!==card.ans){o.classList.add('wrong');box.querySelector(`.opt[data-i="${card.ans}"]`).classList.add('correct');}
+exp.classList.add('show');
+document.getElementById('scoreBox').textContent='✓ 已作答，点击「换一道」继续巩固';
+window._copyText=`【AI 知识卡】${card.q}\n答案：${String.fromCharCode(65+card.ans)}. ${card.opts[card.ans]}\n解析：${card.e}`;
+};
+});
+}
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 知识问答卡片 | AgentGongju.com'))return;
+render();
+document.getElementById('resultArea').classList.add('active');
+});
+document.getElementById('newBtn').onclick=()=>{render();};
+function copyCard(){navigator.clipboard.writeText(window._copyText||document.body.innerText).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

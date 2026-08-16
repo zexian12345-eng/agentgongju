@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 公众号爆款标题 | AgentGongju.com</title>
+<meta name="description" content="输入写作主题，AI生成10个高打开率公众号标题，含干货型、情绪型、悬念型、数字型玩法">
+<meta name="keywords" content="公众号标题,文章标题,爆款标题,新媒体,点击率">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:70px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.title-list{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:16px 20px;color:#e2e8f0;line-height:2.3;font-size:.92rem;margin-bottom:12px}
+.title-list div{display:flex;gap:10px;align-items:flex-start;border-bottom:1px dashed rgba(255,255,255,0.06);padding:6px 0}
+.title-list div:last-child{border-bottom:none}
+.num{color:#a855f7;font-weight:700;min-width:24px}
+.tag{color:#64748b;font-size:.78rem;white-space:nowrap;margin-top:5px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>✍️ AI 公众号爆款标题</h1><p>10个高打开率标题，让文章在信息流里被看见</p></div>
+
+<div class="card">
+<label>📝 文章主题</label>
+<textarea id="topic" placeholder="例如：中年人如何利用碎片时间早起健身，分享我的3个月经验"></textarea>
+<div class="param-row">
+<div><label>📖 内容类型</label>
+<select id="type">
+<option value="干货">📊 干货教程</option><option value="观点">💭 观点评论</option><option value="故事" selected>📖 真实故事</option><option value="测评">🧪 测评盘点</option><option value="资讯">📰 热点资讯</option>
+</select></div>
+<div><label>🔎 目标读者</label>
+<select id="aud">
+<option value="职场人">💼 职场人</option><option value="宝妈" selected>👩 宝妈</option><option value="学生">🎒 学生</option><option value="创业者">🚀 创业者</option><option value="泛人群">🌐 泛人群</option>
+</select></div>
+</div>
+<button class="btn-gen" id="genBtn">🔥 生成爆款标题</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:16px">💥 10个公众号标题</div>
+<div class="title-list" id="outBox"></div>
+<div style="text-align:right"><button class="copy-btn" onclick="copyAll()">📋 复制全部标题</button></div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function rnd(n){return Math.floor(Math.random()*n)}
+const openers=['我用3个月踩坑总结：','别急着划走，','有多少人和我一样，','听我说，真的别再','全网都在偷偷收藏的','看完这篇，少走3年弯路','这5个真相，早点知道就好了'];
+const numbers=['3个','5个','7天','1个月','10个','30天','1000天'];
+const closers=['看完瞬间清醒','最后一个最扎心','后悔没早知道','很多人都在做错','值得转发给朋友','建议收藏慢慢看','第2条真没想到','评论区见'];
+const typeMap={干货:['手把手教学','一学就会','详细步骤拆解'],观点:['我劝你','别再内耗','这才是真相'],故事:['真实经历','背后的故事','三年后我懂了'],测评:['亲测对比','避坑指南','横向测评'],资讯:['刚刚！','全网刷屏','值得关注']};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 公众号爆款标题 | AgentGongju.com'))return;
+const topic=document.getElementById('topic').value.trim()||'这个话题';
+const type=document.getElementById('type').value;
+const aud=document.getElementById('aud').value;
+const tm=typeMap[type];
+const titles=new Set();
+while(titles.size<10){
+const num=numbers[rnd(numbers.length)];
+let t;
+const style=rnd(4);
+if(style===0)t=openers[rnd(openers.length)]+topic+closers[rnd(closers.length)].replace('%d',num);
+if(style===1)t=`${num}个${aud}必知：${topic}`;
+if(style===2)t=`${topic}？${tm[rnd(tm.length)]}，${closers[rnd(closers.length)]}`;
+if(style===3)t=`为什么${topic}，${closers[rnd(closers.length)]}`;
+t=t.replaceAll('%d',num).replace(/，,/,',').slice(0,30);
+titles.add((t||topic));
+}
+const tags=['数字型','干货型','悬念型','情绪型','对比型'];
+const arr=[...titles];
+const out=document.getElementById('outBox');out.innerHTML='';
+arr.forEach((t,i)=>{
+out.innerHTML+=`<div><span class="num">${String(i+1).padStart(2,'0')}</span><span>${t}</span><span class="tag">${tags[i%5]}</span></div>`;
+});
+window._copyText='【AI 公众号爆款标题】'+type+'\n'+arr.map((t,i)=>`${i+1}. ${t}`).join('\n');
+document.getElementById('resultArea').classList.add('active');
+});
+function copyAll(){navigator.clipboard.writeText(window._copyText||document.body.innerText).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

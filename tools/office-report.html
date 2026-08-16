@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 职场汇报话术箱 | AgentGongju.com</title>
+<meta name="description" content="面向职场场景，输入汇报对象与事项，一键生成周报、述职、向上汇报的专业话术">
+<meta name="keywords" content="职场汇报,周报话术,向上管理,述职,工作汇报">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:80px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>💼 AI 职场汇报话术箱</h1><p>周报、述职、向上汇报，专业话术一键生成</p></div>
+
+<div class="card">
+<label>📌 汇报对象 & 汇报事项</label>
+<textarea id="item" placeholder="例如：向直属领导周报，本我完成了新功能上线和两个客户回访"></textarea>
+<div class="param-row">
+<div><label>📄 汇报类型</label>
+<select id="type"><option value="周报">周报</option><option value="月报">月报</option><option value="述职">述职报告</option><option value="口头汇报">口头汇报</option></select></div>
+<div><label>🎯 汇报重点</label>
+<select id="focus"><option value="展现成果">展现成果</option><option value="解决问题">寻求支持</option><option value="例行同步">例行同步</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">📝 生成话术</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🗂 汇报话术</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制话术</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 职场汇报话术箱 | AgentGongju.com'))return;
+const item=document.getElementById('item').value.trim();
+const type=document.getElementById('type').value;
+const focus=document.getElementById('focus').value;
+if(!item){alert('请先填写汇报事项');return;}
+let out='📌 汇报事项：「'+item+'」\n📄 类型：'+type+'　🎯 重点：'+focus+'\n\n';
+out+='【📋 书面版 / 邮件/文档】\n';
+out+='· 进展概述：本周围绕「'+item.slice(0,20)+'」推进，关键节点均按计划完成，整体符合预期。\n';
+if(focus==='展现成果'){
+out+='· 成果亮点：本次交付直接带来了积极反馈，为后续工作奠定了良好基础，具体量化见数据。\n';
+out+='· 结论价值：不只"做了什么"，更强调"带来了什么"，突出对团队/业务的价值贡献。\n';
+}else if(focus==='解决问题'){
+out+='· 遇到的问题：执行中遇到某种阻力，已尝试相应方案，仍需要多方协调支持。\n';
+out+='· 请求支持：希望领导在A/B方向给予协助或资源，我会持续推进闭环。\n';
+}else{
+out+='· 当前状态：按计划稳定推进，暂无阻塞，风险可控。\n';
+}
+out+='· 下一步：下阶段将聚焦收尾与沉淀，明确节点与责任，欢迎领导随时指导。\n\n';
+out+='【🗣 口头汇报版（30秒说清楚）】\n';
+out+='「领导，跟您同步一下「'+item.slice(0,12)+'」：目前进展是'+ (focus==='展现成果'?'已按计划交付并有一些正面反馈':'正在按计划推进，整体可控')+'，下一步我会'+'（做某关键动作）'+'，'+(focus==='解决问题'?'需要您帮忙协调一下资源。':'有问题我会及时升级来同步，您看还有什么需要我注意的吗？」')+'\n\n';
+out+='【🧩 话术进阶技巧】\n';
+out+='· 结论先行：先说结果/结论，再讲过程细节。\n';
+out+='· 量化表达：多用"提升了X%、节省了X小时"替代模糊描述。\n';
+out+='· 主动汇报：比被追问更好，定期同步能建立靠谱人设。\n\n';
+out+='💡 把上面模板填入你的真实数据，就是一份拿得出手的汇报。';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 汇报话术已复制！'))}
+</script>
+</body>
+</html>

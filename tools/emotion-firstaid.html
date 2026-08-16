@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 情绪急救指南 | AgentGongju.com</title>
+<meta name="description" content="当你情绪低落、焦虑或烦躁时，AI为你生成即时的情绪安抚与自我调节小指南">
+<meta name="keywords" content="情绪急救,emo,心理疏导,焦虑缓解,自我调节">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:70px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.notice{color:#94a3b8;font-size:.8rem;margin-top:10px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🫂 AI 情绪急救指南</h1><p>难过、焦虑、emo时，给你一个温柔的即时陪伴与自我调节指南</p></div>
+
+<div class="card">
+<label>💭 你现在的心情（选择或简单描述）</label>
+<select id="mood">
+<option value="低落">😔 低落 / 没精神</option>
+<option value="焦虑">😰 焦虑 / 心慌</option>
+<option value="烦躁">😤 烦躁 / 想发火</option>
+<option value="孤独">🥺 孤独 / 没人懂</option>
+<option value="疲惫">🥱 疲惫 / 心累</option>
+</select>
+<label>✍️ 发生了什么 / 想说说吗？（可选）</label>
+<textarea id="desc" placeholder="可以简单写两句，也可以留空"></textarea>
+<button class="btn-gen" id="genBtn">🌿 给我一份急救指南</button>
+<p class="notice">* 本工具提供的是通用情绪调节建议，不替代专业心理帮助。严重或长期困扰请及时寻求心理咨询。</p>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🌱 你的情绪急救包</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 收藏这段安慰</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const guides={
+'低落':{warm:'先抱抱你，低落不是软弱，而是你太累了。',ok:'现在的状态很正常，给自己一点时间。',act:['出门晒5分钟太阳，让光照进心里','喝杯温水，做一次深呼吸','写下今天一件小成就','听一首喜欢的慢歌']},
+'焦虑':{warm:'焦虑想告诉你：你很在乎正在发生的事。',ok:'它不该压垮你，只是提醒你该慢一点。',act:['用"4-7-8"呼吸法：吸4秒、停7秒、呼8秒','把担心的事写下来，划掉能控制的','把手头大任务拆成一小步','站起来走动两分钟']},
+'烦躁':{warm:'烦躁是因为心里有火没处发，先别急着自责。',ok:'允许自己暂时不温柔。',act:['用力地捏一下拳头再松开，重复几次','去洗把脸，冷水效果好','暂时离开"炸点"场景一下','把想骂的话写下来撕掉']},
+'孤独':{warm:'孤独不代表你不好，只是这一刻没人刚好在场。',ok:'但世界其实一直与你相连。',act:['给一个朋友发条问候','去楼下买个东西，看看人群','写一句自我肯定的话','听点有人声的播客或音乐']},
+'疲惫':{warm:'你撑了太久，连充电的力气都快没了，这不是你的错。',ok:'累了就该休息，不是逃避。',act:['靠椅背闭眼休息10分钟','盘一小会儿肩颈和太阳穴','今天少做一件事也没关系','泡个脚或洗个热水澡']}
+};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 情绪急救指南 | AgentGongju.com'))return;
+const mood=document.getElementById('mood').value;
+const desc=document.getElementById('desc').value.trim();
+const g=guides[mood];
+let out=(desc?'你提到：'+desc+'\n\n':'')+'先深呼吸一下。'+g.warm+'\n\n';
+out+='【🌱 先接住自己】\n· '+g.ok+'\n· 情绪会来，也会走，此刻你不必"立刻好起来"。\n\n';
+out+='【🛠 立刻可以做的小事】\n';
+g.act.forEach((a,i)=>{out+='· '+a+(i===g.act.length-1?'':'')+'\n';});
+out+='\n【💌 想对你说】\n';
+out+='你已经很努力了，允许自己不崩溃、不发光、不完美。今天能好好吃饭、安稳入睡，就已经很棒了。\n\n';
+out+='如果这种感受持续超过两周、影响到正常生活，请一定去寻求专业心理帮助，照顾好自己的心，是最高级的勇敢。';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 这段话已收藏，记得照顾好自己 ❤️'))}
+</script>
+</body>
+</html>

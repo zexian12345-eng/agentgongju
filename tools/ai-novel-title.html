@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 小说书名生成 | AgentGongju.com</title>
+<meta name="description" content="输入小说题材与主角特质，AI生成网感十足的书名，含文艺版、霸道版、悬念版多种风格供选择">
+<meta name="keywords" content="小说取名,书名生成,网文书名,作品起名,创作辅助">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:60px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.outputs{display:grid;gap:14px;margin-bottom:12px}
+.book-item{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:16px}
+.book-item .bg{color:#a855f7;font-weight:700;font-size:1.15rem;margin-bottom:4px}
+.book-item .bd{color:#94a3b8;font-size:.88rem;line-height:1.8}
+.tag{display:inline-block;padding:2px 10px;background:rgba(168,85,247,0.15);border-radius:6px;color:#e9d5ff;font-size:.75rem;margin-bottom:8px;margin-right:6px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📖 AI 小说书名生成</h1><p>题材+主角特质，一键生成文艺、霸道、悬念多款网文书名</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>📚 小说题材</label>
+<select id="genre">
+<option value="都市">🏙 都市</option><option value="玄幻">🐉 玄幻</option><option value="仙侠" selected>🧚 仙侠</option><option value="古言">🏮 古言</option><option value="科幻">🚀 科幻</option><option value="悬疑">🕵 悬疑</option>
+</select></div>
+<div><label>👑 主角特质</label>
+<select id="trait">
+<option value="逆袭">🚀 逆袭</option><option value="重生" selected>🔄 重生</option><option value="天才">✨ 天才</option><option value="废柴">😴 废柴</option><option value="大女主">👸 大女主</option><option value="隐世高手">🙏 隐世高手</option>
+</select></div>
+</div>
+<label>💬 剧情一句话描述（可选）</label>
+<textarea id="desc" placeholder="例如：现代社畜意外穿越到修仙世界，从零开始修炼成最强剑仙"></textarea>
+<button class="btn-gen" id="genBtn">🗡 生成书名</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:16px">📕 书名推荐（6款）</div>
+<div class="outputs" id="outBox"></div>
+<div style="text-align:right"><button class="copy-btn" onclick="copyAll()">📋 复制全部</button></div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function rnd(n){return Math.floor(Math.random()*n)}
+const genrePool={
+都市:['转角','晚风','写字楼','霓虹','故人','烟火'],
+玄幻:['苍穹','帝','诸天','天地','洪荒','战歌'],
+仙侠:['青云','问道','太虚','剑魄','云隐','渡劫'],
+古言:['长安','锦绣','画眉','朱砂','凤求','长歌'],
+科幻:['星环','零点','纪元','坐标','曙光','信标'],
+悬疑:['迷雾','暗夜','证词','第十三个','影子','回声']};
+const traitPool={
+逆袭:['逆风','翻盘','崛起','狂飙'],
+重生:['归来','再世','从头','重来'],
+天才:['无双','登峰','冠绝','天骄'],
+废柴:['废柴','逆袭','觉醒','破局'],
+大女主:['风华','无双','执掌','惊鸿'],
+隐世高手:['剑圣','尊者','隐世','归来']};
+const styleTpl={
+文艺:['{g}里，{t}','再见{won}的{t}','{g}之下我心{t}','写给{t}的这封{v}'],
+霸道:['{t}{g}','独断{g}，我为{t}','震{g}之{t}','{t}无双，傲视{g}'],
+悬念:['{g}惊变','谁动了我的{v}','第{t}生','{g}藏着一个秘密']};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 小说书名生成 | AgentGongju.com'))return;
+const genre=document.getElementById('genre').value;
+const trait=document.getElementById('trait').value;
+const desc=document.getElementById('desc').value.trim()||'一部关于'+trait+'的故事';
+const g=genrePool[genre];const t=traitPool[trait];
+const verb=trait==='重生'?'重生':'逆袭';
+const out=document.getElementById('outBox');out.innerHTML='';
+const styles=['文艺','霸道','悬念'];
+let idx=0;
+styles.forEach(st=>{
+const tpls=styleTpl[st];
+const tpl=tpls[rnd(tpls.length)];
+let name=tpl.replaceAll('{g}',g[rnd(g.length)]).replaceAll('{t}',t[rnd(t.length)]).replaceAll('{won}','挽').replaceAll('{v}',verb);
+if(name.length<4){name=g[rnd(g.length)]+'·'+t[rnd(t.length)]+name;}
+name=name.length>8?name.slice(0,8):name;
+const note=st==='文艺'?'适合文艺向、走情怀路线':(st==='霸道'?'适合爽文、节奏快、角色强':'悬念感强，适合长线埋伏笔');
+const div=document.createElement('div');div.className='book-item';
+div.innerHTML=`<span class="tag">${st}版</span><div class="bg">《${name}》</div><div class="bd">灵感注脚：${desc.slice(0,24)}…<br>${note}</div>`;
+out.appendChild(div);idx++;
+});
+window._copyText='【AI 小说书名】'+genre+'·'+trait+'\n'+[].slice.call(out.children).map((c,i)=>`${i+1}. ${c.querySelector('.bg').innerText}`).join('\n');
+document.getElementById('resultArea').classList.add('active');
+});
+function copyAll(){navigator.clipboard.writeText(window._copyText||document.body.innerText).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

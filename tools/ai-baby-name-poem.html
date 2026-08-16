@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 藏头诗取名 | AgentGongju.com</title>
+<meta name="description" content="输入宝宝/品牌的名字，AI生成藏头诗，一诗藏名，既作祝福又可当贺礼，中式浪漫拉满">
+<meta name="keywords" content="藏头诗,藏名诗,取名,宝宝祝福,贺礼,中式祝福">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:760px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:60px;resize:vertical}
+input:focus,select:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.poem-card{background:rgba(168,85,247,0.08);border:1px solid rgba(168,85,247,0.35);border-radius:16px;padding:26px;text-align:center;margin-bottom:14px}
+.poem-card .head{font-size:1.3rem;font-weight:700;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.poem-card .lines{font-size:1.15rem;line-height:2.4;color:#f3e8ff;letter-spacing:2px}
+.hl{color:#a855f7;font-weight:700}
+.note{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.25);border-radius:12px;padding:16px;color:#cbd5e1;line-height:1.9;font-size:.9rem}
+.note b{color:#a855f7}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🏮 AI 藏头诗取名</h1><p>一诗藏名，把祝福写进诗里，适合宝宝与品牌</p></div>
+
+<div class="card">
+<label>🖋 要藏的名字（2-4字）</label>
+<input type="text" id="name" placeholder="例如：梓萱 / 启明 / 悦然" />
+<div class="param-row">
+<div><label>🎈 用途</label>
+<select id="use">
+<option value="宝宝">👶 宝宝</option><option value="品牌" selected>🏷 品牌</option><option value="婚庆">💒 婚庆</option><option value="朋友">🎁 给朋友</option>
+</select></div>
+<div><label>🌸 诗歌风格</label>
+<select id="style">
+<option value="古风">🏮 古风</option><option value="清新" selected>🌿 清新</option><option value="大气">⛰ 大气</option><option value="俏皮">😊 俏皮</option>
+</select></div>
+</div>
+<button class="btn-gen" id="genBtn">📜 生成藏头诗</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:16px">🖋 为你写好的藏头诗</div>
+<div class="poem-card" id="poemCard"></div>
+<div class="note" id="noteBox"></div>
+<div style="text-align:right;margin-top:12px"><button class="copy-btn" onclick="copyAll()">📋 复制诗句</button></div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function rnd(n){return Math.floor(Math.random()*n)}
+const lineBank=[
+['春','夏日初临万物新','春风拂过满庭芳','春来喜鹊报佳音'],
+['夏','夏夜清风入梦来','夏荷初绽满池香','夏阳正好气象新'],
+['秋','秋高气爽好时节','秋水长天共一色','秋月当空照归程'],
+['冬','冬日暖阳照心田','冬雪纷纷兆丰年','冬梅傲雪绽芳华'],
+['晨','晨光熹微照前程','晨露晶莹润万物','晨钟唤醒好时光'],
+['曦','曦光初露气象新','曦色如画映山河','曦和启程向远方'],
+['悦','悦耳琴声绕梁梁','悦己方能悦于人','悦目赏心皆可期'],
+['然','然诺千金重如山','然是心安处是家','然灯火下话家常'],
+['梓','梓木参天护幼枝','梓里乡愁最动人','梓荫底下好乘凉'],
+['萱','萱草忘忧乐陶陶','萱堂福寿比南山','萱花烂漫映朝霞'],
+['启','启程万里路正长','启智开蒙见真知','启明星耀照前行'],
+['明','明月清风共此时','明眸善睐笑盈盈','明志笃行功自成'],
+['君','君子之交淡如水','君心似海纳百川','君临天下气不凡'],
+['墨','墨香书韵自高雅','墨笔生花绘锦程','墨池深处见真章']];
+const endings=['，','。','，','。'];
+const styleTone={古风:['依依','悠悠','独','轻'],清新:['轻轻','盈盈','浅','柔'],大气:['巍巍','浩浩','磐','昂'],俏皮:['哈哈','蹦蹦','眯眯','嘻嘻']};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 藏头诗取名 | AgentGongju.com'))return;
+const nm=document.getElementById('name').value.trim();
+if(!nm){alert('请先输入要藏的名字');return;}
+const chars=nm.split('').slice(0,4);
+const use=document.getElementById('use').value;
+const style=document.getElementById('style').value;
+const pool={};lineBank.forEach(([c,...ls])=>pool[c]=ls);
+const used=new Set();const picked=[];
+chars.forEach(ch=>{
+let opts=(pool[ch]||['吉祥如意到万家','平安喜乐伴身边','前程似锦步步高']).filter(l=>!used.has(l));
+if(!opts.length)opts=['吉祥如意到万家','平安喜乐伴身边','前程似锦步步高'];
+const pick=opts[rnd(opts.length)];used.add(pick);picked.push(pick);
+});
+const hlTop=picked[0].slice(0,1);
+const card=document.getElementById('poemCard');
+let html=`<div class="head">《${nm}藏头诗》</div><div class="lines">`;
+chars.forEach((ch,i)=>{
+const line=picked[i];
+html+=`<span class="hl">${line.slice(0,1)}</span>${line.slice(1)}${endings[i%4]}`;
+});
+html+=`</div>`;
+card.innerHTML=html;
+const notes={宝宝:'一首藏名诗，当作宝宝成长的祝福与小贺礼，寄托父母美好期许。',品牌:'藏入品牌名，可作企业文化的点睛文案或周年庆宣传语。',婚庆:'藏住新人的名字，诗句既显中式浪漫，又是独一无二的婚礼祝福。',朋友:'把朋友名字藏进诗里，成一份走心又有腔调的小礼物。'};
+document.getElementById('noteBox').innerHTML=`<b>💌 诗句释义：</b>本诗每句首字连读即为「${nm}」。${notes[use]} 藏头诗贵在字里行间的寄望，可打印成书法卷轴或印在贺卡上赠送。<br><span style="color:#64748b">（此诗为AI创作，供日常赠礼娱乐使用）</span>`;
+window._copyText=`《${nm}藏头诗》\n`+chars.map((c,i)=>picked[i]).join(',');
+document.getElementById('resultArea').classList.add('active');
+});
+function copyAll(){navigator.clipboard.writeText(window._copyText||document.body.innerText).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

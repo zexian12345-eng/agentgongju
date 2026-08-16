@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 夸夸文案生成 | AgentGongju.com</title>
+<meta name="description" content="针对一个人或一件事，AI生成真诚又有梗的夸奖文案，不发尬夸，句句夸到点子上">
+<meta name="keywords" content="夸夸,夸奖文案,彩虹屁,赞美,高情商">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:740px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:60px;resize:vertical}
+input:focus,select:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.neo-list{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:16px 20px;color:#e2e8f0;line-height:2;font-size:.92rem;margin-bottom:12px}
+.neo-list div{padding:8px 0;border-bottom:1px dashed rgba(255,255,255,0.06)}
+.neo-list div:last-child{border-bottom:none}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{background:rgba(168,85,247,0.08);border:1px solid rgba(168,85,247,0.3);border-radius:12px;padding:16px;color:#cbd5e1;line-height:1.9;font-size:.88rem}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🌟 AI 夸夸文案生成</h1><p>真诚又走心的夸奖，夸到人心坎里</p></div>
+
+<div class="card">
+<label>👤 想夸谁 / 夸什么</label>
+<textarea id="target" placeholder="例如：夸同事新做的分享很专业；夸女朋友今天打扮得很好看"></textarea>
+<div class="param-row">
+<div><label>🎯 对象身份</label>
+<select id="who">
+<option value="同事">💼 同事</option><option value="朋友">👫 朋友</option><option value="伴侣" selected>💞 伴侣</option><option value="长辈">👴 长辈</option><option value="领导">📈 领导</option><option value="自己">😄 自己</option>
+</select></div>
+<div><label>🎨 风格</label>
+<select id="tone">
+<option value="真诚">💗 真诚走心</option><option value="幽默" selected>😜 幽默有梗</option><option value="文艺">🌸 文艺高级</option><option value="正式">📋 正式得体</option>
+</select></div>
+</div>
+<button class="btn-gen" id="genBtn">✨ 生成夸奖</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:16px">💬 夸夸文案（5条）</div>
+<div class="neo-list" id="outBox"></div>
+<div style="text-align:right"><button class="copy-btn" onclick="copyAll()">📋 复制全部</button></div>
+<div class="tip">💡 好夸奖三要素：<b style="color:#a5b4fc">具体</b>（夸到细节）、<b style="color:#a5b4fc">真诚</b>（不浮夸）、<b style="color:#a5b4fc">落到对方</b>（夸的是对方在乎的点）。避免笼统的“你真棒”，要夸“你考虑到了XX，真的细致”。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function rnd(n){return Math.floor(Math.random()*n)}
+const pools={
+真诚:{a:['你总能注意到别人忽略的细节，这一点特别珍贵','和你共事/相处，常常让我有“被照顾到”的感觉','你说话总是那么得体又真诚，很难得'],b:'真的，我一直很佩服你这一点'},
+幽默:{a:['要是夸人满分100，你值得101分','你是不是偷偷背着我们偷偷优秀？','请收下我的膝盖，respect','你一出场，现场气氛都高端了'],b:'这就是传说中的神仙吧'},
+文艺:{a:['你就像一抹恰到好处的暖光，不喧哗却很有力量','别人在赶路，你在用心经营，气质这东西藏不住','你的从容里，藏着读过的书和走过的路'],b:'是那种让人想靠近的美好'},
+正式:{a:['我在你的工作表现里看到了很强的专业性','你考虑问题的周全，体现了很高的职业素养','你交付的成果质量稳定，令人放心'],b:'期待我们后续更多的合作'}};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 夸夸文案生成 | AgentGongju.com'))return;
+const target=document.getElementById('target').value.trim()||'你';
+const who=document.getElementById('who').value;
+const tone=document.getElementById('tone').value;
+const p=pools[tone];
+const out=document.getElementById('outBox');out.innerHTML='';
+const used=new Set();
+for(let i=0;i<5;i++){
+let line;
+if(i<3)line=p.a[(i+rnd(p.a.length-1))%p.a.length]+'。';
+else line=p.b+'。';
+if(who==='伴侣'&&i===2)line='有你在，连普通的一天都值得纪念。';
+if(who==='领导'&&i===0)line='您今天的判读既果断又稳妥，跟着您做事心里有底。';
+if(who==='长辈'&&i===1)line='您身上那种从容的气度，真是后辈学习的榜样。';
+if(who==='自己'&&i===0)line='今天也认真生活了，这样的自己值得被夸奖一句。';
+if(used.has(line))continue;
+used.add(line);
+out.innerHTML+=`<div>“${line}”</div>`;
+if(used.size>=5)break;
+}
+while(used.size<5){used.add(p.a[rnd(p.a.length)]+'。');out.innerHTML+=`<div>“${[...used].pop()}”</div>`;}
+window._copyText='【AI 夸夸文案】夸'+target+'\n'+[...used].map((s,i)=>`${i+1}. ${s}`).join('\n');
+document.getElementById('resultArea').classList.add('active');
+});
+function copyAll(){navigator.clipboard.writeText(window._copyText||document.body.innerText).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

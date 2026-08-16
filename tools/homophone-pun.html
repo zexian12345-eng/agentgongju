@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 谐音梗生成器 | AgentGongju.com</title>
+<meta name="description" content="输入一个词或主题，AI帮你一键生成趣味谐音梗、双关语和带货俏皮话">
+<meta name="keywords" content="谐音梗,双关语,有趣文案,俏皮话,冷笑话">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:60px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>😂 AI 谐音梗生成器</h1><p>输入一个词，一键生成有趣有梗的双关语文案</p></div>
+
+<div class="card">
+<label>🔤 输入一个关键词 / 商品名 / 主题</label>
+<input type="text" id="word" placeholder="例如：西瓜、奶茶、程序员、划水、卷心菜" />
+<div class="param-row">
+<div><label>🎭 梗的用途</label>
+<select id="use"><option value="朋友圈">朋友圈</option><option value="带货文案">带货文案</option><option value="个性签名">个性签名</option><option value="品牌名">品牌名</option></select></div>
+<div><label>🤪 幽默浓度</label>
+<select id="level"><option value="轻度">轻度 · 含蓄</option><option value="中度" selected>中度 · 有趣</option><option value="重度">重度 · 沙雕</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">🎤 生成谐音梗</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🎉 谐音梗结果</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制结果</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 谐音梗生成器 | AgentGongju.com'))return;
+const word=document.getElementById('word').value.trim();
+const use=document.getElementById('use').value;
+const level=document.getElementById('level').value;
+if(!word){alert('请先输入一个关键词');return;}
+const deep=level==='重度';
+let out='🎯 关键词：'+word+'（用途：'+use+'，幽默浓度：'+level+'）\n\n';
+out+='【精选谐音梗 8 连】\n';
+out+='1. 「'+word+'」出圈啦——对'+word+'的热爱，根本压不住！\n';
+out+='2. 无论你叫啥，今天都愿你「'+word+'」一样，口口甜到心里。\n';
+out+='3. 有「'+word+'」的才叫生活，没「'+word+'」的那叫生存！\n';
+out+='4. 别问，问就是'+(deep?'上头到飞起':'回味悠长')+'，'+(deep?'不服来战':'越品越有味道')+'。\n';
+out+='5. 「'+word+'」虽小，快乐不少，一口下去烦恼全消。\n';
+out+='6. 生活可能'+(deep?'处处碰壁':'偶尔枯燥')+'，但「'+word+'」永远不会让你失望。\n';
+out+='7. 收下这份「'+word+'」牌好心情，今天也是元气满满的一天。\n';
+out+='8. 宝子们，'+(use==='带货文案'?'懂行的已经在冲了':'懂的都懂')+'，「'+word+'」真的yyds！\n\n';
+out+='【双关点睛】\n';
+out+='· "谐"_意双关：把「'+word+'」和它最像的那个常用词绑定，形成反差笑点。\n';
+out+='· "货"_点双关：'+(use==='带货文案'?'突出实惠与限量，制造紧迫感。':'用生活化场景拉近与读者的距离。')+'\n\n';
+out+='💡 小提示：谐音梗用在标题前2个字位置，点击率通常最高，试着把数字序号那行当起手句。';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 谐音梗结果已复制！'))}
+</script>
+</body>
+</html>

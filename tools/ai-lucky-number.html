@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 幸运数字测算 | AgentGongju.com</title>
+<meta name="description" content="结合生日、姓名与今日日期，AI推演你的专属幸运数字、幸运色与今日吉时，仅供娱乐参考">
+<meta name="keywords" content="幸运数字,幸运色,数字测算,吉利数字,今日吉时">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:760px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=date]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.num-show{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:16px}
+.num-box{background:rgba(255,255,255,0.04);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;text-align:center}
+.num-box .big{font-size:2.4rem;font-weight:700;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.num-box .lb{color:#94a3b8;font-size:.8rem;margin-top:6px}
+.color-swatch{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,0.04);border:1px solid rgba(168,85,247,0.3);border-radius:12px;padding:16px 20px;margin-bottom:14px}
+.dot{width:46px;height:46px;border-radius:12px;flex-shrink:0;border:2px solid rgba(255,255,255,0.2)}
+.color-txt{color:#e2e8f0;line-height:1.7;font-size:.92rem}
+.tip-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.25);border-radius:12px;padding:16px;color:#cbd5e1;line-height:1.9;font-size:.9rem}
+.tip-box b{color:#a855f7}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row,.num-show{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🍀 AI 幸运数字测算</h1><p>用生日与姓名，推演你的专属幸运数字与今日吉时</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>📅 出生日期</label>
+<input type="date" id="birth" /></div>
+<div><label>✍️ 你的名字</label>
+<input type="text" id="name" placeholder="例如：张小明" /></div>
+</div>
+<button class="btn-gen" id="genBtn">🔮 测算幸运数字</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:16px">🍀 你的幸运档案</div>
+<div class="num-show">
+<div class="num-box"><div class="big" id="luckyNum"></div><div class="lb">主幸运数字</div></div>
+<div class="num-box"><div class="big" id="secondNum"></div><div class="lb">次选数字</div></div>
+<div class="num-box"><div class="big" id="hourNum"></div><div class="lb">今日吉时</div></div>
+</div>
+<div class="color-swatch"><div class="dot" id="colorDot"></div><div class="color-txt" id="colorTxt"></div></div>
+<div class="tip-box" id="tipBox"></div>
+<div style="text-align:right;margin-top:12px"><button class="copy-btn" onclick="copyAll()">📋 复制结果</button></div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function rnd(n){return Math.floor(Math.random()*n)}
+function digitSum(n){let s=String(n).split('').reduce((a,c)=>a+Number(c),0);while(s>=10&&s!==11&&s!==22){s=String(s).split('').reduce((a,c)=>a+Number(c),0);}return s;}
+const colors=[['#f59e0b','琥珀橙 · 象征活力与创造力'],['#22c55e','翡翠绿 · 象征成长与和谐'],['#38bdf8','天空蓝 · 象征智慧与冷静'],['#a855f7','神秘紫 · 象征灵感与直觉'],['#ef4444','中国红 · 象征好运与热情'],['#f472b6','桃粉色 · 象征温柔与美好']];
+const tips={1:'数字1代表开创与领导力，适合做决策、主动出击，谈判与竞标可优先选择。',2:'数字2代表沟通与合作，适合谈合作、调解与交流会，团队协作事半功倍。',3:'数字3代表表达与创意，适合演讲、创作、发布新作品，灵感更旺。',4:'数字4代表稳定与专注，适合整理、学习与长期规划，稳健推进。',5:'数字5代表自由与变化，适合出行、体验新事物，探索路上有机遇。',6:'数字6代表爱与和谐，适合家庭聚会、修复关系、牵线搭桥。',7:'数字7代表智慧与洞察，适合深度思考、学习进修、做重要判断。',8:'数字8代表财富与实力，适合签约、招财、重要投资决策。',9:'数字9代表圆满与贵人，适合收尾、感恩、求助贵人。',11:'数字11是“大师数”，直觉极强，适合做灵性、创意类决定。',22:'数字22是“建造者”，适合启动长期而宏大的目标。'};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 幸运数字测算 | AgentGongju.com'))return;
+const birth=document.getElementById('birth').value;
+const name=document.getElementById('name').value.trim()||'你';
+let base=0;
+if(birth){const parts=birth.split('-');const y=parts[0]*1,m=parts[1]*1,d=parts[2]*1;base=y+m+d+(y*7+m*11+d*13)%10;}
+else{base=rnd(50)+7;}
+let nStr=0;for(const ch of name){nStr+=(ch.codePointAt(0)%9||9);}
+const lucky=digitSum(base+nStr);
+const second=digitSum(lucky*7+ (name.length+3));
+let lucky2=second;if(lucky2===lucky)lucky2=(lucky2+1)%9+1;
+const d=new Date();const dayNum=digitSum(d.getDate()+d.getMonth()+1);
+const hour=((dayNum+lucky)%8+9);const hourTxt=String(hour).padStart(2,'0')+':00-'+String(hour+1).padStart(2,'0')+':00';
+document.getElementById('luckyNum').textContent=lucky;
+document.getElementById('secondNum').textContent=lucky2;
+document.getElementById('hourNum').textContent=hourTxt.replace(':00-','~');
+const c=colors[(lucky+dayNum)%colors.length];
+document.getElementById('colorDot').style.background=c[0];
+document.getElementById('colorTxt').textContent='今日幸运色：'+c[0]+' '+c[1];
+const t=tips[lucky]||tips[lucky%10];
+document.getElementById('tipBox').innerHTML=`<b>🍀 ${name}的今日运势提示：</b>${t} ${dayNum%2?'今天果断行动胜算更高。':'今天适合三思而后行，稳一点更稳妥。'}<br><span style="color:#64748b">（本测算基于生辰数字演算，仅供娱乐参考）</span>`;
+window._copyText=`【AI 幸运数字】${name}\n主幸运数字：${lucky}\n次选数字：${lucky2}\n今日吉时：${hourTxt.replace(':00-','~')}\n幸运色：${c[1]}\n${t}(仅供娱乐)`;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyAll(){navigator.clipboard.writeText(window._copyText||document.body.innerText).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

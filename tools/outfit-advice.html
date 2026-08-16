@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 穿搭风格建议 | AgentGongju.com</title>
+<meta name="description" content="输入你的体型、场合与偏好，AI生成适合日常/职场/约会的穿搭组合与配色建议">
+<meta name="keywords" content="穿搭建议,穿衣搭配,风格搭配,配色,形象管理">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:70px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>👗 AI 穿搭风格建议</h1><p>体型、场合、风格偏好，帮你搭出适合自己的精致造型</p></div>
+
+<div class="card">
+<label>🧍 你的基本信息 / 体型偏好</label>
+<textarea id="self" placeholder="例如：身高165，微胖，喜欢简约风，平时通勤穿"></textarea>
+<div class="param-row">
+<div><label>🎯 场合</label>
+<select id="occ"><option value="日常">日常休闲</option><option value="职场">职场通勤</option><option value="约会">约会</option><option value="聚会">朋友聚会</option></select></div>
+<div><label>🎨 风格偏好</label>
+<select id="style"><option value="简约">简约干净</option><option value="休闲">舒适休闲</option><option value="气质">知性气质</option><option value="时尚">潮流时尚</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">✨ 给出穿搭建议</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">👗 你的穿搭方案</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制穿搭建议</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const occConf={
+'日常':{'single':'一件质感基础款T恤/卫衣 + 直筒裤 + 小白鞋，干净利落最耐看','advance':'叠穿一件衬衫或薄开衫，拉开层次，再配个斜挎包或棒球帽提气。'},
+'职场':{'single':'衬衫/针织衫 + 西装裤或半裙 + 低跟单鞋，干练又不失亲和','advance':'用中性色打底（白/米/灰），用一条丝巾、一块手表或一件廓形西装增加专业感。'},
+'约会':{'single':'浅色系上衣（白/雾霾蓝）+ 高腰裙或修身裤 + 细跟或乐福鞋，温柔又有细节','advance':'选一个点缀色做亮点（如鞋包一抹亮色），配一点小巧配饰，甜而不腻最加分。'},
+'聚会':{'single':'单品里有一件"有戏"的（碎花/设计感/亮色），配纯色单品压场','advance':'亮眼单品只出一件，其余保持简约，配一双有个性的鞋或包立刻出片。'}
+};
+const styleConf={'简约':['黑白灰+浅蓝为主','剪裁利落、无多余装饰'],'休闲':['牛仔+卫衣+运动鞋','宽松舒适、自由放松'],'气质':['米白、卡其、雾霾蓝','重质感面料、优雅线条'],'时尚':['有设计感单品+撞色','用潮品/配饰点睛']};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 穿搭风格建议 | AgentGongju.com'))return;
+const self=document.getElementById('self').value.trim();
+const occ=document.getElementById('occ').value;
+const style=document.getElementById('style').value;
+if(!self){alert('请先填写你的基本信息');return;}
+const o=occConf[occ],s=styleConf[style];
+let out='🧍 你的情况：「'+self+'」\n🎯 场合：'+occ+'　🎨 风格：'+style+'\n\n';
+out+='【✨ 整体思路】\n· 目标：'+occ+'场合，走「'+style+'」路线。\n· 主色调建议：'+s[0]+'，整体干净不出错。\n· 质感要点：'+s[1]+'。\n\n';
+out+='【👔 第一套·基础不出错】\n· '+o['single']+'\n\n';
+out+='【🌟 进阶加分】\n· '+o['advance']+'\n\n';
+out+='【🎨 配色小贴士】\n· 全身不超过3个主色，用"主色+辅助色+点缀色"原则最稳妥。\n· '+style+'风的关键是：'+s[1]+'，别堆砌元素。\n\n';
+out+='【🧥 加入一点小心机】\n· 配一件有质感的配饰（手表/腰带/耳饰），能把基础款穿出高级感。\n· '+(self.includes('微胖')||self.includes('胖')?'上浅下深、修身不贴身，能显瘦显高。':'突出腰线、适当露肤，比例更显好。')+'\n\n';
+out+='💡 好穿搭=适合体型+贴合场合+表达风格，先抓这三点，再谈潮不潮。';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 穿搭建议已复制！'))}
+</script>
+</body>
+</html>

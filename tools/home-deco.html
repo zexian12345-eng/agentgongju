@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 装修灵感助手 | AgentGongju.com</title>
+<meta name="description" content="输入户型、风格与预算，AI生成装修灵感、风格建议、配色方案与避坑提醒">
+<meta name="keywords" content="装修灵感,家装,风格搭配,配色方案,户型设计">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:60px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🏠 AI 装修灵感助手</h1><p>户型、风格、预算在手，一键获取装修灵感与避坑指南</p></div>
+
+<div class="card">
+<label>🛋 房屋情况（户型 / 面积 / 需求）</label>
+<textarea id="home" placeholder="例如：89平三室两厅，一家三口，希望温馨实用，预算15万"></textarea>
+<div class="param-row">
+<div><label>🎨 偏好的装修风格</label>
+<select id="style"><option value="原木简约">原木简约</option><option value="奶油风">奶油风</option><option value="现代轻奢">现代轻奢</option><option value="北欧风">北欧风</option><option value="新中式">新中式</option><option value="不清楚">不清楚 · 帮我推荐</option></select></div>
+<div><label>💰 预算档位</label>
+<select id="budget"><option value="经济">经济实惠</option><option value="中等" selected>中等舒适</option><option value="高端">高端精致</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">✨ 生成装修灵感</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🛠 装修灵感方案</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制灵感方案</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const styleConf={
+'原木简约':{'配色':'原木色 + 白 + 米灰','气质':'温润自然、清爽耐看','要点':'大面积留白，原木家具点睛，绿植提生气'},
+'奶油风':{'配色':'奶油白 + 奶茶棕 + 燕麦色','气质':'温柔治愈、软糯高级','要点':'圆润线条、软装量大、灯光用暖色调'},
+'现代轻奢':{'配色':'高级灰 + 金属色 + 深咖','气质':'精致利落、有质感','要点':'大理石/金属点缀，注重线条与灯光层次'},
+'北欧风':{'配色':'白 + 浅木 + 低饱和蓝绿','气质':'明亮简洁、亲近自然','要点':'简洁家具配亮色单品，突出采光'},
+'新中式':{'配色':'胡桃木 + 米白 + 黛青','气质':'沉稳雅致、书香气','要点':'对称布局、水墨元素、格栅与圆窗意象'},
+'不清楚':{'配色':'原木 + 白 + 低饱和灰蓝','气质':'百搭耐看、不容易过时','要点':'建议从原木简约入门，软装再点缀风格'}
+};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 装修灵感助手 | AgentGongju.com'))return;
+const home=document.getElementById('home').value.trim();
+const style=document.getElementById('style').value;
+const budget=document.getElementById('budget').value;
+if(!home){alert('请先填写房屋情况');return;}
+const s=styleConf[style];
+let out='🏠 房屋：「'+home+'」\n🎨 风格：'+(style==='不清楚'?'推荐·原木简约':style)+'　💰 预算：'+budget+'\n\n';
+out+='【🎨 风格与配色】\n· 主风格：'+style+'\n· 推荐配色：'+s['配色']+'\n· 空间气质：'+s['气质']+'\n· 落地要点：'+s['要点']+'\n\n';
+out+='【🧱 分空间灵感】\n';
+out+='· 客厅：'+(budget==='经济'?'以大白墙+简约家具为主，用软装和绿植点睛，性价比最高。':budget==='高端'?'用石材/护墙板做背景墙，灯光分层次，整体显高级。':'乳胶漆+局部木饰面，搭配氛围灯带，美观又不过度花费。')+'\n';
+out+='· 卧室：'+'以舒适为主，'+(budget==='经济'?'床品和窗帘用心，墙面简单即可':'增加衣柜定制与床头背景，提升质感')+'。\n';
+out+='· 厨卫：'+'水电隐蔽工程别省，'+(budget==='经济'?'砖用常规款，把钱留给必要电器':'台面做岩板，五金用好的，耐用才是省钱')+'。\n\n';
+out+='【⛔ 避坑提醒】\n';
+out+='· 隐蔽工程（水电、防水）绝不能省材料。\n';
+out+='· 先定风格再动工，避免边装边改导致超支。\n';
+out+='· '+ (budget==='经济'?'自己多跑建材市场比价，能省不少':'重点砸在每天都会用到的五金、床垫和收纳上')+'。\n\n';
+out+='💡 小提示：把这份方案带去给设计师碰撞，能帮你快速对齐需求、少走弯路。';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 装修灵感已复制！'))}
+</script>
+</body>
+</html>

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 健康饮水助手 | AgentGongju.com</title>
+<meta name="description" content="根据体重、年龄与运动量，AI计算每日饮水量并生成分段补水时间表，提醒你科学喝水">
+<meta name="keywords" content="饮水提醒,喝水计划,健康饮水,每日饮水量,补水">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:740px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=number],input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.total-box{background:rgba(168,85,247,0.08);border:1px solid rgba(168,85,247,0.35);border-radius:16px;padding:24px;text-align:center;margin-bottom:14px}
+.total-box .zl{color:#e9d5ff;font-size:.95rem;margin-bottom:6px}
+.total-box .big{font-size:3rem;font-weight:700;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.total-box .sm{color:#94a3b8;font-size:.88rem;margin-top:6px}
+.schedule{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:16px 20px;margin-bottom:14px}
+.schedule .hd{color:#a855f7;font-weight:600;margin-bottom:8px}
+.sch-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px dashed rgba(255,255,255,0.06);color:#cbd5e1;font-size:.9rem}
+.sch-row:last-child{border-bottom:none}
+.sch-row .t{color:#a5b4fc;font-weight:600}
+.sch-row .cup{color:#64748b;font-size:.8rem}
+.tips{background:rgba(34,197,94,0.05);border:1px solid rgba(34,197,94,0.3);border-radius:12px;padding:16px;color:#cbd5e1;line-height:1.9;font-size:.88rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🥤 AI 健康饮水助手</h1><p>按你的体质算饮水量，附定时补水时间表</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>⚖️ 体重（kg）</label>
+<input type="number" id="weight" min="30" max="200" value="65" /></div>
+<div><label>🎂 年龄段</label>
+<select id="age">
+<option value="成人">成人（18-64）</option><option value="老年" selected>中老年（65+）</option><option value="青少年">青少年（12-17）</option>
+</select></div>
+</div>
+<div class="param-row">
+<div><label>🏃 运动量</label>
+<select id="sport">
+<option value="低">几乎不运动</option><option value="中" selected>适量运动</option><option value="高">高强度训练</option>
+</select></div>
+<div><label>🌡 所在季节</label>
+<select id="season">
+<option value="春秋">春秋</option><option value="夏" selected>夏季</option><option value="冬">冬季</option>
+</select></div>
+</div>
+<button class="btn-gen" id="genBtn">💧 计算饮水量</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:16px">💧 你的补水计划</div>
+<div class="total-box"><div class="zl">每日推荐饮水量</div><div class="big" id="totalBig"></div><div class="sm" id="totalSm"></div></div>
+<div class="schedule"><div class="hd">⏰ 分段补水时间表</div><div id="schBox"></div></div>
+<div class="tips" id="tipBox"></div>
+<div style="text-align:right;margin-top:12px"><button class="copy-btn" onclick="copyAll()">📋 复制计划</button></div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function rnd(n){return Math.floor(Math.random()*n)}
+const slots=[['07:30','起床一杯温水，唤醒肠胃'],['09:30','到公司后补水'],['11:30','午餐前补一点水'],['14:00','午后提神一杯'],['16:00','下午茶替水更健康'],['18:30','下班回家补水'],['21:00','睡前一小时少量，避免起夜']];
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 健康饮水助手 | AgentGongju.com'))return;
+const weight=parseInt(document.getElementById('weight').value)||65;
+const age=document.getElementById('age').value;
+const sport=document.getElementById('sport').value;
+const season=document.getElementById('season').value;
+let total=weight*30;
+if(age==='老年')total*=0.95;
+if(sport==='中')total+=400;if(sport==='高')total+=900;
+if(season==='夏')total+=400;if(season==='冬')total-=150;
+total=Math.round(total/50)*50;
+const cups=Math.round(total/250);
+document.getElementById('totalBig').textContent=total+' 毫升';
+document.getElementById('totalSm').textContent=`约合 ${cups} 杯（每杯250ml），分时段少量多次更科学`;
+const sch=document.getElementById('schBox');sch.innerHTML='';
+const per=Math.round(total/cups);
+slots.slice(0,Math.min(slots.length,cups)).forEach(([t,note])=>{
+sch.innerHTML+=`<div class="sch-row"><span class="t">${t}</span><span>${note}</span><span class="cup">约 ${per}ml / 1杯</span></div>`;
+});
+const tip='💡 科学饮水小贴士：\n• 少量多次，不要一次猛灌；尿色浅黄是"饮水适量"的简单信号。\n• 运动前后、空调房、出汗多时需额外补水。\n• 白开水最健康，奶茶咖啡不能替代水。\n• 出现异常口渴、尿量异常建议咨询医生。（本结果基于通用公式，仅供参考，针对特殊体质以医嘱为准）';
+document.getElementById('tipBox').textContent=tip;
+window._copyText=`【AI 健康饮水】每日${total}ml（约${cups}杯）\n${slots.slice(0,cups).map(([t,n])=>`${t} ${n}`).join('\n')}\n${tip}`;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyAll(){navigator.clipboard.writeText(window._copyText||document.body.innerText).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

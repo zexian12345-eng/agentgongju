@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 副业项目测评 | AgentGongju.com</title>
+<meta name="description" content="输入你的背景、时间与启动资金，AI帮你评估适合的副业方向并给出落地建议">
+<meta name="keywords" content="副业,兼职,第二收入,赚钱项目,副业测评">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:70px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.notice{color:#94a3b8;font-size:.78rem;margin-top:10px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>💰 AI 副业项目测评</h1><p>结合你的背景、时间与启动资金，匹配靠谱副业方向</p></div>
+
+<div class="card">
+<label>🧾 你的基本背景 / 技能特长</label>
+<textarea id="bg" placeholder="例如：会写文案，有电商经验，晚上有时间，能投入3000元"></textarea>
+<div class="param-row">
+<div><label>⏰ 每周可投入时间</label>
+<select id="time"><option value="少"><5小时</option><option value="中" selected>5-15小时</option><option value="多">>15小时</option></select></div>
+<div><label>💰 能承受的启动资金</label>
+<select id="money"><option value="0">0（零成本）</option><option value="低">几百元</option><option value="中" selected>几千元</option><option value="高">1万+</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">🔎 测评副业方向</button>
+<p class="notice">* 本测评结果仅供参考，副业有风险，投入需谨慎，谨防各种"先交钱"的骗局。</p>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🧭 适合你的副业方向</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制测评结果</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 副业项目测评 | AgentGongju.com'))return;
+const bg=document.getElementById('bg').value.trim();
+const time=document.getElementById('time').value;
+const money=document.getElementById('money').value;
+if(!bg){alert('请先填写你的背景情况');return;}
+const lowTime=time==='少';
+const noMoney=money==='0';
+let out='🧾 你的背景：「'+bg+'」\n⏰ 时间：'+(lowTime?'<5h/周':'5h以上/周')+'　💰 资金：'+(noMoney?'零成本':money==='低'?'几百元':money==='高'?'1万+':'几千元')+'\n\n';
+out+='【🌟 推荐方向 ① · 技能变现类】\n';
+out+='· 结合你的已有技能（文案/电商等）在线接单，'+(noMoney?'零成本，凭本事赚钱':'轻投入，买工具即可')+'。\n';
+out+='· 起步：先'+(lowTime?'每周接1单练手':'每周接2-3单')+'，跑通流程后再说。\n';
+out+='· 优点：门槛低、见效相对快；缺点：收入与投入时间成正比。\n\n';
+out+='【🌟 推荐方向 ② · '+(noMoney?'内容/知识变现':'轻电商副业')+'】\n';
+if(noMoney){
+out+='· 做内容账号/知识输出的变现路径，时间碎片化也能持续积累。\n';
+out+='· 起步：选一个垂直细分，持续输出，积累到一定量再谈变现。\n';
+out+='· 优点：可长期复利；缺点：见效慢，需耐心。\n';
+}else{
+out+='· 小额试水电商/代理/周边产品，用少量资金测试需求。\n';
+out+='· 起步：先小范围测品，数据好了再加大投入，别一把梭。\n';
+out+='· 优点：天花板较高；缺点：有库存/资金风险，需谨慎。\n';
+}
+out+='\n【⚠️ 给执行力一般的你】\n';
+out+='· 建议只聚焦1个方向先做'+(lowTime?'1个月':'3个月')+'，别贪多同时铺好几个。\n';
+out+='· 前期目标设小：先"跑通"再说"赚钱"，避免因反馈慢而放弃。\n';
+out+='· 副业不是一夜暴富，先稳住主业，再让副业慢慢发芽。\n\n';
+out+='💡 最靠谱的副业，是"你喜欢+你擅长+有人需要"的交集。想清楚了再动手，别被割韭菜。';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 测评结果已复制！'))}
+</script>
+</body>
+</html>

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 诗词启蒙课堂 | AgentGongju.com</title>
+<meta name="description" content="面向孩子的AI诗词课堂，输入一首诗名，AI讲解诗意、重点字词、名句赏析并出互动小问答题">
+<meta name="keywords" content="诗词启蒙,儿童诗词,古诗讲解,语文学习,传统文化">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:780px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:60px;resize:vertical}
+input:focus,select:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.poem-verse{background:rgba(168,85,247,0.08);border:1px solid rgba(168,85,247,0.3);border-radius:12px;padding:20px;text-align:center;font-size:1.4rem;line-height:2.2;color:#f3e8ff;margin-bottom:14px;font-weight:600}
+.section{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.25);border-radius:12px;padding:16px;margin-bottom:14px}
+.section .hd{color:#a855f7;font-weight:600;margin-bottom:8px}
+.section p{color:#cbd5e1;line-height:2;font-size:.92rem}
+.word-chip{display:inline-block;padding:2px 10px;background:rgba(99,102,241,0.15);border-radius:6px;color:#a5b4fc;font-size:.85rem;margin:3px}
+.quiz{background:rgba(255,255,255,0.03);border:1px solid rgba(34,197,94,0.3);border-radius:12px;padding:16px;margin-bottom:14px}
+.quiz .q{color:#bbf7d0;font-size:.95rem;font-weight:600;margin-bottom:8px}
+.quiz .opt{display:block;padding:8px 12px;margin:6px 0;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:8px;color:#cbd5e1;font-size:.88rem;cursor:pointer}
+.quiz .opt:hover{border-color:#6366f1}
+.quiz .opt.correct{background:rgba(34,197,94,0.15);border-color:#22c55e;color:#bbf7d0}
+.quiz .opt.wrong{background:rgba(239,68,68,0.12);border-color:#ef4444;color:#fecaca}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🍃 AI 诗词启蒙课堂</h1><p>让孩子用孩子能懂的方式，读懂每一首好诗</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>📜 选择诗词</label>
+<select id="poem">
+<option value="静夜思">静夜思 · 李白</option><option value="春晓">春晓 · 孟浩然</option><option value="登鹳雀楼" selected>登鹳雀楼 · 王之涣</option><option value="悯农·其二">悯农 · 李绅</option><option value="咏鹅">咏鹅 · 骆宾王</option><option value="赋得古原草送别">古原草 · 白居易</option>
+</select></div>
+<div><label>👧 孩子年龄</label>
+<select id="age">
+<option value="幼小">4-6岁</option><option value="低年级" selected>7-9岁</option><option value="中年级">10-12岁</option>
+</select></div>
+</div>
+<button class="btn-gen" id="genBtn">📖 开始上课</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:16px">🖍 诗词课堂讲义</div>
+<div class="poem-verse" id="verseBox"></div>
+<div class="section"><div class="hd">📖 这首诗在讲什么</div><p id="meanBox"></p></div>
+<div class="section"><div class="hd">🔍 重点字词</div><div id="wordBox"></div></div>
+<div class="section"><div class="hd">🌟 名句赏析</div><p id="famousBox"></p></div>
+<div class="quiz" id="quizBox"></div>
+<div style="text-align:right"><button class="copy-btn" onclick="copyAll()">📋 复制讲义</button></div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function rnd(n){return Math.floor(Math.random()*n)}
+const poems={
+静夜思:{v:'床前明月光，疑是地上霜。<br>举头望明月，低头思故乡。',mean:'晚上睡不着的李白看到床前一片亮光，以为是下了霜，抬头看到是月亮，不禁想起了远方的家乡。整首诗很简单，却把“想家”的心情写得又真又美。',words:[['明月光','晚上的月光'],['疑','以为、怀疑'],['举头','抬头'],['思故乡','想念家乡']],famous:'“举头望明月，低头思故乡”用抬头低头两个小动作，把思念家乡的心情生动地画了出来，是所有思乡诗里最出名的一句。',quiz:{q:'“疑是地上霜”中的“疑”是什么意思？',opts:['怀疑、以为','疑惑、不懂','喜欢','月亮'],ans:0}},
+春晓:{v:'春眠不觉晓，处处闻啼鸟。<br>夜来风雨声，花落知多少。',mean:'春天的早晨，孟浩然睡得香，醒来听到处处鸟叫，想起昨晚的风雨，不知吹落了多少花瓣。写的是春天的早晨，也带着一点惜春的小伤感。',words:[['不觉晓','不知不觉天就亮了'],['闻','听见'],['啼鸟','鸟儿叫'],['风雨声','下雨刮风的声音']],famous:'“春眠不觉晓”点出春日的慵懒惬意，而“花落知多少”则是童趣般的问句，惜春之情自然流露。',quiz:{q:'“花落知多少”表达了诗人怎样的心情？',opts:['高兴','想念','惜花伤春','害怕'],ans:2}},
+登鹳雀楼:{v:'白日依山尽，黄河入海流。<br>欲穷千里目，更上一层楼。',mean:'太阳靠着山落下，黄河向大海流去。想看更远的地方，就要再登高一层楼。既写壮丽景色，也告诉我们站得高、看得远的道理。',words:[['依','靠着'],['尽','落下、消失'],['欲穷','想要看尽'],['千里目','看很远很远的目光']],famous:'“欲穷千里目，更上一层楼”是千古名句，用登楼这个小事讲出“不断努力才能看得更远”的大道理，常用来鼓励人进步。',quiz:{q:'这首诗告诉我们什么道理？',opts:['要多睡觉','站得高看得远，要不断努力','要看日出','要下海'],ans:1}},
+悯农·其二:{v:'锄禾日当午，汗滴禾下土。<br>谁知盘中餐，粒粒皆辛苦。',mean:'农民在正午太阳最毒的时候锄草，汗水滴进土里。有谁知道碗里的每一粒米饭，都来自这份辛苦？教会我们要珍惜粮食。',words:[['禾','庄稼、粮食'],['餐','饭'],['皆','都'],['盘中餐','碗里的饭']],famous:'“谁知盘中餐，粒粒皆辛苦”把耕地和吃饭联系起来，提醒每个人珍惜粮食，是影响最深远的珍惜粮食之诗。',quiz:{q:'学习这首诗后，我们应该怎样做？',opts:['挑食','浪费食物','珍惜粮食','只吃肉'],ans:2}},
+咏鹅:{v:'鹅，鹅，鹅，曲项向天歌。<br>白毛浮绿水，红掌拨清波。',mean:'七岁的骆宾王看到池塘里的鹅，高兴地叫：鹅鹅鹅！鹅弯着脖子朝天叫，白毛浮在绿水上，红掌拨着清波。用声音和色彩把鹅写得活灵活现。',words:[['曲项','弯着脖子'],['浮','漂浮'],['拨','拨动'],['清波','清清的水波']],famous:'“白毛浮绿水，红掌拨清波”用“白白红绿”四种颜色和“浮、拨”两个动作，把鹅的样子写得像一幅画。',quiz:{q:'“曲项向天歌”中“项”指的是什么？',opts:['鸡','腿','脖子','尾巴'],ans:2}},
+赋得古原草送别:{v:'离离原上草，一岁一枯荣。<br>野火烧不尽，春风吹又生。',mean:'原野上的草长得茂盛，每年枯一次又盛一次。野火都烧不完，春天一到又长出来。用小草的生命力，赞美顽强不屈的精神。',words:[['离离','茂盛的样子'],['岁','年'],['枯荣','枯萎和茂盛'],['又生','又长出来']],famous:'“野火烧不尽，春风吹又生”借野草顽强的生命力，写出不屈不挠、屡败屡战的精神，成为家喻户晓的名句。',quiz:{q:'“野火烧不尽，春风吹又生”告诉我们什么精神？',opts:['害怕困难','顽强有生命力','安于现状','依赖别人'],ans:1}}};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 诗词启蒙课堂 | AgentGongju.com'))return;
+const poem=document.getElementById('poem').value;
+const age=document.getElementById('age').value;
+const p=poems[poem];
+document.getElementById('verseBox').innerHTML=p.v;
+document.getElementById('meanBox').textContent=p.mean;
+let w='';p.words.forEach(([a,b])=>{w+=`<span class="word-chip"><b style="color:#a5b4fc">${a}</b> · ${b}</span>`;});
+document.getElementById('wordBox').innerHTML=w;
+document.getElementById('famousBox').textContent=p.famous;
+const q=p.quiz;
+const qb=document.getElementById('quizBox');
+qb.innerHTML=`<div class="q">✅ 小提问：${q.q}</div>`+q.opts.map((o,i)=>`<span class="opt" data-i="${i}">${String.fromCharCode(65+i)}. ${o}</span>`).join('');
+qb.querySelectorAll('.opt').forEach(o=>{
+o.onclick=()=>{
+qb.querySelectorAll('.opt').forEach(x=>x.classList.remove('correct','wrong'));
+const ci=parseInt(o.dataset.i);
+if(ci===q.ans){o.classList.add('correct');qb.innerHTML+=`<div style="color:#22c55e;font-weight:600;margin-top:8px">🎉 答对啦，真棒！</div>`;}
+else{o.classList.add('wrong');qb.querySelector(`.opt[data-i="${q.ans}"]`).classList.add('correct');qb.innerHTML+=`<div style="color:#ef4444;font-weight:600;margin-top:8px">再想想～正确答案是 ${String.fromCharCode(65+q.ans)}</div>`;}
+};
+});
+window._copyText=`【AI 诗词启蒙】${poem}\n${p.mean}\n名句：${p.famous}`;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyAll(){navigator.clipboard.writeText(window._copyText||document.body.innerText).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

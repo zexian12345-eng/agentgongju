@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 宠物用品推荐 | AgentGongju.com</title>
+<meta name="description" content="输入宠物类型、年龄与预算，AI为你推荐合适的宠物用品与喂养护理建议">
+<meta name="keywords" content="宠物用品,养宠攻略,宠物推荐,猫狗用品,宠物护理">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:60px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🐾 AI 宠物用品推荐</h1><p>按宠物类型与预算，匹配实用好物与科学喂养建议</p></div>
+
+<div class="card">
+<label>🐱 你养的宠物类型 / 情况</label>
+<textarea id="pet" placeholder="例如：2岁的金毛，平时掉毛多，想买点狗粮、玩具和护理用品"></textarea>
+<div class="param-row">
+<div><label>💰 预算档位</label>
+<select id="budget"><option value="经济">经济实惠</option><option value="中档" selected>中档</option><option value="高配">高配</option></select></div>
+<div><label>🎯 主要需求</label>
+<select id="need"><option value="吃喝">吃喝粮</option><option value="用品">日常用品</option><option value="护理">护理清洁</option><option value="玩具">玩具娱乐</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">🐾 生成推荐清单</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🛒 宠物好物推荐清单</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制清单</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 宠物用品推荐 | AgentGongju.com'))return;
+const pet=document.getElementById('pet').value.trim();
+const budget=document.getElementById('budget').value;
+const need=document.getElementById('need').value;
+if(!pet){alert('请先填写宠物情况');return;}
+const isDog=/狗|犬/.test(pet), isCat=/猫/.test(pet);
+const type=isCat?'猫':isDog?'狗':'宠物';
+let out='🐾 宠物情况：「'+pet+'」\n💰 预算：'+budget+'　🎯 需求：'+need+'\n\n';
+out+='【🛒 按需推荐（'+need+'）】\n';
+if(need==='吃喝'){
+out+='· 主粮：选'+(budget==='经济'?'口碑平价粮，看配料表前几位是肉即可':'无谷且动物蛋白靠前的中端粮')+'，别只看营销词。\n';
+out+='· 零食：少量'+(type==='猫'?'冻干/猫条（注意含肉量）':'肉干/洁齿棒（洁齿顺便）')+'，作为奖励，别当正餐。\n';
+out+='· 水：'+(isCat?'多放几个水碗/用流动饮水机，猫爱喝活水':'保证随时有干净水，遛弯后及时补水')+'。\n';
+}else if(need==='用品'){
+out+='· '+(isCat?'猫砂盆+豆腐砂，勤铲才是关键':'狗笼/围栏+垫子，给足安全感')+'。\n';
+out+='· 牵引/胸背：选'+(isDog?'胸背比项圈更护颈，尺寸要贴身不勒':'舒适项圈，标签牌写上电话')+'。\n';
+out+='· '+(budget==='高配'?'智能喂食器/饮水机，上班族省心' :'基础款食碗水碗+一个舒适的窝即可')+'。\n';
+}else if(need==='护理'){
+out+='· 洗护：选'+(isDog?'宠物专用香波（别用人的，皮肤pH不同）':'宠物专用清洁，注意耳朵清洁')+'。\n';
+out+='· 梳毛：'+(isDog&&/掉毛/.test(pet)?'掉毛多买一个针梳+除毛神器，勤梳能大大减少满屋毛':'一把合适的梳子，每周1-2次即可')+'。\n';
+out+='· 指甲剪+耳道护理液，基础护理在家就能做，省钱又安心。\n';
+}else{
+out+='· 耐咬玩具：'+(isDog?'橡胶结骨/漏食球，能消耗精力还护牙':'逗猫棒+小老鼠，满足捕猎天性')+'。\n';
+out+='· 互动玩具：'+(isCat?'猫抓板必不可少，保护家具':'飞盘/嗅闻垫，运动加益智')+'。\n';
+out+='· '+(budget==='经济'?'选择耐用的基础款即可，玩具别贪多，安全第一':'升级款带奖励机制的，主子更爱玩')+'。\n';
+}
+out+='\n【❤️ 科学喂养小贴士】\n';
+out+='· 换粮要"逐步过渡"，别一次全换，容易闹肠胃。\n';
+out+='· '+(isCat?'猫要保证足够水分摄入和干净猫砂，健康常在细节':'每天固定遛弯和定量喂食，规律最重要')+'。\n';
+out+='· 定期体检+按时驱虫疫苗，比买再多"好物"都更负责任。\n\n';
+out+='💡 养宠丰俭由人，但"先国产平价试试、不合适再换"是不踩坑的好策略。愿毛孩子健康快乐！';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 宠物好物清单已复制！'))}
+</script>
+</body>
+</html>

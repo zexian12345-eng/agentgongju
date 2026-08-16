@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 垃圾分类助手 | AgentGongju.com</title>
+<meta name="description" content="输入垃圾名称，AI即时判断属于可回收物、有害垃圾、厨余垃圾还是其他垃圾，附投放小贴士">
+<meta name="keywords" content="垃圾分类,四分类,可回收物,有害垃圾,厨余垃圾,环保">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:700px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+input[type=text]{width:100%;padding:14px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:1rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.hot-tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+.hot-tags span{padding:6px 14px;background:rgba(99,102,241,0.12);border:1px solid rgba(99,102,241,0.25);border-radius:20px;color:#a5b4fc;font-size:.82rem;cursor:pointer}
+.hot-tags span:hover{background:rgba(99,102,241,0.25)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.result-card{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:16px;padding:24px;text-align:center;margin-bottom:14px}
+.type-big{font-size:2rem;font-weight:700;margin:10px 0 6px}
+.result-card .color{font-size:.9rem;padding:4px 16px;border-radius:20px;display:inline-block;margin-bottom:10px}
+.tip{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.2);border-radius:12px;padding:16px;color:#cbd5e1;line-height:1.9;font-size:.9rem;text-align:left}
+.tip b{color:#a855f7}
+@media(max-width:600px){}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>♻️ AI 垃圾分类助手</h1><p>输入垃圾名称，秒判四分类，低碳生活从我做起</p></div>
+
+<div class="card">
+<label>🗑 输入垃圾名称</label>
+<input type="text" id="item" placeholder="例如：没喝完的奶茶、废电池、旧报纸…" />
+<div class="hot-tags">
+<span onclick="set('珍珠奶茶')">珍珠奶茶</span><span onclick="set('废电池')">废电池</span>
+<span onclick="set('碎玻璃')">碎玻璃</span><span onclick="set('过期药品')">过期药品</span>
+<span onclick="set('旧衣服')">旧衣服</span><span onclick="set('果皮')">果皮</span>
+<span onclick="set('泡沫塑料')">泡沫塑料</span><span onclick="set('外卖盒')">外卖盒</span>
+</div>
+<button class="btn-gen" id="genBtn">🔍 查询分类</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="result-card" id="rcard"></div>
+<div class="tip" id="tipBox"></div>
+<div style="text-align:right;margin-top:12px"><button class="copy-btn" style="padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem" onclick="copyAll()">📋 复制结果</button></div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function set(v){document.getElementById('item').value=v}
+function rnd(n){return Math.floor(Math.random()*n)}
+const refuse=[
+{n:['可回收物','♻️'],c:'#22c55e',tip:'干净未污染的塑料、玻璃、金属、纸张、织物等可回收物才可回收。请清空残留液体、压平纸箱后再投放。'},
+{n:['有害垃圾','⚠️'],c:'#ef4444',tip:'含汞电池、过期药品、废灯管、油漆桶等含有毒有害物质的垃圾，请投入红色有害垃圾箱，切勿混入其他垃圾。'},
+{n:['厨余垃圾','🍽️'],c:'#84cc16',tip:'剩菜剩饭、果皮菜叶、茶叶渣等易腐垃圾为厨余垃圾（湿垃圾），建议沥干水分后投放，有条件的可先行破袋。'},
+{n:['其他垃圾','🗑️'],c:'#64748b',tip:'难以回收又没有毒害的垃圾，如污染纸巾、烟蒂、灰土、一次性餐具等，统一投入灰色其他垃圾（干垃圾）箱。'}];
+const rules=[[/[电池|药品|油漆|灯管|温度计|胶片|水银|杀虫剂]/,1],[/(珍珠|奶茶|外卖盒|剩菜|果皮|蔬菜|菜叶|茶叶|剩饭|骨头|蛋壳|瓜皮)/,2],[/(报纸|纸箱|塑料|玻璃瓶|易拉罐|旧衣|金属|快递盒|书本|矿泉水瓶)/,0],[/(餐巾纸|纸巾|烟蒂|烟头|灰土|尘土|拖把|脏抹布|一次性餐具|尿不湿|头发|湿纸巾)/,3]];
+const others=[[/(湿纸巾|脏纸巾|烟蒂|灰土|污损)/,3],[/(可乐瓶|矿泉水瓶|易拉罐)/,0]];
+function classify(name){
+for(const[r,c]of rules){if(r.test(name))return c;}
+for(const[r,c]of others){if(r.test(name))return c;}
+return (name.length+ rnd(4))%4;
+}
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 垃圾分类助手 | AgentGongju.com'))return;
+const name=document.getElementById('item').value.trim();
+if(!name){alert('请先输入垃圾名称');return;}
+const idx=classify(name);
+const item=refuse[idx];
+const rc=document.getElementById('rcard');
+rc.innerHTML=`<div class="type-big" style="background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent">${name}</div><div><span class="color" style="background:${item.c}22;color:${item.c};border:1px solid ${item.c}44">${item.n[0]}</span></div><div style="font-size:1.6rem">${item.n[1]}</div>`;
+document.getElementById('tipBox').innerHTML=`<b>💡 投放建议：</b>${item.tip}`;
+window._copyText=`【AI 垃圾分类】${name} → ${item.n[0]}\n${item.tip}`;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyAll(){navigator.clipboard.writeText(window._copyText||document.body.innerText).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

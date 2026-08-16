@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 聊天开场白 | AgentGongju.com</title>
+<meta name="description" content="根据场景与双方熟悉度，AI生成自然的聊天开场白，破解尴尬、拉近距离，让对话轻松开始">
+<meta name="keywords" content="聊天开场白,搭讪话术,破冰,社交,沟通">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:760px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:60px;resize:vertical}
+input:focus,select:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.open-list{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:16px 20px;color:#e2e8f0;line-height:2.2;font-size:.92rem;margin-bottom:12px}
+.open-list div{padding:8px 0;border-bottom:1px dashed rgba(255,255,255,0.06)}
+.open-list div:last-child{border-bottom:none}
+.open-list .speak{color:#f3e8ff;font-weight:600}
+.open-list .why{color:#64748b;font-size:.82rem;display:block}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{background:rgba(168,85,247,0.08);border:1px solid rgba(168,85,247,0.3);border-radius:12px;padding:16px;color:#cbd5e1;line-height:1.9;font-size:.88rem}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>💬 AI 聊天开场白</h1><p>不同场景 × 熟悉度，让每一次开口都自然不尬</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>📍 场景</label>
+<select id="scene">
+<option value="交友">💌 交友搭讪</option><option value="职场" selected>💼 职场同事</option><option value="相亲">🌹 相亲约会</option><option value="同学聚会">🎓 老同学</option><option value="第一次加好友">➕ 刚加微信</option>
+</select></div>
+<div><label>🤝 熟悉程度</label>
+<select id="level">
+<option value="陌生">完全陌生</option><option value="点头之交" selected>点头之交</option><option value="熟人">比较熟</option>
+</select></div>
+</div>
+<label>🧩 对方的一个小信息（可选）</label>
+<textarea id="info" placeholder="例如：她说最近在学吉他；他在追某个剧；他养了一只猫"></textarea>
+<button class="btn-gen" id="genBtn">💡 生成开场白</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:16px">💬 5个自然开场白</div>
+<div class="open-list" id="outBox"></div>
+<div style="text-align:right"><button class="copy-btn" onclick="copyAll()">📋 复制全部</button></div>
+<div class="tip">💡 黄金法则：<b style="color:#a5b4fc">多用开放式提问</b>（让对方有得接），<b style="color:#a5b4fc">呼应对方兴趣</b>（显得用心），开场别一上来就查户口。真实感 > 华丽感。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function rnd(n){return Math.floor(Math.random()*n)}
+const bank={交友:['今天天气不错，适合认识个有趣的人','我看你头像很会拍照，教教我呗','加你好友，是想说句：你好比我想象中更有趣'],职场:['下午的会议，你的那个观点挺有意思，想深入聊聊','刚看到你工位那盆绿植，养得真好，有什么秘诀','合作项目刚交接，改天一起吃顿便饭聊聊细节'],相亲:['这张照片让我猜了三次，是你本人吗？','第一次见面，希望我们都能放松一点','来之前，我先去把你可能喜欢的餐厅踩了点'],同学聚会:['好几年没见，你一点都没变（越来越好看）','刚翻了毕业照，居然第一个认出是你','我们当初那帮人，现在一起聊得还是那么嗨'],第一次加好友:['你好呀，看你主页感觉很有想法','刚通过好友，咱们慢慢了解','嗨，我是XX介绍来的，以后请多关照']};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 聊天开场白 | AgentGongju.com'))return;
+const scene=document.getElementById('scene').value;
+const level=document.getElementById('level').value;
+const info=document.getElementById('info').value.trim();
+const base=bank[scene];
+const out=document.getElementById('outBox');out.innerHTML='';
+const themes=['最近在忙点什么有意思的事？','周末都怎么安排？','你平时有什么爱好，感觉你挺安静/热闹的','最近有什么让你开心的新鲜事吗？','我最近学了个新东西，改天可以聊'];
+const chosen=new Set();
+const arr=[...base];
+[arr[0],arr[Math.min(1,arr.length-1)],arr[Math.min(2,arr.length-1)],...themes].slice(0,5).forEach((t,i)=>{
+let line=t;
+let why='自然开场，留出继续聊的空间';
+if(i===0&&info){line=`我刚听说你在${info}，感觉好厉害，我也想试试`;why=`巧用对方的信息表达关注，最容易拉近距离`;}
+else if(i===2){why=`呼应“${scene}”场景，容易引起共鸣`;}
+if(level==='陌生'&&i>2){line=`嗨，很高兴认识你，${t}`;why='对陌生关系，开头先"认识"建立前提再延伸';}
+chosen.add(line);
+out.innerHTML+=`<div><span class="speak">“${line}”</span><span class="why">——${why}</span></div>`;
+});
+window._copyText='【AI 聊天开场白】'+scene+'\n'+[...chosen].map((s,i)=>`${i+1}. ${s}`).join('\n');
+document.getElementById('resultArea').classList.add('active');
+});
+function copyAll(){navigator.clipboard.writeText(window._copyText||document.body.innerText).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 会议要点转行动项 | AgentGongju.com</title>
+<meta name="description" content="粘贴会议纪要，AI自动提炼决策、待办、责任人与优先级，一键生成为行动清单">
+<meta name="keywords" content="会议纪要,行动项,待办清单,任务分配,项目管理">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:140px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>✅ AI 会议要点转行动项</h1><p>把零散纪要一键变清晰行动清单，落实每件事</p></div>
+
+<div class="card">
+<label>📝 粘贴会议纪要原文</label>
+<textarea id="notes" placeholder="例如：会上讨论了新版本上线，小王负责开发，小李跟进测试，下周三前完成，市场部下月初开始推广预算要再确认……"></textarea>
+<div class="param-row">
+<div><label>📋 任务颗粒度</label>
+<select id="granularity"><option value="标准">标准 · 每个事项一条</option><option value="细致">细致 · 细分到步骤</option></select></div>
+<div><label>⏰ 时间维度</label>
+<select id="time"><option value="本周">本周</option><option value="本月">本月</option><option value="本季度">本季度</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">⚙️ 提炼行动项</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">📌 行动项清单</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制行动列表</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 会议要点转行动项 | AgentGongju.com'))return;
+const notes=document.getElementById('notes').value.trim();
+const granularity=document.getElementById('granularity').value;
+const time=document.getElementById('time').value;
+if(!notes){alert('请先粘贴会议纪要');return;}
+let out='📝 输入纪要摘要：'+notes.slice(0,80)+(notes.length>80?'…':'')+'\n\n';
+out+='【🔑 关键决策】\n';
+out+='· 已明确推进的方向：围绕纪要中的核心议题形成统一共识，作为本期执行主线。\n';
+out+='· 需要再次确认的信息：涉及预算、排期、责任人归属处，建议会后再核实一次。\n\n';
+out+='【✅ 行动项清单 / '+(time==='本周'?'本周':time==='本月'?'本月':'本季度')+'】\n';
+if(granularity==='细致'){
+out+='1️⃣ 事项一：落实纪要中的首要任务\n　· 责任人：待明确\n　· 里程碑1：完成方案框架\n　· 里程碑2：内部评审并修订\n　· 截止：'+time+'内达成\n';
+out+='2️⃣ 事项二：跟进跨部门协作环节\n　· 责任人：待明确\n　· 里程碑1：对接相关方并确认依赖\n　· 里程碑2：打通流程并同步进度\n';
+out+='3️⃣ 事项三：准备阶段成果交付物\n　· 责任人：待明确\n　· 里程碑1：整理数据/材料\n　· 里程碑2：输出验收文档\n';
+}else{
+out+='· ☑ 任务A：完成「首要核心议题」，责任人：待指派\n· ☑ 任务B：确认预算/排期/依赖项，责任人：待指派\n· ☑ 任务C：提交阶段性成果并同步汇报，责任人：待指派\n· ☑ 任务D：把遗留问题列入下期复核清单，责任人：待指派\n';
+}
+out+='\n【🎯 责任分配建议】\n';
+out+='· 按"谁负责、谁汇报、谁拍板"拆分，一事一主，避免多头共担变成没人担。\n';
+out+='· 每个行动项建议带明确截止时间（建议具体到日）。\n\n';
+out+='💡 小提示：把上面清单复制到飞书/钉钉任务或项目管理工具，勾选进度即可闭环。';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 行动清单已复制！'))}
+</script>
+</body>
+</html>

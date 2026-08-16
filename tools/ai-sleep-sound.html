@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 助眠氛围推荐 | AgentGongju.com</title>
+<meta name="description" content="选择你的睡前状态，AI为你推荐助眠音乐、白噪音与冥想引导，附带现成的睡前播放清单">
+<meta name="keywords" content="助眠,白噪音,睡前,冥想,睡眠,放松音乐">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:760px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.mood-line{background:rgba(168,85,247,0.08);border:1px solid rgba(168,85,247,0.3);border-radius:12px;padding:18px;color:#e9d5ff;line-height:1.9;font-size:.92rem;margin-bottom:14px}
+.playlist{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:16px 20px;margin-bottom:14px}
+.playlist .hd{color:#a855f7;font-weight:600;margin-bottom:10px}
+.playlist .track{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px dashed rgba(255,255,255,0.06);color:#e2e8f0;font-size:.9rem}
+.playlist .track:last-child{border-bottom:none}
+.playlist .tr{color:#64748b;font-size:.8rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🌙 AI 助眠氛围推荐</h1><p>按你的睡前状态，推荐白噪音、助眠音乐与冥想引导</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>😴 睡前状态</label>
+<select id="state">
+<option value="兴奋">🧠 脑子停不下来</option><option value="焦虑" selected>😰 心里有事</option><option value="疲惫">😪 身体疲劳</option><option value="失眠">🌒 长期失眠</option><option value="轻度">😌 想睡得更好</option>
+</select></div>
+<div><label>🎧 偏好音效</label>
+<select id="sound">
+<option value="雨声" selected>🌧 雨声</option><option value="海浪">🌊 海浪</option><option value="壁炉">🔥 壁炉</option><option value="森林">🌲 森林鸟鸣</option><option value="扇叶">🌀 风扇白噪音</option>
+</select></div>
+</div>
+<button class="btn-gen" id="genBtn">🎶 生成助眠方案</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:16px">🌙 今晚的助眠方案</div>
+<div class="mood-line" id="moodBox"></div>
+<div class="playlist" id="playBox"></div>
+<div style="text-align:right"><button class="copy-btn" onclick="copyAll()">📋 复制方案</button></div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function rnd(n){return Math.floor(Math.random()*n)}
+const stateData={
+兴奋:{mood:'大脑仍在高速运转，适合用稳定的白噪音慢慢“降频”，避免刺激性节奏。', breath:['4-7-8呼吸法：吸气4秒，屏息7秒，呼气8秒，重复8组','渐进式放松：从脚趾到头顶逐部位放松肌肉']},
+焦虑:{mood:'心里挂着事，先用“具象化”冥想把思绪暂时安放，再配合温柔环境音入睡。', breath:['盒子呼吸法：吸4秒-停4秒-呼4秒，循环5分钟','“担忧清单”书写：把烦心事写下并锁进抽屉，告诉自己明天再说']},
+疲惫:{mood:'身心都已透支，重点是快速放松，选择节奏缓慢、几乎没有起伏的声景。', breath:['延展呼气：呼气时间延长至吸气两倍，激活副交感神经','「478」版本：吸4-呼6，配合舒展身体各部位']},
+失眠:{mood:'推荐连续播放至少25分钟的自然声景，避免听中途会“跳脱”的音频。', breath:['「4-7-8」深度版：睡前60分钟开始，期间不再看手机','固定睡眠锚点：每天同一时间睡、同一时间起']},
+轻度:{mood:'状态尚可，选一段轻盈的环境声作为入睡仪式感，听心情切换即可。', breath:['简单3分钟冥想：专注呼吸，走神了就温柔拉回来','把音量调到刚好能听见的程度即可']}};
+const soundMap={
+雨声:['中雨濡濡屋檐','窗边细雨','雨后林间水滴','滴答的应急灯'],
+海浪:['缓慢的潮汐','远处拍岸的浪','海边的夜风'],
+壁炉:['噼啪柴火声','炉火旁的暖意','偶尔的木柴爆裂'],
+森林:['夏夜虫鸣','清晨鸟叫','林间微风与溪流'],
+扇叶:['低转速电扇','空调运转','旧式风扇叶声']};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 助眠氛围推荐 | AgentGongju.com'))return;
+const state=document.getElementById('state').value;
+const sound=document.getElementById('sound').value;
+const sd=stateData[state];const tracks=soundMap[sound];
+const shuffle=[...tracks];for(let i=shuffle.length-1;i>0;i--){const k=rnd(i+1);[shuffle[i],shuffle[k]]=[shuffle[k],shuffle[i]];}
+document.getElementById('moodBox').innerHTML=`<strong>${state}状态 · ${sound}声景</strong><br>${sd.mood}`;
+let list='';
+shuffle.forEach((t,i)=>{list+=`<div class="track"><span>🎵 ${t}</span><span class="tr">建议 ${5+i*2}-${7+i*2} 分钟</span></div>`;});
+document.getElementById('playBox').innerHTML=`<div class="hd">🎧 推荐播放清单（${sound}）</div>${list}<div class="track" style="border-top:1px dashed rgba(255,255,255,0.12)"><span>🧘 助眠引导</span><span class="tr">${sd.breath[0]}</span></div>`;
+window._copyText=`【AI 助眠方案】${state} · ${sound}\n${sd.mood}\n♪ ${shuffle.join(' / ')}\n呼吸法：${sd.breath[0]}`;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyAll(){navigator.clipboard.writeText(window._copyText||document.body.innerText).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

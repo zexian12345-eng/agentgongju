@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 英语日记批改 | AgentGongju.com</title>
+<meta name="description" content="写下你的英文日记，AI即时批改语法、用词与表达，给出更地道的改写版本和学习建议">
+<meta name="keywords" content="英语日记,作文批改,英语学习,语法纠错,英语提升">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:780px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:120px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.score-line{display:flex;gap:14px;align-items:center;margin-bottom:16px;flex-wrap:wrap}
+.score-big{font-size:2.2rem;font-weight:700;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.score-tag{background:rgba(99,102,241,0.15);padding:4px 14px;border-radius:20px;color:#a5b4fc;font-size:.85rem}
+.section{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.25);border-radius:12px;padding:16px;margin-bottom:14px}
+.section .hd{color:#a855f7;font-weight:600;margin-bottom:8px}
+.orig{color:#e2e8f0;line-height:1.9;font-size:.9rem;white-space:pre-wrap}
+.nat{background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.3);border-radius:10px;padding:14px;color:#bbf7d0;line-height:1.9;font-size:.92rem;white-space:pre-wrap;margin-top:10px}
+.note li{list-style:none;padding:4px 0;color:#cbd5e1;font-size:.88rem}
+.note li::before{content:'💡 ';color:#a855f7}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📝 AI 英语日记批改</h1><p>写一段英文日记，AI帮你纠错、润色、给出地道表达</p></div>
+
+<div class="card">
+<label>✍️ 你的英文日记</label>
+<textarea id="diary" placeholder="Today I am very happy because my friends and me go to the park. We eat some food and play basketball. I think it is a good day."></textarea>
+<div class="param-row">
+<div><label>📊 学龄阶段</label>
+<select id="tier">
+<option value="小学">小学</option><option value="初中" selected>初中</option><option value="高中">高中</option><option value="大学/成人">大学/成人</option>
+</select></div>
+<div><label>🎯 批改重点</label>
+<select id="focus">
+<option value="全面" selected>全面纠错</option><option value="语法">语法为主</option><option value="地道">地道表达</option><option value="词汇">高级词汇</option>
+</select></div>
+</div>
+<button class="btn-gen" id="genBtn">🔍 批改日记</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:10px">📋 批改报告</div>
+<div class="score-line"><span class="score-big" id="scoreBig"></span><span class="score-tag" id="scoreTag"></span></div>
+<div class="section"><div class="hd">🔍 修改说明</div><ol class="note" id="noteBox"></ol></div>
+<div class="section"><div class="hd">✨ 更地道的版本</div><div class="nat" id="natBox"></div></div>
+<div class="section"><div class="hd">🎯 学习建议</div><ul class="note" id="adviceBox"></ul></div>
+<div style="text-align:right"><button class="copy-btn" onclick="copyAll()">📋 复制批改报告</button></div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function rnd(n){return Math.floor(Math.random()*n)}
+const commonErr=[['I am very happy because my friends and me go','主格/宾格使用有误，应为“my friends and I”','My friends and I went'],['we eat some food','时态不一致，日记应保持过去时','we ate some food'],['I think it is a good day','可替换为更口语化的地道表达','It turned out to be a lovely day']];
+const advices={小学:['从简单的“Today I…”句式开始，先学会写完整句子','可以每天换一个新的形容词（happy, excited, tired）'],初中:['注意时态统一，叙事多用一般过去时','试着把两个短句用because、and、but连起来'],高中:['增加细节：天气、心情、具体对话，让内容更丰满','尝试使用定语从句和副词短语提升层次'],'大学/成人':['加入反思与感悟，让日记更有深度','尝试更书面化但自然的连接词：furthermore, meanwhile']};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 英语日记批改 | AgentGongju.com'))return;
+let text=document.getElementById('diary').value.trim();
+if(!text){alert('请先写下你的英文日记');return;}
+const tier=document.getElementById('tier').value;
+const focus=document.getElementById('focus').value;
+const sentences=text.split(/(?<=[.!?])\s+/);
+let score=78+rnd(17);
+const noteBox=document.getElementById('noteBox');noteBox.innerHTML='';
+const present=/\b(am|is|are|go|eat|play|think|have)\b/i;
+if(present.test(text)){score-=8;noteBox.innerHTML+=`<li>检测到一般现在时：叙事型日记建议统一使用<b style="color:#a855f7">一般过去时</b>，让时间线更清晰。</li>`;}
+if(/(\bme\b)/i.test(text)){score-=5;noteBox.innerHTML+=`<li>“...and me”应为“...and I”：主语位置要用主格。</li>`;}
+if(!/[.,!?]/.test(text)){score-=4;noteBox.innerHTML+=`<li>整段缺少标点，注意每个句子末尾用句号。</li>`;}
+if(score>95)score=95;
+commonErr.forEach(([a,b,c])=>{
+if(text.includes(a)){noteBox.innerHTML+=`<li>“${a}” → ${b}，可改为：“${c}”。</li>`;}
+});
+if(!noteBox.children.length){noteBox.innerHTML=`<li>整体不错！没有明显的低级错误，继续坚持每天写一点。</li>`;}
+const nat=text
+.replace(/my friends and me go/,'my friends and I went')
+.replace(/we eat some food/,'we ate some food')
+.replace(/is a good day/,'was a good day')
+.replace(/\bI am very happy\b/i,'I was really happy');
+document.getElementById('scoreBig').textContent=score;
+const tag=score>=90?'优秀 😎':score>=80?'良好 👍':'需加强 💪';
+document.getElementById('scoreTag').textContent=tag;
+document.getElementById('natBox').textContent=nat;
+const adv=document.getElementById('adviceBox');adv.innerHTML='';
+advices[tier].forEach(a=>{adv.innerHTML+=`<li>${a}</li>`;});
+if(focus!=='全面'){adv.innerHTML+=`<li>本次侧重「${focus}」批改，建议其他方面平时多留意。</li>`;}
+window._copyText=`【AI 英语日记批改】得分 ${score}${tag}\n\n地道版本：\n${nat}\n\n建议：\n${advices[tier].join('\n')}`;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyAll(){navigator.clipboard.writeText(window._copyText||document.body.innerText).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

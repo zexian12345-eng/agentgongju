@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 抖音爆款开头 | AgentGongju.com</title>
+<meta name="description" content="输入视频主题，AI生成多个高点击率的抖音/短视频黄金开头，抓住前3秒抓住观众">
+<meta name="keywords" content="抖音开头,短视频文案,爆款开头,黄金3秒,视频文案">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:70px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🎬 AI 抖音爆款开头</h1><p>前3秒抓住观众，输出高点击率的视频黄金开场白</p></div>
+
+<div class="card">
+<label>🎥 视频主题 / 内容简介</label>
+<textarea id="topic" placeholder="例如：教大家15分钟搞定一顿丰盛的晚餐"></textarea>
+<div class="param-row">
+<div><label>📌 视频类型</label>
+<select id="type"><option value="美食">美食</option><option value="知识科普">知识科普</option><option value="生活vlog">生活vlog</option><option value="美妆时尚">美妆时尚</option><option value="职场干货">职场干货</option><option value="搞笑段子">搞笑段子</option></select></div>
+<div><label>🎭 开头风格</label>
+<select id="style"><option value="悬念式">悬念式 · 勾住好奇心</option><option value="反差式">反差式 · 制造冲击</option><option value="痛点式">痛点式 · 直击需求</option><option value="承诺式">承诺式 · 给足好处</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">🎤 生成黄金开头</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">⚡ 黄金3秒开头方案</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制方案</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 抖音爆款开头 | AgentGongju.com'))return;
+const topic=document.getElementById('topic').value.trim();
+const type=document.getElementById('type').value;
+const style=document.getElementById('style').value;
+if(!topic){alert('请先输入视频主题');return;}
+let out='🎥 主题：「'+topic+'」（类型：'+type+'，风格：'+style+'）\n\n';
+out+='【方案 A — 直接开场】\n';
+out+='「90%的人看完都后悔没早点知道，今天一分钟讲透「'+topic+'」。」\n\n';
+out+='【方案 B — 悬念反问】\n';
+out+='「你有没有想过，「'+topic+'」背后真正的秘密是什么？我花了3年才搞明白。」\n\n';
+out+='【方案 C — 反差冲击】\n';
+if(style==='反差式'){
+out+='「别再被坑了！关于「'+topic+'」，大多数人以为的，跟实际完全是两回事。」\n\n';
+out+='【方案 D — 痛点直击】\n';
+out+='「如果你也为「'+topic+'」头疼过，那今天这条视频，就是为你准备的。」\n\n';
+}else if(style==='悬念式'){
+out+='「这条视频只说一件事，看完你会回来感谢我——关于「'+topic+'」。」\n\n';
+out+='【方案 D — 痛点直击】\n';
+out+='「多少人踩过「'+topic+'」的坑？今天教你彻底避开。」\n\n';
+}else if(style==='承诺式'){
+out+='「看完这条，「'+topic+'」再也不用求人，5分钟给你讲得明明白白。」\n\n';
+out+='【方案 D — 痛点直击】\n';
+out+='「如果你也为「'+topic+'」发愁过，今天这条就是为你拍的。」\n\n';
+}else{
+out+='「先别划走！「'+topic+'」这件事，99%的人第一步就做错了。」\n\n';
+out+='【方案 D — 痛点直击】\n';
+out+='「别再为「'+topic+'」犯难了，方法我帮你试出来了。」\n\n';
+}
+out+='【方案 E — 金句收尾开头】\n';
+out+='「一生做好一件事，今天聊聊「'+topic+'」，它不是玄学，是方法。」\n\n';
+out+='💡 开头法则：前3秒给"钩子"（悬念/痛点/承诺），5秒内上干货，别让观众等。';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 爆款开头方案已复制！'))}
+</script>
+</body>
+</html>

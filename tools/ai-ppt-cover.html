@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI PPT 封面标题生成 | AgentGongju.com</title>
+<meta name="description" content="输入汇报主题，AI一键生成主标题+副标题+核心卖点，为你的PPT封面注入吸睛文案">
+<meta name="keywords" content="PPT标题,PPT封面,汇报标题,标题生成,演示文案">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:70px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.outputs{display:grid;gap:14px;margin-bottom:12px}
+.title-item{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:16px}
+.title-item .tl{color:#a855f7;font-weight:700;font-size:1.1rem;margin-bottom:6px}
+.title-item .sub{color:#cbd5e1;font-size:.9rem;line-height:1.8}
+.title-item .tag{display:inline-block;padding:2px 10px;background:rgba(99,102,241,0.15);border-radius:6px;color:#a5b4fc;font-size:.75rem;margin-bottom:8px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{color:#94a3b8;font-size:.85rem;text-align:right}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📊 AI PPT 封面标题生成</h1><p>一个主题，多款封面文案，让演示从第一眼就出彩</p></div>
+
+<div class="card">
+<label>📋 汇报主题</label>
+<textarea id="topic" placeholder="例如：2026年上半年市场部增长复盘，面向高管汇报"></textarea>
+<div class="param-row">
+<div><label>🎯 汇报场景</label>
+<select id="scene">
+<option value="年度总结">年度/季度总结</option><option value="项目立项">项目立项</option><option value="融资路演" selected>融资路演</option><option value="产品发布">产品发布</option><option value="部门述职">部门述职</option><option value="培训分享">培训分享</option>
+</select></div>
+<div><label>😊 语言风格</label>
+<select id="tone">
+<option value="大气正式">大气正式</option><option value="数据硬核">数据硬核</option><option value="简洁有力" selected>简洁有力</option><option value="结果导向">结果导向</option><option value="热点网感">热点网感</option>
+</select></div>
+</div>
+<button class="btn-gen" id="genBtn">✨ 生成封面标题</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:16px">🎬 封面文案方案</div>
+<div class="outputs" id="outputBox"></div>
+<div style="text-align:right"><button class="copy-btn" onclick="copyASingle()">📋 复制全部</button></div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function rnd(n){return Math.floor(Math.random()*n)}
+const prefixes={年度总结:['步履不停，答案在行动里','回望与奔赴','把成绩写在纸上','每一份努力都算数'],项目立项:['从0到1，答案在此','定义未来','敢想，更敢干','新赛道，新可能'],融资路演:['让资本看见增长','解锁下一个增长极','价值，看得见','用数据讲一个伟大故事'],产品发布:['重新定义使用体验','每一次革新都改变习惯','终于，轮到你主角登场','科技赋能每一天'],部门述职:['守住基本盘，打开新局面','复盘是为了更好地出发','协作，是最大的杠杆','这一年，我们一起拼过'],培训分享:['把经验变成方法','让每个人都成为高手','干货已备好，请签收','分享即成长']};
+const styleMap={大气正式:['以卓越之心，致宏大之愿','行稳致远，进而有为','格局打开，未来已来'],数据硬核:['12个月，300%的增长密码','一组数据，看懂整个盘面','增长不是玄学，是可复制的公式'],简洁有力:['向新而生','全力以赴，聚焦增长','使命在肩，即刻出发'],结果导向:['结果，是最好的语言','把目标变成现实','每一步，都为最终答案'],热点网感:['这波操作，稳了','把PPT做得出圈','主打一个稳中带炸']};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI PPT 封面标题生成 | AgentGongju.com'))return;
+const topic=document.getElementById('topic').value.trim()||'本次汇报';
+const scene=document.getElementById('scene').value;
+const tone=document.getElementById('tone').value;
+const pools=prefixes[scene];const style=styleMap[tone];
+const picks=[];
+[pools,style].forEach((pool,p)=>{
+for(let i=0;i<(p===0?2:1);i++){const pi=rnd(pool.length);picks.push(pool[pi]);
+}});
+let str=scene+' · '+tone;
+const out=document.getElementById('outputBox');out.innerHTML='';
+const items=[
+{tl:picks[0],sub:`主标题 · <strong>${topic}</strong><br>—— ${picks[0]}（大气开场，可直接作封面大字）`},
+{tl:picks[1],sub:`替换版 · 数据增强<br>—— ${picks[2]}，配一句关键数字（如：增长 300%）`},
+{tl:picks[2],sub:`金句版 · ${tone}<br>—— ${picks[3]}，适合沉淀为金句页`}];
+if(tone==='数据硬核'){items[1].sub='—— '+picks[1]+'，直接放三个核心KPI作为副标题'};
+items.forEach(it=>{
+const tags=['主标题','提升标题','金句版'];
+const div=document.createElement('div');div.className='title-item';
+div.innerHTML=`<span class="tag">${tags[items.indexOf(it)]}</span><div class="tl">${it.tl}</div><div class="sub">${it.sub}</div>`;
+out.appendChild(div);
+});
+let text=`【AI PPT 封面标题】${str}\n主标题：${picks[0]}\n替换版：${picks[2]}\n金句版：${picks[3]}`;
+refresh(text);
+window._copyText=text;
+document.getElementById('resultArea').classList.add('active');
+});
+function refresh(){}
+function copyASingle(){navigator.clipboard.writeText(window._copyText||document.body.innerText).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

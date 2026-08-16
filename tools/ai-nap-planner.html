@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 科学午休规划 | AgentGongju.com</title>
+<meta name="description" content="按你的起床时间与下午安排，AI规划科学午休方案，含最佳时长、小睡技巧与快速清醒方法">
+<meta name="keywords" content="午休,午睡,小睡科学,睡眠规划,下午精力">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:740px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=time],input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.plan-box{background:rgba(168,85,247,0.08);border:1px solid rgba(168,85,247,0.35);border-radius:16px;padding:24px;text-align:center;margin-bottom:14px}
+.plan-box .zl{font-size:1.1rem;color:#e9d5ff;margin-bottom:6px}
+.plan-box .big{font-size:2.6rem;font-weight:700;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin:6px 0}
+.plan-box .sm{color:#94a3b8;font-size:.88rem}
+.section{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.25);border-radius:12px;padding:16px 18px;margin-bottom:14px}
+.section .hd{color:#a855f7;font-weight:600;margin-bottom:8px}
+.section p{color:#cbd5e1;line-height:1.9;font-size:.92rem;white-space:pre-wrap}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>😴 AI 科学午休规划</h1><p>睡对午休，下午满血复活，拒绝越睡越累</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>🌅 今天几点起床</label>
+<input type="time" id="wake" value="07:00" /></div>
+<div><label>📅 下午任务强度</label>
+<select id="task">
+<option value="轻">轻松日常</option><option value="中" selected>需要专注</option><option value="重">高脑力/高压</option>
+</select></div>
+</div>
+<label>😪 昨晚睡眠时长约为</label>
+<select id="lastnight">
+<option value="差">不足6小时</option><option value="中" selected>6-7小时</option><option value="好">7小时以上</option>
+</select>
+<button class="btn-gen" id="genBtn">⌛ 生成午休方案</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:16px">💤 你的科学午休方案</div>
+<div class="plan-box"><div class="zl">推荐午休时长</div><div class="big" id="zlBig"></div><div class="sm" id="zlSm"></div></div>
+<div class="section"><div class="hd">🗓 时间安排建议</div><p id="timeBox"></p></div>
+<div class="section"><div class="hd">🛏 提升小睡质量的方法</div><p id="qualityBox"></p></div>
+<div class="section"><div class="hd">⚡ 快速清醒的小技巧</div><p id="reviveBox"></p></div>
+<div style="text-align:right"><button class="copy-btn" onclick="copyAll()">📋 复制方案</button></div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function rnd(n){return Math.floor(Math.random()*n)}
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 科学午休规划 | AgentGongju.com'))return;
+const wake=document.getElementById('wake').value||'07:00';
+const task=document.getElementById('task').value;
+const last=document.getElementById('lastnight').value;
+const wakeH=parseInt(wake.split(':')[0]);
+let dur;
+if(task==='重'||last==='差'){dur=20;durLabel='20分钟 · 短周期浅睡';}
+else{dur=rnd(6)>3?20:30;}
+const rec=dur===20?'20分钟':'30分钟';
+document.getElementById('zlBig').textContent=dur+'分钟';
+document.getElementById('zlSm').textContent=rec==='20分钟'?'浅睡周期，快速充电不昏沉':'完整小睡周期，清醒度高';
+let startH=wakeH+6;
+if(startH>23)startH=13;if(startH<12)startH=13;
+const st=String(startH).padStart(2,'0')+':00';
+document.getElementById('timeBox').textContent=`• 理想午休时间：${st} 前后 30 分钟（距起床${wakeH>=10?6:6}小时左右，在人体的“午后困倦峰”）。\n• 最晚别超过 ${String(Math.min(15,startH+2)).padStart(2,'0')}:00，避免影响夜间睡眠。\n• ${task==='重'?'高强度下午，小睡20分钟收益最高，过长反而困倦':'普通下午，30分钟以内的浅睡即可恢复精力'}。`;
+const q=[['拉上窗帘或戴眼罩，营造黑暗环境','定好闹钟，睡十几分钟就够不要贪睡'],['睡前一小时别喝含咖啡因饮品','空调温度调至24-26℃，盖薄毯防着凉'],['睡醒后不要立刻查看手机消息','用腹式呼吸放松，帮助更快入睡']];
+document.getElementById('qualityBox').textContent='• '+q[0].join('\n• ')+'\n• '+q[1].join('\n• ')+'\n• '+q[2].join('\n• ');
+const rv=[['起床后先喝一小杯温水','到窗边晒2-3分钟自然光','做几组伸展或深蹲唤醒身体'],['冷水洗脸或轻拍面部','听一首节奏明快的歌','先处理需要动脑的"硬骨头"任务']];
+document.getElementById('reviveBox').textContent='• '+rv[0].join('\n• ')+'\n• '+rv[1].join('\n• ');
+window._copyText=`【AI 科学午休】推荐${dur}分钟\n建议时间：${st}前后\n${document.getElementById('qualityBox').textContent}`;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyAll(){navigator.clipboard.writeText(window._copyText||document.body.innerText).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 创业点子雷达 | AgentGongju.com</title>
+<meta name="description" content="输入你的技能、资源与预算，AI生成一批可行的小本创业点子，含玩法、成本与适合人群分析">
+<meta name="keywords" content="创业点子,副业,小本创业,轻资产,赚钱项目">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:70px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.idea{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:18px;margin-bottom:14px}
+.idea .nm{color:#a855f7;font-weight:700;font-size:1.05rem;margin-bottom:6px}
+.idea .ds{color:#cbd5e1;font-size:.9rem;line-height:1.8;margin-bottom:8px}
+.tags{display:flex;flex-wrap:wrap;gap:6px}
+.tags span{padding:3px 10px;background:rgba(99,102,241,0.12);border-radius:6px;color:#a5b4fc;font-size:.78rem}
+.tags .cost{background:rgba(34,197,94,0.12);color:#bbf7d0}
+.tags .people{background:rgba(168,85,247,0.15);color:#e9d5ff}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📡 AI 创业点子雷达</h1><p>按你的技能与预算，扫出靠谱的轻资产创业方向</p></div>
+
+<div class="card">
+<label>🛠 你的技能 / 资源</label>
+<textarea id="skill" placeholder="例如：会做设计、有3年电商经验、下班后有3小时空闲、预算5万"></textarea>
+<div class="param-row">
+<div><label>💰 启动预算</label>
+<select id="budget">
+<option value="1万以内">1万以内</option><option value="1-5万" selected>1-5万</option><option value="5-20万">5-20万</option><option value="20万以上">20万以上</option>
+</select></div>
+<div><label>🎯 参与方式</label>
+<select id="mode">
+<option value="全职">全职投入</option><option value="副业" selected>下班副业</option><option value="团队">团队合伙</option>
+</select></div>
+</div>
+<button class="btn-gen" id="genBtn">📡 扫描创业点子</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:16px">💡 为你找到的创业方向</div>
+<div id="ideaBox"></div>
+<div style="text-align:right"><button class="copy-btn" onclick="copyAll()">📋 复制点子</button></div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function rnd(n){return Math.floor(Math.random()*n)}
+const pool=[
+{nm:'本地美食探店矩阵号',ds:'用你空闲时间探店，做抖音/小红书本地号，接商家推广与代运营，模式轻、上手快。',tags:['内容创业','副业友好']},
+{nm:'小众手作定制店',ds:'结合AI绘图快速出图，针对宠物、萌宠主做定制手机壳/挂画，走私域预售模式，成本低。',tags:['轻资产','创意变现']},
+{nm:'职场技能训练营',ds:'把你在职场攒下的经验做成专栏或录播课，挂在小红书/视频号，一次制作反复售卖。',tags:['知识付费','可复制']},
+{nm:'社区团购团长',ds:'利用小区熟人网络做生鲜/日用品团购，门槛低、现金流好，前期只需一部手机。',tags:['低门槛','现金流']},
+{nm:'AI代运营工作室',ds:'用AI帮本地小商家做文案、海报、短视频，包月收服务费，一个人即可启动。',tags:['AI红利','服务型']},
+{nm:'智能家居改造体验店',ds:'针对老旧小区做智能门锁、灯光改造及安装服务，赚产品价差+服务费。',tags:['上门服务','刚需']},
+{nm:'二手闲置翻新',ds:'低价回收旧家具/手机，用简单工具翻新后挂闲鱼，差价可观且越做越专业。',tags:['低成本','锻炼技能']},
+{nm:'宠物上门喂养/洗护',ds:'面向养宠白领提供节假日上门喂养与基础洗护，复购率高，充分利用时间段。',tags:['家庭服务','高复购']},
+{nm:'短视频带货选品顾问',ds:'帮新手主播做选品与直播话术建议，按单收费，把你的经验变成收入。',tags:['经验变现','咨询型']},
+{nm:'自习室+轻餐吧',ds:'在写字楼/高校周边开小型自习室，叠加咖啡简餐，客单价与坪效俱佳。',tags:['线下实体','稳中带增']}];
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 创业点子雷达 | AgentGongju.com'))return;
+const skill=document.getElementById('skill').value.trim()||'如果你没有特别突出的技能也没关系';
+const budget=document.getElementById('budget').value;
+const mode=document.getElementById('mode').value;
+const box=document.getElementById('ideaBox');box.innerHTML='';
+const shuffled=[...pool];for(let i=shuffled.length-1;i>0;i--){const k=rnd(i+1);[shuffled[i],shuffled[k]]=[shuffled[k],shuffled[i]];}
+const show=mode==='副业'?shuffled.slice(0,3):shuffled.slice(0,4);
+show.forEach(it=>{
+const div=document.createElement('div');div.className='idea';
+div.innerHTML=`<div class="nm">💡 ${it.nm}</div><div class="ds">${it.ds}</div><div class="tags"><span>预算 ${budget}</span><span class="cost">${mode}</span><span class="people">启动门槛：看情况适中</span></div>`;
+box.appendChild(div);
+});
+const note=document.createElement('div');
+note.className='idea';
+note.style.borderColor='rgba(168,85,247,0.4)';
+note.innerHTML=`<div class="nm">🧭 结合你的情况</div><div class="ds">针对「${skill}」，建议优先选择能用你现有资源快速起盘的方向，先用最小成本验证需求再放大。${mode==='副业'?'保持主业现金流，副业试错更稳妥。':'全职投入前建议先做市场小范围验证。'}</div>`;
+box.appendChild(note);
+window._copyText='【AI 创业点子雷达】\n'+show.map((s,i)=>`${i+1}. ${s.nm}：${s.ds}`).join('\n')+'\n结合情况：'+skill;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyAll(){navigator.clipboard.writeText(window._copyText||document.body.innerText).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 抖音爆款标题 | AgentGongju.com</title>
+<meta name="description" content="输入视频主题，AI一键生成10个抖音爆款标题，含悬念、反差、热点等玩法，提高完播率与点赞">
+<meta name="keywords" content="抖音标题,短视频标题,爆款标题,涨粉,播放量">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:70px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.title-list{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:16px 20px;color:#e2e8f0;line-height:2.3;font-size:.92rem;margin-bottom:12px}
+.title-list div{display:flex;gap:10px;align-items:flex-start;border-bottom:1px dashed rgba(255,255,255,0.06);padding:6px 0}
+.title-list div:last-child{border-bottom:none}
+.num{color:#a855f7;font-weight:700;min-width:24px}
+.tag{color:#64748b;font-size:.78rem;white-space:nowrap;margin-top:5px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{color:#94a3b8;font-size:.85rem;text-align:right}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🎵 AI 抖音爆款标题</h1><p>10个高完播标题，悬念、反差、热点一网打尽</p></div>
+
+<div class="card">
+<label>🎬 视频主题</label>
+<textarea id="topic" placeholder="例如：3分钟教你做一道复刻版黄焖鸡，适合美食赛道"></textarea>
+<div class="param-row">
+<div><label>🏷 视频赛道</label>
+<select id="track">
+<option value="美食">🍜 美食</option><option value="生活vlog">📷 生活vlog</option><option value="职场干货">💼 职场干货</option><option value="知识科普" selected>📚 知识科普</option><option value="健身运动">💪 健身运动</option><option value="情感共鸣">💗 情感共鸣</option>
+</select></div>
+<div><label>🎯 目标</label>
+<select id="goal">
+<option value="涨粉">📈 涨粉</option><option value="带货" selected>🛒 带货</option><option value="引流" >➡ 引流</option><option value="品牌曝光">✨ 品牌曝光</option>
+</select></div>
+</div>
+<button class="btn-gen" id="genBtn">🚀 生成爆款标题</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:16px">💥 10个爆款标题</div>
+<div class="title-list" id="outBox"></div>
+<div style="text-align:right"><button class="copy-btn" onclick="copyAll()">📋 复制全部标题</button></div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function rnd(n){return Math.floor(Math.random()*n)}
+const hooks=['99%的人不知道','千万别划走','看完这条你绝对会收藏','全网都在找','这个方法我藏了三年','与其刷手机，不如看完这条','最后一个才是重点','早知道就好了','连我妈都服了','不转发真的会后悔','短短几秒，全是干货','这是普通人最容易忽略的细节'];
+const contrasts=['你以为很难，其实超简单','别人都在做对的，你做反了','3分钟 vs 30天','花小钱办大事','看起来贵，其实便宜'];
+const calls=['收藏起来慢慢学','关注我，每天一个技巧','转发给需要的朋友','评论区告诉我你的做法'];
+const areas={美食:['复刻版','家常做法','大厨不外传','零失败'],生活vlog:['沉浸式','一人食','治愈系','独居日记'],职场干货:['面试官亲授','升职加薪','避坑指南','高效工作法'],知识科普:['冷知识','涨姿势了','原来如此','颠覆认知'],健身运动:['新手必看','高效燃脂','同款训练','练出好身材'],情感共鸣:['谁懂啊','太真实了','狠狠共鸣','成年人破防']};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 抖音爆款标题 | AgentGongju.com'))return;
+const topic=document.getElementById('topic').value.trim()||'这条视频';
+const track=document.getElementById('track').value;
+const goal=document.getElementById('goal').value;
+const area=areas[track];
+const titles=new Set();
+while(titles.size<10){
+let t=rnd(3)<2?(hooks[rnd(hooks.length)]+'：'+topic):topic;
+let style=rnd(3);
+if(style===0)t=t+'，'+area[rnd(area.length)];
+if(style===1)t=contrasts[rnd(contrasts.length)]+' · '+t;
+if(style===2)t=t+'（'+calls[rnd(calls.length)]+'）';
+t=t.replace(/\s+/g,'');
+titles.add(t);
+}
+const tags=['悬念型','反差型','利益型','收藏型','热点型'];
+const arr=[...titles];
+const out=document.getElementById('outBox');out.innerHTML='';
+arr.forEach((t,i)=>{
+out.innerHTML+=`<div><span class="num">${String(i+1).padStart(2,'0')}</span><span>${t}</span><span class="tag">${tags[i%5]}</span></div>`;
+});
+window._copyText='【AI 抖音爆款标题】'+track+'\n'+arr.map((t,i)=>`${i+1}. ${t}`).join('\n');
+document.getElementById('resultArea').classList.add('active');
+});
+function copyAll(){navigator.clipboard.writeText(window._copyText||document.body.innerText).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

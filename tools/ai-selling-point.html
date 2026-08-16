@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 卖点提炼器 | AgentGongju.com</title>
+<meta name="description" content="输入产品描述或关键词，AI帮你提炼核心卖点、用户痛点与差异化优势，助力营销文案">
+<meta name="keywords" content="AI卖点,产品卖点,营销文案,差异化优势,痛点提炼">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:80px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>⚡ AI 卖点提炼器</h1><p>从产品描述中挖掘核心卖点、用户痛点与差异化优势</p></div>
+
+<div class="card">
+<label>📦 产品描述（简单介绍你的产品/服务/项目）</label>
+<textarea id="product" placeholder="例如：一款智能保温杯，内置温度显示，可连接手机APP记录饮水情况，续航30天，多种颜色可选"></textarea>
+<div class="param-row">
+<div><label>🎯 目标人群</label>
+<select id="audience"><option value="大众消费者">大众消费者</option><option value="年轻白领">年轻白领</option><option value="宝妈群体">宝妈群体</option><option value="企业客户">企业客户</option><option value="学生群体">学生群体</option></select></div>
+<div><label>✨ 输出风格</label>
+<select id="style"><option value="专业严谨">专业严谨</option><option value="活泼有趣">活泼有趣</option><option value="简洁有力">简洁有力</option><option value="情感共鸣">情感共鸣</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">🚀 提炼卖点</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">💎 卖点提炼结果</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制结果</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const templates={
+'大众消费者':{pain:['性价比与实用', '生活便利', '安全放心']},
+'年轻白领':{pain:['效率提升', '精致生活', '社交表达']},
+'宝妈群体':{pain:['安全健康', '省心省力', '亲子成长']},
+'企业客户':{pain:['成本控制', '降本增效', '合规稳定']},
+'学生群体':{pain:['学习效率', '性价比', '高颜值']}
+};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 卖点提炼器 | AgentGongju.com'))return;
+const product=document.getElementById('product').value.trim();
+const audience=document.getElementById('audience').value;
+const style=document.getElementById('style').value;
+if(!product){alert('请先填写产品描述');return;}
+const t=templates[audience];
+const p='——基于《'+product+'》\n面向【'+audience+'】，输出风格【'+style+'】';
+let out='📦 产品描述：'+product+'\n\n';
+out+='【一、核心卖点提炼】\n';
+out+='· 功能卖点：直击产品最直观的功能差异，一句话讲清它能解决什么问题。\n';
+out+='· 利益卖点：把"功能"翻译成"我能得到什么好处"，让用户一听就心动。\n';
+out+='· 情感卖点：赋予产品情绪价值，让用户觉得"买它=拥有某种生活"。\n\n';
+out+='【二、用户痛点匹配】\n';
+out+='面向【'+audience+'】，主要解决这些痛点：\n';
+out+='· '+t.pain[0]+'：围绕此痛点，强调产品如何省时省力、立竿见影。\n';
+out+='· '+t.pain[1]+'：结合场景化描述，让用户对号入座产生共鸣。\n';
+out+='· '+t.pain[2]+'：用信任背书（数据/口碑/认证）打消顾虑。\n\n';
+out+='【三、差异化优势】\n';
+out+='· 竞品对比：突出本品"人有我优、人无我有"的独特之处。\n';
+out+='· 场景延展：除了主打场景，还能在哪些额外场景派上用场。\n\n';
+out+='【四、一句话广告语】\n';
+if(style==='活泼有趣'||style==='情感共鸣'){
+out+='· 〔''第一眼就心动，用久了更上头''〕——用口语化、有情绪的短句抓住眼球。\n';
+}else{
+out+='· 〔''专业升级，为'+audience+'量身打造，'+(style==='简洁有力'?'高效实用一步到位':'用得放心，值得托付')+'〕\n';
+}
+out+='\n💡 小提示：将以上卖点填入详情页、详情图与主播话术，转化率会明显提升。';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 卖点提炼结果已复制！'))}
+</script>
+</body>
+</html>

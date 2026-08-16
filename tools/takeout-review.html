@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 外卖点评助手 | AgentGongju.com</title>
+<meta name="description" content="根据菜品和用餐感受，一键生成真实又有文采的外卖/餐厅点评，还可用于回复评价">
+<meta name="keywords" content="外卖点评,评价文案,餐厅评论,吃货文案,好评生成">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:70px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🍜 AI 外卖点评助手</h1><p>吃得好就要夸得妙，一键生成真实有文采的评价</p></div>
+
+<div class="card">
+<label>🍽 点了什么菜 / 用餐感受（可简单描述）</label>
+<textarea id="dish" placeholder="例如：红烧肉、油焖大虾、米饭，味道不错，就是分量有点少"></textarea>
+<div class="param-row">
+<div><label>⭐ 评价倾向</label>
+<select id="tone"><option value="好评">好评 · 夸得走心</option><option value="中评">中评 · 真实客观</option><option value="差评">差评 · 委婉表达</option></select></div>
+<div><label>📝 使用场景</label>
+<select id="use"><option value="发评价">发评价</option><option value="回复网友">回复网友</option><option value="店主回复">店主回复</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">✍️ 生成点评</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🖋 点评文案</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制点评</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 外卖点评助手 | AgentGongju.com'))return;
+const dish=document.getElementById('dish').value.trim();
+const tone=document.getElementById('tone').value;
+const use=document.getElementById('use').value;
+if(!dish){alert('请先填写菜品或感受');return;}
+let out='🍽 内容：「'+dish+'」\n\n';
+if(use==='店主回复'){
+if(tone==='好评'){out+='【店主回复】\n谢谢亲的认可和这么走心的评价！能得到您的喜欢是我们最大的动力，欢迎常来，下次给你多送一份小食～\n'}
+else if(tone==='中评'){out+='【店主回复】\n感谢亲提的宝贵意见，分量这块我们已经在调整了，下次给您补足，期待您再来光顾～\n'}
+else{out+='【店主回复】\n真的很抱歉没能让您满意，您反馈的问题我们一定认真改进，欢迎您再给我一次机会，给您安排到位～\n'}
+out+='\n💡 提示：加上具体补偿（如多送/退款/补足），比空泛道歉更有诚意。';
+}else{
+if(tone==='好评'){
+out+='【好评版】\n「'+dish+'」，这一餐真的没有踩雷！份量实在、味道在线，尤其是整体口感很能打。本来只是随便点个外卖，没想到被狠狠惊喜到，干饭人狂喜！口味稳定、包装也到位，下次必须回购，推荐给同样爱吃的小伙伴～\n';
+}else if(tone==='中评'){
+out+='【中评版】\n点了「'+dish+'」，整体还行，味道中规中矩，没有特别惊艳但也不难吃。就是分量比想象中少一些，性价比一般般。包装和服务都算正常，如果能在分量上再厚道点就更好了。\n';
+}else{
+out+='【差评 · 委婉版】\n这次的「'+dish+'」说实话有点小失望，口感和上次比差了些，分量也不如预期。理解商家不易，但还是希望后续能改进，毕竟之前也是常客，还是希望这家店越做越好。\n';
+}
+out+='\n【✨ 点评加分项】\n· 配上一张实拍图，可信度翻倍，也更容易被人点赞。\n· 带上「推荐/回购/会再来」等关键词，对店主也友好。\n';
+if(tone==='差评'){out+='· 客观给出改进点，比单纯情绪发泄更有价值，也显得真诚。\n'}
+}
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 点评文案已复制！'))}
+</script>
+</body>
+</html>
