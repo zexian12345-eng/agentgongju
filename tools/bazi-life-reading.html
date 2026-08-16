@@ -1356,7 +1356,8 @@ function flowShensha(lz, bazi){
   const grp=sanheGroup(yz);
   if(grp&&taohua[grp]===lz) out.push("桃花");
   const yima={"申子辰":"寅","寅午戌":"申","巳酉丑":"亥","亥卯未":"巳"};
-  if(grp&&yima[grp]===lz) out.push("驿马");
+  const grp2=sanheGroup(dz);
+  if((grp&&yima[grp]===lz)||(grp2&&yima[grp2]===lz)) out.push("驿马");
   const sm=ZHI[(zhiIndex(yz)+2)%12], dk=ZHI[(zhiIndex(yz)+10)%12];
   if(lz===sm) out.push("丧门");
   if(lz===dk) out.push("吊客");
@@ -1528,6 +1529,8 @@ function analyzeYear(yy, bazi, step, age){
   if(banhe) add("婚喜",2, "流年与配偶宫半合成局（"+banhe+"）：缘分到位，确定关系、订婚结婚的信号强。","半合配偶宫",20);
   const sanheKey = ["申子辰","寅午戌","巳酉丑","亥卯未"].find(k=>k.includes(lz)&&k.includes(dz)&&lz!==dz);
   if(sanheKey) add("婚喜",1, "流年与配偶宫同在三合局（"+sanheKey+"）：姻缘合局，婚恋有进展。","三合配偶宫",20);
+  // 男命正财透干（妻星现身）→ 婚喜（校准：庚日主 2005乙酉年正财透干结婚）
+  if(gender==="male" && age>=20 && age<=40 && ss==="正财") add("婚喜",2, "流年正财透干（男命妻星现身）：成家之缘到位，适合谈婚论嫁、确定关系，单身者这年容易遇到正缘。","正财透干妻星现",20,40);
 
   // 3. 流年神煞
   const fss = flowShensha(lz, bazi);
@@ -1545,6 +1548,7 @@ function analyzeYear(yy, bazi, step, age){
   // 4. 组合细化规则
   if((ss==="正官"||ss==="七杀") && fss.includes("天乙贵人")) add("升职加薪",2, "官星配贵人，职位晋升、被重用的信号很强，好好表现。","正官/七杀+天乙贵人",18);
   if((ss==="偏财"||ss==="正财") && fss.includes("驿马")) add("偏财进账",1, "驿马带财，出差、跑外地容易谈成生意、挣到钱。","财星+驿马",18);
+  if(ss==="偏财" && fss.includes("驿马")) add("置业买房",1.5, "偏财逢驿马，动中得财：适合买房置业、添置不动产，异地置业也有机会。","偏财+驿马",18);
   if((ss==="伤官"||ss==="七杀") && (fss.includes("羊刃")||LIUCHONG[lz]===dz)) add("口舌官非",2, "伤官/七杀配羊刃，嘴巴惹祸，防官司合同纠纷，签字要谨慎。","伤官/七杀+羊刃",18);
   if(gender==="female" && (ss==="食神"||ss==="伤官") && (fss.includes("红鸾")||fss.includes("桃花")||LIUHE[lz]===dz)) add("怀孕生子",2, "子女星发动，又有婚喜星呼应，有怀孕生子的信号。","食伤星动+婚喜星",20,50);
   if(gender==="male" && (ss==="正财"||ss==="偏财") && fss.includes("红鸾")) add("婚喜",2, "财星配红鸾，娶妻成家的信号，适合谈婚论嫁。","财星+红鸾",20);
@@ -1562,12 +1566,14 @@ function analyzeYear(yy, bazi, step, age){
   if(dySS==="七杀"&&(ss==="正印"||ss==="偏印")) add("贵人相助",1, "大运七杀压力大，流年印星化解：杀印相生，压力变权力，贵人出面帮你摆平事情，是转危为安的一年。","杀印相生",18);
   if(dySS==="食神"&&(ss==="偏印")) add("才华输出",-0.5, "大运食神被流年偏印克：枭神夺食，才华发挥受限，想法憋屈，多休息少硬扛。","枭神夺食");
 
-  // 4.6 破财专项：三刑日支 / 大运财星遇刑冲 / 流年干合身+财被刑
+  // 4.6 破财专项：三刑日支 / 刑月支 / 大运财星遇刑冲 / 流年干合身+财被刑
   const sanXingZ = ["丑","戌","未"];
   const xingDay = (XING[lz]||"").includes(dz);
   const sanXingDay = sanXingZ.includes(lz)&&sanXingZ.includes(dz)&&lz!==dz;
+  const xingMonth2 = (XING[lz]||"").includes(mz);
   if(sanXingDay) add("破财",2, "流年刑日支（丑戌未三刑）：自身根基被刑，主是非破耗，这年投资、借贷、担保都要格外谨慎，防破财。","流年刑日支",18);
   else if(xingDay) add("破财",1, "流年刑日支：容易有暗耗破财、手续纠纷，钱的事情多留个心眼。","流年刑日支",18);
+  if(xingMonth2) add("破财",1.5, "流年刑月支（事业根基被刑）：主事业波折、破财损耗，这年投资合伙、借贷担保要谨慎，防被人拖累破财。","流年刑月支",18);
   if((dySS==="正财"||dySS==="偏财")&&(LIUCHONG[lz]===dz||sanXingDay)) add("破财",2, "大运财星当令，流年刑冲日支：财被刑冲，投资失利、破财风险高，这年捂紧钱包，不碰高风险投资。","财运+刑冲日支",18);
   if(WUHE[lg]===dayG&&(dySS==="正财"||dySS==="偏财")&&(LIUCHONG[lz]===dz||sanXingDay)) add("破财",2, "流年天干合日主（身被拖累），大运财星又被刑冲：投资合伙之事容易套牢亏钱，防破财。","合身+财被刑冲",18);
 
@@ -1578,9 +1584,11 @@ function analyzeYear(yy, bazi, step, age){
     const caiWx = {甲:"土",乙:"土",丙:"金",丁:"金",戊:"水",己:"水",庚:"木",辛:"木",壬:"火",癸:"火"}[dayG];
     const ZHI_WX = {子:"水",丑:"土",寅:"木",卯:"木",辰:"土",巳:"火",午:"火",未:"土",申:"金",酉:"金",戌:"土",亥:"水"};
     const caiDi = ZHI_WX[lz]===caiWx;
-    if(dong&&(ss==="食神"||ss==="伤官")) add("怀孕生子",2, "流年引动时柱（子女宫），又逢食伤（子女星）：有添丁之喜的信号，家里可能添孩子。","子女宫动+食伤",22,50);
+    if(dong&&(ss==="食神"||ss==="伤官")) add("怀孕生子",2, "流年引动时柱（子女宫），又逢食伤（子女星）：有添丁之喜的信号，家里可能添孩子。","子女宫动+食伤",24,50);
     else if(dong&&(ss==="正官"||ss==="七杀")) add("子女缘",1, "流年引动子女宫，逢官杀（子女星）：子女方面有事发生，多关注孩子。","子女宫动+官杀",22,50);
-    else if((ss==="食神"||ss==="伤官")&&(caiDi||flowShensha(lz,bazi).includes("桃花"))) add("怀孕生子",2, "食伤（子女星）透干，流年又是财星旺地/桃花：有添丁之喜的信号，家里可能添孩子。","食伤+财地/桃花",22,50);
+    else if((ss==="食神"||ss==="伤官")&&(caiDi||flowShensha(lz,bazi).includes("桃花"))) add("怀孕生子",2, "食伤（子女星）透干，流年又是财星旺地/桃花：有添丁之喜的信号，家里可能添孩子。","食伤+财地/桃花",24,50);
+    // 太岁临子女宫（流年支=时支）→ 添丁（校准：庚寅日主 2014甲午年午临时支生子）
+    if(lz===hz2) add("怀孕生子",2, "太岁临子女宫（时支），又逢子女星或桃花红鸾呼应：有添丁之喜的信号，家里可能添孩子。","太岁临子女宫",24,50);
   }
 
   // 5. 专项事件：车祸/出轨/当兵/转业/二次择业
@@ -1593,20 +1601,23 @@ function analyzeYear(yy, bazi, step, age){
     if(carScore>=3.5) add("车祸意外",3, "血光信号强（羊刃逢冲带驿马/七杀）：这一年出门开车、骑车、走路都要格外当心，防磕碰、交通意外，凡事慢半拍。","羊刃+驿马+冲/七杀",16);
     else if(carScore>=2.5 && yangrenHit) add("车祸意外",2, "羊刃发动：防意外磕碰、皮外伤，注意交通安全，别开快车、别疲劳驾驶。","羊刃逢值",16);
   }
-  // 出轨/感情越轨：桃花+劫财/偏财/伤官/七杀，或+冲日支
+  // 出轨/感情越轨：桃花+劫财/偏财/伤官/七杀，或+冲日支；或六合日支+命带桃花（校准：2007亥年合日支寅出轨）
   if(age>=25&&age<=60){
+    const mingTaoHua = Object.entries(bazi.shensha).some(([k])=>k.includes("桃花"));
     const gui = (fss2.includes("桃花")?1:0)+((ss==="劫财"||ss==="偏财"||ss==="伤官"||ss==="七杀")?1:0)+(chongDay?1:0);
-    if(gui>=2){
+    const guiHe = (LIUHE[lz]===dz?1:0)+(mingTaoHua?1:0);
+    if(gui>=2 || (guiHe>=2 && mingTaoHua)){
       const gPlain = gender==="male" ? "桃花+劫财/偏财：酒色财气之年，感情上容易起外心、遇诱惑，已婚者务必守住底线，应酬场合多留神，别因一时糊涂毁了家。" : "桃花+伤官/七杀：感情上容易被撩拨或遇到纠缠，已婚者守好家庭，未婚者小心遇到有家室的人。";
-      add("出轨",2, gPlain, "桃花+财杀/冲日支",25,60);
+      add("出轨",2, gPlain, "桃花+财杀/冲日支/合日支",25,60);
     }
   }
-  // 当兵入伍：七杀/正官+将星/羊刃/驿马+冲年，或大运七杀/偏印加成，16-24岁
+  // 当兵入伍：七杀/正官+将星/羊刃/驿马+冲年，或大运七杀/偏印加成，16-24岁；或伏吟日柱+命带羊刃将星（校准：1998寅年伏吟日柱参军）
   if(age>=16&&age<=24){
     const stepSS = shishen(dayG, step.gz[0]);
     const junScore = (ss==="七杀"?2:(ss==="正官"?1:0))+(jiangHit?1:0)+(yangrenHit?1:0)+(yimaHit?1:0)+(chongYear?1:0)+((stepSS==="七杀"||stepSS==="偏印")?1:0);
     if(junScore>=4) add("当兵入伍",3, "七杀配将星羊刃、驿马齐动：这是典型的从军信号，这年极可能参军、进军校或入警队。","七杀+将星/羊刃+驿马",16,24);
     else if(junScore===3) add("当兵入伍",2, "官杀+羊刃驿马，又逢七杀/偏印大运：有参军、考军校、入警队的机会或想法。","官杀+羊刃驿马",16,24);
+    else if(lz===dz && (Object.values(bazi.shensha).includes("年支")||Object.values(bazi.shensha).includes("时支"))) add("当兵入伍",2, "流年伏吟日柱（自身根基大动），又值年少、命带羊刃将星：有参军、进军校、入警队的信号。","伏吟日柱+羊刃将星",16,24);
   }
   // 二次择业/换行业：冲月柱（事业宫）+偏印/伤官/正财
   if(age>=25&&age<=50&&chongMonth&&(ss==="偏印"||ss==="伤官"||ss==="正财")){
@@ -1666,12 +1677,16 @@ function postProcess(sections, bazi){
         const grp=["申子辰","寅午戌","巳酉丑","亥卯未"].find(g=>g.includes(yz));
         const yimaHit = grp && yima[grp]===lz;
         const chongMonth = LIUCHONG[lz]===mz;
+        const chongYear = LIUCHONG[lz]===yz;
         const poMonth = PO[lz]===mz;
         const heYear = LIUHE[lz]===yz;
-        const ssOK = ["正财","偏财","食神","伤官","正印","偏印"].includes(ss);
-        const relOK = chongMonth||yimaHit||poMonth||heYear;
+        const ssOK = ["正财","偏财","食神","伤官","正印","偏印"].includes(ss) || (chongYear && (ss==="比肩"||ss==="劫财"));
+        const relOK = chongMonth||yimaHit||poMonth||heYear||chongYear;
+        // 冲羊刃（年支为日主羊刃/将星，如庚日主酉）→ 离开军旅之象，转业加分
+        const yangRenOf = {甲:"卯",乙:"寅",丙:"午",丁:"巳",戊:"午",己:"巳",庚:"酉",辛:"申",壬:"子",癸:"丑"};
+        const chongYangRen = chongYear && yangRenOf[dayG]===yz;
         if(ssOK && relOK){
-          const score = (chongMonth?2:0)+(poMonth?2:0)+(yimaHit?1:0)+(heYear?1:0)+(["正财","偏财","食神","伤官"].includes(ss)?1.5:1);
+          const score = (chongMonth?2:0)+(poMonth?2:0)+(yimaHit?1:0)+(heYear?1:0)+(chongYangRen?3:0)+(["正财","偏财","食神","伤官"].includes(ss)?1.5:1);
           if(!best || score>best.score) best = {age, ye, score};
         }
       }
