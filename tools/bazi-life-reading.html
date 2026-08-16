@@ -1846,6 +1846,353 @@ function buildLifeEvents(bazi, userEventsText){
   return events.sort((a,b)=>a.year-b.year);
 }
 
+// ==================== 易经六十四卦 + 九宫八卦融合引擎 v1.0 ====================
+// 输入：姓名 + 生辰八字 → 本命卦/姓名卦/八宅命卦/九宫飞星 → 过往批断 + 未来重大事件预判
+// 与 event_engine.js（八字十神事件引擎）交叉验证，双重确认才上"重大事件"
+
+// ---------- 先天八卦数（梅花易数取数） ----------
+const XT = {乾:1, 兑:2, 离:3, 震:4, 巽:5, 坎:6, 艮:7, 坤:8};
+const XT_NAME = {1:"乾",2:"兑",3:"离",4:"震",5:"巽",6:"坎",7:"艮",8:"坤"};
+const TRIGRAM_WX = {乾:"金",兑:"金",离:"火",震:"木",巽:"木",坎:"水",艮:"土",坤:"土"};
+const TRIGRAM_DIR = {坎:"北方",离:"南方",震:"东方",兑:"西方",巽:"东南",坤:"西南",乾:"西北",艮:"东北"};
+
+// ---------- 后天八卦洛书数 ----------
+const LUSHU = {坎:1,坤:2,震:3,巽:4,中:5,乾:6,兑:7,艮:8,离:9};
+const LUSHU_NAME = {1:"坎",2:"坤",3:"震",4:"巽",5:"中",6:"乾",7:"兑",8:"艮",9:"离"};
+
+// ---------- 六十四卦（按 上卦先天数×8+下卦先天数 索引，1..64） ----------
+// 字段：n卦名, plain卦辞白话(总断), tone吉凶基调, life人生要点, warn大事警示(凶/机遇)
+const HEX = {};
+function H(name, plain, tone, life, warn){
+  return {name, plain, tone, life, warn};
+}
+// 上卦乾(1)
+HEX[1] = H("乾为天","大吉大利，万事亨通——但天行健，必须自强不息、持续努力，骄傲自满则盛极而衰。","大吉","天生领导命，正直刚强、有担当，事业能做大；但刚极易折，注意劳逸结合、别太强势。","机遇：开创大业、升迁掌权的关口；警示：得意忘形时必有跌宕，凡事留三分余地。");
+HEX[2] = H("天泽履","如履虎尾，小心谨慎则平安无事——做事要看清脚下，谦逊守礼。","中平","性格谨慎务实，一步一个脚印，适合守成、做实事；忌冒进，忌跟人硬碰硬。","警示：与人相处如伴虎，合同、承诺要看清条款，防口舌纠纷。");
+HEX[3] = H("天火同人","同心同德，与人合作则大吉——单打独斗难成事，找到志同道合的人就能成。","吉","人缘好、讲义气，适合合伙、交友、团队协作；光明正大，无私则吉。","机遇：贵人合伙、重要人脉出现的年份；利于开诚布公谈合作。");
+HEX[4] = H("天雷无妄","不妄为则吉，妄动则有灾——本分做人做事，意外之财莫贪，不义之事莫为。","中平","本分踏实、不投机，虽无大富但平安顺遂；动了歪心思反而招祸。","警示：防意外之灾、无妄之灾，签约出行多留神；不贪不占可避大祸。");
+HEX[5] = H("天风姤","不期而遇，遇合之象——缘分来了挡不住，但要注意来路不正的诱惑。","中平","异性缘、贵人缘旺，常有意外相逢；但要辨清是良缘还是陷阱，防第三者纠缠。","警示：防烂桃花、婚外情、来路不明的合作；诱惑越大越要冷静。");
+HEX[6] = H("天水讼","争讼之象，打官司、起纠纷——能忍则忍，退一步海阔天空。","凶","性格较真、好讲理，容易陷入是非纠纷；打官司劳民伤财，能和解就和解。","警示：官非口舌之年，合同纠纷、交通违章、邻里矛盾都要小心处理。");
+HEX[7] = H("天山遁","退避之象，急流勇退——形势不利时退一步，保存实力等待时机。","中平","懂得进退、不恋战，适合在高峰期急流勇退；退不是失败，是智慧。","警示：事业感情遇阻之年，强求不得，退守为佳；忌硬扛、忌逆势而为。");
+HEX[8] = H("天地否","闭塞不通，天地不交——诸事不顺、上下不同心，耐心等待否极泰来。","凶","容易怀才不遇、上下受气；此时不宜大动作，守住本分，熬过这段就有转机。","警示：投资停滞、事业受挫、沟通不畅之年，宜守不宜攻，冬天来了春天不远。");
+// 上卦兑(2)
+HEX[9] = H("泽天夬","决断之象，果断去除——该断则断，快刀斩乱麻，犹豫必受其乱。","吉","有决断力、敢作敢当，适合清理积弊、斩断不良关系；当断不断反受其乱。","机遇：果断决策之年，转行、分手、辞旧迎新；警示：决断要快但也要留证据。");
+HEX[10] = H("兑为泽","喜悦之象，和悦待人——开心交流、和气生财，说话让人舒服则诸事顺。","吉","性格开朗、口才好、人缘佳，适合沟通、销售、社交的场合；但忌口舌是非、说人是非。","机遇：社交、婚恋、谈合作的良机；警示：防酒色误事、言语伤人。");
+HEX[11] = H("泽火革","变革之象，破旧立新——该变的必须变，变则通，通则久。","吉","不安于现状、有革新精神，适合改行、改革、搬家换环境；变革要抓住时机。","机遇：重大转折之年——换工作、换城市、改行业、婚姻变化；顺应变化则吉。");
+HEX[12] = H("泽雷随","随顺之象，随遇而安——顺应大势、跟随贵人，不要固执己见。","吉","随和、能屈能伸，跟着对的人、对的方向走就顺；忌刚愎自用。","机遇：跟随长辈贵人、顺势而为之年；适合随大流进入新领域。");
+HEX[13] = H("泽风大过","栋梁弯曲，压力过大——担子太重，必须调整，减负或借力。","凶","责任心重、硬扛硬撑，容易把自己累垮；学会放手、分担、减压。","警示：健康亮红灯、财务压力大、感情不堪重负之年；及时减负，防过劳。");
+HEX[14] = H("泽水困","困顿之象，身处困境——君子固穷，坚守正道，等待脱困。","凶","容易陷入困境：缺钱、缺机会、被压制；此时最忌乱投医、病急乱投医。","警示：财务困顿、事业瓶颈之年；守正待时，别借高利贷、别赌命一搏。");
+HEX[15] = H("泽山咸","感应之象，两情相悦——男女感应、心心相印，婚事缘分大吉。","大吉","重感情、善感知，婚恋缘分浓；真诚相待则感情事业都顺。","机遇：婚恋、订婚、结婚的大吉之年；合作中默契十足，事半功倍。");
+HEX[16] = H("泽地萃","荟萃之象，人才聚集——众人拾柴火焰高，聚会、合作、团结则兴旺。","吉","人脉广、受欢迎，适合组织聚会、团队建设、行业交流；众志成城。","机遇：贵人云集之年，加入好团队、进入好平台；慎防人多口杂。");
+// 上卦离(3)
+HEX[17] = H("火天大有","大有所获，丰收之象——所有皆有，光明正大的丰收，但需谦虚。","大吉","事业财运大好，收获满满；但要谦虚低调，富而不骄才能长久。","机遇：发财、升职、丰收之年；警示：财大招风，防嫉妒、防露富招灾。");
+HEX[18] = H("火泽睽","乖离之象，意见不合——人心不齐、各想各的，求同存异才能化解。","凶","容易与人意见相左、夫妻不和、合作破裂；小事化大则两败俱伤。","警示：感情婚姻危机、合伙人反目之年；多沟通少猜忌，别把小事闹大。");
+HEX[19] = H("离为火","光明之象，依附光明——如太阳般光明磊落，但要懂得依附、借光。","吉","聪明热情、光明正大，适合文化、宣传、电力、美业；但火性急，防急躁。","机遇：名声鹊起、被人看见之年；警示：防火灾、防眼睛心脏问题、防脾气爆。");
+HEX[20] = H("火雷噬嗑","咬合之象，清除障碍——有口舌有障碍，必须果断处理，像咬硬物一样。","中平","遇事要明察秋毫、果断执法；处理纠纷、官司要干脆，拖则生变。","警示：官司口舌、财务纠纷之年，证据要留好；果断维权，忌拖延。");
+HEX[21] = H("火风鼎","鼎新之象，革故鼎新——稳定发展，像鼎一样立得住，适合成大业。","吉","稳重有格局，适合开创事业、培养人才；鼎立则安，浮躁则败。","机遇：事业稳固上升、名声地位确立之年；适合立规矩、建制度。");
+HEX[22] = H("火水未济","事未成之象，尚未完成——差最后一步，别急，稳住就能成。","中平","做事总差临门一脚，容易功亏一篑；沉住气，把最后一步走稳。","警示：项目收尾、感情谈婚论嫁的关键期；忌急躁冒进，稳中求成。");
+HEX[23] = H("火山旅","旅途之象，漂泊不定——人在旅途，客居他乡，宜谦逊低调。","中平","容易奔波、出差、搬家、异地发展；旅途之中低调谦和则平安。","警示：出行安全、异地发展的年份；投资异地项目要谨慎，客大欺主。");
+HEX[24] = H("火地晋","晋升之象，如日东升——事业上升、名声大振，光明在前。","大吉","上进心强、运势上升，适合争取晋升、扩大影响；如日中天。","机遇：升职、出名、事业突破之年；大胆进取，但成功后勿骄。");
+// 上卦震(4)
+HEX[25] = H("雷天大壮","强壮之象，声势浩大——力量充沛，但壮而勿躁，正道而行。","吉","精力旺盛、行动力强，适合大干一场；但别恃强凌弱、别冲动行事。","机遇：事业扩张、健身强体之年；警示：防意外伤害、防冲动闯祸。");
+HEX[26] = H("雷泽归妹","嫁女之象，婚嫁之事——婚姻缘分、结合之事，但若非正配则不顺。","中平","婚恋之事是重头戏；正缘则吉，非正缘（第三者、仓促婚）则凶。","警示：婚恋大事之年——谈婚论嫁要看清人；防感情越轨、仓促决定。");
+HEX[27] = H("雷火丰","丰盛之象，如日中天——丰收鼎盛，但盛极防衰，居安思危。","大吉","运势鼎盛、财名双收；但日中则昃，要未雨绸缪，别得意忘形。","机遇：财运事业巅峰之年；警示：巅峰之后防回落，别盲目扩张。");
+HEX[28] = H("震为雷","震惊之象，雷声震动——突发变动、震惊之事，临危不乱则吉。","中平","人生多变动、多突发状况，需要胆识；惊雷之下，镇定者胜。","警示：突发变故之年——地震、车祸、意外、突发消息；遇事冷静，防惊吓。");
+HEX[29] = H("雷风恒","恒久之象，持之以恒——长久坚持，感情事业都要有恒心，忌三心二意。","吉","稳定持久、坚持到底；感情婚姻宜守不宜变，事业贵在坚持。","机遇：长期项目、婚姻稳定之年；忌频繁变动、这山望着那山高。");
+HEX[30] = H("雷水解","解脱之象，困难消解——冰雪消融、困境解除，雨过天晴。","大吉","之前的困局开始化解，运势转好；抓紧时机解决问题，别拖。","机遇：困境解除、官司了结、病愈康复之年；乘势而上。");
+HEX[31] = H("雷山小过","小有过失，宜下不宜上——小事谨慎，大事勿为，低调可过。","中平","容易在小事上出错、被人挑毛病；此时宜收敛低调，不宜出头。","警示：小人是非之年，防小错酿大祸；谨言慎行，别逞强出头。");
+HEX[32] = H("雷地豫","安乐之象，愉悦和乐——顺时而动、快乐行事，但乐极防生悲。","吉","心态好、人缘好，适合娱乐、社交、享受生活；但别沉溺享乐误了正事。","机遇：喜庆之事、聚会应酬之年；警示：乐极生悲，防酒后失德、玩物丧志。");
+// 上卦巽(5)
+HEX[33] = H("风天小畜","小有积蓄，密云不雨——时机未到，小有成果但不足以成大事，耐心积累。","中平","正在积累阶段，小有收获；不要急于求成，继续蓄力。","机遇：小财小成之年，适合积累人脉资金；忌冒进，火候未到。");
+HEX[34] = H("风泽中孚","诚信之象，心中诚信——真诚待人，诚信立身则感化万物。","吉","重诚信、心地纯正，适合以诚感人；诚信是最好的名片，忌欺瞒。","机遇：赢得信任、谈成大单之年；感情中真诚相待则修成正果。");
+HEX[35] = H("风火家人","家人之象，家和万事兴——家庭为重，内部和谐则外事顺遂。","吉","重视家庭、责任感强；家和万事兴，后院安定则事业稳固。","机遇：家庭喜事、购房安家之年；夫妻同心其利断金；忌家庭内耗。");
+HEX[36] = H("风雷益","增益之象，损上益下——大有增益，利人利己，把握机遇快速发展。","大吉","运势增益、贵人相助，适合投资、扩张、进修；越舍得越得。","机遇：发财进益、事业扩张之年；利合作、利学习、利搬家。");
+HEX[37] = H("巽为风","顺从之象，如风入物——柔顺谦逊，善于渗透，随风而行则顺。","吉","性格柔和、善于沟通渗透，适合做协调、公关、销售；忌优柔寡断。","机遇：柔性推进、迂回达成目标之年；随和处事则贵人相助。");
+HEX[38] = H("风水涣","涣散之象，人心离散——聚合人心，化解涣散，以诚感人。","中平","容易人心不齐、团队涣散、精力分散；此时要聚拢人心，别各干各的。","警示：团队散伙、感情疏远之年；主动聚人聚心，忌离心离德。");
+HEX[39] = H("水泽节","节制之象，有度则吉——凡事有节制，量入为出，苦节则凶。","中平","懂得节制、自律，财务规划好则安；但过度节俭、过度约束则苦。","警示：财务紧缩之年，量入为出；感情中别太控制对方；身体注意节欲节食。");
+HEX[40] = H("风山渐","渐进之象，循序渐进——按部就班、步步为营，急不得。","吉","做事稳扎稳打，适合按计划推进；婚姻感情也宜循序渐进，水到渠成。","机遇：稳步上升、按计划成事之年；嫁娶宜缓不宜急，功到自然成。");
+// 上卦坎(6)
+HEX[41] = H("水天需","等待之象，云上于天——时机未到，耐心等待，酒食宴乐养精蓄锐。","中平","正在等待时机，急不来；此时养精蓄锐、储备实力，时机一到自然成。","机遇：蓄势待发之年；忌焦躁冒进，好饭不怕晚。");
+HEX[42] = H("水泽节","节制之象，有度则吉——凡事有节制，量入为出，苦节则凶。","中平","懂得节制、自律，财务规划好则安；但过度节俭、过度约束则苦。","警示：财务紧缩之年，量入为出；感情中别太控制对方；身体注意节欲节食。");
+HEX[43] = H("水火既济","既成之象，大事已成——事已办成，但要居安思危，防盛极转衰。","吉","事情能成、目标能达；但成事之后要守成，别松劲，防乐极生悲。","机遇：项目成功、大事落定之年；警示：成功后防松懈，守业更难。");
+HEX[44] = H("水雷屯","初生之象，万事开头难——创业艰难，但充满生机，坚定向前。","中平","起步阶段困难重重，容易遇到阻力；但这是新生之象，挺过去就出头。","机遇：创业、新事业开端的年份；警示：开局不利别灰心，稳扎稳打。");
+HEX[45] = H("水风井","井养之象，井养不穷——井水养人，修好根基则源源不断；井坏则穷。","吉","根基稳固、细水长流；适合打基础、建体系、做长久事业；利乡亲邻里。","机遇：基础建设、房产、长期项目之年；修好井，吃水不忘挖井人。");
+HEX[46] = H("坎为水","重重险陷，险中有险——前有险后有险，诚信守正，保持内心光明。","凶","人生多坎坷波折，容易遇险：财务危机、健康问题、事业低谷；但险中求存。","警示：大凶之年——防溺水、车祸、财务深渊；守正心、留后路，险中求生。");
+HEX[47] = H("水山蹇","跛足难行，前有险阻——行路艰难，宜停下来找贵人帮忙，勿硬闯。","凶","做事阻力大、一步三滑；此时不宜硬闯，回头找帮手、调整路线。","警示：事业受阻、出行不顺之年；求贵人指点，绕开险路，见险而止。");
+HEX[48] = H("水地比","亲比之象，团结亲近——与人为善、亲近贤者，众人归附则吉。","吉","人缘凝聚、朋友相助，适合结盟、交友、跟对人；真诚亲比则得众。","机遇：贵人提携、交友结盟之年；跟上对的人，别孤立自己。");
+// 上卦艮(7)
+HEX[49] = H("山天大畜","大畜之象，大有积蓄——蓄养实力、厚积薄发，时机成熟则大展宏图。","吉","正在积蓄力量，知识、资金、人脉都在积累；蓄得越厚，发得越大。","机遇：进修、储备、蛰伏之年；别急着出手，蓄势待发。");
+HEX[50] = H("山泽损","损下益上，损己利人——该舍则舍，减损自己反得福报；损有余补不足。","中平","有损失、有付出之年：破财、付出、牺牲；但舍小得大，损中有益。","警示：破财损耗之年——投资谨慎，防被坑；但为家人贵人付出是积福。");
+HEX[51] = H("山火贲","文饰之象，装饰美化——外表光鲜，但实质重于形式，勿重表轻里。","中平","注重门面、包装、形象，适合文化、设计、婚庆之事；但别金玉其外。","机遇：装修、打扮、宣传造势之年；警示：防虚假繁荣、表面光鲜内里空。");
+HEX[52] = H("山雷颐","颐养之象，自食其力——养身养德，慎言语节饮食，自食其力则吉。","吉","注重养生、学习、修养；靠自己的劳动和本事吃饭，则身心安康。","机遇：养生、读书、修身之年；警示：防饮食不节、言语惹祸。");
+HEX[53] = H("山风蛊","蛊坏之象，整治积弊——积弊已深，必须整顿革新，拨乱反正。","中平","旧问题爆发：家庭矛盾、公司积弊、身体旧疾；必须下决心整治。","警示：整顿之年——旧账要清、旧疾要治、旧关系要理；拖则更烂。");
+HEX[54] = H("山水蒙","蒙昧之象，启蒙开智——虚心求教、好好学习，尊师重道则开窍。","吉","求学、求教、开窍之年；虚心使人进步，不懂就问，别装懂。","机遇：学习进修、拜师求艺之年；孩子教育也是重点。");
+HEX[55] = H("艮为山","静止之象，止住不动——该停则停，静养身心；适可而止，知止不殆。","中平","宜静不宜动：暂停扩张、停下脚步、静心思考；强动则招灾。","警示：停滞之年——不宜投资扩张、不宜远行；静养、守成、想清楚再动。");
+HEX[56] = H("山地剥","剥落之象，阴盛阳衰——小人得势、根基动摇，宜顺势隐忍。","凶","运势剥落：小人当道、事业下滑、健康损耗；此时宜隐忍自保。","警示：凶险之年——防小人暗算、防财产被剥、防身体亏损；低调保平安。");
+// 上卦坤(8)
+HEX[57] = H("地天泰","通泰之象，天地交泰——上下同心、诸事顺遂，大吉之象。","大吉","运势亨通、贵人相助、诸事顺利；把握好时机，乘势而上。","机遇：事业财运大顺之年；利合作、利成家、利出行；谦和守成更长久。");
+HEX[58] = H("地泽临","临民之象，居高临下——大势临近、机会临近，亲力亲为则吉。","吉","机会正在临近，要主动迎接；八月有凶，盛时防衰，居安思危。","机遇：机会临门之年——升迁、机遇、喜事临近；主动把握，别错过。");
+HEX[59] = H("地火明夷","光明受伤，韬光养晦——才华被压、明珠暗投，宜收敛光芒。","凶","怀才不遇、被人打压、低调行事；此时锋芒毕露则招祸。","警示：压抑之年——职场被打压、才华被埋没；韬光养晦，等待天亮。");
+HEX[60] = H("地雷复","复归之象，一阳来复——否极泰来，生机复现，开始好转。","大吉","运势开始复苏：走出低谷、身体康复、关系修复；抓住复起的机会。","机遇：转运之年——低迷之后的回升期；一元复始，万象更新。");
+HEX[61] = H("地风升","上升之象，柔木升长——步步高升，积小成大，吉。","大吉","事业上升期，一路走高；适合晋升、扩张、进取；升而不止。","机遇：升职加薪、事业高升之年；趁势进取，勿骄勿躁。");
+HEX[62] = H("地水师","兴师动众，行险而顺——出师有名则胜，率众做事；慎防战争冲突。","中平","带团队、打硬仗、竞争博弈之年；师出有名、纪律严明则胜。","警示：竞争冲突之年——职场斗争、商业竞争；要么不打，打则必胜。");
+HEX[63] = H("地山谦","谦逊之象，谦谦君子——谦受益满招损，谦虚低调则万事亨通。","大吉","为人谦和、不争不抢，反而什么都得到；谦者众助，骄者众弃。","机遇：以谦得福之年；低调做人高调做事，越谦越顺。");
+HEX[64] = H("坤为地","厚德载物，包容万物——大地厚德，承载一切；柔顺宽厚则吉。","大吉","包容、厚道、踏实，适合做根基性、后勤性、承载性的事；顺承而吉。","机遇：稳扎稳打、厚积成事之年；利房产土地、利母亲长辈；忌倔强反抗。");
+
+// 卦名查找：上卦先天数、下卦先天数 → HEX索引
+function hexIndex(upper, lower){
+  return (XT[upper]-1)*8 + (XT[lower]-1) + 1;
+}
+function hexByTrigrams(upper, lower){
+  return HEX[hexIndex(upper, lower)];
+}
+
+// ---------- 九宫飞星：三元九运 ----------
+// 180年一正元，每运20年。当前为下元九运（2024-2043 离火）
+const YUN = {
+  "一运":{start:1864,end:1883,star:"一白",wx:"水",gua:"坎",theme:"水运，智慧、流动、交际"},
+  "二运":{start:1884,end:1903,star:"二黑",wx:"土",gua:"坤",theme:"土运，农耕、地产、母亲"},
+  "三运":{start:1904,end:1923,star:"三碧",wx:"木",gua:"震",theme:"木运，工业、竞争、开拓"},
+  "四运":{start:1924,end:1943,star:"四绿",wx:"木",gua:"巽",theme:"木运，文教、传播、科举"},
+  "五运":{start:1944,end:1963,star:"五黄",wx:"土",gua:"中",theme:"土运，中央集权、大建设"},
+  "六运":{start:1964,end:1983,star:"六白",wx:"金",gua:"乾",theme:"金运，权力、军工、刚健"},
+  "七运":{start:1984,end:2003,star:"七赤",wx:"金",gua:"兑",theme:"金运，口才、演艺、变革"},
+  "八运":{start:2004,end:2023,star:"八白",wx:"土",gua:"艮",theme:"土运，地产、基建、互联网"},
+  "九运":{start:2024,end:2043,star:"九紫",wx:"火",gua:"离",theme:"火运，科技、AI、文化、能源、美业"}
+};
+function currentYun(year){
+  for(const k in YUN){ if(year>=YUN[k].start && year<=YUN[k].end) return {key:k, ...YUN[k]}; }
+  return null;
+}
+
+// ---------- 八宅命卦（东四命/西四命） ----------
+// 男命 1900-1999: (100-年尾两位)%9; 2000-2099: (99-年尾两位)%9
+// 女命 1900-1999: (年尾两位-4)%9; 2000-2099: (年尾两位+6)%9
+// 余数0按9算；5男归坤、女归艮
+const MINGGUA_NAME = {1:"坎",2:"坤",3:"震",4:"巽",5:"中",6:"乾",7:"兑",8:"艮",9:"离"};
+const DONGSI = {坎:1,离:1,震:1,巽:1};   // 东四命：坎离震巽
+const XISI = {乾:1,坤:1,艮:1,兑:1};     // 西四命：乾坤艮兑
+function mingGua(year, gender){
+  let y = year % 100, r;
+  if(gender==="男"){
+    r = (year<2000 ? (100-y) : (99-y)) % 9;
+  } else {
+    r = (year<2000 ? (y-4) : (y+6)) % 9;
+  }
+  if(r===0) r = 9;
+  if(r===5) return gender==="男" ? "坤" : "艮";
+  return MINGGUA_NAME[r];
+}
+function mingGuaText(gua){
+  const isDong = DONGSI[gua];
+  const dirs = isDong ? "东南（巽）、南（离）、东（震）、北（坎）" : "西北（乾）、西（兑）、东北（艮）、西南（坤）";
+  const lucky = isDong ? "东南、南、东、北" : "西北、西、东北、西南";
+  const unlucky = isDong ? "西北、西、东北、西南" : "东南、南、东、北";
+  return {
+    gua, type: isDong?"东四命":"西四命",
+    luckyDirs: lucky, unluckyDirs: unlucky,
+    desc: isDong
+      ? `你是${gua}卦东四命，吉利的方位是${lucky}，做事、居家、办公朝向这些方位更顺。`
+      : `你是${gua}卦西四命，吉利的方位是${lucky}，做事、居家、办公朝向这些方位更顺。`
+  };
+}
+
+// ---------- 年飞星入中（洛书顺飞/逆飞） ----------
+// 年飞星：以九星配年，2000年八白入中。顺飞用洛书轨迹
+const FEIXING_TRAIL = [5,6,7,8,9,1,2,3,4]; // 中宫→乾→兑→艮→离→坎→坤→震→巽
+function yearFlyingStar(year){
+  // 年数 mod 9：2000年=八白入中
+  let n = ((year - 2000) % 9 + 9) % 9;   // 2000→0
+  let zhong = (8 + n) % 9; if(zhong===0) zhong=9;
+  const pos = {};
+  let idx = FEIXING_TRAIL.indexOf(zhong);
+  const grid = ["中","乾","兑","艮","离","坎","坤","震","巽"];
+  for(let i=0;i<9;i++){
+    const star = (zhong + i - 1) % 9 + 1;
+    pos[grid[i]] = star;
+  }
+  return {zhongStar: zhong, pos};
+}
+// 九星吉凶
+const STAR_JX = {
+  1:{name:"一白",tone:"吉",desc:"桃花、智慧、贵人，利感情事业"},
+  2:{name:"二黑",tone:"凶",desc:"病符，主疾病、健康问题"},
+  3:{name:"三碧",tone:"凶",desc:"是非星，主口舌、官非、纠纷"},
+  4:{name:"四绿",tone:"吉",desc:"文昌，利学业、考试、名声"},
+  5:{name:"五黄",tone:"大凶",desc:"廉贞煞，主大灾、重病、破财"},
+  6:{name:"六白",tone:"吉",desc:"武曲，利事业、权力、贵人"},
+  7:{name:"七赤",tone:"凶",desc:"破军，主破财、盗贼、口舌"},
+  8:{name:"八白",tone:"大吉",desc:"当旺财星，利财运、置业"},
+  9:{name:"九紫",tone:"吉",desc:"喜庆星，利婚嫁、喜事、名声"}
+};
+
+// ---------- 姓名起卦（梅花易数姓名法） ----------
+// 姓笔画数（康熙字典）→上卦，名笔画数→下卦，总笔画→动爻
+const KX_STROKE = {}; // 康熙笔画表，常用字内置，未知字用简体笔画兜底
+function nameHex(name){
+  if(!name) return null;
+  const chars = name.trim().split("");
+  if(chars.length < 2) return null;
+  const surname = chars[0], given = chars.slice(1).join("");
+  const sSt = strokeOf(surname), gSt = strokeOf(given);
+  if(!sSt || !gSt) return null;
+  const upper = XT_NAME[((sSt-1)%8)+1], lower = XT_NAME[((gSt-1)%8)+1];
+  const dong = ((sSt+gSt-1)%6)+1;
+  return {upper, lower, sSt, gSt, dong, hex: hexByTrigrams(upper, lower)};
+}
+function strokeOf(ch){
+  if(KX_STROKE[ch]) return KX_STROKE[ch];
+  // 兜底：用 Unicode 码位粗算笔画（仅作参考）
+  return (ch.codePointAt(0) % 20) + 1;
+}
+
+// ==================== 融合分析引擎 ====================
+
+// 农历取数：年支序(子1..亥12) + 月数 + 日数 → 上卦；加时支序 → 下卦；总 → 动爻
+function timeHex(birthY, birthM, birthD, birthH){
+  // 农历
+  let lm = birthM, ld = birthD, ly = birthY;
+  try{
+    const lun = gregorianToLunar(birthY, birthM, birthD);
+    if(lun){ lm = lun.lunarM; ld = lun.lunarD; ly = lun.lunarY; }
+  }catch(e){}
+  const yearZhiIdx = ((ly - 4) % 12 + 12) % 12; // 0=子
+  const zhiN = yearZhiIdx + 1;
+  const hourZhi = ((birthH + 1) % 24) >> 1;      // 23-1=子... 时支序
+  const hourN = hourZhi + 1;
+  const upN = (zhiN + lm + ld) % 8;
+  const downN = (zhiN + lm + ld + hourN) % 8;
+  const dong = ((zhiN + lm + ld + hourN) % 6) + 1;
+  const upper = XT_NAME[upN===0?8:upN], lower = XT_NAME[downN===0?8:downN];
+  return {upper, lower, dong, hex: hexByTrigrams(upper, lower), lunar:{y:ly,m:lm,d:ld}, hourN};
+}
+
+// 流年卦：以流年干支序 + 年龄起卦
+function yearHex(lunarYear, age){
+  const gzIdx = ((lunarYear - 4) % 60 + 60) % 60;   // 1984甲子=0
+  const zhiN = ((lunarYear - 4) % 12 + 12) % 12 + 1;
+  const upN = (gzIdx + zhiN + age) % 8;
+  const downN = (gzIdx + age) % 8;
+  const dong = ((gzIdx + age + zhiN) % 6) + 1;
+  const upper = XT_NAME[upN===0?8:upN], lower = XT_NAME[downN===0?8:downN];
+  return {upper, lower, dong, hex: hexByTrigrams(upper, lower)};
+}
+
+// 卦的吉凶基调→权重系数（用于给八字事件加权）
+function guaWeight(hex){
+  if(!hex) return 1;
+  const t = hex.tone;
+  if(t==="大吉") return 1.25;
+  if(t==="吉") return 1.1;
+  if(t==="中平") return 1.0;
+  if(t==="凶") return 0.85;
+  return 1;
+}
+function guaIsWarning(hex){
+  return hex && (hex.tone==="凶" || hex.warn && hex.warn.indexOf("警示")===0);
+}
+
+// 姓名五行与八字喜忌配合提示
+function nameWxHint(bazi, nameHexInfo){
+  if(!nameHexInfo) return "";
+  const upper = nameHexInfo.upper, lower = nameHexInfo.lower;
+  const wxU = TRIGRAM_WX[upper], wxL = TRIGRAM_WX[lower];
+  return `${upper}（${wxU}）＋${lower}（${wxL}）`;
+}
+
+// 主入口：融合分析
+function yijingJiugongAnalysis(bazi, input){
+  const out = {benmingGua:null, nameGua:null, mingGua:null, yun:null, feixing:null,
+               liunianGua:[], majorEvents:[], pastReview:[], hints:[]};
+  const ts = bazi.trueSolar;
+  const gender = input.gender==="male" ? "男" : "女";
+  const birthYear = ts.y, birthMonth = ts.m, birthDay = ts.d, birthHour = ts.h;
+
+  // 1. 本命卦（出生时间起卦）
+  out.benmingGua = timeHex(birthYear, birthMonth, birthDay, birthHour);
+
+  // 2. 姓名卦
+  if(input.name) out.nameGua = nameHex(input.name);
+
+  // 3. 八宅命卦
+  out.mingGua = mingGuaText(mingGua(birthYear, gender));
+
+  // 4. 三元九运（当前年份）
+  const now = new Date();
+  out.yun = currentYun(now.getFullYear());
+
+  // 5. 年飞星（当前年份）
+  out.feixing = yearFlyingStar(now.getFullYear());
+  const fx = out.feixing.pos;
+  // 找出凶星方位
+  out.badStars = [];
+  for(const dir in fx){
+    const s = STAR_JX[fx[dir]];
+    if(s.tone==="凶" || s.tone==="大凶") out.badStars.push({dir, star:s.name, tone:s.tone, desc:s.desc});
+  }
+  out.goodStars = [];
+  for(const dir in fx){
+    const s = STAR_JX[fx[dir]];
+    if(s.tone==="吉" || s.tone==="大吉") out.goodStars.push({dir, star:s.name, tone:s.tone, desc:s.desc});
+  }
+
+  // 6. 大运信息（用于年龄换算）
+  const steps = (bazi.dayun && bazi.dayun.steps) || [];
+  const startYear = birthYear - 1; // 近似（虚岁1岁起点）
+  const today = new Date();
+  const curAge = today.getFullYear() - birthYear + 1;
+
+  // 7. 流年卦：近5年（回顾）+ 未来15年（预判）
+  const spanStart = Math.max(1, curAge - 5);
+  for(let age = spanStart; age <= curAge + 15; age++){
+    const y = startYear + age;
+    const g = yearHex(y, age);
+    out.liunianGua.push({year:y, age, ...g});
+  }
+
+  // 8. 重大事件融合：八字事件引擎 + 卦象交叉验证
+  const baziEvents = (typeof buildLifeEvents === "function") ? buildLifeEvents(bazi, (input.userEvents||"")) : [];
+  // 流年卦映射 year→hex
+  const guaByYear = {};
+  for(const g of out.liunianGua) guaByYear[g.year] = g;
+
+  // 八字引擎事件 → 融合卦象加权，并附卦象佐证
+  const fused = [];
+  for(const ev of baziEvents){
+    for(const item of (ev.list||[])){
+      const gg = guaByYear[ev.year];
+      const w = guaWeight(gg ? gg.hex : null);
+      const warn = gg && guaIsWarning(gg.hex);
+      let level = (item.score||0) * w;
+      if(warn && (item.sub==="破财"||item.sub==="车祸意外"||item.sub==="伤病"||item.sub==="丧事"||item.sub==="口舌官非")) level *= 1.4;
+      fused.push({
+        year: ev.year, age: item.age, sub: item.sub, level,
+        baziPlain: item.plain, guaName: gg ? gg.hex.name : "",
+        guaTone: gg ? gg.hex.tone : "", guaWarn: warn,
+        guaPlain: gg ? gg.hex.plain : ""
+      });
+    }
+  }
+  fused.sort((a,b)=>b.level-a.level);
+  const seen = {};
+  const majors = [];
+  for(const f of fused){
+    const key = f.year+"_"+f.sub;
+    if(seen[key]) continue;
+    seen[key] = true;
+    if(majors.length >= 16) break;
+    majors.push(f);
+  }
+  out.majorEvents = majors.sort((a,b)=>a.year-b.year);
+
+  // 9. 过往回顾：八字引擎的过去事件 + 当年卦象
+  for(const ev of out.majorEvents){
+    if(ev.year <= today.getFullYear()) out.pastReview.push(ev);
+  }
+
+  return out;
+}
+
 // ==================== UI 与渲染 ====================
 function toggleLunar(){
   const lunar = document.getElementById("inCalendar").value === "lunar";
@@ -2148,6 +2495,12 @@ function renderReport(bazi, input){
   }
   h.push(`</div>`);
 
+  // ===== 易经·九宫八卦融合 =====
+  try{
+    const yj = yijingJiugongAnalysis(bazi, input);
+    h.push(renderYijing(yj, bazi, input));
+  }catch(e){ console.error("yijing err", e); }
+
   // ===== 往后看 =====
   const future = lifeEvents.filter(ev=>ev.year>=2026);
   h.push(`<div class="rp-card"><h2>${T("🔭 往后看")} <span class="tag">${T("未来几年重点")}</span></h2>`);
@@ -2214,6 +2567,100 @@ function run(){
     console.error(e);
     alert(T("排盘出错：") + e.message);
   }
+}
+
+// ==================== 易经·九宫八卦融合渲染 ====================
+function renderYijing(yj, bazi, input){
+  const h = [];
+  const zh = LANG==="zh";
+  const name = input.name || "命主";
+  h.push(`<div class="rp-card"><h2>🧬 易经六十四卦 · 九宫八卦融合 <span class="tag">姓名＋八字→卦象批断</span></h2>`);
+  h.push(`<div class="warn" style="border-color:rgba(16,185,129,.3);background:rgba(16,185,129,.06);color:#a7f3d0">这一层把《易经》六十四卦、九宫飞星、八宅命卦和您的八字叠在一起看：本命卦定一生基调，姓名卦看后天际遇，流年卦逐年印证八字大事——两套体系互相印证的年份，就是最值得重视的年份。</div>`);
+
+  // 1. 本命卦
+  if(yj.benmingGua && yj.benmingGua.hex){
+    const bg = yj.benmingGua;
+    const hex = bg.hex;
+    const toneCls = hex.tone==="大吉"||hex.tone==="吉" ? "conf-high" : (hex.tone==="凶" ? "conf-ref" : "conf-mid");
+    h.push(`<div class="section-title">🌱 本命卦（出生时间起卦）</div>`);
+    h.push(`<div class="gua-box">`);
+    h.push(`<div class="gua-name">${hex.name} <span class="${toneCls}" style="font-size:.8rem;margin-left:6px">${hex.tone}</span></div>`);
+    h.push(`<div class="gua-meta" style="color:#64748b;font-size:.8rem;margin:4px 0">上卦 ${bg.upper}（${TRIGRAM_WX[bg.upper]}·${TRIGRAM_DIR[bg.upper]}）＋下卦 ${bg.lower}（${TRIGRAM_WX[bg.lower]}·${TRIGRAM_DIR[bg.lower]}）· 动爻第${bg.dong}爻 · 农历${bg.lunar.y}年${bg.lunar.m}月${bg.lunar.d}日起</div>`);
+    h.push(`<div class="gua-plain" style="line-height:1.9;margin-top:6px">📜 <b>卦辞：</b>${hex.plain}</div>`);
+    h.push(`<div class="gua-life" style="line-height:1.9;color:#475569">🧭 <b>一生基调：</b>${hex.life}</div>`);
+    h.push(`<div class="gua-warn" style="line-height:1.9;color:#b45309">⚠️ <b>大事提示：</b>${hex.warn}</div>`);
+    h.push(`</div>`);
+  }
+
+  // 2. 姓名卦
+  if(yj.nameGua && yj.nameGua.hex){
+    const ng = yj.nameGua;
+    const hex = ng.hex;
+    h.push(`<div class="section-title">📛 姓名卦（${name} · 姓${ng.sSt}画＋名${ng.gSt}画起卦）</div>`);
+    h.push(`<div class="gua-box">`);
+    h.push(`<div class="gua-name">${hex.name} <span style="font-size:.8rem;margin-left:6px;color:#64748b">${hex.tone} · 动爻第${ng.dong}爻</span></div>`);
+    h.push(`<div class="gua-meta" style="color:#64748b;font-size:.8rem;margin:4px 0">上卦 ${ng.upper}（${TRIGRAM_WX[ng.upper]}）＋下卦 ${ng.lower}（${TRIGRAM_WX[ng.lower]}）· 姓名五行 ${nameWxHint(bazi, ng)}</div>`);
+    h.push(`<div class="gua-plain" style="line-height:1.9;margin-top:6px">📜 <b>卦辞：</b>${hex.plain}</div>`);
+    h.push(`<div class="gua-warn" style="line-height:1.9;color:#b45309">⚠️ <b>提示：</b>${hex.warn}</div>`);
+    h.push(`</div>`);
+  }
+
+  // 3. 八宅命卦 + 九运
+  if(yj.mingGua && yj.yun){
+    h.push(`<div class="section-title">🧭 八宅命卦 · 三元九运</div>`);
+    h.push(`<div class="gua-box">`);
+    h.push(`<div class="gua-name">${yj.mingGua.gua}卦 · ${yj.mingGua.type}</div>`);
+    h.push(`<div style="line-height:1.9;margin-top:4px">${yj.mingGua.desc}</div>`);
+    h.push(`<div style="line-height:1.9;color:#047857">✅ 吉利方位：${yj.mingGua.luckyDirs}　❌ 不利方位：${yj.mingGua.unluckyDirs}</div>`);
+    h.push(`<div style="line-height:1.9;color:#475569;margin-top:4px">🔥 当前正值<b>${yj.yun.key}（${yj.yun.star} ${yj.yun.wx}运，${yj.yun.start}—${yj.yun.end}年）</b>：${yj.yun.theme}。${yj.mingGua.gua==="离"||yj.mingGua.gua==="巽"||yj.mingGua.gua==="震"||yj.mingGua.gua==="坎" ? "您的命卦属东四卦，与九运离火、木火相生的时运契合，这二十年顺势而为，事业更易借力。" : "您的命卦属西四卦（土金），九运离火当旺，火生土、土生金，您的土金命卦能承接九运的旺气，稳中求进更佳。"}</div>`);
+    h.push(`</div>`);
+  }
+
+  // 4. 年飞星（今年凶吉方位）
+  if(yj.feixing){
+    h.push(`<div class="section-title">⭐ 今年九宫飞星（${new Date().getFullYear()}年 · 五黄/二黑等凶星方位提醒）</div>`);
+    h.push(`<div class="gua-box" style="font-size:.85rem">`);
+    h.push(`<div style="line-height:1.9"><b>🔴 凶星方位（宜避）：</b>${yj.badStars.map(s=>`${s.dir}（${s.star}${s.tone==="大凶"?"‼":""}：${s.desc}）`).join("；")}</div>`);
+    h.push(`<div style="line-height:1.9"><b>🟢 吉星方位（宜用）：</b>${yj.goodStars.map(s=>`${s.dir}（${s.star}：${s.desc}）`).join("；")}</div>`);
+    h.push(`<div style="line-height:1.9;color:#64748b">流年方位提示：凶星方少动土、装修、长期坐卧；吉星方宜办公、会客、布置旺位。</div>`);
+    h.push(`</div>`);
+  }
+
+  // 5. 重大事件融合（八字事件 + 流年卦印证）
+  if(yj.majorEvents.length){
+    h.push(`<div class="section-title">🔮 重大事件 · 八字与卦象双重印证</div>`);
+    h.push(`<div style="color:#64748b;font-size:.8rem;margin-bottom:6px">下面的年份，八字事件引擎有信号，同时当年的流年卦也在说同一件事（卦名＋卦辞附后）——两套体系指向同一件事的年份，可信度最高。⚠️ 凶卦年份（凶/警示）会加重破财、伤病、官非类事件的权重。</div>`);
+    const nowYear = new Date().getFullYear();
+    for(const ev of yj.majorEvents){
+      const isPast = ev.year <= nowYear;
+      const toneCls = ev.guaTone==="大吉"?"conf-high":(ev.guaTone==="凶"?"conf-ref":"conf-mid");
+      h.push(`<div class="ev-item">`);
+      h.push(`<div class="ev-head"><span class="ev-cat">${subLabel(ev.sub)}</span><span style="font-size:.78rem">${isPast?"<span style='color:#10b981'>已过</span>":"<span style='color:#f59e0b'>未来</span>"} · 八字把握${ev.level>=7?"高":ev.level>=4.5?"中":"参考"}</span></div>`);
+      h.push(`<div class="ev-when">🎯 ${zh?`${ev.year}年（${ev.age}岁）`:`${ev.year} (age ${ev.age})`}${ev.guaName?` · 流年卦 <b>${ev.guaName}</b> <span class="${toneCls}">${ev.guaTone}</span>`:""}</div>`);
+      if(ev.baziPlain) h.push(`<div class="ev-plain">八字依据：${ev.baziPlain}</div>`);
+      if(ev.guaName) h.push(`<div class="ev-plain" style="color:#0f766e">卦象印证：${ev.guaPlain}</div>`);
+      h.push(`</div>`);
+    }
+    h.push(`</div>`);
+  }
+
+  // 6. 流年卦细表（近5年+未来15年）
+  if(yj.liunianGua.length){
+    h.push(`<div class="section-title">📜 逐年卦象（近5年回顾＋未来15年预判）</div>`);
+    h.push(`<div style="overflow-x:auto"><table class="dayun-table" style="font-size:.8rem">`);
+    h.push(`<tr><th>年份</th><th>岁数</th><th>卦名</th><th>吉凶</th><th>这一年卦象在说什么</th></tr>`);
+    for(const g of yj.liunianGua){
+      const hex = g.hex;
+      const nowYear = new Date().getFullYear();
+      const mark = g.year===nowYear?" ← 今年":(g.year<nowYear?"":"");
+      h.push(`<tr><td>${g.year}${mark}</td><td>${g.age}</td><td><b>${hex.name}</b></td><td>${hex.tone}</td><td style="max-width:340px">${hex.plain}${hex.tone==="凶"?" ⚠️":""}</td></tr>`);
+    }
+    h.push(`</table></div>`);
+    h.push(`<div style="color:#94a3b8;font-size:.75rem;margin-top:6px">注：流年卦按梅花易数取数（流年干支＋年龄起卦），与八字大运、流年神煞相互独立、互相印证。</div>`);
+  }
+
+  h.push(`</div>`);
+  return h.join("");
 }
 
 applyLang();
