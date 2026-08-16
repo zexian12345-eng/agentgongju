@@ -295,6 +295,13 @@ const EN_MAP = {
   "五行强弱排序：":"Five Elements (strong → weak): ",
   "五行所缺：":"Missing elements: ",
   "无明显缺失":"None missing",
+  "⚖️ 命局格局（据《子平真诠》取格法）":"⚖️ Chart Pattern (per Zi Ping Zhen Quan)",
+  "喜：":"Favorable: ",
+  "忌：":"Avoid: ",
+  "从格·顺势而为":"Following Pattern",
+  "透干取格":"revealed in stems",
+  "按本气":"by primary qi",
+  "取格依据：《子平真诠》以月令本气藏干透出天干者为格（本气优先），不透干则按本气取；喜忌按八格总表。":"Method per Zi Ping Zhen Quan: the pattern is set by the Month Branch's primary hidden stem when it appears among the stems (primary qi first); if not revealed, use the primary qi. Favorable/Avoid follows the Eight Patterns table.",
   "🚀 起运与大运":"🚀 Luck Cycles (Da Yun)",
   "阳男/阴女顺排":"Yang male / Yin female — forward order",
   "阴男/阳女逆排":"Yin male / Yang female — reverse order",
@@ -394,7 +401,9 @@ const EN_SUBCAT = {
   "出轨":"💔 Infidelity Risk",
   "当兵入伍":"🎖️ Joining the Military",
   "转业":"🔄 Leaving the Military",
-  "二次择业":"🔁 Changing Careers"
+  "二次择业":"🔁 Changing Careers",
+  "岁运并临":"🔁 Year-Luck Merge",
+  "伏吟":"🌀 Fu Yin Repetition"
 };
 
 // ---------- 事件 sub 英文描述模板 ----------
@@ -430,7 +439,9 @@ const EN_PLAIN = {
   "出轨":"Romance temptation year: keep boundaries strong if married; if single, beware of entangled or taken partners.",
   "当兵入伍":"A classic military signal (Seven Killings + General/Blade/Travel stars): highly likely to join the army, military academy, or police this year.",
   "转业":"After years of service, stars indicate leaving the military and returning to civilian work — a turning point that opens a new path.",
-  "二次择业":"Career palace is activated: a strong year to switch industries, change direction, or start a second career."
+  "二次择业":"Career palace is activated: a strong year to switch industries, change direction, or start a second career.",
+  "岁运并临":"A Year-Luck Merge year (flow year and luck pillar share the exact same stems & branches): fortunes are doubled — good times get better, risky times get riskier. Stay steady all year; think twice before major decisions.",
+  "伏吟":"A Fu Yin year (flow year repeats a natal pillar's stems & branches): things feel stuck and repetitive — low mood, inertia, and inner friction. Keep calm, avoid upheaval, and let the year pass."
 };
 
 // ---------- 规则 desc 英文 ----------
@@ -500,7 +511,14 @@ const EN_DESC = {
   "七杀+将星/羊刃+驿马":"Seven Killings + General/Blade/Travel",
   "官杀+羊刃驿马":"Officer stars + Blade/Travel Horse",
   "冲月柱+偏印/伤官":"Clash Month Pillar + Indirect Resource/Hurting Officer",
-  "当兵→转业链":"Military → transfer chain"
+  "当兵→转业链":"Military → transfer chain",
+  "大运流年天克地冲":"Luck pillar & flow year: Heaven-Clash Earth-Clash",
+  "天克地冲主迁动":"Heaven-Clash Earth-Clash signals movement",
+  "岁运并临":"Year-Luck Merge (identical stems & branches)",
+  "流年伏吟年柱":"Fu Yin on Year Pillar",
+  "流年伏吟月柱":"Fu Yin on Month Pillar",
+  "流年伏吟日柱":"Fu Yin on Day Pillar",
+  "流年伏吟时柱":"Fu Yin on Hour Pillar"
 };
 
 // ---------- 十神 / 神煞 / 关系 英文含义 ----------
@@ -895,16 +913,18 @@ function toggleLang(){
 function applyLang(){
   const btn = document.getElementById("langBtn");
   if(btn) btn.textContent = (LANG==="zh") ? "🌐 English" : "🌐 中文";
-  document.documentElement.lang = (LANG==="zh") ? "zh-CN" : "en";
+  if(document.documentElement) document.documentElement.lang = (LANG==="zh") ? "zh-CN" : "en";
   // 替换静态文本
-  document.querySelectorAll("[data-i18n]").forEach(el=>{
-    const zh = el.getAttribute("data-i18n");
-    el.textContent = T(zh);
-  });
-  document.querySelectorAll("[data-i18n-ph]").forEach(el=>{
-    const zh = el.getAttribute("data-i18n-ph");
-    el.setAttribute("placeholder", T(zh));
-  });
+  if(document.querySelectorAll){
+    document.querySelectorAll("[data-i18n]").forEach(el=>{
+      const zh = el.getAttribute("data-i18n");
+      el.textContent = T(zh);
+    });
+    document.querySelectorAll("[data-i18n-ph]").forEach(el=>{
+      const zh = el.getAttribute("data-i18n-ph");
+      el.setAttribute("placeholder", T(zh));
+    });
+  }
   document.title = (LANG==="zh") ? "八字命理详批 | AgentGongju.com" : "BaZi Fortune Reading | AgentGongju.com";
   const metaDesc = document.querySelector('meta[name="description"]');
   if(metaDesc) metaDesc.setAttribute("content", LANG==="zh" ? "专业八字排盘：真太阳时校正、节气定月、四柱十神、大运流年、人生事件推断。输入出生年月日时与出生地，一键生成完整命书。" : "Professional BaZi (Chinese astrology) chart reading: True Solar Time, Four Pillars, Ten Gods, Luck Cycles, and life event analysis. Enter your birth info for a complete fortune report.");
@@ -1331,7 +1351,9 @@ const SUBCAT = {
   "出轨": "💔 感情越轨",
   "当兵入伍": "🎖️ 当兵入伍",
   "转业": "🔄 转业变动",
-  "二次择业": "🔁 换行业择业"
+  "二次择业": "🔁 换行业择业",
+  "岁运并临": "🔁 岁运并临",
+  "伏吟": "🌀 伏吟反复"
 };
 
 const LIUHE = {子:"丑",丑:"子",寅:"亥",亥:"寅",卯:"戌",戌:"卯",辰:"酉",酉:"辰",巳:"申",申:"巳",午:"未",未:"午"};
@@ -1428,6 +1450,51 @@ function sixQin(ss, gender){
   };
   const v = map[ss];
   return v ? v[zh?0:1] : "";
+}
+
+// ==================== 格局分析（《子平真诠》取格法） ====================
+// 八格信息：取法/喜/忌/白话（依据知识库：月令本气藏干透干优先，不透则本气兜底）
+const GE_INFO = {
+  "正官": {name:"正官格", xi:"财生、印护、身旺", ji:"伤官见官、七杀混杂、刑冲破害", plain:"走正途当官掌权的命：职位、名声、规矩是主线，最怕违法乱纪、走歪门邪道，守规矩走正道就能掌权。", en:{name:"Direct Officer Pattern", xi:"Wealth generates, Resource protects, strong body", ji:"Hurting Officer meets Officer, Seven Killings mixing, punishments/clashes/harms", plain:"A life of legitimate authority: position, reputation, and rules are the theme. The biggest risk is breaking rules — stay on the straight path and you will lead."}},
+  "七杀": {name:"七杀格", xi:"食神制杀、印星化杀", ji:"财星滋杀、无制", plain:"压力大权力大的命：竞争和挑战是常态，扛得住就掌权，扛不住就劳累是非；宜找对路子把压力变成动力。", en:{name:"Seven Killings Pattern", xi:"Eating God controls, Resource transforms", ji:"Wealth feeds the killings, no control", plain:"A life of pressure and power: rivalry is the norm. Endure and you command; fail and you get exhaustion and disputes. Channel pressure into drive."}},
+  "正财": {name:"正财格", xi:"食伤生财、身旺担财", ji:"比劫夺财、官杀泄财", plain:"正经做生意挣钱的命：稳定收入、实业经营是主线，踏踏实实做正经事最旺，防朋友分财。", en:{name:"Direct Wealth Pattern", xi:"Output generates Wealth, strong body carries it", ji:"Peers rob Wealth, Officer drains it", plain:"A life of honest business: stable income and solid enterprise are the theme. Steady legitimate work prospers; guard against friends splitting your money."}},
+  "偏财": {name:"偏财格", xi:"身旺", ji:"比劫争财", plain:"生意财、横财运旺的命：来财活络、路子广，但守财难，防合伙分财、财来财去。", en:{name:"Indirect Wealth Pattern", xi:"Strong body", ji:"Peers compete for Wealth", plain:"Flexible, windfall-rich wealth: money flows in through many channels, but is hard to keep. Guard against partnership splits and money coming and going."}},
+  "正印": {name:"正印格", xi:"官杀生印", ji:"财星破印", plain:"靠文凭学历、长辈庇护吃饭的命：读书、考证、进体制最有利，长辈贵人是靠山。", en:{name:"Direct Resource Pattern", xi:"Officer generates Resource", ji:"Wealth breaks Resource", plain:"A life built on credentials and elder support: study, certification, and institutions favor you; elders and mentors are your backing."}},
+  "偏印": {name:"偏印格", xi:"偏财制印", ji:"食神被夺（枭神夺食）", plain:"偏门技艺、特殊才能的命：独门绝活、冷门学问是本事，适合钻研技术，防想太多、钻牛角尖。", en:{name:"Indirect Resource Pattern", xi:"Indirect Wealth controls it", ji:"Eating God robbed (Resource robs food)", plain:"A life of niche skills and special talents: unique crafts and uncommon knowledge are your edge. Great for technical depth; avoid overthinking."}},
+  "食神": {name:"食神格", xi:"身旺、食神生财", ji:"偏印夺食", plain:"才华口福好、靠本事吃饭的命：手艺、创作、餐饮美食都旺你，温和输出才华，日子过得滋润。", en:{name:"Eating God Pattern", xi:"Strong body, Eating God generates Wealth", ji:"Indirect Resource robs", plain:"Talent and good taste: crafts, creation, and culinary arts favor you. Express talent gently and live comfortably."}},
+  "伤官": {name:"伤官格", xi:"印绶制伤（伤官佩印）", ji:"伤官见官", plain:"才华外露、口才好的命：适合技术、艺术、口才类，聪明外露，但管住嘴才有大出息。", en:{name:"Hurting Officer Pattern", xi:"Resource controls (Hurting Officer with Resource)", ji:"Hurting Officer meets Officer", plain:"Brilliant and expressive: technology, arts, and eloquence suit you. Your wit is sharp — but guarding your tongue brings real success."}},
+  "比肩": {name:"建禄格（月令比肩）", xi:"身旺，喜财官", ji:"比劫再帮、印星再扶", plain:"月令比肩建禄：身旺自立，凡事靠自己，朋友兄弟多，宜合伙、武职、体育；忌朋友分财。", en:{name:"Prosperity Pattern (month Peer)", xi:"Strong body, favor Wealth & Officer", ji:"More Peers and Resources", plain:"Month-branch Peer (Prosperity): strong and self-reliant, many friends — suited to partnership, martial roles, sports. Beware friends dividing your wealth."}},
+  "劫财": {name:"羊刃格（月令劫财）", xi:"七杀或食伤制刃", ji:"印比再帮、无制", plain:"月令劫财羊刃：性格刚烈、行动力强，宜军警武职、开拓类，防冲动破财、血光磕碰。", en:{name:"Blade Pattern (month Rob Wealth)", xi:"Seven Killings or Output controls the blade", ji:"More Resources/Peers, uncontrolled", plain:"Month-branch Rob Wealth (Blade): fierce and action-driven — suited to military, police, pioneering roles. Guard against impulsive losses and accidents."}}
+};
+
+// 格局判定：月令本气藏干透干优先，不透则本气兜底；另判从格
+function gejuAnalysis(bazi){
+  const dg = bazi.pillars.day.g;
+  const mz = bazi.monthZhi;
+  const cang = CANG[mz] || [];
+  if(!cang.length) return null;
+  const stems = [bazi.pillars.year.g, bazi.pillars.month.g, bazi.pillars.hour.g];
+  let geSS = null, geGan = null, viaTou = false;
+  for(const c of cang){ // 本气→中气→余气
+    if(stems.includes(c)){ geSS = shishen(dg, c); geGan = c; viaTou = true; break; }
+  }
+  if(!geSS){ geSS = shishen(dg, cang[0]); geGan = cang[0]; }
+  // 从格判定：日主无根、无比劫帮身、无印星生扶 → 从财/从官/从杀/从儿
+  const dw = WX_GAN[dg];
+  const roots = [bazi.pillars.year.z, bazi.pillars.month.z, bazi.pillars.day.z, bazi.pillars.hour.z].filter(z => CANG[z].some(c => WX_GAN[c] === dw)).length;
+  const stemSS = stems.map(g => shishen(dg, g));
+  const noBang = !stemSS.some(s => s === "比肩" || s === "劫财");
+  const noYin = !stemSS.some(s => s === "正印" || s === "偏印");
+  const sa = strengthAnalysis(bazi);
+  let cong = null;
+  if(roots === 0 && noBang && noYin && sa.score <= -3){
+    const mzSS = shishen(dg, cang[0]);
+    if(mzSS === "正财" || mzSS === "偏财") cong = "从财格";
+    else if(mzSS === "正官" || mzSS === "七杀") cong = mzSS === "正官" ? "从官格" : "从杀格";
+    else if(mzSS === "食神" || mzSS === "伤官") cong = "从儿格";
+  }
+  const info = GE_INFO[geSS] || GE_INFO["比肩"];
+  return {geSS, geGan, viaTou, cong, name: info.name, xi: info.xi, ji: info.ji, plain: info.plain, en: info.en, mz, cang};
 }
 
 // 单流年分析（细分事件 + 大白话）
@@ -1591,6 +1658,34 @@ function analyzeYear(yy, bazi, step, age){
     if(lz===hz2) add("怀孕生子",2, "太岁临子女宫（时支），又逢子女星或桃花红鸾呼应：有添丁之喜的信号，家里可能添孩子。","太岁临子女宫",24,50);
   }
 
+  // 4.8 岁运作用：天克地冲（反吟）/ 岁运并临 / 伏吟
+  // 天克地冲：流年天干克大运天干 + 流年支冲大运支（知识库§四）
+  const dyGan = step.gz[0], dyZhi = step.gz[1];
+  const gKe = KE[WX_GAN[lg]] === WX_GAN[dyGan]; // 流年干克大运干（五行相克）
+  const zChong = LIUCHONG[lz] === dyZhi;
+  if(age>=18 && gKe && zChong){
+    add("工作变动", 2.5, "天克地冲（反吟）之年：流年与大运干支双冲双克，主大变动——搬家、换工作、婚变、伤病、大起大落，好事坏事都来得猛，宜稳中求变、提前规划。", "大运流年天克地冲", 18);
+    add("出行迁居", 1.5, "天克地冲主走动变迁，这年出差、搬家、调动概率高。", "天克地冲主迁动", 18);
+  }
+  // 岁运并临：流年干支与大运干支完全相同
+  if(age>=18 && (lg+lz) === step.gz){
+    add("岁运并临", 2.5, "岁运并临之年（流年与大运干支完全相同）：吉凶加倍——好事更顺、坏事更险，全年宜稳，重大决策三思而行，防乐极生悲也防过度悲观。", "岁运并临", 18);
+  }
+  // 伏吟：流年干支与命局某柱相同 → 忧愁苦闷、反复、内耗（知识库§四）
+  const fuyinPillars = [["年柱", bazi.pillars.year], ["月柱", bazi.pillars.month], ["日柱", bazi.pillars.day], ["时柱", bazi.pillars.hour]];
+  for(const [fName, fP] of fuyinPillars){
+    if(age>=18 && (lg+lz) === fP.gz){
+      if(fName==="日柱" && sig.points["当兵入伍"]) continue; // 16-24伏吟日柱已由当兵规则覆盖，避免重复
+      const fPlain = {
+        "年柱": "流年伏吟年柱（干支与年柱相同）：主家宅、长辈或早年根基之事反复，心情易沉闷，宜守成、忌折腾。",
+        "月柱": "流年伏吟月柱（干支与月柱相同）：事业或父母之事容易原地踏步、反复拉锯，主忧愁苦闷，宜稳住别冲动。",
+        "日柱": "流年伏吟日柱（干支与日柱相同）：自身与感情之事反复内耗，心情苦闷、原地打转，多沟通、少赌气。",
+        "时柱": "流年伏吟时柱（干支与时柱相同）：子女或晚年之事有反复，操心劳神，宜放宽心。"
+      };
+      add("伏吟", 2.2, fPlain[fName], "流年伏吟"+fName, 18);
+    }
+  }
+
   // 5. 专项事件：车祸/出轨/当兵/转业/二次择业
   const fss2 = flowShensha(lz, bazi);
   const yangrenHit = fss2.includes("羊刃"), yimaHit = fss2.includes("驿马"), jiangHit = fss2.includes("将星");
@@ -1706,7 +1801,7 @@ const CAT_GROUP = {
   "恋爱缘":"感情","婚喜":"感情","感情波动":"感情","出轨":"感情",
   "伤病":"健康","车祸意外":"健康",
   "怀孕生子":"家庭","子女缘":"家庭","长辈健康":"家庭","丧事":"家庭",
-  "贵人相助":"其他","考试升学":"其他","出行迁居":"其他","合伙合作":"其他","才华输出":"其他","进修独处":"其他","人际应酬":"其他","和合":"其他","摩擦口角":"其他","暗耗谨防":"其他"
+  "贵人相助":"其他","考试升学":"其他","出行迁居":"其他","合伙合作":"其他","才华输出":"其他","进修独处":"其他","人际应酬":"其他","和合":"其他","摩擦口角":"其他","暗耗谨防":"其他","岁运并临":"其他","伏吟":"其他"
 };
 const CAT_ORDER = ["事业","财运","感情","健康","家庭"];
 const CAT_NAME = {事业:"💼 事业",财运:"💰 财运",感情:"❤️ 感情",健康:"🏥 健康",家庭:"🏠 家庭",其他:"📌 其他"};
@@ -1820,9 +1915,9 @@ function verifyUserEvents(bazi, userEvents){
 // 一生大事列表：按时间排序，每年最多2件大事，全生命周期取信号最强的
 function buildLifeEvents(bazi, userEventsText){
   const sections = analyzeLife(bazi);
-  const MAJOR_W = {"婚喜":1.4,"怀孕生子":1.4,"当兵入伍":1.3,"转业":1.3,"车祸意外":1.3,"破财":1.15,"升职加薪":1.15,"置业买房":1.1,"二次择业":1.1,"工作变动":1.0,"出行迁居":0.9,"创业契机":1.1,"伤病":1.05,"偏财进账":0.8};
+  const MAJOR_W = {"婚喜":1.4,"怀孕生子":1.4,"当兵入伍":1.3,"转业":1.3,"车祸意外":1.3,"破财":1.15,"升职加薪":1.15,"置业买房":1.1,"二次择业":1.1,"工作变动":1.0,"出行迁居":0.9,"创业契机":1.1,"伤病":1.05,"偏财进账":0.8,"岁运并临":1.3,"伏吟":0.8};
   const SPECIAL = ["当兵入伍","转业","二次择业","车祸意外","出轨"];
-  const ageOK = {"婚喜":[20,60],"怀孕生子":[22,50],"当兵入伍":[16,24],"转业":[20,45],"二次择业":[25,55],"工作变动":[18,60],"升职加薪":[18,65],"创业契机":[20,65],"置业买房":[20,70],"破财":[18,75],"偏财进账":[18,75],"伤病":[0,99],"车祸意外":[16,80],"出行迁居":[0,99]};
+  const ageOK = {"婚喜":[20,60],"怀孕生子":[22,50],"当兵入伍":[16,24],"转业":[20,45],"二次择业":[25,55],"工作变动":[18,60],"升职加薪":[18,65],"创业契机":[20,65],"置业买房":[20,70],"破财":[18,75],"偏财进账":[18,75],"伤病":[0,99],"车祸意外":[16,80],"出行迁居":[0,99],"岁运并临":[18,99],"伏吟":[18,99]};
   // 用户确认的事件加权，确保出现在列表里
   const boost = {};
   for(const ue of parseUserEvents(userEventsText)) boost[ue.year+"_"+ue.sub] = true;
@@ -2310,6 +2405,13 @@ function preciseSummary(bazi){
     "劫财":["月令劫财，你一生主线在'争'：身边竞争多、花钱快，要学会守财，防朋友分财。","Month-branch Rob Wealth: your theme is 'rivalry' — much competition and fast spending; guard your money against being divided by friends."]
   };
   out.push(mainLine[mzSS]||["",""]);
+  // 4.5 格局点睛（《子平真诠》取格法）
+  const gjInfo = gejuAnalysis(bazi);
+  if(gjInfo){
+    const geLineZh = `格局：你的命格是「${gjInfo.name}」（${gjInfo.viaTou?"月令本气"+gjInfo.geGan+"透干取格":"月令本气"+gjInfo.geGan+"取格（藏干不透，按本气论）"}）。${gjInfo.plain}${gjInfo.cong?"（此命日主极弱无根、满盘异党，为从格：顺势而行反得助力，忌逆势硬扛。）":""}`;
+    const geLineEn = `Pattern: your chart forms the ${gjInfo.en.name} (taken from the Month Branch's primary hidden stem ${gjInfo.geGan}${gjInfo.viaTou?" revealed in the stems":" (no stem reveals it; taken by primary qi)"}). ${gjInfo.en.plain}${gjInfo.cong?" (With the Day Master extremely weak and rootless among all opposing stars, this is a Following pattern: go with the current instead of against it.)":""}`;
+    out.push([geLineZh, geLineEn]);
+  }
   // 5. 五行分布提示
   if(missing.length){
     const missHint = {
@@ -2451,6 +2553,18 @@ function renderReport(bazi, input){
   h.push(`<div><span class="k">${T("五行强弱排序：")}</span><span class="v">${wxSorted.map(([k,v])=>wxNames[k]+" "+v.toFixed(1)).join(" · ")}</span></div>`);
   h.push(`<div><span class="k">${T("五行所缺：")}</span><span class="v">${missing.length?missing.join(zh?"、":", "):T("无明显缺失")}</span></div>`);
   h.push(`</div>`);
+  // 格局详情卡（取格·喜忌·从格）
+  const gj = gejuAnalysis(bazi);
+  if(gj){
+    h.push(`<div class="section-title">${T("⚖️ 命局格局（据《子平真诠》取格法）")}</div>`);
+    h.push(`<div class="gua-box" style="font-size:.9rem">`);
+    h.push(`<div class="gua-name">${zh?gj.name:gj.en.name} <span class="tag">${zh?(gj.viaTou?"月令本气"+gj.geGan+"透干取格":"按本气"+gj.geGan+"取格"):(gj.viaTou?"Month-branch "+gj.geGan+" revealed":"Primary qi "+gj.geGan)}</span>${gj.cong?` <span class="tag" style="color:#b45309">${zh?"从格·顺势而为":"Following pattern"}</span>`:""}</div>`);
+    h.push(`<div style="line-height:1.9;margin-top:6px">✅ ${T("喜：")}${zh?gj.xi:gj.en.xi}<br>❌ ${T("忌：")}${zh?gj.ji:gj.en.ji}</div>`);
+    h.push(`<div style="line-height:1.9;color:#475569;margin-top:6px">🧭 ${zh?gj.plain:gj.en.plain}</div>`);
+    if(gj.cong) h.push(`<div style="line-height:1.9;color:#b45309;margin-top:4px">${zh?`（${gj.cong}：日主极弱无根，满盘异党，顺势而行反得助力，行运喜异党、忌印比帮身。）`:`(${gj.cong}: Day Master extremely weak and rootless among opposing stars — go with the current; favorable cycles are the opposing group, avoid Resource/Peer support.)`}</div>`);
+    h.push(`<div style="color:#94a3b8;font-size:.72rem;margin-top:6px">${T("取格依据：《子平真诠》以月令本气藏干透出天干者为格（本气优先），不透干则按本气取；喜忌按八格总表。")}</div>`);
+    h.push(`</div>`);
+  }
   h.push(`</div>`);
 
   // 大运
