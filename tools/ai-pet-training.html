@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 宠物训练建议 | AgentGongju.com</title>
+<meta name="description" content="根据宠物类型与训练目标，AI生成科学温和的训宠方法与日常练习计划"><meta name="keywords" content="宠物训练,训狗,训猫,狗狗,猫咪,训练建议,行为纠正">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:740px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.sec{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:16px 20px;color:#e2e8f0;line-height:2;font-size:.92rem;margin-bottom:12px}
+.sec h4{color:#a855f7;margin:0 0 6px 0;font-size:1rem}
+.sec div{padding:3px 0}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{background:rgba(168,85,247,0.08);border:1px solid rgba(168,85,247,0.3);border-radius:12px;padding:16px;color:#cbd5e1;line-height:1.9;font-size:.88rem}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🐾 AI 宠物训练建议</h1><p>科学温和的训宠方法，让毛孩子更听话</p></div>
+<div class="card">
+<div class="param-row">
+<div><label>🐶 宠物类型</label>
+<select id="pet"><option value="狗" selected>🐕 狗狗</option><option value="猫">🐈 猫咪</option></select></div>
+<div><label>🎯 训练目标</label>
+<select id="goal"><option value="定点大小便" selected>🚽 定点大小便</option><option value="坐下指令">🐕‍🦺 坐下/基本指令</option><option value="不咬人">🦷 不乱咬/磨牙</option><option value="牵引随行">🦮 牵引绳随行</option><option value="分离焦虑">💔 缓解分离焦虑</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">✨ 生成训练方案</button>
+</div>
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:16px">🐾 训练方案</div>
+<div class="sec"><h4>📋 分步训练法</h4><div id="stepsBox"></div></div>
+<div class="sec"><h4>✨ 关键技巧</h4><div id="tipsBox"></div></div>
+<div class="sec"><h4>⚠️ 常见误区</h4><div id="mistakeBox"></div></div>
+<div style="text-align:right"><button class="copy-btn" onclick="copyAll()">📋 复制全部</button></div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const plans={
+'定点大小便':{step:['选择固定位置，铺好尿垫/引导到指定区域；','留意进食后、睡醒、玩耍后的「黄金排便期」，及时带去定点；','每次做对立刻奖励零食+表扬，让它明白「在这里=有奖励」；','若在别处解决，不惩罚，默默清理（用酶清洁剂去味）；','坚持2周左右，逐渐形成习惯。'],tip:'正向奖励远比惩罚有效，狗狗犯错后片刻的训斥基本没用，重点是「做对立刻奖励」。',mis:'不要在它已经排完才去责骂，它无法把「责骂」和「排便」联系起来，会加重焦虑。'},
+'坐下指令':{step:['手握零食放在狗狗鼻前，慢慢上抬，它会自然坐下；','它坐下瞬间，说「坐！」并立刻给零食奖励；','逐步减少零食诱导，改为手势+口令；','在不同的地点、不同人面前反复练习，巩固指令；','每次3-5分钟，一天2-3次，避免过久失去耐心。'],tip:'训练要「短、频、快」，口令干脆一致，奖励及时，效果最好。',mis:'不要用「坐下坐坐坐」反复喊，口令要统一简单，否则它会困惑。'},
+'不乱咬':{step:['提供充足合适的磨牙玩具、啃咬物；','当它咬不该咬的东西，立即打断并递上合规玩具；','咬对玩具时大力表扬奖励，强化正确行为；','增加运动量，消耗多余精力；','收好易咬的拖鞋、电线等安全隐患。'],tip:'乱咬多是换牙期或精力旺盛，给对出口比单纯制止更有效。',mis:'不要用手或身体跟它「玩耍式」拉扯，容易让它理解为可以咬人。'},
+'牵引随行':{step:['短绳+胸背带，从室内安静环境开始练习；','零食引导它走在你脚边，保持绳子放松；','它走好了立刻奖励，靠拢→奖励，反复强化；','循序渐进到室外，用口令「靠」「走」引导；','保持耐心，一次训练10-15分钟足够了。'],tip:'绳子的状态是信号：放松=做对了，拉紧=要调整，让它「跟着你」而不是「被你拖着」。',mis:'不要靠拉拽绳子惩罚，会让狗狗抗拒戴牵引甚至出现反攻性。'},
+'分离焦虑':{step:['先做「短暂离开」脱敏，从出门几秒到几分钟逐渐延长；','出门前不做夸张的道别仪式，平静自然；','在家放白噪音、玩具或藏食球分散注意力；','回家后等它平静再互动，别一进门就热情拥抱；','循序渐进，让独处时间慢慢变长。'],tip:'让「离开」变得平平无奇、让「回来」变得不值得兴奋，反而最能安抚焦虑。',mis:'长时间离开前千万不要用「抱抱说再见」的亲密动作，会放大分离恐惧。'}};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 宠物训练建议 | AgentGongju.com'))return;
+const pet=document.getElementById('pet').value;
+const goal=document.getElementById('goal').value;
+const p=plans[goal];
+const stepsBox=document.getElementById('stepsBox');stepsBox.innerHTML='';
+p.step.forEach((s,i)=>{stepsBox.innerHTML+='<div>'+(i+1)+'. '+s+'</div>';});
+document.getElementById('tipsBox').innerHTML='<div>💡 '+p.tip+'</div>';
+document.getElementById('mistakeBox').innerHTML='<div>❌ '+p.mis+'</div>';
+window._copyText='【'+pet+'｜'+goal+'】训练方案\n'+stepsBox.innerText;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyAll(){navigator.clipboard.writeText(window._copyText||document.body.innerText).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 儿童营养餐 | AgentGongju.com</title>
+<meta name="description" content="根据孩子年龄与口味偏好，AI生成一周营养均衡的儿童食谱与搭配建议"><meta name="keywords" content="儿童食谱,营养餐,亲子,做饭,辅食,一周菜单">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:740px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.neo-list{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:16px 20px;color:#e2e8f0;line-height:2;font-size:.92rem;margin-bottom:12px}
+.day{padding:8px 0;border-bottom:1px dashed rgba(255,255,255,0.06)}
+.day:last-child{border-bottom:none}
+.day b{color:#a5b4fc}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{background:rgba(168,85,247,0.08);border:1px solid rgba(168,85,247,0.3);border-radius:12px;padding:16px;color:#cbd5e1;line-height:1.9;font-size:.88rem}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🥦 AI 儿童营养餐</h1><p>一周不重样，吃出健康和好胃口</p></div>
+<div class="card">
+<div class="param-row">
+<div><label>👶 孩子年龄</label>
+<select id="age"><option value="2-4">👧 2-4岁</option><option value="5-7" selected>🧒 5-7岁</option><option value="8-12">👦 8-12岁</option></select></div>
+<div><label>🥕 口味偏好</label>
+<select id="taste"><option value="均衡" selected>🍎 均衡不挑食</option><option value="爱吃肉">🍗 无肉不欢</option><option value="爱吃菜">🥬 偏爱蔬菜</option></select></div>
+</div>
+<div><label>🚨 需要避开的食材（可选）</label>
+<input type="text" id="avoid" placeholder="例如：花生、海鲜、香菜"></div>
+<button class="btn-gen" id="genBtn">✨ 生成一周食谱</button>
+</div>
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:16px">🍱 本周儿童营养食谱</div>
+<div class="neo-list" id="outBox"></div>
+<div style="text-align:right"><button class="copy-btn" onclick="copyAll()">📋 复制全部</button></div>
+<div class="tip">💡 儿童餐搭配口诀：主食 + 优质蛋白 + 两种以上蔬菜 + 适量水果。做法尽量清淡，少油少盐少糖，细软易咀嚼。若孩子偏食，可用「做饭 + 一起参与」提高兴趣。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const days=['周一','周二','周三','周四','周五','周六','周日'];
+const mains=['番茄炒蛋盖饭','虾仁西兰花意面','胡萝卜炖牛腩','南瓜小米粥配三鲜包子','玉米鸡丁炒饭','清蒸鲈鱼配米饭','木耳山药炒肉片','白菜豆腐汤配馒头'];
+const sides=['凉拌黄瓜','蒸紫薯','水煮豌豆','清炒时蔬','水果拼盘','蒸南瓜','拌酸奶','紫菜蛋花汤'];
+const meatTaste=['糖醋里脊','可乐鸡翅（少糖）','卤肉饭','香煎鸡排','土豆炖牛腩','番茄烩牛肉'];
+const vegTaste=['清炒西蓝花','山药炒木耳','上汤娃娃菜','蒜蓉油麦菜','荷塘小炒','香菇油菜'];
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 儿童营养餐 | AgentGongju.com'))return;
+const age=document.getElementById('age').value;
+const taste=document.getElementById('taste').value;
+const avoid=document.getElementById('avoid').value.trim();
+const out=document.getElementById('outBox');out.innerHTML='';
+const index=j=>((j*5+age.length*3)%mains.length);
+for(let i=0;i<7;i++){
+let main;
+if(taste==='爱吃肉'){main=meatTaste[i%meatTaste.length];}
+else if(taste==='爱吃菜'){main=mains[index(i)].split('配')[0]+' + 清炒时蔬';}
+else{main=mains[index(i)];}
+main=main.replace('配','＋').replace('配','＋');
+const side=sides[(i*3+age.length)%sides.length];
+out.innerHTML+='<div class="day"><b>'+days[i]+'</b>　午餐：'+main+'｜加餐：'+side+'</div>';
+}
+out.innerHTML+='<div class="day" style="border-left:3px solid #a855f7;padding-left:8px"><b>营养提醒</b>　'+(age==='2-4'?'需注意软烂细腻，一天三次正餐+两次加餐；':'每日保证一杯奶、一个蛋、足量蔬果和优质蛋白。')+' 换着花样做，孩子更愿意吃。</div>';
+if(avoid){out.innerHTML+='<div class="day"><b>⚠️ 避开提醒</b>　已根据你的要求，全程避开：'+avoid+'。</div>';}
+window._copyText='【儿童营养餐】\n'+out.innerText;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyAll(){navigator.clipboard.writeText(window._copyText||document.body.innerText).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

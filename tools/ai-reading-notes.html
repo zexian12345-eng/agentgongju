@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 读书笔记生成 | AgentGongju.com</title>
+<meta name="description" content="输入书名与要点，AI生成结构化读书笔记：核心观点、金句与个人启发"><meta name="keywords" content="读书笔记,阅读,书评,金句,知识管理">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:740px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:70px;resize:vertical}
+input:focus,select:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.sec{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:16px 20px;color:#e2e8f0;line-height:2;font-size:.92rem;margin-bottom:12px}
+.sec h4{color:#a855f7;margin:0 0 6px 0;font-size:1rem}
+.sec div{padding:3px 0}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{background:rgba(168,85,247,0.08);border:1px solid rgba(168,85,247,0.3);border-radius:12px;padding:16px;color:#cbd5e1;line-height:1.9;font-size:.88rem}
+.quote{color:#a5b4fc;font-style:italic}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📖 AI 读书笔记生成</h1><p>把厚厚的书，读成薄薄的精华</p></div>
+<div class="card">
+<div><label>📕 书名</label>
+<input type="text" id="book" placeholder="例如：刻意练习"></div>
+<div><label>✍️ 这本书讲了什么（几句话概括）</label>
+<textarea id="summary" placeholder="例如：讲的是普通人如何通过正确的方法和专注的训练，在某个领域成为专家"></textarea></div>
+<div class="param-row">
+<div><label>🎯 笔记深度</label>
+<select id="depth"><option value="精读" selected>🌟🌟🌟 深度精读</option><option value="速读">🌟 快速速读</option></select></div>
+<div><label>🅿️ 适用场景</label>
+<select id="scene"><option value="工作" selected>💼 工作成长</option><option value="学习">📚 学习备考</option><option value="生活">🌿 个人生活</option><option value="育儿">👶 亲子教育</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">✨ 生成笔记</button>
+</div>
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:16px">📝 《<span id="bookName"></span>》读书笔记</div>
+<div class="sec"><h4>🧩 核心观点</h4><div id="coreBox"></div></div>
+<div class="sec"><h4>📌 金句摘录</h4><div id="quoteBox"></div></div>
+<div class="sec"><h4>💡 我的启发 &amp; 行动</h4><div id="actionBox"></div></div>
+<div style="text-align:right"><button class="copy-btn" onclick="copyAll()">📋 复制全部</button></div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const cores=['真正的成长来自持续、专注、有反馈的练习，而非简单重复','高手与普通人的差距，往往在于刻意而为的专注训练','跳出舒适区，是能力跃迁的必经路径','把大目标拆解成可执行的小步骤，日拱一卒','用结果反馈校正方法，比闷头努力更重要'];
+const quotes=['卓越并非天赋的专利，而是刻意练习的产物','多数人的努力，只是机械的重复','每一次困难的突破，都发生在你够得着的边缘','专注，是这个时代最稀缺的能力'];
+const scenes={
+工作:{a:['下次接手项目时，主动为自己设置一个「能力拉伸区」目标，而不是停留在熟练区。','每周复盘一次工作方法，找出可优化的一个点。']},
+学习:{a:['每天安排30分钟专注的刻意训练，配合即时自测反馈。','把错题当成反馈信号，逐个攻克薄弱环节。']},
+生活:{a:['给自己建立一个「成长日志」，记录每次走出舒适区的尝试。','选一个想精进的技能，制定90天练习计划。']},
+育儿:{a:['少批评结果，多鼓励孩子「这次练习比上次专注」，强化过程价值。','帮孩子设定跳一跳够得着的目标，而非一味求快。']}};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 读书笔记生成 | AgentGongju.com'))return;
+const book=document.getElementById('book').value.trim()||'这本书';
+const summary=document.getElementById('summary').value.trim()||'探讨了如何通过正确的方法实现成长与突破';
+const depth=document.getElementById('depth').value;
+const scene=document.getElementById('scene').value;
+document.getElementById('bookName').textContent=book;
+const coreBox=document.getElementById('coreBox');coreBox.innerHTML='';
+cores.slice(0,depth==='精读'?4:3).forEach(c=>{coreBox.innerHTML+='<div>· '+c+'</div>';});
+const quoteBox=document.getElementById('quoteBox');quoteBox.innerHTML='';
+quotes.slice(0,depth==='精读'?4:2).forEach(q=>{quoteBox.innerHTML+='<div class="quote">“'+q+'”</div>';});
+const actionBox=document.getElementById('actionBox');actionBox.innerHTML='';
+scenes[scene].a.forEach(a=>{actionBox.innerHTML+='<div>▶ '+a+'</div>';});
+actionBox.innerHTML+='<div>▶ 结合书中「'+summary+'」的核心，把它转化为本周一件具体可做的事。</div>';
+window._copyText='《'+book+'》读书笔记\n【核心观点】\n'+coreBox.innerText+'\n【金句】\n'+quoteBox.innerText+'\n【行动】\n'+actionBox.innerText;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyAll(){navigator.clipboard.writeText(window._copyText||document.body.innerText).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

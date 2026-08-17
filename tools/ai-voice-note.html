@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 语音稿转文字 | AgentGongju.com</title>
+<meta name="description" content="把口语化的转写/口述梳理成书面、得体、结构清晰的正式文字，适配邮件、周报、方案"><meta name="keywords" content="语音转文字,口语整理,文字润色,会议纪要,书面化,口述整理">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:740px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:120px;resize:vertical}
+input:focus,select:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.out{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px 22px;color:#e2e8f0;line-height:2;font-size:.95rem;margin-bottom:12px;white-space:pre-wrap}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{background:rgba(168,85,247,0.08);border:1px solid rgba(168,85,247,0.3);border-radius:12px;padding:16px;color:#cbd5e1;line-height:1.9;font-size:.88rem}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🎙️ AI 语音稿转文字</h1><p>把口述梳理成得体有条理的书面文字</p></div>
+<div class="card">
+<div><label>📝 粘贴口语转写内容</label>
+<textarea id="raw" placeholder="例如：呃，那个，我想说一下，咱们下季度，嗯，市场部这边主要就是推新品嘛，然后呢预算可能比较紧张……"></textarea></div>
+<div class="param-row">
+<div><label>🎯 用途</label>
+<select id="use"><option value="通用" selected>📄 通用书面化</option><option value="邮件">✉️ 工作邮件</option><option value="周报">📋 周报总结</option><option value="方案">📑 方案要点</option></select></div>
+<div><label>📏 输出长度</label>
+<select id="len"><option value="精简" selected>⚡ 精简</option><option value="适中">📖 适中</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">✨ 整理成文</button>
+</div>
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:16px">📝 整理结果</div>
+<div class="out" id="outBox"></div>
+<div style="text-align:right"><button class="copy-btn" onclick="copyAll()">📋 复制</button></div>
+<div class="tip">💡 梳理原则：<b style="color:#a5b4fc">去口语词</b>（嗯、那个、然后）、<b style="color:#a5b4fc">理逻辑</b>（先结论后展开）、<b style="color:#a5b4fc">分条列点</b>（让重点分明）。本文案由规则自动整理，正式重要文稿建议再人工校对一遍。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 语音稿转文字 | AgentGongju.com'))return;
+const raw=document.getElementById('raw').value.trim();
+if(!raw){alert('请先粘贴需要整理的内容哦～');return;}
+const use=document.getElementById('use').value;
+const len=document.getElementById('len').value;
+let text=raw;
+text=text.replace(/，(就是|然后)(?=[^，。]{2,20}[，。])/g,'，').replace(/然后呢/g,'，').replace(/那个/g,'').replace(/就是说/g,'即').replace(/呃+|嗯+|啊+/g,'，').replace(/就是说|咱说/g,'').replace(/基本上？/g,'基本').replace(/\s+/g,' ');
+// split into points
+const sentences=text.split(/[。!！?？;；]/).map(s=>s.trim()).filter(s=>s.length>3).slice(0,6);
+let outStr;
+if(use==='邮件'){
+outStr='您好：\n\n'+'关于本次沟通事项，整理如下：\n'+sentences.map((s,i)=>(i+1)+'. '+s+'。').join('\n')+'\n\n以上请知悉，如有问题随时沟通，谢谢！';
+}else if(use==='周报'){
+outStr='本周工作进展：\n'+sentences.map((s,i)=>(i+1)+'. '+s+'。').join('\n')+(len==='适中'?'\n\n下周计划：结合以上情况继续推进，并做好跟进复盘。':'');
+}else if(use==='方案'){
+outStr='方案要点：\n'+sentences.slice(0,4).map((s,i)=>(['背景','目标','做法','预期'][i]||'补充')+'：'+s+'。').join('\n');
+}else{
+outStr=sentences.map((s,i)=>(i+1)+'. '+s+'。').join('\n');
+}
+document.getElementById('outBox').textContent=outStr;
+window._copyText=outStr;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyAll(){navigator.clipboard.writeText(window._copyText||document.body.innerText).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

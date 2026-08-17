@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 绿植养护 | AgentGongju.com</title>
+<meta name="description" content="根据绿植种类与养护条件，AI生成浇水、光照、施肥等养护建议，让绿植越养越精神"><meta name="keywords" content="绿植养护,养花,浇水,多肉,绿萝,盆栽,植物护理">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:740px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.sec{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:16px 20px;color:#e2e8f0;line-height:2;font-size:.92rem;margin-bottom:12px}
+.sec h4{color:#a855f7;margin:0 0 6px 0;font-size:1rem}
+.sec div{padding:3px 0}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{background:rgba(168,85,247,0.08);border:1px solid rgba(168,85,247,0.3);border-radius:12px;padding:16px;color:#cbd5e1;line-height:1.9;font-size:.88rem}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🌿 AI 绿植养护</h1><p>懂它所需，让每一盆绿植都活得神采奕奕</p></div>
+<div class="card">
+<div class="param-row">
+<div><label>🪴 绿植种类</label>
+<select id="plant"><option value="绿萝" selected>🍃 绿萝</option><option value="多肉">🌵 多肉</option><option value="发财树">🌳 发财树</option><option value="吊兰">🌿 吊兰</option><option value="君子兰">🌸 君子兰</option><option value="龟背竹">🍂 龟背竹</option></select></div>
+<div><label>☀️ 摆放环境</label>
+<select id="light"><option value="散射光" selected>🌤️ 室内散射光</option><option value="明亮">☀️ 明亮直射</option><option value="阴暗">🌑 光线较弱</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">✨ 生成养护建议</button>
+</div>
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:16px">🌱 <span id="plantName"></span>养护指南</div>
+<div class="sec"><h4>💧 浇水</h4><div id="waterBox"></div></div>
+<div class="sec"><h4>☀️ 光照</h4><div id="lightBox"></div></div>
+<div class="sec"><h4>🧪 土壤与施肥</h4><div id="soilBox"></div></div>
+<div class="sec"><h4>🆘 常见问题</h4><div id="issueBox"></div></div>
+<div style="text-align:right"><button class="copy-btn" onclick="copyAll()">📋 复制全部</button></div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const data={
+绿萝:{water:'土表略干再浇水，宁干勿涝，冬季少浇；',light:'耐阴，散射光最好，忌暴晒；',soil:'疏松透气腐殖土，春夏每月施一次稀薄液肥；',issue:'叶片发黄多为浇水过多，应及时控水通风；' },
+多肉:{water:'见干见湿，土干透了再浇透，夏季休眠少浇；',light:'喜欢充足光照，光照足才容易出状态、上色；',soil:'用排水好的多肉专用颗粒土，忌积水；',issue:'徒长多是光照不足，需逐步增加光照；'},
+发财树:{water:'盆土偏干再浇，切忌积水烂根；',light:'喜明亮散射光，避免强光直射；',soil:'排水良好的沙壤土，生长季每月追肥一次；',issue:'掉叶可能与浇水过多或温度过低有关，注意保暖控水；'},
+吊兰:{water:'盆土微润，见干见湿，空气干燥可喷水；',light:'耐半阴，忌阳光暴晒，散射光最适宜；',soil:'普通园土加腐叶土即可，生长期每月施肥；',issue:'叶尖干枯多为空气干燥，适当喷雾增湿；'},
+君子兰:{water:'浇水见干见湿，避免水淋进叶心；',light:'喜半阴，春秋可晒柔和日光，夏季遮阴；',soil:'疏松肥沃微酸性土，花期前施磷钾肥；',issue:'夹箭多为温差或营养不足，注意昼夜温差与施肥；'},
+龟背竹:{water:'见干见湿，保持盆土微润，冬季控水；',light:'喜散射光，避免直晒，光照过强易焦叶；',soil:'肥沃疏松营养土，夏季多浇水多喷叶；',issue:'叶片黄斑多为晒伤，移至散射光处并修剪；'}};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 绿植养护 | AgentGongju.com'))return;
+const plant=document.getElementById('plant').value;
+const d=data[plant];
+document.getElementById('plantName').textContent=plant;
+document.getElementById('waterBox').innerHTML='<div>'+d.water+'</div>';
+document.getElementById('lightBox').innerHTML='<div>'+d.light+'</div><div style="color:#94a3b8">你的环境：'+document.getElementById('light').value+'</div>';
+document.getElementById('soilBox').innerHTML='<div>'+d.soil+'</div>';
+document.getElementById('issueBox').innerHTML='<div>⚠️ '+d.issue+'</div>';
+window._copyText='【'+plant+'养护】\n浇水：'+d.water+'\n光照：'+d.light+'\n土壤施肥：'+d.soil+'\n常见问题：'+d.issue;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyAll(){navigator.clipboard.writeText(window._copyText||document.body.innerText).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

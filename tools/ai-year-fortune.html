@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 全年运势 | AgentGongju.com</title>
+<meta name="description" content="输入星座与生肖，AI生成全年十二个月的运势走势与关键节点提醒"><meta name="keywords" content="运势,全年运势,星座,生肖,黄历">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:740px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.neo-list{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:16px 20px;color:#e2e8f0;line-height:2;font-size:.92rem;margin-bottom:12px}
+.neo-list div{padding:8px 0;border-bottom:1px dashed rgba(255,255,255,0.06)}
+.neo-list div:last-child{border-bottom:none}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{background:rgba(168,85,247,0.08);border:1px solid rgba(168,85,247,0.3);border-radius:12px;padding:16px;color:#cbd5e1;line-height:1.9;font-size:.88rem}
+.month{border-left:3px solid #6366f1;padding-left:12px;margin-bottom:8px}
+.month b{color:#a5b4fc}
+.good{color:#34d399}.mid{color:#fbbf24}.avoid{color:#f87171}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🔮 AI 全年运势</h1><p>十二个月的运势走势，提前看清这一年</p></div>
+<div class="card">
+<div class="param-row">
+<div><label>♈ 星座</label>
+<select id="sign"><option>白羊座</option><option>金牛座</option><option>双子座</option><option>巨蟹座</option><option>狮子座</option><option selected>处女座</option><option>天秤座</option><option>天蝎座</option><option>射手座</option><option>摩羯座</option><option>水瓶座</option><option>双鱼座</option></select></div>
+<div><label>🐾 生肖</label>
+<select id="animal"><option>鼠</option><option>牛</option><option>虎</option><option selected>兔</option><option>龙</option><option>蛇</option><option>马</option><option>羊</option><option>猴</option><option>鸡</option><option>狗</option><option>猪</option></select></div>
+</div>
+<div><label>🗓️ 关注重点（可选）</label>
+<input type="text" id="focus" placeholder="例如：事业、财运、感情、考试"></div>
+<button class="btn-gen" id="genBtn">✨ 生成全年运势</button>
+</div>
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:16px">📅 <span id="signName"></span>十二个月运势</div>
+<div class="neo-list" id="outBox"></div>
+<div style="text-align:right"><button class="copy-btn" onclick="copyAll()">📋 复制全部</button></div>
+<div class="tip">💡 运势仅供参考，帮你提前规划、把握节奏就好。真正的运气，永远藏在每一天的行动里。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const months=['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'];
+const good=['事业迎来小高峰，机会主动找上门','财运稳步回升，适合做储蓄和长期布局','人际关系融洽，贵人运明显','学习运在线，适合啃硬骨头','家庭和睦，心情格外顺畅'];
+const mid=['平稳过渡期，重要决策建议三思','宜稳中求进，不急不躁','有波动但整体可控，注意把控节奏','适合复盘总结、为下阶段蓄力','按部就班推进，不建议冒进'];
+const avoid=['注意小人档运，关键文件留痕','开销略有增加，谨慎冲动消费','工作节奏被打乱，谨防忙中出错','感情上需要多点耐心沟通'];
+function charScore(m){ return {总体:m*0.85+2, 事业:m%5===0?4:3, 财运:(m*7)%4+2, 感情:(m%3===0)?4:3, 学业:(m%4===0)?4:3 }; }
+function genMonth(sign,animal,i){
+const seed=(sign.length+animal.charCodeAt(0)+i*13)%100;
+let line;
+if(seed<45){const g=good[(seed+animal.length)%good.length];line='<span class="good">▲ '+g+'</span>';}
+else if(seed<80){const m=mid[(seed*3)%mid.length];line='<span class="mid">◆ '+m+'</span>';}
+else{const a=avoid[(seed)%avoid.length];line='<span class="avoid">▼ '+a+'</span>';}
+return '<div class="month"><b>'+months[i]+'</b>　'+line+'</div>';
+}
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 全年运势 | AgentGongju.com'))return;
+const sign=document.getElementById('sign').value;
+const animal=document.getElementById('animal').value;
+const focus=document.getElementById('focus').value.trim();
+document.getElementById('signName').textContent=sign;
+const out=document.getElementById('outBox');out.innerHTML='';
+for(let i=0;i<12;i++){out.innerHTML+=genMonth(sign,animal,i);}
+if(focus){out.innerHTML+='<div class="month" style="border-left-color:#a855f7"><b>特别提示</b>　今年在<b style="color:#a855f7">'+focus+'</b>上建议：把握春夏季的加速期，秋冬更宜稳扎稳打、沉淀积累。</div>';}
+window._copyText='【'+sign+' '+animal+'】全年运势\n'+out.innerText;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyAll(){navigator.clipboard.writeText(window._copyText||document.body.innerText).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

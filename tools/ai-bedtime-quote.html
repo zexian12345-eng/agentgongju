@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 晚安文案 | AgentGongju.com</title>
+<meta name="description" content="根据对象与语气，AI生成温暖的晚安文案，适合朋友圈、睡前发给自己或心爱的人"><meta name="keywords" content="晚安,晚安文案,睡前,朋友圈语录,温暖句子">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:740px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.neo-list{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:16px 20px;color:#e2e8f0;line-height:2;font-size:.95rem;margin-bottom:12px}
+.neo-list div{padding:10px 0;border-bottom:1px dashed rgba(255,255,255,0.06)}
+.neo-list div:last-child{border-bottom:none}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{background:rgba(168,85,247,0.08);border:1px solid rgba(168,85,247,0.3);border-radius:12px;padding:16px;color:#cbd5e1;line-height:1.9;font-size:.88rem}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🌙 AI 晚安文案</h1><p>一句温柔的晚安，治愈一整天</p></div>
+<div class="card">
+<div class="param-row">
+<div><label>👤 对象</label>
+<select id="who"><option value="自己" selected>🌙 发给自己</option><option value="伴侣">💞 伴侣</option><option value="朋友">👫 朋友</option><option value="家人">🏠 家人</option></select></div>
+<div><label>🎨 语气风格</label>
+<select id="tone"><option value="温柔" selected>🌷 温柔治愈</option><option value="元气">☀️ 元气满满</option><option value="文艺">🌸 文艺清新</option><option value="可爱">🐻 俏皮可爱</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">✨ 生成晚安文案</button>
+</div>
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:16px">🌙 为你准备的 6 句晚安</div>
+<div class="neo-list" id="outBox"></div>
+<div style="text-align:right"><button class="copy-btn" onclick="copyAll()">📋 复制全部</button></div>
+<div class="tip">💡 一句走心的晚安，是对一天最好的告别。睡前少刷手机，早点休息，把好梦留给明天。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const pools={
+自己:{温柔:['今天辛苦啦，把烦恼关掉，晚安。','一切都挺好的，睡个好觉，明天继续加油。','愿你被世界温柔以待，也要好好照顾自己。'],元气:['今天过完啦，明天又是元气满满的一天，晚安！','收工！狠狠睡一觉，明天继续发光！','睡前清零，明早满电，晚安！'],文艺:['且将新火试新茶，诗酒趁年华，晚安。','夜色温柔，愿你枕着月光入睡。','晚安，是今天所有的温柔在收尾。'],可爱:['今天的你也很棒棒哦，钻进被窝睡觉觉啦～','晚安啦，梦里见！做个甜甜的梦！','本宝要充电啦，明天再满血复活！']},
+伴侣:{温柔:['有你的一天，再多疲惫也被治愈了，晚安，爱你。','梦里也要记得想我哦，晚安宝贝。','有你，连夜色都很温柔，晚安。'],元气:['今天也要和你一起加油呀，明天见，晚安！','和你在一起，每天都元气满满，晚安亲爱的！','超爱你的，睡个好觉，明天继续黏你！'],文艺:['山河远阔，人间烟火，无一是你，无一不是你。晚安。','夜色凉如水，你的名字是暖的。晚安。','你是藏在漫天星光里的温柔。晚安。'],可爱:['抱住我的小可爱，晚安啦mua～','今天也超喜欢你！明天更更更喜欢你！','把你写进今天的梦里，晚安～']},
+朋友:{温柔:['朋友晚安，愿你今晚好梦，明天顺遂。','忙了一天，好好休息，晚安朋友。','慢慢来，日子会越来越好的，晚安。'],元气:['兄弟/姐妹，今天又是充实的一天，晚安！','明天一起冲鸭！晚安！','保持热爱，晚安，明天见！'],文艺:['海内存知己，天涯若比邻。晚安朋友。','愿你我各自发光，顶峰相见。晚安。','人海茫茫，相遇不易，晚安。'],可爱:['晚安啦我的损友，梦里不许diss我！','今天也谢谢你陪我玩，安啦！','下线睡觉！明天继续带我飞！']},
+家人:{温柔:['爸/妈，今天辛苦了，早点休息，晚安。','在外面要照顾好自己，家里永远是你靠山，晚安。','平安健康就是最大的福气，晚安。'],元气:['家人就是我的充电站，晚安！','今天也要为明天的幸福努力呀，晚安！','健康快乐每一天，晚安！'],文艺:['家是温暖的港湾，夜深了，早点靠岸歇息。晚安。','愿家里人丁安康，岁岁无忧。晚安。','灯火可亲，家人团圆，晚安。'],可爱:['家宝子们晚安啦，梦里继续当团宠～','今晚也要梦到家里香喷喷的饭菜哦，晚安！','晚安，明天继续被家人宠坏！']}};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 晚安文案 | AgentGongju.com'))return;
+const who=document.getElementById('who').value;
+const tone=document.getElementById('tone').value;
+const list=pools[who][tone];
+const out=document.getElementById('outBox');out.innerHTML='';
+list.forEach((s,i)=>{out.innerHTML+='<div>「'+s+'」</div>';});
+window._copyText='【晚安文案】\n'+out.innerText;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyAll(){navigator.clipboard.writeText(window._copyText||document.body.innerText).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

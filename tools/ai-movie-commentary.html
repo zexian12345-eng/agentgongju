@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 电影解说文案 | AgentGongju.com</title>
+<meta name="description" content="根据电影类型与主题，AI生成带钩子、有节奏的短视频解说文案"><meta name="keywords" content="电影解说,影视解说,短视频文案,解说稿">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:740px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:70px;resize:vertical}
+input:focus,select:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.neo-list{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:16px 20px;color:#e2e8f0;line-height:2;font-size:.92rem;margin-bottom:12px}
+.neo-list div{padding:8px 0;border-bottom:1px dashed rgba(255,255,255,0.06)}
+.neo-list div:last-child{border-bottom:none}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{background:rgba(168,85,247,0.08);border:1px solid rgba(168,85,247,0.3);border-radius:12px;padding:16px;color:#cbd5e1;line-height:1.9;font-size:.88rem}
+.hook{color:#a855f7;font-weight:600}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🎬 AI 电影解说文案</h1><p>钩子开场 + 悬念铺垫，三分钟讲活一部电影</p></div>
+<div class="card">
+<div><label>🎞️ 一句话介绍电影</label>
+<textarea id="plot" placeholder="例如：一个外卖小哥无意中继承了一座神秘庄园，却发现庄园里的时间会倒流…"></textarea></div>
+<div class="param-row">
+<div><label>🎭 电影类型</label>
+<select id="genre"><option value="悬疑" selected>🕵️ 悬疑</option><option value="爱情">💕 爱情</option><option value="动作">💥 动作</option><option value="科幻">🚀 科幻</option><option value="喜剧">😂 喜剧</option><option value="恐怖">👻 恐怖</option></select></div>
+<div><label>⏱️ 文案长度</label>
+<select id="len"><option value="短" selected>短（60秒）</option><option value="中">中（3分钟）</option><option value="长">长（5分钟）</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">✨ 生成解说文案</button>
+</div>
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:16px">📝 解说文案</div>
+<div class="neo-list" id="outBox"></div>
+<div style="text-align:right"><button class="copy-btn" onclick="copyAll()">📋 复制全部</button></div>
+<div class="tip">💡 好解说的节奏：<b style="color:#a5b4fc">3秒钩子</b>抛出悬念 → <b style="color:#a5b4fc">中段</b>层层反转 → <b style="color:#a5b4fc">结尾</b>留一个彩蛋勾人关注。避免全程剧透，保留30%的神秘感。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const hooks={
+悬疑:['别眨眼！这部电影的第一个秘密，藏在你以为的画面里','如果你猜得到结局，我跟你姓','开局的五分钟，已经悄悄埋下了全片的炸弹'],
+爱情:['有没有这样一个人，让你愿意用一生去等','这大概是今年最虐心的一场双向奔赴','看之前觉得狗血，看之后哭成狗'],
+动作:['这一拳下去，差点把电影院天花板打穿','开场三分钟，干到连片名都没来得及出','这动作戏，每一帧都在烧钱'],
+科幻:['如果时间可以重置，你会改变哪一天？','这是今年脑洞最大的设定，没有之一','人类离神，只差这一层窗户纸'],
+喜剧:['全程憋笑失败，戴好防笑掉下巴装置','这片子让我们明白了：没有一顿饭解决不了的尴尬','笑点密度高到评论区都刷不过来'],
+恐怖:['建议开灯观看，接下来这幕我至今有阴影','这个声音一响，我整个人就麻了','别看！真睡不着。但真的好看']};
+const mids=['然后，主角无意间发现事情远没有表面那么简单…','就在所有人都以为要结束的时候，真正的反转出现了…','可真相，往往比想象中更让人意外…','直到那个人出现，一切才开始失控…'];
+const ends=['至于结局，我只能说——别走，最后的彩蛋能让你重新看一遍开头。','最后的那个眼神，值得你二刷三刷。','故事的答案，评论区里我们慢慢聊。'];
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 电影解说文案 | AgentGongju.com'))return;
+const plot=document.getElementById('plot').value.trim()||'一个平凡人卷入了一场意想不到的冒险';
+const genre=document.getElementById('genre').value;
+const len=document.getElementById('len').value;
+const h=hooks[genre][Math.floor(Math.random()*hooks[genre].length)];
+const out=document.getElementById('outBox');out.innerHTML='';
+out.innerHTML+='<div><span class="hook">【开场钩子】</span>'+h+'</div>';
+out.innerHTML+='<div><span class="hook">【故事梗概】</span>'+plot+'。'+(len!=='短'?'而这个故事，远没有开头看上去那么简单。':'')+'</div>';
+out.innerHTML+='<div><span class="hook">【剧情推进】</span>'+mids[Math.floor(Math.random()*mids.length)]+'</div>';
+if(len!=='短'){out.innerHTML+='<div><span class="hook">【冲突升级】</span>'+mids[(Math.floor(Math.random()*mids.length)+2)%mids.length]+'</div>';}
+out.innerHTML+='<div><span class="hook">【结尾留白】</span>'+ends[Math.floor(Math.random()*ends.length)]+'</div>';
+window._copyText='【电影解说】'+h+'\n'+plot+'。\n'+out.innerText.split('】')[1];
+document.getElementById('resultArea').classList.add('active');
+});
+function copyAll(){navigator.clipboard.writeText(window._copyText||document.body.innerText).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

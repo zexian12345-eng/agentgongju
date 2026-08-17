@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 活动邀请函 | AgentGongju.com</title>
+<meta name="description" content="输入活动名称、时间地点，AI一键生成正式得体的邀请函与邀约话术"><meta name="keywords" content="邀请函,活动邀请,商务邀请,邀约话术,会议邀请">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:740px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:60px;resize:vertical}
+input:focus,select:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.letter{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px 22px;color:#e2e8f0;line-height:2;font-size:.95rem;margin-bottom:12px;white-space:pre-line}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{background:rgba(168,85,247,0.08);border:1px solid rgba(168,85,247,0.3);border-radius:12px;padding:16px;color:#cbd5e1;line-height:1.9;font-size:.88rem}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>✉️ AI 活动邀请函</h1><p>正式得体、仪式感拉满的邀约文案</p></div>
+<div class="card">
+<div><label>📅 活动名称</label>
+<input type="text" id="event" placeholder="例如：2026年度合作伙伴答谢晚宴"></div>
+<div class="param-row">
+<div><label>🕐 时间</label><input type="text" id="time" placeholder="例如：2026年9月20日 18:30"></div>
+<div><label>📍 地点</label><input type="text" id="place" placeholder="例如：世博中心宴会厅"></div>
+</div>
+<div><label>👥 邀请对象</label>
+<input type="text" id="guest" placeholder="例如：合作伙伴、行业嘉宾"></div>
+<div><label>🎨 语气风格</label>
+<select id="tone"><option value="正式" selected>📋 正式庄重</option><option value="热忱">💛 热情真诚</option><option value="文艺">🌸 文艺雅致</option></select></div>
+<button class="btn-gen" id="genBtn">✨ 生成邀请函</button>
+</div>
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:16px">💌 邀请函</div>
+<div class="letter" id="letterBox"></div>
+<div class="letter" id="shortBox"></div>
+<div style="text-align:right"><button class="copy-btn" onclick="copyAll()">📋 复制全部</button></div>
+<div class="tip">💡 好的邀请函要给足<b style="color:#a5b4fc">理由</b>（为什么值得来）、<b style="color:#a5b4fc">信息</b>（时间地点清晰）、<b style="color:#a5b4fc">诚意</b>（体现对被邀请者的重视）。文末记得留下确认回复方式。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const opens={
+正式:'尊敬的嘉宾：\n\n　　谨此诚邀您拨冗出席「%e」活动。',
+热忱:'亲爱的朋友：\n\n　　很开心能与您分享一个好消息——「%e」即将拉开帷幕！',
+文艺:'展信佳：\n\n　　春华秋实，时逢佳期。我们诚邀您共赴「%e」之约。'};
+const middles={
+正式:'此次活动旨在共叙情谊、共话未来，我们荣幸地邀请到众多行业同仁齐聚一堂。',
+热忱:'我们准备了许多精彩环节，期待与您面对面交流、真诚分享、碰撞火花。',
+文艺:'愿借一席清风与美酒，与您聊聊走过的路、也聊聊想去的远方。'};
+const ends={
+正式:'在此，敬候您的莅临！\n\n时间：%t\n地点：%p\n　　敬请回复确认，以便我们妥善安排，谢谢！\n\n顺颂商祺！',
+热忱:'期待您的到来，别让我们等太久哦～\n\n🗓 时间：%t\n📍 地点：%p\n\n记得回复我一声，我们在现场等您！',
+文艺:'愿与您相逢于时光深处。\n\n🗓 %t\n📍 %p\n\n盼覆佳音。'};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 活动邀请函 | AgentGongju.com'))return;
+const ev=document.getElementById('event').value.trim()||'主题活动';
+const time=document.getElementById('time').value.trim()||'届时';
+const place=document.getElementById('place').value.trim()||'活动场地';
+const guest=document.getElementById('guest').value.trim()||'各位嘉宾';
+const tone=document.getElementById('tone').value;
+let full=opens[tone].replace('%e',ev)+'\n\n'+middles[tone]+'\n\n'+ends[tone].replace('%t',time).replace('%p',place);
+const short='【邀约通知】\n「'+ev+'」\n🗓 '+time+'\n📍 '+place+'\n\n诚邀您莅临，期待与您相聚！详询请回复确认。';
+document.getElementById('letterBox').textContent=full;
+document.getElementById('shortBox').textContent=short;
+window._copyText=full+'\n\n====\n'+short;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyAll(){navigator.clipboard.writeText(window._copyText||document.body.innerText).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

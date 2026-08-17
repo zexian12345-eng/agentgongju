@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 送礼灵感 | AgentGongju.com</title>
+<meta name="description" content="根据收礼对象、场合与预算，AI推荐走心又有创意的送礼方案"><meta name="keywords" content="送礼,礼物推荐,生日礼物,节日礼物,送礼攻略">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:740px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.neo-list{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:16px 20px;color:#e2e8f0;line-height:2;font-size:.92rem;margin-bottom:12px}
+.gift{padding:10px 0;border-bottom:1px dashed rgba(255,255,255,0.06)}
+.gift:last-child{border-bottom:none}
+.gift b{color:#a5b4fc}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{background:rgba(168,85,247,0.08);border:1px solid rgba(168,85,247,0.3);border-radius:12px;padding:16px;color:#cbd5e1;line-height:1.9;font-size:.88rem}
+.price{color:#34d399;font-size:.85rem}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🎁 AI 送礼灵感</h1><p>送到心坎里的礼物，不再为「送什么」发愁</p></div>
+<div class="card">
+<div class="param-row">
+<div><label>👤 收礼对象</label>
+<select id="who"><option value="长辈" selected>👴 长辈</option><option value="伴侣">💞 伴侣</option><option value="朋友">👫 朋友</option><option value="领导">📈 领导/客户</option><option value="孩子">🧒 孩子</option></select></div>
+<div><label>💰 预算范围</label>
+<select id="budget"><option value="100-300" selected>💵 100-300元</option><option value="300-800">💵 300-800元</option><option value="800+">💳 800元以上</option></select></div>
+</div>
+<div><label>🎂 场合</label>
+<select id="occasion"><option value="生日" selected>🎂 生日</option><option value="节日">🎉 节日/纪念日</option><option value="感谢">❤️ 致谢</option><option value="探望">🤲 探望/慰问</option></select></div>
+<div><label>💡 对方爱好（可选）</label><input type="text" id="hobby" placeholder="例如：喝茶、健身、看书、养花"></div>
+<button class="btn-gen" id="genBtn">✨ 生成送礼方案</button>
+</div>
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:16px">🎁 为你精选的 5 个送礼方案</div>
+<div class="neo-list" id="outBox"></div>
+<div style="text-align:right"><button class="copy-btn" onclick="copyAll()">📋 复制全部</button></div>
+<div class="tip">💡 送礼的底层逻辑：<b style="color:#a5b4fc">投其所好</b>（结合兴趣）＞<b style="color:#a5b4fc">实用贴心</b>＞<b style="color:#a5b4fc">贵重面子</b>。加上一张手写卡片，诚意直接翻倍。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const pools={
+长辈:{g:['品质茶叶套装+茶具','保暖舒适的真丝围巾/护颈枕','定制相册（家人合影集）','养生礼盒（枸杞/按摩仪）','精美年货点心礼盒'],why:['长辈重实用与健康，礼品应体现关怀','送带「心意」的比送「价签」的更打动人','陪伴与问候，才是最好的礼物加成']},
+伴侣:{g:['定制饰品/纪念对戒','一次精心策划的双人约会','心意手账+愿望清单','按摩/SPA体验券','情侣对表/对杯'],why:['伴侣更看重仪式感与用心','结合对方当下需求，比贵更重要','亲手写一封情书，情感加倍']},
+朋友:{g:['创意桌面摆件/手办','好吃的零食礼盒','香味蜡烛/香薰','实用通勤好物','两人一起参加的兴趣体验'],why:['朋友间送「有趣+小众」更有惊喜感','一起的体验，比物品更难忘','投缘的朋友，心意比价格重要']},
+领导:{g:['高品质钢笔礼盒','商务保温杯/公文包','精致茶礼','定制皮质名片夹','香薰/绿植桌面造景'],why:['商务场合礼物宜大方得体不张扬','体现尊重与专业，避免过度贵重','附上真诚谢意，表达恰到好处']},
+孩子:{g:['益智积木/拼图','喜欢的绘本套装','科学实验套装','运动装备','会「玩」的文具礼包'],why:['孩子开心最重要，能激发探索欲更好','安全第一，避免过于刺激的玩具','家长的参与，让礼物更有温度']}};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 送礼灵感 | AgentGongju.com'))return;
+const who=document.getElementById('who').value;
+const budget=document.getElementById('budget').value;
+const occasion=document.getElementById('occasion').value;
+const hobby=document.getElementById('hobby').value.trim();
+const p=pools[who];
+const out=document.getElementById('outBox');out.innerHTML='';
+const seen=new Set();
+p.g.forEach((g,i)=>{
+if(seen.has(g))return;seen.add(g);
+out.innerHTML+='<div class="gift"><b>'+(i+1)+'. '+g+'</b><br><span style="color:#94a3b8">预算参考：'+budget+'　场合：'+occasion+(hobby?'　结合爱好：'+hobby:'')+'</span><br><span class="price">💡 推荐理由：'+p.why[i%p.why.length]+'</span></div>';
+});
+window._copyText='【送礼方案】\n'+out.innerText;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyAll(){navigator.clipboard.writeText(window._copyText||document.body.innerText).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

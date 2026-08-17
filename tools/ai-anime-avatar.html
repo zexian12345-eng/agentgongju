@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 动漫头像 Prompt | AgentGongju.com</title>
+<meta name="description" content="输入人物设定与风格，AI生成可直接复制的二次元动漫头像AI绘画提示词"><meta name="keywords" content="AI绘画,动漫头像,二次元,prompt,提示词,文生图">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:740px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:50px;resize:vertical}
+input:focus,select:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.prompt-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:16px 20px;color:#e2e8f0;line-height:1.8;font-size:.9rem;margin-bottom:12px;white-space:pre-wrap}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{background:rgba(168,85,247,0.08);border:1px solid rgba(168,85,247,0.3);border-radius:12px;padding:16px;color:#cbd5e1;line-height:1.9;font-size:.88rem}
+.lang{color:#a5b4fc}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🎌 AI 动漫头像 Prompt</h1><p>一行提示词，生成专属二次元头像</p></div>
+<div class="card">
+<div><label>👤 人物设定</label>
+<input type="text" id="char" placeholder="例如：银发少年，蓝色眼睛，穿着风衣"></div>
+<div class="param-row">
+<div><label>🎨 画风</label>
+<select id="style"><option value="日系" selected>🌸 日系动漫</option><option value="赛璐璐">🎨 赛璐璐厚涂</option><option value="水彩">🖌️ 水彩风</option><option value="像素">🕹️ 像素风</option></select></div>
+<div><label>👀 视角/构图</label>
+<select id="view"><option value="半身特写" selected>半身特写</option><option value="大头贴">大头贴</option><option value="全身">全身</option><option value="侧面">侧面</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">✨ 生成 Prompt</button>
+</div>
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:16px">🎌 可直接复制的提示词</div>
+<div class="prompt-box" id="box1"></div>
+<div class="prompt-box" id="box2"></div>
+<div style="text-align:right"><button class="copy-btn" onclick="copyAll()">📋 复制全部</button></div>
+<div class="tip">💡 提示词里包含 <b style="color:#a5b4fc">主体、外貌、画风、构图、质量词</b> 效果更好。可把英文版本复制到 Midjourney / Stable Diffusion 使用，中文版可直接喂给通义万相、即梦等国内AI绘图工具。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const styleEn={日系:'anime style, cel shading, clean lineart',赛璐璐:'thick paint style, cel shading, vibrant colors',水彩:'watercolor illustration, soft pastel colors',像素:'pixel art style, retro game sprite'};
+const styleCn={日系:'日系动漫风格，赛璐璐上色，线条干净',赛璐璐:'厚涂风格，赛璐璐画风，色彩艳丽',水彩:'水彩插画，柔和粉彩色调',像素:'像素艺术风格，复古游戏精灵图'};
+const viewEn={半身特写:'bust portrait, close-up',大头贴:'chibi headshot, big eyes',全身:'full body character shot',侧面:'side profile portrait'};
+const qEn=', highly detailed, clean background, masterpiece, best quality';
+const qCn='，高清细节，干净背景，杰作，最高质量';
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 动漫头像 Prompt | AgentGongju.com'))return;
+const c=document.getElementById('char').value.trim()||'动漫风格少年';
+const style=document.getElementById('style').value;
+const view=document.getElementById('view').value;
+document.getElementById('box1').textContent='【中文版】\n一个'+c+'，'+styleCn[style]+'，'+view+'，动漫头像'+qCn+'';
+document.getElementById('box2').textContent='【English】\na '+c+' , '+styleEn[style]+' , '+viewEn[view]+qEn+'';
+window._copyText=document.getElementById('box1').textContent+'\n\n'+document.getElementById('box2').textContent;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyAll(){navigator.clipboard.writeText(window._copyText||document.body.innerText).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

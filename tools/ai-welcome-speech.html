@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 欢迎致辞生成 | AgentGongju.com</title>
+<meta name="description" content="输入场合与对象，AI生成热情得体的欢迎致辞，适用于开业、年会、接待、开学等场景"><meta name="keywords" content="欢迎辞,致辞,欢迎词,开业致辞,接待,开场白">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:740px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:60px;resize:vertical}
+input:focus,select:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.letter{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px 22px;color:#e2e8f0;line-height:2.1;font-size:.95rem;margin-bottom:12px;white-space:pre-line}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{background:rgba(168,85,247,0.08);border:1px solid rgba(168,85,247,0.3);border-radius:12px;padding:16px;color:#cbd5e1;line-height:1.9;font-size:.88rem}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🎤 AI 欢迎致辞生成</h1><p>各种场合的开场，热情得体不掉链子</p></div>
+<div class="card">
+<div><label>🎊 场合</label>
+<select id="scene"><option value="开业" selected>🏬 开业庆典</option><option value="年会">🌟 公司年会</option><option value="接待">🤝 客户/嘉宾接待</option><option value="开学">📚 开学/迎新</option><option value="婚礼">💍 婚礼/喜宴</option></select></div>
+<div><label>👋 致辞人身份</label>
+<input type="text" id="who" placeholder="例如：公司老板、主持人、校长"></div>
+<div><label>👥 欢迎对象</label>
+<input type="text" id="guest" placeholder="例如：各位来宾、新同学们、各位朋友"></div>
+<button class="btn-gen" id="genBtn">✨ 生成致辞</button>
+</div>
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:16px">📄 欢迎致辞</div>
+<div class="letter" id="speechBox"></div>
+<div style="text-align:right"><button class="copy-btn" onclick="copyAll()">📋 复制全部</button></div>
+<div class="tip">💡 一篇好的致辞：<b style="color:#a5b4fc">称呼得体</b>开头、<b style="color:#a5b4fc">表达欢迎</b>点明场合、<b style="color:#a5b4fc">传递价值</b>（这场合的意义）、<b style="color:#a5b4fc">展望祝愿</b>收尾。控制在2-3分钟为宜，真诚比华丽更重要。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const scenes={
+开业:{open:'尊敬的各位来宾，亲爱的朋友们：\n\n　　大家好！在这个喜庆祥和的日子里，我们相聚于此，共同见证「%b」的开业盛典。', body:'这一刻，我们期待已久；这份喜悦，愿与各位共同分享。感谢每一位到场朋友的信任与支持，正是你们的到来，让今天的『%b』蓬荜生辉。', close:'未来的路，我们愿以诚心与品质，服务好每一位客户。再次感谢大家的光临，祝各位身体健康、万事如意！'},
+年会:{open:'各位同仁、各位伙伴：\n\n　　大家新年好！回首过去的一年，感谢每一位奋斗的伙伴，欢迎你们入场，也欢迎今天到场的各界朋友。', body:'这一年我们并肩拼搏，有欢笑也有汗水。站在新的起点，我为大家的努力而感动，也为团队的凝聚力而自豪。', close:'新的一年，让我们继续携手同行、共创佳绩。愿大家工作顺心、阖家幸福！'},
+接待:{open:'尊敬的客人们，各位领导、朋友：\n\n　　欢迎来到我们中间！能在这个特别的时刻接待大家，是我们莫大的荣幸。', body:'一路舟车劳顿，辛苦了。这里虽谈不上豪华，但诚意绝对拉满。希望大家在这里宾至如归、畅所欲言。', close:'愿此次相聚不负期待，也盼未来合作长久。感谢大家的莅临，祝旅途愉快！'},
+开学:{open:'亲爱的同学们、各位老师、家长：\n\n　　金秋送爽，满怀憧憬，我们迎来了崭新的学期，也迎来了朝气蓬勃的你们。', body:'新的起点意味着新的可能。希望你们在这里播种梦想、收获成长，把每一天都过得充实而闪亮。', close:'愿你们不负韶华、勇敢追梦。让我们以饱满的热情，共同开启这段精彩旅程！'},
+婚礼:{open:'各位亲友，各位来宾：\n\n　　良辰吉日，喜气盈门。感谢大家前来见证这对新人的幸福时刻！', body:'今天，两颗心走到了一起，从此风雨同舟、携手白头。这份喜悦，因为有了你们的祝福而更加圆满。', close:'让我们共同举杯，祝愿新人百年好合、永结同心！也祝各位来宾幸福安康！'}};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 欢迎致辞生成 | AgentGongju.com'))return;
+const scene=document.getElementById('scene').value;
+const who=document.getElementById('who').value.trim()||'主办方';
+const guest=document.getElementById('guest').value.trim()||'各位来宾';
+const s=scenes[scene];
+const brand=s.open.includes('%b')?s.open.replace('%b','本机构'):s.open;
+const speech=brand+'\n\n'+s.body+'\n\n'+s.close+'\n\n（致辞人：'+who+'）';
+document.getElementById('speechBox').textContent=speech;
+window._copyText=speech;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyAll(){navigator.clipboard.writeText(window._copyText||document.body.innerText).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

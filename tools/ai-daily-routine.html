@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 每日作息规划 | AgentGongju.com</title>
+<meta name="description" content="根据你的时间安排与类型，AI生成科学合理的每日作息表，早起高效、作息规律"><meta name="keywords" content="作息,时间管理,早睡早起,效率,番茄钟,日程表">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:740px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.schedule{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:16px 20px;color:#e2e8f0;line-height:2.1;font-size:.92rem;margin-bottom:12px}
+.slot{display:flex;gap:12px;padding:6px 0;border-bottom:1px dashed rgba(255,255,255,0.06)}
+.slot:last-child{border-bottom:none}
+.time{color:#a855f7;font-weight:600;min-width:90px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{background:rgba(168,85,247,0.08);border:1px solid rgba(168,85,247,0.3);border-radius:12px;padding:16px;color:#cbd5e1;line-height:1.9;font-size:.88rem}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>⏰ AI 每日作息规划</h1><p>把一天过成高效又从容的节奏</p></div>
+<div class="card">
+<div class="param-row">
+<div><label>🌅 起床时间</label>
+<select id="wake"><option value="05:30">🌄 05:30</option><option value="06:30" selected>🌅 06:30</option><option value="07:30">🌞 07:30</option><option value="08:30">🌤️ 08:30</option></select></div>
+<div><label>🕘 主要任务（白天做什么）</label>
+<select id="day"><option value="上班" selected>💼 上班</option><option value="学习">📚 学习备考</option><option value="自由">🎨 自由/创业</option><option value="带娃">👶 居家带娃</option></select></div>
+</div>
+<div><label>💪 锻炼习惯</label>
+<select id="workout"><option value="早起" selected>🏃 早起晨练</option><option value="傍晚">🌇 傍晚锻炼</option><option value="不练">😴 暂不安排</option></select></div>
+<button class="btn-gen" id="genBtn">✨ 生成作息表</button>
+</div>
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:16px">📋 我的每日作息表</div>
+<div class="schedule" id="outBox"></div>
+<div style="text-align:right"><button class="copy-btn" onclick="copyAll()">📋 复制全部</button></div>
+<div class="tip">💡 科学的作息核心：<b style="color:#a5b4fc">固定起床时间</b>稳定生物钟、<b style="color:#a5b4fc">早起先做重要事</b>抓住黄金时段、<b style="color:#a5b4fc">午饭后小憩</b>恢复精力、<b style="color:#a5b4fc">睡前少看手机</b>保证睡眠质量。坚持21天，习惯自然养成。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function slot(t,a){return '<div class="slot"><div class="time">'+t+'</div><div>'+a+'</div></div>';}
+document.getElementById('genBtn').addEventListener('click',()=>{
+const wake=document.getElementById('wake').value;
+const day=document.getElementById('day').value;
+const workout=document.getElementById('workout').value;
+const out=document.getElementById('outBox');out.innerHTML='';
+const add=(t,a)=>out.innerHTML+=slot(t,a);
+add(wake,'起床，喝一杯温水，拉开窗帘接触自然光');
+if(workout==='早起'){add('06:50','晨间锻炼（拉伸+有氧30分钟）');}
+add('07:30','营养早餐，吃好一天的能量');
+add('08:00',day==='上班'?'通勤路上听播客/整理今日待办':'晨间黄金学习/工作时段一（专注90分钟）');
+add('09:30',day==='上班'?'进入工作，优先处理最重要的一件事':'休息10分钟，伸个懒腰，继续第2个专注时段');
+add('12:00','午餐，注意荤素搭配，七分饱为宜');
+add('13:00','午休小憩 20-30 分钟，恢复精力');
+add('14:00',day==='上班'?'下午工作：安排会议、协作、琐事处理':'下午专注时段（深度创作/难点攻坚）');
+add('17:30','适度活动，走动缓解久坐疲劳');
+add('18:30',day==='带娃'?'亲子时间：陪孩子玩耍、读绘本':'晚餐，清淡为宜，饭后散步消食');
+if(workout==='傍晚'){add('19:30','傍晚锻炼（力量/跑步/球类）');}
+add('20:30','自由放松：阅读、兴趣、陪伴家人');
+add('22:00','睡前准备：放下手机，泡脚/听轻音乐');
+add('23:00','熄灯入睡，保证7-8小时睡眠');
+window._copyText='【每日作息表】\n'+out.innerText;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyAll(){navigator.clipboard.writeText(window._copyText||document.body.innerText).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

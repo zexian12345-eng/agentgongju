@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 语录壁纸文案 | AgentGongju.com</title>
+<meta name="description" content="输入主题，AI生成适合做壁纸、朋友圈背景图的金句文案与排版建议"><meta name="keywords" content="语录,壁纸文案,朋友圈背景,金句,个性签名,句子">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:740px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.wallpaper{background:linear-gradient(135deg,rgba(99,102,241,0.18),rgba(168,85,247,0.18));border:1px solid rgba(168,85,247,0.35);border-radius:14px;padding:34px 26px;margin-bottom:14px;text-align:center}
+.wallpaper .line{font-size:1.15rem;color:#e2e8f0;line-height:2;letter-spacing:.5px}
+.wallpaper .sub{color:#94a3b8;font-size:.85rem;margin-top:8px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{background:rgba(168,85,247,0.08);border:1px solid rgba(168,85,247,0.3);border-radius:12px;padding:16px;color:#cbd5e1;line-height:1.9;font-size:.88rem}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🖼️ AI 语录壁纸文案</h1><p>一句走心的话，让壁纸也有温度</p></div>
+<div class="card">
+<div class="param-row">
+<div><label>💭 主题/风格</label>
+<select id="theme"><option value="励志" selected>🔥 励志向上</option><option value="治愈">🌿 治愈温柔</option><option value="文艺">🌸 文艺清新</option><option value="摆烂">😌 佛系自洽</option><option value="情侣">💞 情感浪漫</option></select></div>
+<div><label>🔠 配英文与否</label>
+<select id="en"><option value="no" selected>纯中文</option><option value="yes">中文+英文</option></select></div>
+</div>
+<div><label>🖋️ 想表达的关键词（可选）</label><input type="text" id="kw" placeholder="例如：坚持、自由、慢生活"></div>
+<button class="btn-gen" id="genBtn">✨ 生成语录</button>
+</div>
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:16px">✨ 6 条壁纸金句</div>
+<div id="outBox"></div>
+<div style="text-align:right"><button class="copy-btn" onclick="copyAll()">📋 复制全部</button></div>
+<div class="tip">💡 好壁纸文案三大标准：<b style="color:#a5b4fc">短</b>（一两行读完）、<b style="color:#a5b4fc">有态度</b>（引起共鸣）、<b style="color:#a5b4fc">留白</b>（让人回味）。配图建议同色系渐变或极简留白，文字居中或靠下。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const pools={
+励志:['生活明朗，万物可爱，未来可期。','你只管努力，剩下的交给时间。','越努力，越幸运。','种一棵树最好的时间是十年前，其次是现在。','你若盛开，清风自来。','熬过无人问津的日子，才有诗和远方。'],
+治愈:['愿你眼里有光，心中有暖。','慢慢来，一切都会好起来的。','世界很大，幸福很小，有你刚好。','温柔待人，也被温柔以待。','别怕，天总会亮的。','把日子过成喜欢的样子。'],
+文艺:['山河远阔，人间烟火。','且听风吟，静待花开。','把生活过成诗，把日子酿成酒。','一花一世界，一叶一菩提。','等风来，不如追风去。','沉淀，是最好的成长。'],
+摆烂:['忙有所值，闲有所趣。','人生不过三万天，开心一天是一天。','允许一切发生，也允许自己休息。','知足常乐，随遇而安。','我不卷了，我先躺为敬。','保持热爱，偶尔发疯。'],
+情侣:['人间烟火气，最抚凡人心。','与你一起，柴米油盐也是诗。','目光所及，皆是你。','一生一世一双人。','有你，便是人间四月天。','三生有幸，遇你同行。']};
+const enMap={励志:'Keep going, the best is yet to come.',治愈:'Everything will be okay.',文艺:'Live the life you love.',摆烂:'Take it easy.',情侣:'You and me, forever.'};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 语录壁纸文案 | AgentGongju.com'))return;
+const theme=document.getElementById('theme').value;
+const en=document.getElementById('en').value;
+const kw=document.getElementById('kw').value.trim();
+const list=pools[theme];
+const out=document.getElementById('outBox');out.innerHTML='';
+let lines=[...list];
+if(kw){lines=[...list.slice(0,2),'「'+kw+'」——愿所有美好，都如约而至。',...list.slice(2,5)];}
+lines.slice(0,6).forEach((l,i)=>{
+out.innerHTML+='<div class="wallpaper"><div class="line">「'+l+'」</div>'+(en==='yes'?'<div class="sub">'+enMap[theme]+'</div>':'')+'</div>';
+});
+window._copyText='【语录壁纸】\n'+out.innerText;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyAll(){navigator.clipboard.writeText(window._copyText||document.body.innerText).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

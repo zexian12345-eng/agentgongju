@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 养生茶饮配方 | AgentGongju.com</title>
+<meta name="description" content="根据需求与季节，AI生成养生茶饮配方，含食材、功效与冲泡方法"><meta name="keywords" content="养生茶,茶饮配方,代茶饮,减脂,安神,润喉,红枣枸杞">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:740px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.sec{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:16px 20px;color:#e2e8f0;line-height:2;font-size:.92rem;margin-bottom:12px}
+.sec h4{color:#a855f7;margin:0 0 6px 0;font-size:1rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{background:rgba(168,85,247,0.08);border:1px solid rgba(168,85,247,0.3);border-radius:12px;padding:16px;color:#cbd5e1;line-height:1.9;font-size:.88rem}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🍵 AI 养生茶饮配方</h1><p>一杯合时宜的茶，滋养一天的好状态</p></div>
+<div class="card">
+<div class="param-row">
+<div><label>🎯 需求</label>
+<select id="need"><option value="安神助眠" selected>😴 安神助眠</option><option value="养颜美容">🌹 养颜美容</option><option value="健脾养胃">🍚 健脾养胃</option><option value="明目护眼">👁️ 明目护眼</option><option value="润喉护嗓">🎤 润喉护嗓</option><option value="提神醒脑">⚡ 提神醒脑</option></select></div>
+<div><label>🍂 适合季节</label>
+<select id="season"><option value="春">🌸 春</option><option value="夏">☀️ 夏</option><option value="秋">🍁 秋</option><option value="冬" selected>❄️ 冬</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">✨ 生成配方</button>
+</div>
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:16px">🍵 为你推荐的养生茶</div>
+<div class="sec"><h4>🥣 配方食材</h4><div id="herbBox"></div></div>
+<div class="sec"><h4>✨ 功效</h4><div id="effectBox"></div></div>
+<div class="sec"><h4>♨️ 冲泡方法</h4><div id="brewBox"></div></div>
+<div class="sec"><h4>⚠️ 注意事项</h4><div id="warnBox"></div></div>
+<div style="text-align:right"><button class="copy-btn" onclick="copyAll()">📋 复制全部</button></div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const recipes={
+'安神助眠':{h:'酸枣仁 9g、百合 6g、红枣 3粒（去核）、茯苓 6g、莲子 6g',e:'宁心安神、缓解焦虑、改善睡眠质量',b:'将食材稍加清洗，放入茶壶，用约500ml沸水冲泡，焖10分钟后饮用，睡前1小时温饮更佳。',w:'孕妇、体质偏寒者或正在服用镇静类药物者，建议先咨询医生。'},
+'养颜美容':{h:'玫瑰花 5朵、枸杞 10g、红枣 4粒、桂圆肉 6颗、蜂蜜适量',e:'补气养血、提亮气色、滋润皮肤',b:'玫瑰、枸杞、红枣、桂圆用沸水冲泡，焖8分钟，待温后调入蜂蜜饮用。',w:'易上火、经期量多者适当减少桂圆用量；糖尿病患者慎用蜂蜜。'},
+'健脾养胃':{h:'陈皮 3g、山药干 10g、茯苓 6g、炒薏米 10g、大枣 3粒',e:'健脾和胃、祛湿消胀、促进消化',b:'食材加水500ml，小火煮10分钟，取汁代茶温饮，一周2-3次。',w:'胃酸过多者避免空腹饮用，严重胃病请就医。'},
+'明目护眼':{h:'枸杞 10g、菊花 5朵、决明子 6g、桑叶 3g',e:'清肝明目、缓解眼疲劳、滋润双眼',b:'所有材料沸水冲泡，焖8分钟，一天可反复冲泡2-3次。',w:'脾胃虚寒、容易腹泻者慎用决明子；眼疾请结合治疗。'},
+'润喉护嗓':{h:'胖大海 2枚、罗汉果 1/4个、麦冬 6g、甘草 3g',e:'清热润肺、利咽开音、缓解干痒',b:'材料放入杯中，沸水冲泡焖10分钟，小口慢饮，需讲课时更宜。',w:'胖大海不宜长期连续饮用，脾胃虚寒者控制用量。'},
+'提神醒脑':{h:'绿茶 3g、薄荷叶 少许、西洋参片 3g、枸杞 6粒',e:'提神醒脑、清心明亮、补充元气',b:'用80℃左右水温冲泡，焖5分钟后饮用，午后一杯精力满满。',w:'神经衰弱或睡前4小时内不建议饮用，以免影响睡眠。'}};
+const seasonAdd={春:'——春季宜养肝，可酌加少量菊花、玫瑰花。',夏:'——夏季宜清热，可加适量薄荷、金银花。',秋:'——秋季宜润燥，可配百合、麦冬。',冬:'——冬季宜温补，可配红枣、桂圆更暖身。'};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 养生茶饮配方 | AgentGongju.com'))return;
+const need=document.getElementById('need').value;
+const season=document.getElementById('season').value;
+const r=recipes[need];
+document.getElementById('herbBox').innerHTML='<div>'+r.h+'</div>';
+document.getElementById('effectBox').innerHTML='<div>'+r.e+'</div><div style="color:#a5b4fc">'+seasonAdd[season]+'</div>';
+document.getElementById('brewBox').innerHTML='<div>'+r.b+'</div>';
+document.getElementById('warnBox').innerHTML='<div>'+r.w+'</div>';
+window._copyText='【'+need+'养生茶】\n食材：'+r.h+'\n功效：'+r.e+'\n冲泡：'+r.b+'\n注意：'+r.w;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyAll(){navigator.clipboard.writeText(window._copyText||document.body.innerText).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

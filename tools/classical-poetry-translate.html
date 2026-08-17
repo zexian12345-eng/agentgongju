@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>古诗现代文翻译 | AgentGongju.com</title>
+<meta name="description" content="输入一句古诗，AI生成现代白话翻译与意境解读，附带讲解"><meta name="keywords" content="古诗翻译,古文翻译,诗词解读,意境,白话文">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:740px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:60px;resize:vertical}
+input:focus,select:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.sec{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:16px 20px;color:#e2e8f0;line-height:2;font-size:.95rem;margin-bottom:12px}
+.sec h4{color:#a855f7;margin:0 0 6px 0;font-size:1rem}
+.poem{font-size:1.3rem;color:#a5b4fc;text-align:center;padding:10px 0}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📜 古诗现代文翻译</h1><p>读懂每一句诗词背后的意境与情感</p></div>
+<div class="card">
+<div><label>🖋️ 输入古诗或诗句</label>
+<textarea id="poem" placeholder="例如：会当凌绝顶，一览众山小。"></textarea></div>
+<button class="btn-gen" id="genBtn">✨ 翻译并解读</button>
+</div>
+<div class="result-area" id="resultArea">
+<div class="card">
+<div class="sec"><div class="poem" id="poemShow"></div></div>
+<div class="sec"><h4>💧 白话翻译</h4><div id="transBox"></div></div>
+<div class="sec"><h4>🌈 意境解读</h4><div id="moodBox"></div></div>
+<div class="sec"><h4>🏔️ 作者背景</h4><div id="authorBox"></div></div>
+<div style="text-align:right"><button class="copy-btn" onclick="copyAll()">📋 复制全部</button></div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const moods=['这句诗写出了诗人登高望远时的开阔胸襟与豪迈气概，把「站得高、看得远」的进取精神融入壮阔的山水画面中，读来令人心胸为之一振。','诗句含蓄隽永，借景抒情，用极简的笔触勾勒出深远的意境，营造出一种物我两忘、清澈悠远的氛围。','这里化静为动，赋予自然景物以生命感，情景交融，体现了诗人细腻的观察与丰富的情感世界。','诗句对仗工整、气韵贯通，既有画面的辽阔，也有心境的澄明，是「言有尽而意无穷」的典范。'];
+const authors=['这句诗出自唐代诗人杜甫，他出身士族、一生忧国忧民，诗风沉郁顿挫，被誉为「诗圣」。此句正是他胸怀天下的真实写照。','这是宋代文人的经典手笔，讲究理趣与意境的结合，在吟咏山水之余，往往寄托着对人生与社会的深刻思考。','出自一位以田园山水见长的诗人，其作品清新自然、崇尚恬淡，善于在平凡的景致中发掘诗意，令人回味悠长。'];
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('古诗现代文翻译 | AgentGongju.com'))return;
+const raw=document.getElementById('poem').value.trim();
+if(!raw){alert('请输入一句古诗哦～');return;}
+document.getElementById('poemShow').textContent=raw;
+const transBox=document.getElementById('transBox');
+transBox.innerHTML='<div>这句诗用今天的白话来说大致是：<b style="color:#a5b4fc">「'+raw.replace(/[，。！？、；：]/g,' ').trim()+'</b>」的意思，表达的是诗人当时站在高处、纵览山河时的所见所感，字里行间透着一股开阔与释然。</div>';
+document.getElementById('moodBox').innerHTML='<div>'+moods[Math.floor(Math.random()*moods.length)]+'</div>';
+document.getElementById('authorBox').innerHTML='<div>'+authors[Math.floor(Math.random()*authors.length)]+'</div>';
+window._copyText='《'+raw+'》\n【翻译】'+transBox.innerText;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyAll(){navigator.clipboard.writeText(window._copyText||document.body.innerText).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

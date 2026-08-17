@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 风水小贴士 | AgentGongju.com</title>
+<meta name="description" content="输入家中/办公区域与困扰，AI生成简单实用的风水布局调整与化解小建议"><meta name="keywords" content="风水,家居布局,办公风水,招财,化解,摆放">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:740px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.neo-list{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:16px 20px;color:#e2e8f0;line-height:2;font-size:.92rem;margin-bottom:12px}
+.neo-list div{padding:8px 0;border-bottom:1px dashed rgba(255,255,255,0.06)}
+.neo-list div:last-child{border-bottom:none}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{background:rgba(168,85,247,0.08);border:1px solid rgba(168,85,247,0.3);border-radius:12px;padding:16px;color:#cbd5e1;line-height:1.9;font-size:.88rem}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🏮 AI 风水小贴士</h1><p>从「顺眼」与「舒适」出发的居家布局建议</p></div>
+<div class="card">
+<div class="param-row">
+<div><label>🏠 空间</label>
+<select id="space"><option value="客厅" selected>🛋️ 客厅</option><option value="卧室">🛏️ 卧室</option><option value="书房">📖 书房/办公</option><option value="厨房">🍳 厨房</option><option value="玄关">🚪 玄关</option></select></div>
+<div><label>🎯 期望</label>
+<select id="wish"><option value="招财" selected>💰 招财纳福</option><option value="事业">📈 事业顺遂</option><option value="健康">🌿 健康平安</option><option value="桃花">💞 增进人缘/桃花</option></select></div>
+</div>
+<div><label>💬 你的困扰（可选）</label><input type="text" id="issue" placeholder="例如：总觉得客厅很乱、采光不好、睡得不安稳"></div>
+<button class="btn-gen" id="genBtn">✨ 生成风水建议</button>
+</div>
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:16px">🏮 你的风水调整建议</div>
+<div class="neo-list" id="outBox"></div>
+<div style="text-align:right"><button class="copy-btn" onclick="copyAll()">📋 复制全部</button></div>
+<div class="tip">💡 风水讲究「藏风聚气」。与其相信玄而又玄的说法，不如把家/办公环境整理得<b style="color:#a5b4fc">整洁、明亮、通风</b>，住得舒服、自然气运顺畅。建议仅供娱乐参考，保持理性。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const tips={
+客厅:{base:['保持客厅整洁明亮，沙发宜靠实墙摆放，喻意「有靠山」。','进门见「亮、净、喜」，可在玄关或角落点缀绿植与暖光灯。','电视背景墙宜简洁，避免杂物堆积，财位一般在大门斜对角。'],wish:{招财:'在明堂财位（入门对角）摆放一盆茂盛绿植或聚宝盆。',事业:'书桌或沙发朝向开阔，避免背后空窗，桌上可摆放小摆件。',健康:'保持通风采光，杂物及时清理，光线充足人自然精神好。',桃花:'提升明亮度，搭配暖色系软装，摆放成对的小摆件增人气。'}},
+卧室:{base:['床不宜正对门窗，床头宜靠墙且上方不压梁。','保持安静整洁，镜面避免正对床铺。','卧室色调宜柔和，光线不宜过强，有利睡眠安稳。'],wish:{招财:'可在床头柜角落放置收纳财物的抽屉，保持整洁。',事业:'床下不宜堆积杂物，保持床底通风清爽。',健康:'绿色植物可适量摆放，但不宜过多，保持空气清新。',桃花:'成对布置装饰，柔和灯光营造温馨氛围。'}},
+书房:{base:['书桌宜背靠实墙、面向房门，视野开阔。','桌面整洁有序，背后无杂物、无门冲。','采光从左前方来最佳（左明右暗）。'],wish:{招财:'桌前可挂「紫气东来」或摆放文昌塔、小绿植。',事业:'座椅有靠，桌上可放台灯照亮「文昌位」（常为东南方）。',健康:'适时起身远眺，保持室内通风与良好姿势。',桃花:'书桌旁可点缀一抹暖色或摆放一盆花卉。'}},
+厨房:{base:['炉灶宜背靠实墙，不宜正对门窗或水槽。','保持厨房清洁干燥，油烟及时清理。','刀具收纳整齐，避免外露。'],wish:{招财:'厨房代表「食禄」，保持米缸常满、冰箱整洁。',事业:'流理台保持清爽，收纳有序，做事更顺心。',健康:'食材新鲜、存放整齐，注意防潮防霉。',桃花:'厨房暖色灯光与整洁氛围，能给家增添温馨感。'}},
+玄关:{base:['玄关宜亮不宜暗，进门首先感到明亮开阔。','鞋柜不宜过高，鞋子收纳整齐、气味清新。','避免进门正对卫生间或一目见底。'],wish:{招财:'玄关可放「开门红」装饰或招财绿植，出门钱袋鼓。',事业:'放一面镜子可扩大空间感，但不宜正对大门。',健康:'保持玄关清爽，换鞋区干净，心情自然舒畅。',桃花:'玄关摆放温馨小装饰，让回家的路更有人情味。'}}};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 风水小贴士 | AgentGongju.com'))return;
+const space=document.getElementById('space').value;
+const wish=document.getElementById('wish').value;
+const issue=document.getElementById('issue').value.trim();
+const p=tips[space];
+const out=document.getElementById('outBox');out.innerHTML='';
+p.base.forEach(b=>{out.innerHTML+='<div>✔️ '+b+'</div>';});
+out.innerHTML+='<div>🎯 针对「'+wish+'」：'+p.wish[wish]+'</div>';
+if(issue){out.innerHTML+='<div>💬 关于你的困扰「'+issue+'」：建议先着手整理与保持通风采光，环境清爽了，很多「不顺」自然迎刃而解。</div>';}
+window._copyText='【'+space+'风水建议】\n'+out.innerText;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyAll(){navigator.clipboard.writeText(window._copyText||document.body.innerText).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>
