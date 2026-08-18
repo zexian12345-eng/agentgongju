@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 每日心灵肯定 | AgentGongju.com</title>
+<meta name="description" content="每天给自己一句积极正面的心理暗示，搭配今日主题与小任务，帮你建立自信、缓解焦虑、元气满满过好每一天">
+<meta name="keywords" content="心灵肯定,自我肯定,心理暗示,积极心理学,正能量,减压,自信">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:60px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px;text-align:center}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🌅 AI 每日心灵肯定</h1><p>给自己一句温柔又有力量的话</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>🎯 今日想加强的方向</label>
+<select id="focus"><option value="自信" selected>💪 自信</option><option value="放松">☁ 放松减压</option><option value="专注">🎯 专注高效</option><option value="感恩">🙏 感恩知足</option><option value="勇气">🔥 勇气行动</option></select></div>
+<div><label>💬 肯定强度</label>
+<select id="strength"><option value="温柔">🌸 温柔舒缓</option><option value="坚定" selected>🔥 坚定有力</option></select></div>
+</div>
+<label>📝 想对自己说的话（选填）</label>
+<textarea id="note" placeholder="例如：最近压力有点大，想给自己打打气"></textarea>
+<button class="btn-gen" id="genBtn">✨ 生成今日肯定</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🌅 今日心灵肯定卡片</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制并设为今日壁纸文案</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const affirm={
+'自信':{soft:['你值得被温柔对待，也值得拥有想要的一切。','你已经在很多次“不行”里，走到了今天，这就是你的底气。','不必和任何人比较，你正在成为更好的自己。'],strong:['我足够好，我配得上每一个我努力争取的机会。','相信自己，你有能力把今天过好，也有勇气把未来点亮。']},
+'放松':{soft:['没关系，慢一点也没关系，你不需要时刻都跑在最前面。','把肩上的重量暂时放一放，此刻允许自己停下来喘口气。','焦虑不是你的全部，平静也常常与你同在。'],strong:['我允许自己放松，我选择活在当下，不背负不属于我的重担。']},
+'专注':{soft:['一次只做一件事，专注本身就会带来踏实的力量。','慢慢来，比较快，把眼前这一件事做好就很好。'],strong:['我聚焦于此刻，分清轻重缓急，我是自己时间的主人。','我的注意力很宝贵，我把它留给真正重要的人和事。']},
+'感恩':{soft:['谢谢你，愿意看见生活里那些细小的美好。','拥有一份普通的生活，已经是被很多人羡慕的幸运。'],strong:['我感激所拥有的一切，也感激那个始终没有放弃的自己。']},
+'勇气':{soft:['勇敢不是不害怕，而是带着害怕仍然往前走了一步。','那个试着迈出一小步的你，已经在闪闪发光了。'],strong:['我有勇气去尝试，也有坦然接受任何结果的大气。','行动的一方总比观望的一方先一步接近答案。']}
+};
+const tasks=['给今天的自己写一句悄悄话，贴在镜子上','为某位朋友或同事送上一句真诚的夸奖','慢下来喝一杯水，观察窗外的天空三分钟','写下今天最想感谢的三件小事','对一件一直拖延的小事，今天就做掉它','睡前记录一句今天做得不错的事'];
+const notes=['深呼吸三次，把这句话轻轻说给自己听。','把它读出来，让声音也记住此刻的力量。','允许自己停三秒，把这句话在心里默念两遍。'];
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 每日心灵肯定 | AgentGongju.com'))return;
+const focus=document.getElementById('focus').value;
+const strength=document.getElementById('strength').value;
+const note=document.getElementById('note').value.trim();
+const list=affirm[focus];
+const pool=strength==='坚定'?(list.strong.length?list.strong:list.soft):list.soft;
+const pick=pool[Math.floor(Math.random()*pool.length)];
+const task=tasks[Math.floor(Math.random()*tasks.length)];
+const nt=notes[Math.floor(Math.random()*notes.length)];
+const today=new Date();
+let out='今日主题：'+focus+' 　　日期：'+today.getFullYear()+'年'+(today.getMonth()+1)+'月'+today.getDate()+'日\n\n';
+out+='───────\n\n';
+out+='🌟 '+pick+'\n\n';
+out+='───────\n\n';
+if(note)out+='你写给自己的话：“'+note+'”→ 愿这句话，今天能成为你心里的一点微光。\n\n';
+out+='☀️ 今日微行动\n· '+task+'\n\n';
+out+='💬 '+nt;
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 今日肯定已复制，记得送自己一句鼓励！'))}
+</script>
+</body>
+</html>

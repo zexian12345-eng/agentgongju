@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 装修避坑指南 | AgentGongju.com</title>
+<meta name="description" content="根据户型面积、预算与装修方式，生成个性化装修攻略与避坑清单，帮你避开装修中的常见大坑">
+<meta name="keywords" content="装修,装修避坑,装修攻略,毛坯房,一键装修,预算,装修预算">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:60px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.9;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🏠 AI 装修避坑指南</h1><p>把每一步都安排明白，装修不踩雷</p></div>
+
+<div class="card">
+<label>📐 房屋面积（约）</label>
+<input type="text" id="area" placeholder="例如：89 平米 / 小三室">
+<div class="param-row">
+<div><label>💰 装修总预算</label>
+<select id="budget"><option value="10万以内">10万以内（实用型）</option><option value="15-20万" selected>15-20万（舒适型）</option><option value="30万以上">30万以上（品质型）</option></select></div>
+<div><label>🔨 装修方式</label>
+<select id="method"><option value="全包">🛠 全包（省心）</option><option value="半包" selected>✂️ 半包（性价比）</option><option value="清包">📦 清包（自购材料）</option></select></div>
+</div>
+<label>📝 特别关注（选填）</label>
+<textarea id="special" placeholder="如：地暖、智能家居、儿童房、环保材料……"></textarea>
+<button class="btn-gen" id="genBtn">✨ 生成避坑指南</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">📋 你的装修避坑指南</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制指南</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const phases=[
+['1. 准备阶段','量房、明确风格与预算、多方比价选装修公司或工长，签合同看清“增项条款”'],
+['2. 拆改放线','确认承重墙，动工前到物业备案；先定改水电位置，反复核对插座点位'],
+['3. 水电工程','水电是最重要也最隐蔽的一环：走顶、验收前拍照留存，打压试水别省'],
+['4. 木泥瓦工','防水至少两遍并做闭水试验；瓷砖空鼓要敲；木工活确认封边工艺'],
+['5. 油漆/墙','墙固、腻子至少两遍再打磨；环保涂料注意通风晾晒周期'],
+['6. 主材安装','插座开关、门窗、地板、洁具、定制柜逐步进场，每件都验货再装'],
+['7. 软装收尾','窗帘、灯具、家具进场后统一除味；保留全部收据与保修卡']
+];
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 装修避坑指南 | AgentGongju.com'))return;
+const area=document.getElementById('area').value.trim();
+const budget=document.getElementById('budget').value;
+const method=document.getElementById('method').value;
+const special=document.getElementById('special').value.trim();
+if(!area){alert('请先输入房屋面积');return;}
+const rough=budget.indexOf('10万')===0?1000:budget.indexOf('30万')===0?1800:1200;
+let out='🏠 '+area+' · 装修避坑指南\n';
+out+='预算档位：'+budget+'　方式：'+method+'\n';
+if(special)out+='特别关注：'+special+'\n\n';
+out+='【预算参考】（按'+budget+'档）\n';
+out+='· 设计/半包施工费：约 '+(budget.indexOf('10万')===0?'35%':budget.indexOf('30万')===0?'30%':'33%')+'\n';
+out+='· 主材（地板/瓷砖/洁具/柜体）：约 45%\n';
+out+='· 家电软装：约 20%（建议预留备用金）\n\n';
+out+='【逐步避坑攻略】\n\n';
+phases.forEach(p=>{out+=p[0]+'\n· '+p[1]+'\n\n';});
+out+='【'+method+' 特别提醒】\n';
+out+=method==='全包'?'· 全包要盯紧增项和主材品牌，合同写清型号不得更换，验收逐项核对。':(method==='半包'?'· 半包自己买主材性价比高，但水电、防水等隐蔽工程必须亲自验收。':'· 清包最省钱也最累，建议自学基础工艺并让懂行的亲友帮忙验货。');
+out+='\n\n'+(special?'【针对「'+special+'」的建议】\n· 去建材市场多看多比，环保等级、质保年限写明到合同，验收时留样备查。\n':'');
+out+='\n📌 三条铁律\n· 合同越细越好，口头承诺一律写进书面\n· 隐蔽工程（水电防水）验收比外观更重要\n· 工序分阶段付款，尾款压到验收合格后再结';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 装修指南已复制！'))}
+</script>
+</body>
+</html>

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 播客脚本创作 | AgentGongju.com</title>
+<meta name="description" content="按主题快速生成完整播客节目脚本，含开场白、分段提纲、金句与结束语，适合知识类与访谈类播客">
+<meta name="keywords" content="播客脚本,AI写作,节目文案,知识播客,口播脚本">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:80px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.9;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🎙 AI 播客脚本创作</h1><p>按主题一键生成专业播客节目脚本</p></div>
+
+<div class="card">
+<label>🎯 本期播客主题</label>
+<textarea id="topic" placeholder="例如：普通人如何用 AI 提升工作效率？"></textarea>
+<div class="param-row">
+<div><label>🎙 节目类型</label>
+<select id="type"><option value="知识科普">🧠 知识科普</option><option value="人物访谈">👥 人物访谈</option><option value="观点杂谈">💬 观点杂谈</option><option value="资讯快报">📰 资讯快报</option></select></div>
+<div><label>⏱ 节目时长</label>
+<select id="duration"><option value="短篇（8-12分钟）">短篇（8-12分钟）</option><option value="中篇（15-25分钟）" selected>中篇（15-25分钟）</option><option value="长篇（30分钟以上）">长篇（30分钟以上）</option></select></div>
+</div>
+<label>🎙 播客名称（可选，用于开场介绍）</label>
+<input type="text" id="showName" placeholder="例如：小明的三点一刻">
+<button class="btn-gen" id="genBtn">✨ 生成播客脚本</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">📜 播客脚本</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制脚本</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const hooks=['你有没有发现，我们总是把宝贵的时间，浪费在了重复的琐事上？','今天这个话题，可能会改变你接下来一整年的工作方式。','你有没有认真想过，同样的一天，为什么有人效率惊人，有人原地打转？','先问你一个问题：你上一次做决定之前，是不是也曾经犹豫不决？'];
+const transitions=['聊到这儿，我们不妨换个角度想一想。','不过，光说理论还不够，我们再看一个真实的例子。','这里有个关键点，值得你停下来细想。','在往下讲之前，我想先抛出一个问题给大家。'];
+const endings=['如果你喜欢这期节目，欢迎点赞、收藏和转发，让更多朋友听到。','节目到这里就告一段落，我们下期再见。','好，本期就聊到这儿，感谢收听，我们下次继续。','希望今天的分享，能给你一点点启发，我们下期见！'];
+const filler=['好，我们进入今天的主题。','言归正传。','闲话不多说。','好的，让我们正式开始。'];
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 播客脚本创作 | AgentGongju.com'))return;
+const topic=document.getElementById('topic').value.trim();
+const type=document.getElementById('type').value;
+const duration=document.getElementById('duration').value;
+const showName=document.getElementById('showName').value.trim();
+if(!topic){alert('请先输入本期播客主题');return;}
+const h=Math.floor(Math.random()*hooks.length);
+const t=Math.floor(Math.random()*transitions.length);
+const e=Math.floor(Math.random()*endings.length);
+const f=Math.floor(Math.random()*filler.length);
+const count=duration.indexOf('短篇')===0?4:(duration.indexOf('长篇')===0?6:5);
+let out=(showName?'【开场白】\n大家好，欢迎收听《'+showName+'》。':'【开场白】\n大家好，欢迎收听本期节目。')+'\n'+hooks[h]+'\n\n今天咱们要聊的主题是：「'+topic+'」。\n\n';
+out+='【'+filler[f]+'】\n';
+for(let i=1;i<=count;i++){
+out+='\n—— 第 '+i+' 个分点 ——\n';
+out+='内容框架：围绕「'+topic+'」展开第 '+i+' 个层面（背景/案例/难点/解决方案/延伸思考）\n';
+out+='👤 主播口播：'+(i===1?'先给听众一个背景铺垫，用大白话讲清楚这件事为什么值得关注。':(i%2===0?'这里插一个具体的小案例或数据佐证，让观点落地。':'引申一个反常识的观点，制造反差，留住听众注意力。'))+'\n';
+if(type==='人物访谈'&&i===2){out+='👥 嘉宾视角：如果本期有嘉宾，这里安排一个提问——请嘉宾分享一段真实经历。\n';}
+}
+out+='\n【'+transitions[t]+'】\n\n【金句小结】\n· 关于「'+topic+'」，最想让你记住的一句话是：理解比技巧更重要，行动比犹豫更有用。\n\n【结束语】\n'+endings[e]+'\n\n【节目包装建议】\n· 片头音效控制在 8 秒内，语速建议每分钟 240 字左右\n· 每个分点之间留 1 秒呼吸感，方便剪辑\n';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 播客脚本已复制！'))}
+</script>
+</body>
+</html>

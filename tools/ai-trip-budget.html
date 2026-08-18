@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 旅行预算规划 | AgentGongju.com</title>
+<meta name="description" content="根据目的地、天数和人数，快速生成旅行预算明细与省钱建议，机票酒店吃喝玩乐一目了然">
+<meta name="keywords" content="旅行预算,旅游规划,旅行花费,省钱攻略,出行预算,旅行清单">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:60px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.9;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>✈️ AI 旅行预算规划</h1><p>把每分钱都花在刀刃上的出行规划</p></div>
+
+<div class="card">
+<label>🌍 目的地</label>
+<input type="text" id="dest" placeholder="例如：大理 / 泰国 / 成都">
+<div class="param-row">
+<div><label>📅 出行天数</label>
+<select id="days"><option value="2">2 天</option><option value="3" selected>3 天</option><option value="5">5 天</option><option value="7">7 天</option><option value="10">10 天</option></select></div>
+<div><label>👥 出行人数</label>
+<select id="ppl"><option value="1">1 人</option><option value="2" selected>2 人</option><option value="3-4">3-4 人</option></select></div>
+</div>
+<label>🎒 消费档次</label>
+<select id="level"><option value="经济型">💰 经济型（背包客）</option><option value="舒适型" selected>🏨 舒适型（品质游）</option><option value="豪华型">🌟 豪华型（享受型）</option></select>
+<button class="btn-gen" id="genBtn">✨ 生成预算</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">📊 旅行预算明细</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制预算表</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 旅行预算规划 | AgentGongju.com'))return;
+const dest=document.getElementById('dest').value.trim();
+const days=parseInt(document.getElementById('days').value);
+const pplSel=document.getElementById('ppl').value;
+const level=document.getElementById('level').value;
+if(!dest){alert('请先输入目的地');return;}
+const ppl=pplSel==='3-4'?3:parseInt(pplSel);
+// 国内日人均参考（元）
+const needFlight=!['北京','上海','广州','深圳','成都','杭州','重庆','武汉','西安','南京','苏州','天津','长沙','郑州','青岛'].includes(dest);
+const dailyHotel={经济型:{room:180,meal:120,play:100,trans:60},舒适型:{room:400,meal:200,play:160,trans:100},豪华型:{room:900,meal:400,play:300,trans:200}}[level];
+const roomShare=(dailyHotel.room*((ppl+1)%2+0.6)); // 估算每人均摊
+const flight=needFlight?(level==='经济型'?600:level==='舒适型'?1100:1800):350;
+const nights=Math.max(1,days-1);
+const hotel=roomShare*nights;
+const meal=dailyHotel.meal*days;
+const localTr=dailyHotel.trans*days;
+const play=dailyHotel.play*days;
+const misc=level==='经济型'?150:level==='舒适型'?300:600;
+const subFlight=needFlight?flight*1:0;
+const totalPer=(needFlight?subFlight:0)+hotel+meal+localTr+play+misc;
+const groupTotal=totalPer*ppl;
+let out='✈️ '+dest+' · '+days+'天'+(ppl>1?' '+ppl+'人':'')+' · '+level+' 预算\n\n';
+out+='【费用明细（按每人元）】\n';
+if(needFlight)out+='· 往返交通（机票/高铁）：¥'+flight+'\n';
+out+='· 住宿（'+nights+'晚 人均分摊）：¥'+Math.round(hotel)+'\n';
+out+='· 餐饮：¥'+meal+'（'+level+'日均¥'+dailyHotel.meal+'）\n';
+out+='· 当地交通：¥'+localTr+'\n';
+out+='· 门票/娱乐：¥'+play+'\n';
+out+='· 杂物/购物储备：¥'+misc+'\n\n';
+out+='────────────────\n';
+out+='💰 人均预算：约 ¥'+Math.round(totalPer)+'\n';
+if(ppl>1)out+='👫 合计预算（'+ppl+'人）：约 ¥'+Math.round(groupTotal)+'\n';
+out+='\n【省钱小攻略】\n';
+out+='· 机票/高铁:提前 30-45 天预订通常最便宜，避开周五晚与周日下午出发\n';
+out+='· 住宿:连住选择带早餐的酒店更划算，周末房价常上浮 20%\n';
+out+='· 门票:多数景区学生/老人有优惠，提前一天网上购票省 10-20 元\n';
+out+='· 餐饮:午饭吃当地特色正餐，晚饭可吃小吃街，节省又地道\n';
+out+='\n📌 建议另备总预算 10% 作为应急金（突发状况或加项），出行更安心。';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 旅行预算已复制！'))}
+</script>
+</body>
+</html>

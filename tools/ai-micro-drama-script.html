@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 短剧脚本生成器 | AgentGongju.com</title>
+<meta name="description" content="快速生成反转短剧脚本，含角色设定、分场场景与冲突高潮，适配短视频与竖屏短剧拍摄">
+<meta name="keywords" content="短剧脚本,短视频剧本,剧情创作,剧本,拍视频,内容创作">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:70px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.8;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🎬 AI 短剧脚本生成器</h1><p>三分钟写出带反转的爆款短剧剧本</p></div>
+
+<div class="card">
+<label>📖 故事主线（一句话）</label>
+<textarea id="plot" placeholder="例如：普通打工人重生回三年前，决定改变命运"></textarea>
+<div class="param-row">
+<div><label>🎭 题材</label>
+<select id="genre"><option value="都市逆袭" selected>🏙 都市逆袭</option><option value="甜宠">🍬 甜宠</option><option value="悬疑">🔍 悬疑</option><option value="家庭">👨‍👩‍👧 家庭温情</option></select></div>
+<div><label>💰 核心看点</label>
+<select id="hook"><option value="全员打脸">👏 全员打脸</option><option value="惊天反转">🔄 惊天反转</option><option value="极限虐恋">💔 极限虐恋</option><option value="爆笑喜剧">😂 爆笑喜剧</option></select></div>
+</div>
+<label>📺 预计时长</label>
+<select id="length"><option value="1分钟">⏱ 1分钟（30-40秒成片）</option><option value="3分钟" selected>📍 3分钟（1-3分钟成片）</option><option value="5分钟">🕑 5分钟以上</option></select>
+<button class="btn-gen" id="genBtn">✨ 生成剧本</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🎬 短剧脚本</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制剧本</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const names=['林晚','苏沐','陈默','江离','顾言','沈星','洛初','叶舟','季薇','程野'];
+const reverseHooks={
+'全员打脸':'结尾：曾经看不起他的人，此刻全都愣在原地，而主角只是淡淡一笑。',
+'惊天反转':'结尾：原来这一切早有安排——幕后推手竟是主角自己。',
+'极限虐恋':'结尾：他转身离开，却没看见身后那滴无声落下的泪。',
+'爆笑喜剧':'结尾：所有人都以为主角在演戏，直到他拿出真的证据，全场哄堂大笑。'
+};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 短剧脚本生成器 | AgentGongju.com'))return;
+const plot=document.getElementById('plot').value.trim();
+const genre=document.getElementById('genre').value;
+const hook=document.getElementById('hook').value;
+const length=document.getElementById('length').value;
+if(!plot){alert('请先输入故事主线');return;}
+const n=()=>names[Math.floor(Math.random()*names.length)];
+const a=n(),b=n();
+const scenes=length.indexOf('1分钟')===0?3:(length.indexOf('5分钟')===0?6:4);
+let out='《一片未讲完的故事》\n';
+out+='题材：'+genre+'　看点：'+hook+'　成片时长：'+length+'\n\n';
+out+='【角色设定】\n';
+out+='· '+a+'：本剧主角，'+(hook==='爆笑喜剧'?'憨直真诚却屡遭误会':'隐忍坚毅，深藏不露')+'，故事围绕他展开\n';
+out+='· '+b+'：核心对手/关键人物，'+(hook==='极限虐恋'?'与主角纠葛最深的人':'决定剧情走向的重要角色')+'\n\n';
+out+='【故事主线】\n“'+plot+'”\n\n';
+out+='【分场脚本】\n';
+for(let i=1;i<=scenes;i++){
+out+='\n── 第 '+i+' 场 ──\n';
+out+='⏱ 场景：'+(i===1?'内景·晨光初现':(i%2===0?'场景切换·冲突升级':'转折场景·情绪爆发'))+'\n';
+out+='🎬 画面：【镜头指引】'+(['给主角近景特写，表现复杂情绪','快切几个环境镜头强化氛围','用慢镜头突出关键道具','推进到脸部特写，音效模拟心跳'].join(' ｜ '))+'\n';
+out+='💬 台词：'+(i===1?`${a}：（喃喃自语）那一天我下定决心，再也不要重蹈覆辙。`:(i===scenes?`${b}：（望着${a}）原来，我们都在等这一刻。` : `${a}：（握紧掌心）既然决定了，就绝不回头。`))+'\n';
+out+='🎵 音效/BGM：'+(i===1?'轻缓钢琴铺垫':(i===scenes?'情绪推高的弦乐收尾':'节奏渐强的鼓点'))+'\n';
+}
+out+='\n【'+hook+'】\n'+reverseHooks[hook]+'\n\n';
+out+='📌 拍摄提示：竖屏拍摄，前 3 秒必须有情绪钩子，字幕短平快，剪辑节奏卡在 2-3 秒一个镜头。';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 短剧脚本已复制！'))}
+</script>
+</body>
+</html>

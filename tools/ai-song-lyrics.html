@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 歌词创作器 | AgentGongju.com</title>
+<meta name="description" content="根据主题、情绪与风格，快速生成有韵味的歌词，附带押韵与节奏感建议，适合创作者找灵感">
+<meta name="keywords" content="歌词创作,AI写词,歌词灵感,作词,押韵,写歌">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:70px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.9;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🎵 AI 歌词创作器</h1><p>写一首专属于你此刻心情的歌</p></div>
+
+<div class="card">
+<label>🎤 歌曲主题</label>
+<textarea id="theme" placeholder="例如：异地恋、毕业离别、追梦不放弃"></textarea>
+<div class="param-row">
+<div><label>🎭 情绪基调</label>
+<select id="mood"><option value="温暖">🌤 温暖治愈</option><option value="伤感">🌧 伤感怀旧</option><option value="励志">🔥 热血励志</option><option value="轻松" selected>🌸 轻松俏皮</option></select></div>
+<div><label>🎼 曲风</label>
+<select id="genre"><option value="抒情">🎹 抒情流行</option><option value="民谣">🎸 民谣</option><option value="说唱" >🎤 说唱</option><option value="古风" selected>🏮 古风</option></select></div>
+</div>
+<label>🔤 歌名（选填，不填则自动生成）</label>
+<input type="text" id="title" placeholder="例如：晚风、归途">
+<button class="btn-gen" id="genBtn">🎼 创作歌词</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🎶 你的歌词</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制歌词</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const titles=['晚风里的答案','未寄出的信','追光的人','半城烟雨','奔赴山海','把心事唱给你听','四季都等你','越过人海里那盏灯'];
+const verses={
+温暖:[['把云朵揉进晚安','把星光铺在路边'],['一杯热茶等你回家','一句早安让我心安']],
+伤感:[['风把旧信吹散在街角','黄昏落在没说完的话'],['我把夏天叠进口袋','你却走向了秋天']],
+励志:[['哪怕逆着风也要奔跑','把汗水写成骄傲'],['跌倒一百次就站一百零一次','光的尽头是远方']],
+轻松:[['今天也是元气满满','烦恼统统丢进回收站'],['奶茶加冰快乐加倍','生活偶尔也需要摆烂']]
+};
+const choruses=['副歌核心：用最上口的一句循环升华主题','重复的旋律配上简单直白的句子，最容易被记住','副歌情绪要最饱满，用意象堆叠出画面感'];
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 歌词创作器 | AgentGongju.com'))return;
+const theme=document.getElementById('theme').value.trim();
+const mood=document.getElementById('mood').value;
+const genre=document.getElementById('genre').value;
+const title=(document.getElementById('title').value.trim()|| ('《'+(titles[Math.floor(Math.random()*titles.length)])+'》'));
+if(!theme){alert('请先输入歌曲主题');return;}
+const v=verses[mood];
+const r=Math.floor(Math.random()*v[0].length);
+const pickTheme=theme;
+let out=title+'\n（'+mood+' · '+(genre==='说唱'?'说唱节奏 ':genre==='古风'?'古风韵味 ':'流行 ')+'· 主题：'+pickTheme+'）\n\n──────\n\n';
+// 主歌1
+out+='【第一段主歌】\n';
+out+=(genre==='古风'?'青石巷口晚来风，折一枝梅花寄东风\n':v[0][r]+'\n');
+out+=(genre==='古风'?'抬眼望尽山万重，故人归处烟雨濛\n':v[1][r]+'\n\n');
+out+='【第二段主歌】\n';
+out+='关于「'+pickTheme+'」，我把心事写进字里行间——\n';
+out+=(mood==='励志'?'就算全世界都在说算了，我也偏要再试一次。\n':mood==='伤感'?'有些话还没说完，就已经飘散在风里了。\n':'日子虽然平平淡淡，也有细细碎碎的小确幸。\n')+'\n';
+// 副歌
+out+='【副歌】\n';
+const ch=(mood==='励志'?'就算跌倒也向上，追光的人自带光芒':(mood==='伤感'?'宁愿错过千万人海，也要记得你的模样':(mood==='温暖'?'把温柔都给你，四季都不缺席':'快乐其实很简单，把今天过甜就行')));
+out+=ch+'\n';
+out+=ch.split(' ')[0]+'，'+(genre==='说唱'?'Floating 的节拍里 flow 出梦想':'让我把这一遍，再唱给风听一遍')+'\n';
+out+=choruses[(mood==='励志'?2:(mood==='伤感'? ((theme.length%2)+1) :1))]+'\n\n';
+// Bridge
+out+='【Bridge】\n';
+out+='如果可以，我想把「'+pickTheme+'」写成一句最温柔的话——\n';
+out+='愿所有未完的故事，都还有好好结尾的那一天。\n\n';
+// Outro
+out+='（歌词完）\n\n──────\n';
+out+='🎙 编曲/演唱建议：'+genre+'风格注意节奏轻重，副歌可以加入和声叠唱增强感染力。';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 歌词已复制！'))}
+</script>
+</body>
+</html>

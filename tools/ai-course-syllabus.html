@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 课程大纲生成 | AgentGongju.com</title>
+<meta name="description" content="输入课程主题与目标人群，快速生成结构化课程大纲，含章节设计、课时安排与学习目标，适合讲师与知识博主">
+<meta name="keywords" content="课程大纲,课程设计,教学大纲,知识付费,讲师备课,技能课">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:60px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.9;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📋 AI 课程大纲生成</h1><p>从零设计一门逻辑清晰、干货满满的课程</p></div>
+
+<div class="card">
+<label>🎓 课程主题</label>
+<textarea id="theme" placeholder="例如：零基础学会短视频剪辑"></textarea>
+<div class="param-row">
+<div><label>👥 目标人群</label>
+<select id="audience"><option value="零基础小白" selected>零基础小白</option><option value="进阶学习者">进阶学习者</option><option value="企业内训">企业内训</option><option value="少儿">少儿</option></select></div>
+<div><label>📚 课程形式</label>
+<select id="format"><option value="录播视频">🎥 录播视频</option><option value="直播互动" selected>🔴 直播互动</option><option value="图文专栏">📄 图文专栏</option></select></div>
+</div>
+<label>⏳ 总课时预计（选填）</label>
+<input type="text" id="hours" placeholder="如：10节课 / 约6小时">
+<button class="btn-gen" id="genBtn">✨ 生成课程大纲</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">📚 课程大纲</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制大纲</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const intros=['这门课不讲空洞理论，只教能马上上手的方法。','这是一门带你从入门到上手的实操课，循序渐进、环环相扣。','我们希望学完这门课，你能真正独立完成任务，而不是只会看不会做。'];
+const chapterSkeletons=[
+['认知与目标','为什么学、学完能收获什么、建立正确认知'],
+['工具上手','核心工具/软件的第一节课，手把手演示'],
+['核心方法','本课最关键的方法论，配案例拆解'],
+['综合实战','完整案例实操，把前面知识串起来'],
+['避坑进阶','常见错误、优化技巧与进阶方向'],
+['总结与展望','知识梳理、作业布置与答疑']
+];
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 课程大纲生成 | AgentGongju.com'))return;
+const theme=document.getElementById('theme').value.trim();
+const audience=document.getElementById('audience').value;
+const format=document.getElementById('format').value;
+const hours=document.getElementById('hours').value.trim();
+if(!theme){alert('请先输入课程主题');return;}
+const in2=audience==='零基础小白'?'超级友好，从最基础讲起，无需任何前置经验':(audience==='进阶学习者'?'已具备一定基础，直接切入进阶技巧':(audience==='少儿'?'生动活泼、寓教于乐，多互动多游戏':'面向企业场景，注重落地与团队协作'));
+const sk=chapterSkeletons;
+let out='《'+theme+'》课程大纲\n';
+out+='目标人群：'+audience+'（'+in2+'）\n';
+out+='课程形式：'+format+(hours?'　预计课时：'+hours:'')+'\n\n';
+out+='【课程总目标】\n学完后，学员能够'+(x=>x)(theme)+'——从思路建立到动手实操，形成完整闭环能力。\n\n';
+out+=intros[Math.floor(Math.random()*intros.length)]+'\n\n';
+const parts=audience==='零基础小白'||audience==='少儿'?5:6;
+out+='【章节安排】\n';
+for(let i=0;i<parts;i++){
+out+='\n第 '+(i+1)+' 章｜'+sk[i][0]+'\n';
+out+='· 本章目标：'+sk[i][1]+'\n';
+out+='· 课时拆解：\n';
+out+='　· 课时'+(i*2+1)+'：'+sk[i][0]+'——概念引入与开胃案例\n';
+out+='　· 课时'+(i*2+2)+'：'+sk[i][0]+'——实操演练与【本次作业】\n';
+}
+out+='\n【配套资源】\n· 课件PPT　· 实操素材包　· 课后练习与参考答案　· 社群答疑\n\n';
+out+='【结课安排】\n· 学员提交一份完整作品，讲师逐一点评复盘\n· 优秀作品示范展示，颁发结课证书';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 课程大纲已复制！'))}
+</script>
+</body>
+</html>

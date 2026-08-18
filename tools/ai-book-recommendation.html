@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 智能荐书助手 | AgentGongju.com</title>
+<meta name="description" content="根据你的阅读兴趣、当下状态与时间安排，智能推荐适合你的好书，附推荐理由与阅读建议">
+<meta name="keywords" content="荐书,书单推荐,读书,好书推荐,阅读,书单">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:70px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.9;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📚 AI 智能荐书助手</h1><p>懂你此刻的书单推荐，少走弯路读好书</p></div>
+
+<div class="card">
+<label>📖 你感兴趣的领域（可写多个）</label>
+<textarea id="interest" placeholder="例如：心理学、职场成长、科幻小说"></textarea>
+<div class="param-row">
+<div><label>🎯 当下阅读目的</label>
+<select id="purpose"><option value="系统学习">📘 系统学习</option><option value="放松解压">☕ 放松解压</option><option value="开拓眼界">🔭 开拓眼界</option><option value="解决问题" selected>💡 解决问题</option></select></div>
+<div><label>⏳ 每周可读时间</label>
+<select id="time"><option value="不到1小时">⏱ 不到1小时</option><option value="2-4小时">🕐 2-4小时</option><option value="5小时以上" selected>🕑 5小时以上</option></select></div>
+</div>
+<label>🧐 最近读过的书或偏好的写法（选填）</label>
+<input type="text" id="history" placeholder="如：喜欢讲故事的《人类简史》">
+<button class="btn-gen" id="genBtn">✨ 为我荐书</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">📚 为你推荐的书单</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制书单</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const books=[{t:'《思考，快与慢》',a:'丹尼尔·卡尼曼',type:'心理学',reason:'诺贝尔经济学奖得主之作，讲透直觉与理性如何影响决策，很适合想提升判断力的人'},{t:'《刻意练习》',a:'安德斯·艾利克森',type:'成长',reason:'打破“天赋决定论”，给出技能提升的科学方法，适合想精进某项能力'},{t:'《原则》',a:'瑞·达利欧',type:'成长',reason:'传奇投资人的思维框架，教你建立自己的做人做事原则'},{t:'《人类简史》',a:'尤瓦尔·赫拉利',type:'历史',reason:'用宏大又有趣的视角重新看懂人类文明，读起来像追剧'},{t:'《活着》',a:'余华',type:'文学',reason:'用最朴素的文字讲最深的生命主题，适合深夜静读'},{t:'《被讨厌的勇气》',a:'岸见一郎',type:'心理',reason:'用对话体讲阿德勒心理学，教你接纳自我、活得自在'},{t:'《小王子》',a:'圣埃克苏佩里',type:'文学',reason:'一本写给大人的童话，常读常新，温柔治愈'},{t:'《高效能人士的七个习惯》',a:'史蒂芬·柯维',type:'职场',reason:'自我管理的经典之作，帮你建立长期主义的处世方式'},{t:'《乡土中国》',a:'费孝通',type:'社科',reason:'理解中国社会与人际关系的入门经典，简短又深刻'},{t:'《Atomic Habits》',a:'詹姆斯·克利尔',type:'成长',reason:'微习惯改变人生的实操指南，方法可立刻上手'},{t:'《蛤蟆先生去看心理医生》',a:'罗伯特·戴博德',type:'心理',reason:'用童话故事带你看懂情绪根源，轻松又不肤浅'},{t:'《平凡的世界》',a:'路遥',type:'文学',reason:'写给平凡人的奋斗史诗，读完会充满力量'},{t:'《人类群星闪耀时》',a:'斯蒂芬·茨威格',type:'传记',reason:'14个改变历史的瞬间，历史原来如此惊心动魄'},{t:'《认知觉醒》',a:'周岭',type:'成长',reason:'中文读者友好的自我成长方法论，直击当代人痛点'}];
+const typeOf=t=>t.t.includes('简史')||t.t.includes('群星')?'历史':(t.t.includes('简史')||t.t.includes('乡土')?'社科':(t.t.includes('心理')||t.t.includes('勇气')||t.t.includes('蛤蟆')?'心理':(t.t.includes('原则')||t.t.includes('习惯')||t.t.includes('刻意')||t.t.includes('认知')||t.t.includes('Atomic')?'成长':'文学')));
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 智能荐书助手 | AgentGongju.com'))return;
+const interest=document.getElementById('interest').value.trim();
+const purpose=document.getElementById('purpose').value;
+const time=document.getElementById('time').value;
+const history=document.getElementById('history').value.trim();
+if(!interest){alert('请先输入你感兴趣的领域');return;}
+let prefs=[interest];
+if(history)prefs.push(history);
+const joined=prefs.join(' ');
+// 粗匹配兴趣分类
+let score={};
+books.forEach((b,idx)=>{let s=0;const kw=[b.t,b.type];kw.forEach(k=>{if(joined.includes(k))s+=2;});score[idx]=s;});
+let picked=[];
+Object.keys(score).sort((a,b)=>score[b]-score[a]).forEach((idx,k)=>{if(k<3)picked.push(books[idx]);});
+if(picked.length<3){books.forEach(b=>{if(!picked.includes(b)&&picked.length<4)picked.push(b);});}
+picked=picked.slice(0,4);
+// 依据时间调整阅读建议
+const daily=time==='不到1小时'?'每天 15 分钟、选章节阅读更易坚持':(time==='2-4小时'?'每天 30 分钟，一周一本薄书刚好':'可以挑战大部头，采用“每天一章”计划');
+let out='📚 结合你的「'+interest+'」与「'+purpose+'」目标，为你推荐：\n\n';
+picked.forEach((b,i)=>{
+out+='【'+(i+1)+'】'+b.t+' — '+b.a+'\n';
+out+='· 推荐理由：'+b.reason+'\n';
+out+='· 分类：'+b.type+'   建议：'+(i===0?'第一本入手':'搭配阅读')+'\n\n';
+});
+out+='── 阅读行动计划 ──\n';
+out+='· 优先级：先从 『'+picked[0].t+'』 开始，建立阅读正反馈。\n';
+out+='· 节奏：'+daily+'。\n';
+out+='· 工具：读完一章做 3 条摘抄 + 1 个自己的应用点子，记得更牢。\n';
+if(history)out+='· 补充：鉴于你提到读过「'+history+'」，书单已尽量避免同题材重复。\n';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 书单已复制！'))}
+</script>
+</body>
+</html>

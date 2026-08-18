@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 员工表扬信生成 | AgentGongju.com</title>
+<meta name="description" content="根据员工的具体事迹，快速生成真诚专业的表扬信或表彰词，适合主管、HR与团队管理者使用">
+<meta name="keywords" content="表扬信,员工表彰,感谢信,管理工具,团队激励,表扬词">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:70px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🌟 AI 员工表扬信生成</h1><p>让每一份付出都被真诚看见</p></div>
+
+<div class="card">
+<label>🙋 员工姓名</label>
+<input type="text" id="name" placeholder="例如：李小明">
+<label>📝 值得表扬的具体事迹（越具体越好）</label>
+<textarea id="deed" placeholder="例如：主动接手了临时任务，连续加班三天，最终提前两天交付并得到客户好评"></textarea>
+<div class="param-row">
+<div><label>🎯 表扬类型</label>
+<select id="type"><option value="正式公开表扬">🏆 正式公开表扬</option><option value="日常私聊鼓励">💬 日常私聊鼓励</option><option value="述职/评优推荐" selected>📋 述职/评优推荐</option></select></div>
+<div><label>📢 你的身份</label>
+<select id="role"><option value="直属主管">直属主管</option><option value="部门负责人" selected>部门负责人</option><option value="人事HR">人事HR</option></select></div>
+</div>
+<label>📅 事件所在时间段（选填）</label>
+<input type="text" id="period" placeholder="如：本月 / 上个季度 / 本次项目周期">
+<button class="btn-gen" id="genBtn">✨ 生成表扬信</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">💌 表扬信</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制表扬信</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const opens=['我非常高兴能够在这个时间点上，向团队的每一位成员郑重介绍一件值得被记住的事。','今天想和大家分享一个让我印象深刻的小故事。','这段时间有件事始终让我心头一暖，今天想特别提一提。','感谢每一位认真做事的人，也感谢你们让我们看到了什么是靠谱。'];
+const reasons=['责任心强、执行力高，是我们不可或缺的中坚力量。','在关键时刻敢于担当，体现了团队应有的专业与主动。','不仅完成了任务本身，更用行动带动了整个团队的士气。','他的表现，正是公司倡导价值观的最好示范。'];
+const closings=['希望这份表扬，能让他/她感受到团队的真挚认可。','愿我们都能带着这样的热情继续前行。','让我们他/她用最热烈的掌声表示祝贺！','这种精神值得每一位伙伴共同学习。'];
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 员工表扬信生成 | AgentGongju.com'))return;
+const name=document.getElementById('name').value.trim();
+const deed=document.getElementById('deed').value.trim();
+const type=document.getElementById('type').value;
+const role=document.getElementById('role').value;
+const period=document.getElementById('period').value.trim();
+if(!name||!deed){alert('请填写员工姓名和具体事迹');return;}
+const o=opens[Math.floor(Math.random()*opens.length)];
+const r=reasons[(name.length+deed.length)%reasons.length];
+const c=closings[(deed.length)%closings.length];
+let out=type==='正式公开表扬'?'【公开表扬公告】\n':'【'+type+'】\n\n';
+const header=type==='日常私聊鼓励'?'一条真诚的私聊消息':('致 '+name+' 的表扬信');
+out+=header;
+if(type!=='日常私聊鼓励')out+='\n\n致 '+name+'：';
+out+='\n\n'+o+'\n\n';
+out+=(period?'在'+period+'里，':'')+'我想特别提到 '+name+'——'+deed+'。\n\n';
+out+='这份表现背后，是 '+name+' 的'+r+'\n\n';
+out+='他/她的行动，让我们看到了什么叫把工作放在心上，也值得我们把这份赞许郑重送出。\n\n';
+if(type==='日常私聊鼓励'){
+out+='（私聊版）想对你说的就是：你的努力大家都看在眼里，辛苦了，为你骄傲。\n\n';
+}else{
+out+='（署名：'+role+'）\n\n';
+out+='特此表扬，以资鼓励。\n';
+}
+out+=c+'\n';
+out+=type!=='日常私聊鼓励'?('\n\n署名：你的 '+role+'\n日期：'+new Date().getFullYear()+' 年 '+(new Date().getMonth()+1)+' 月'):'';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 表扬信已复制！'))}
+</script>
+</body>
+</html>

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>写给未来的一封信 | AgentGongju.com</title>
+<meta name="description" content="记录此刻的心情与期许，生成一封寄给未来自己的信，回顾成长、见证变化">
+<meta name="keywords" content="写给未来,时间胶囊,一封信,成长,期许,记录">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:80px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>💌 写给未来的一封信</h1><p>把此刻的感受，温柔地寄给几年后的自己</p></div>
+
+<div class="card">
+<label>📅 寄给多久后的自己</label>
+<select id="when"><option value="一年后">一年后</option><option value="三年后">三年后</option><option value="五年后" selected>五年后</option><option value="十年后">十年后</option></select>
+<label>✍️ 此刻想对未来的自己说的话（可写心情、困惑或期许）</label>
+<textarea id="note" placeholder="例如：现在的我有些迷茫，不知道工作该怎么选，但我想告诉你……"></textarea>
+<div class="param-row">
+<div><label>🎭 信的语气</label>
+<select id="tone"><option value="温暖鼓励">🌞 温暖鼓励</option><option value="理性客观">🎯 理性客观</option><option value="幽默轻松">😄 幽默轻松</option></select></div>
+<div><label>👤 收信人称呼</label>
+<select id="who"><option value="亲爱的自己">亲爱的自己</option><option value="未来的我">未来的我</option><option value="老友" >老友</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">💌 生成这封信</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">📮 你的来信</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制这封信</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const opens=[
+ '你好呀，我是写这封信时那个还在路上奔波的你。',
+ '嘿，很高兴你能读到这封信，它是多年前的我，特意留给你的一份时光礼物。',
+ '此刻的我停下脚步，写下这些话，想和未来的你好好聊聊天。',
+ '见字如面。愿此刻的你已经活成了自己喜欢的模样。'
+];
+const midWarm=['我想告诉未来的你：无论你现在面对怎样的选择，都别忘了你曾有过的勇气。','希望你已经找到了内心真正想做的事，而不是被日子推着走。','记得照顾好身体，早点休息，别让当初那个爱拼的你忘记好好爱自己。'];
+const midRational=['时间是最好的过滤器，那些当初以为过不去的坎，多半已云淡风轻。','回看这段路，重要的是你持续在往前走，而不是每一步都完美。','愿你依然保有好奇，学有所得，也敢于说一句“我不懂”。'];
+const midHumor=['顺便提一句，答应我少熬夜、多喝水，别让未来的你为现在的你买单。','要是那时你还是不会砍价，也没关系，至少你开心就行。'];
+const closings=['愿时光温柔待你，愿你不负曾认真写下的每一个字。','无论世事如何变迁，都愿你眼里有光，心中有暖。','一路走来辛苦了，未来的你，请记得好好拥抱自己。','愿我们在时间的另一端，依然彼此欣赏。'];
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('写给未来的一封信 | AgentGongju.com'))return;
+const when=document.getElementById('when').value;
+const note=document.getElementById('note').value.trim();
+const tone=document.getElementById('tone').value;
+const who=document.getElementById('who').value;
+if(!note){alert('请先写下一段想对未来的自己说的话');return;}
+const m=tone==='温暖鼓励'?midWarm:(tone==='理性客观'?midRational:midHumor);
+const pick=arr=>arr[Math.floor(Math.random()*arr.length)];
+const now=new Date();
+const targetYear=now.getFullYear()+(when==='一年后'?1:(when==='三年后'?3:(when==='五年后'?5:10)));
+const targetDate=(now.getMonth()+1)+'月'+now.getDate()+'日';
+let out='【写给 '+when+' 的自己】\n';
+out+='收信人：'+who+'\n';
+out+='寄件时间：'+now.getFullYear()+' 年 '+(now.getMonth()+1)+' 月 '+now.getDate()+' 日\n';
+out+='预想送达：'+targetYear+' 年 '+targetDate+'\n\n──────\n\n';
+out+=pick(opens)+'\n\n';
+out+='此刻的我，把这段话留给你：\n“'+note+'”\n\n';
+out+='如果说到那时你已忘记此刻的心情，那我再念叨几句——\n';
+out+='· '+pick(m)+'\n';
+out+='· '+((tone==='幽默轻松'?pick(m):pick(midWarm)))+'\n';
+out+='· 别丢了当初那个认真生活的自己。\n\n';
+out+=pick(closings)+'\n\n';
+out+='—— 写于 '+now.getFullYear()+'年，一直惦记着你的那个我\n\n';
+out+='📎 小贴士：建议把日期也写进手机备忘录，到点再打开这封信，会有不一样的感动。';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 这封信已复制！'))}
+</script>
+</body>
+</html>
