@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 暑假作息表 | AgentGongju.com</title>
+<meta name="description" content="为孩子生成一份劳逸结合、不鸡娃也不摆烂的暑假作息计划，学习运动娱乐兼得">
+<meta name="keywords" content="暑假作息,暑假计划,学生作息表,作息安排,假期计划,孩子暑假">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:60px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{color:#94a3b8;font-size:.85rem;margin-bottom:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🏖️ AI 暑假作息表</h1><p>学习、运动、玩闹都不落下的暑假黄金作息计划</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>🏫 所在年级</label>
+<select id="grade"><option value="小学">🎒 小学</option><option value="初中" selected>📚 初中</option><option value="高中">📖 高中</option></select></div>
+<div><label>⏰ 作息类型</label>
+<select id="type"><option value="规律">🌞 规律健康</option><option value="高强度">🔥 学习冲刺</option><option value="佛系">🌿 轻松愉快</option></select></div>
+</div>
+<div class="param-row">
+<div><label>🎯 兴趣爱好（可多选词）</label><input type="text" id="hobby" placeholder="例如：篮球、画画、钢琴"></div>
+<div><label>🕒 每天学习时长（小时）</label>
+<select id="study"><option value="2">2小时</option><option value="3" selected>3小时</option><option value="4">4小时</option><option value="6">6小时</option></select></div>
+</div>
+<label>📝 特别安排（选填）</label>
+<textarea id="extra" placeholder="例如：周二上游泳课、周末上午去图书馆"></textarea>
+<button class="btn-gen" id="genBtn">🗓️ 生成暑假作息表</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 孩子的暑假作息表</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制作息表</button>
+<div class="tip" style="margin-top:12px">💡 小贴士：作息表不用太死板，固定『睡、吃、学、动』四大关键时段，给孩子留白时间反而更能坚持。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const studyTasks={'小学':['数学计算练习','语文阅读/古诗背诵','英语单词','课本预习'],'初中':['数学/物理刷题','英语背单词听力','语文阅读写作','历史/道法背诵'],'高中':['理科刷题纠错','英语+单词长难句','语文作文素材','综合整理错题本']};
+const hobbies=['篮球','跳绳','游泳','画画','练琴','编程','手工','下棋'];
+const breakAct=['眺望远方放松眼睛','吃水果补充能量','到客厅伸个懒腰','洗把脸提提神'];
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 暑假作息表 | AgentGongju.com'))return;
+const grade=document.getElementById('grade').value;
+const type=document.getElementById('type').value;
+const hobby=document.getElementById('hobby').value.trim();
+const study=parseInt(document.getElementById('study').value);
+const extra=document.getElementById('extra').value.trim();
+const hs=hobby?hobby.split(/[，,、\s]/).filter(Boolean):hobbies.slice(0,2);
+const st=studyTasks[grade];
+const h1=Math.floor(study/2), h2=study-h1;
+let out='━━━━ '+grade+'生 · 暑假作息表（'+type+'型）━━━━\n';
+out+='\n🌅 07:00-07:30　起床、洗漱、喝水\n';
+out+='🌞 07:30-08:00　早餐 + 晨读（古诗/英语）\n';
+if(type!=='佛系'){out+='📖 08:00-09:30　学习时段①（'+st[0]+'）'+h1+'h\n';}else{out+='🖼️ 08:00-09:30　自由阅读/兴趣时间\n';}
+out+='🍎 09:30-10:00　加餐 + '+breakAct[0]+'\n';
+out+='📖 10:00-11:30　学习时段②（'+st[1]+'）\n';
+out+='🏃 11:30-12:00　运动时间：'+hs[0]+' or 小区活动\n';
+out+='🍚 12:00-13:30　午餐 + 午休\n';
+if(type==='高强度'){out+='📖 14:00-16:00　学习时段③（'+st[2]+'）+ 错题整理\n';}else if(type==='佛系'){out+='🎨 14:00-16:00　兴趣/户外自由活动\n';}else{out+='🎨 14:00-15:30　兴趣时间：'+(hs[1]||hs[0])+'\n📖 15:30-16:30　学习时段③（'+st[2]+'）\n';}
+out+='🍉 16:30-17:30　吃水果 + 自由活动/家务小帮手\n';
+out+='🍲 17:30-19:00　晚餐 + 家庭聊天\n';
+out+='📚 19:00-20:00　晚间复习 / 课外阅读\n';
+out+='📱 20:00-21:00　自由放松（控制屏幕时间）\n';
+out+='🛌 21:30　洗漱、准备睡觉（'+(grade==='小学'?'21:30':grade==='初中'?'22:00':'22:30')+'前入睡）\n';
+if(extra){out+='\n【📌 特别安排】\n· '+extra+'\n';}
+out+='\n【💡 执行建议】\n· 每天固定学习'+study+'小时，坚持比突击更有效。\n· 周末留半天完全放松，改到户外。\n· 作息表贴墙上，完成一项打勾有成就感。\n'
++'· 家长多鼓励少催促，保护学习兴趣。';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 作息表已复制！'))}
+</script>
+</body>
+</html>

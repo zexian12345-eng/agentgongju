@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI周公解梦 | AgentGongju.com</title>
+<meta name="description" content="输入你梦见的场景或事物，AI基于传统周公解梦与现代心理解读，帮你分析梦境寓意、潜在心理暗示与吉凶参考。">
+<meta name="keywords" content="周公解梦,解梦,梦境解析,做梦,梦的含义,心理暗示">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+textarea,input[type=text],select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:80px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tag-btn{display:inline-block;padding:5px 12px;background:rgba(99,102,241,0.12);border:1px solid rgba(99,102,241,0.25);border-radius:20px;color:#a5b4fc;cursor:pointer;font-size:.8rem;margin:3px;transition:all .2s}
+.tag-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🌙 AI周公解梦</h1><p>梦是一封写给你的信，帮你读懂它</p></div>
+
+<div class="card">
+<label>✨ 快速选择梦境关键词</label>
+<div>
+<span class="tag-btn" onclick="setTag('梦见蛇')">🐍 蛇</span>
+<span class="tag-btn" onclick="setTag('梦见掉牙齿')">🦷 掉牙</span>
+<span class="tag-btn" onclick="setTag('梦见水')">💧 水</span>
+<span class="tag-btn" onclick="setTag('梦见飞')">🕊️ 飞翔</span>
+<span class="tag-btn" onclick="setTag('梦见考试')">📚 考试</span>
+<span class="tag-btn" onclick="setTag('梦见死亡')">⚰️ 死亡</span>
+<span class="tag-btn" onclick="setTag('梦见结婚')">💒 结婚</span>
+<span class="tag-btn" onclick="setTag('梦见迷路')">🧭 迷路</span>
+</div>
+<label>📝 描述你的梦境</label>
+<textarea id="dream" placeholder="例如：我梦见一条蛇追着我跑，最后变成了一朵花……"></textarea>
+<button class="btn-gen" id="genBtn">🔮 解析梦境</button>
+<label style="margin-top:12px;color:#64748b;font-size:.8rem">* 解梦内容仅供娱乐参考，不必过度在意吉凶</label>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🌙 你的梦境解析</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制解析</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const tags=['蛇','牙','水','飞','考试','死亡','结婚','迷路','花','火','雨','追','哭','雨','坠落','房子','老人','婴儿','大海','钱','头发','开车','爬','消失','受伤'];
+const lore={
+'蛇':['潜意识里的不安或转变','可能预示近期情绪波动或人际关系的变化'],
+'掉牙/牙齿':['与压力、成长或表达相关','有时代表对衰老、失去或说不出口的话的焦虑'],
+'水':['象征情绪与财运','清水代表顺遂，浑浊水可能提示情绪积压'],
+'飞':['代表渴望自由与突破','可能提示你正想摆脱束缚，追寻更高目标'],
+'考试':['与自我评判和压力相关','预示你正在意他人的认可或对某事没有把握'],
+'死亡/死':['象征旧事物结束与新开始','并非凶兆，更多是「放下」与「重生」的隐喻'],
+'结婚/婚':['代表结合、承诺或新的责任','可能反映你对某段关系的期待或对责任的思考'],
+'迷路':['与方向感缺失相关','提示近期对人生或工作目标感到迷茫'],
+'花':['象征美好的事物与收获','预示心情愉悦，或有好消息将至'],
+'火':['代表激情、能量或危机','燃起的火是动力，失控的火则提示情绪管理'],
+'追':['代表压力、竞争或未解决的事','提示有事情在追赶你，需要正面面对'],
+'坠落':['与失控感、不安全感相关','常出现在压力大、缺乏掌控感时'],
+'房子/屋':['象征内心世界与安全感','房子的新旧好坏反映你内心的安稳程度'],
+'老人':['代表智慧、经验或对岁月的思考','可能提示你需要沉淀与借鉴经验'],
+'婴儿/宝宝':['象征新的开始与希望','预示新项目、新生命或新的可能性'],
+'大海/海':['代表广阔的情绪或机会','平静的海预示顺利，波涛汹涌则提示情绪波动'],
+'雨':['象征情感释放与洗涤','淋雨常对应压力宣泄或情绪的释放'],
+'开车/车':['代表掌控力与人生方向','顺利开车预示状态良好，失控则提示需谨慎']
+};
+const luckNotes=['梦到积极的意象，今天可以试着主动推进内心一直想做的那件事。','梦境提示你将迎来「放下」的瞬间，建议把堆积的情绪好好整理一次。','这两天适合关注直觉，一些犹豫不决的事，或许本能已给出答案。','梦是潜意识的回响，白天多做些让自己安心的准备，会更有底气。'];
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI周公解梦 | AgentGongju.com'))return;
+const dream=document.getElementById('dream').value.trim();
+if(!dream){alert('请先描述你的梦境');return;}
+const hit=tags.filter(t=>dream.includes(t));
+const matchedLore=hit.map(t=>lore[uniqueKey(t)]).filter(Boolean);
+const symbol=(hit.length?hit.slice(0,2):['梦境场景']).join('、');
+let out='【梦境】\n'+dream+'\n\n';
+out+='【解析】\n';
+if(matchedLore.length){
+  matchedLore.forEach(l=>{out+='· '+l[0]+'：'+l[1]+'\n';});
+}else{
+  out+='· 这个梦境更多反映你近期的心理状态与潜在情绪，建议结合最近的生活压力来理解。\n';
+}
+out+='\n【心理提示】\n'+(symbol)+'的意象，往往对应你内心「'+moodGuess(hit)+'」的状态。这是潜意识在与你对话，不必害怕。\n\n';
+out+='【今日建议】\n'+luckNotes[Math.floor(Math.random()*luckNotes.length)]+'\n\n';
+out+='—— 解梦内容仅供娱乐参考，愿你一夜好眠 🌙';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function uniqueKey(t){
+  if(t==='掉牙'||t==='牙齿')return '掉牙/牙齿';
+  if(t==='死')return '死亡/死';
+  if(t==='婚')return '结婚/婚';
+  if(t==='屋')return '房子/屋';
+  if(t==='宝宝')return '婴儿/宝宝';
+  if(t==='海')return '大海/海';
+  if(t==='车')return '开车/车';
+  return t;
+}
+function moodGuess(hit){
+  if(hit.some(t=>['坠落','追','死','考试','迷路'].includes(t)))return '有些焦虑或压力';
+  if(hit.some(t=>['花','飞','婴儿','宝宝','结婚'].includes(t)))return '期待美好、想要成长';
+  if(hit.some(t=>['水','雨','大海'].includes(t)))return '情绪涌动、渴望释放';
+  return '正在思考与沉淀';
+}
+function setTag(v){document.getElementById('dream').value=v;}
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 解析已复制！'))}
+</script>
+</body>
+</html>

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 家居收纳整理方案 | AgentGongju.com</title>
+<meta name="description" content="卧室衣柜、厨房冰箱、客厅杂物…按区域生成专业的收纳整理方案，从"断舍离"到"保持不乱"的完整攻略">
+<meta name="keywords" content="收纳整理,家居收纳,断舍离,衣柜整理,厨房收纳,房间整理,极简生活">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:70px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📦 AI 家居收纳整理方案</h1><p>告别凌乱，从今天开始让家变"轻"</p></div>
+
+<div class="card">
+<label>🏠 整理区域</label>
+<select id="area"><option value="衣柜" selected>👕 衣柜/换季衣橱</option><option value="厨房">🍳 厨房/冰箱</option><option value="客厅">🛋 客厅/杂物</option><option value="书房">📚 书房/书桌</option><option value="卧室">🛏 卧室/床品</option><option value="全屋">🏠 全屋整体</option></select>
+<div class="param-row">
+<div><label>👨‍👩‍👧 居住人数</label>
+<select id="people"><option value="1人">1人</option><option value="2人" selected>2人</option><option value="3人">3-4人</option><option value="5人以上">5人以上</option></select></div>
+<div><label>⏰ 收纳风格</label>
+<select id="style"><option value="极简">极简断舍离</option><option value="实用" selected>实用主义</option><option value="日系">日系MUJI风</option></select></div>
+</div>
+<label>📝 困扰描述（选填）</label>
+<textarea id="pain" placeholder="如：衣柜塞满了但每天还是找不到衣服…"></textarea>
+<button class="btn-gen" id="genBtn">✨ 生成收纳方案</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#60a5fa;font-weight:600;margin-bottom:12px">🧹 整理方案</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制方案</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const plans={
+'衣柜':{step:['第一步：全部清空','把整个衣柜的衣服全部拿出来，铺在床上/沙发上，先分类：常穿/不常穿/从没穿过/不合适的',],principle:['1. 近一年没穿过的：要么送人要么捐掉\n2. 不合适/显旧的：果断出手\n3. 同一类保留最佳2-3件'],org:['按"颜色→品类"分区：上衣挂一排、裤装一排、外套一排\n叠放区：毛衣、T恤竖着叠（抽屉法）\n上方储物格：换季衣物+床品\n下方抽屉：内衣袜子在右侧、配饰在左侧'],tip:['挂衣区只留常穿款，约60%挂、40%叠\n衣架统一颜色（黑色/白色）立马显高级\n换季时"上正下副"原则：当季放顺手层']},
+'厨房':{step:['第一步：分区清空','把厨房所有物品逐一拿出来，按功能分：锅具/餐具/调味品/食品/清洁用品/小家电',],principle:['1. 超过半年没用的厨房小家电：卖掉或送人\n2. 过期的调味品立刻扔\n3. 同种类只留一套'],org:['台面"清零"：能进柜的绝不摆台面\n抽屉：餐具按"动线"放，最常用的在前\n吊柜上：干货、常温食材（避免潮湿）\n冰箱：密封盒统一分装，贴标签\n挂墙：锅盖沥水架、抹布钩'],tip:['调味品用统一玻璃瓶+白标签\n食品"先进先出"原则\n每周日晚上花10分钟顺手归位一次']},
+'客厅':{step:['第一步：视觉清零','先做一轮"减少70%暴露物"的整理：茶几、电视柜、书架表面上只保留美观的东西',],principle:['1. 桌面摆放后不遮视线\n2. 电子产品线材全遮蔽\n3. 杂物装进带盖收纳篮'],org:['电视柜：下层放"低频物品"（急救、纸巾、充电器）\n茶几：只留最高频的纸巾+遥控器\n沙发旁：放一个带盖收纳筐\n角落：立式收纳柜+顶天立地架'],tip:['"一进一出"原则：买一件新的丢一件旧的\n所有插座附近放一个小收纳盒装充电线']},
+'书房':{step:['第一步：电子化清理','先把纸质文件全部扫描/拍照入手机，能电子化就不留纸',],principle:['1. 纸文件分三类：必留（重要原件）/短期/可扔\n2. 书桌只保留"今日在用的"1-2件\n3. 所有笔和笔记本统一放一个笔筒'],org:['抽屉分区：A常用笔具、B便利贴/回形针、C数据线\n桌面立式文件分格架分类存放\n书架：按"在读→收藏→工具书"排序\n线材全部卷好放收纳盒'],tip:['给每摞纸加标签："处理中/已处理"\n每周末整理桌面 5 分钟']},
+'卧室':{step:['第一步：床品更换+被褥换季','当季床品清洗晾晒，换季被褥压缩收纳',],principle:['1. 被子真空压缩袋收进床底/柜顶\n2. 枕头只留2-4个，多余的收\n3. 床下空间用带轮收纳箱利用起来'],org:['床边：床头柜只放手机+水杯+一本书\n床尾：放一条毛毯+收纳筐\n衣柜最上层：换季床品成套装好贴标签'],tip:['卧室越"空"睡眠越好\n睡前5分钟顺手把床品铺好，房间瞬间整']},
+'全屋':{step:['第一天：卧室+衣柜 → 第二天：厨房+冰箱 → 第三天：客厅+玄关 → 第四天：书房+卫生间',],principle:['1. 用"扔东西"判断法：再买回来要花多少钱？不值就扔\n2. 同类物品归位到固定"家"\n3. 每天固定一个区域，4天回完'],org:['全屋"1个问题1个固定位置"原则\n玄关：鞋柜+钥匙盘+快递签收台\n卫生间：洗漱台只放每日用品，其他进柜'],tip:['整理完拍一张"before/after"对比照，超有成就感\n以后坚持"每天5分钟归位"就能长期不乱']}
+};
+const styleNames={极简:'（极简风：减少拥有的物品，只保留必需的）',实用:'（实用风：以好用为前提，兼顾美观）',日系:'（日系风：原木色系＋低饱和收纳，视觉舒适）'};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 家居收纳整理方案 | AgentGongju.com'))return;
+const area=document.getElementById('area').value;
+const people=document.getElementById('people').value;
+const style=document.getElementById('style').value;
+const pain=document.getElementById('pain').value.trim();
+const p=plans[area];
+let out='【'+area+' · '+people+'人 · '+styleNames[style]+'】\n\n';
+if(pain)out+='你的困扰：「'+pain+'」\n\n';
+out+='—— '+p.step[0]+' ——\n'+p.step[1]+'\n\n';
+out+='—— 断舍离标准 ——\n'+p.principle.join('\n')+'\n\n';
+out+='—— 收纳布局 ——\n'+p.org.join('\n')+'\n\n';
+out+='—— 保持不乱的秘诀 ——\n'+p.tip.join('\n')+'\n\n';
+out+='📌 执行建议\n· 用"整理前拍照"给自己动力\n· 每天做1个区域，别贪多\n· '+(style==='极简'?'给自己定"买一扔一"的规矩':'收纳后坚持"物归原位"')+'\n祝你早日拥有一个清爽整洁的家！';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 收纳方案已复制，马上行动！'))}
+</script>
+</body>
+</html>

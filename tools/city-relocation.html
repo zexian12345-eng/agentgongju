@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 跨城搬家攻略 | AgentGongju.com</title>
+<meta name="description" content="从打包清单到物流选择、从租房安顿到社保医保转接，生成跨城搬家全流程攻略，让你顺利安家新城市">
+<meta name="keywords" content="跨城搬家,搬家攻略,搬家流程,异地搬家,搬家公司,租房安顿,城市迁移">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🚚 AI 跨城搬家攻略</h1><p>从离开到安顿，每一步都有章法</p></div>
+
+<div class="card">
+<label>💼 搬家方式</label>
+<select id="move"><option value="整包物流" selected>整包物流（大件全发）</option><option value="随身+物流">只带随身物品，大件处理掉</option><option value="自驾搬家">自驾+自己搬</option></select>
+<div class="param-row">
+<div><label>🏙 搬去哪类城市</label>
+<select id="dest"><option value="一线" selected>一线城市</option><option value="二线">二线城市</option><option value="三四线">三四线城市/回老家</option></select></div>
+<div><label>🧳 随身物品量</label>
+<select id="bags"><option value="少">1-2箱</option><option value="中" selected>3-5箱</option><option value="多">5箱以上/行李多</option></select></div>
+</div>
+<label>📝 特别注意（选填）</label>
+<textarea id="extra" placeholder="如：有宠物要带，有健身器材要处理…"></textarea>
+<button class="btn-gen" id="genBtn">✨ 生成搬家攻略</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#fbbf24;font-weight:600;margin-bottom:12px">🗺 搬家全流程攻略</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制攻略</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 跨城搬家攻略 | AgentGongju.com'))return;
+const m=document.getElementById('move').value;
+const dest=document.getElementById('dest').value;
+const bags=document.getElementById('bags').value;
+const extra=document.getElementById('extra').value.trim();
+let out='【'+m+' · '+dest+' · 随身行李'+bags+'】\n\n';
+if(extra)out+='注意：'+extra+'\n\n';
+out+='— 🗓 倒计时 2-3 周 —\n1. 确认新住处（租房合同/室友）- 优先办妥\n2. 处理大件：二手平台（闲鱼/转转）卖掉或用得上的发物流\n3. 确认搬家日期，与公司请好假\n4. 提前预订搬家/物流服务\n\n';
+out+='— 📦 打包阶段（倒计时 1 周）—\n· 分类：衣物/厨具/书籍/电子设备分别打包\n· 易碎品：用衣物或泡沫裹好，标注"易碎"\n· 每一箱贴标签+编号："卧室-书籍-1"\n· 贵重物品（证件/首饰/电脑）随身带\n· 药品、充电线、一套换洗衣物放"到岗包"（到新家第一晚用）\n\n';
+out+='— 🚚 物流选择 —\n'+(m==='整包物流'?'· 推荐"物流+厢货同城"分开下单\n· 跨城用德邦/顺丰大件，按体积和重量计费\n· 下单前确认：是否上门取件、是否需要自提、保险怎么买\n· 全程跟踪物流电话':(m==='随身+物流'?'· 大件全处理，只带'+(bags==='少'?'1-2箱':'3-5箱')+'随身行李\n· 随身行李用行李箱+登机/火车规则\n· 完全轻松：无物流负担，高铁/飞机可直达':'· 自己装车注意：重心低、重的在下\n· 长途驾驶每小时休息15分钟\n· 走高速留意收费路段'))+'\n\n';
+out+='— 📄 证件&社保办理（到了新城市）—\n1. 办理居住证/落户（'+(dest==='一线'?'部分城市需积分/居住证':'一般可网上办理')+'）\n2. 社保转移：到新城市社保局/线上申请转移接续\n3. 公积金：可转或提取（看政策）\n4. 银行卡/手机号：换新城市约1小时能办\n5. 驾驶证迁入（如需）：车牌异地可保留或办理转入\n\n';
+out+='— 🏠 到新家第一周 —\n· 第1天：到岗包开箱，装好床品，简单入住\n· 第2-3天：等大件到达，逐步拆箱归位\n· 第4-7天：办本地电话卡/门禁/物业/社区登记\n· 周末：探一探周边（超市/医院/菜市场）\n\n';
+out+='— 💡 省钱贴士 —\n· 物流比"搬家公司"便宜50%以上（跨城）\n· 二手大件提前2周挂出，免得最后临期亏卖\n· 快递纸箱提前在小区里收（省钱）\n· 订物流选工作日，比周末便宜\n\n🚀 新城市，新生活，祝一切顺利！';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 搬家攻略已复制，祝安顿顺利！'))}
+</script>
+</body>
+</html>

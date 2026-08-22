@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 同事关系处理话术 | AgentGongju.com</title>
+<meta name="description" content="同事甩锅、领导布置过重、同事总爱指手画脚…生成得体又有原则的职场沟通话术，既不憋屈也不伤人">
+<meta name="keywords" content="同事关系,职场沟通,职场话术,甩锅,职场冲突,沟通技巧,办公室关系">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:80px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🤝 AI 同事关系处理话术</h1><p>职场不憋屈，沟通有妙招</p></div>
+
+<div class="card">
+<label>⚠️ 职场场景</label>
+<select id="scenario"><option value="甩锅" selected>同事甩锅/推卸责任</option><option value="被迫加班">总是被迫接额外工作</option><option value="指手画脚">同事对我的工作指手画脚</option><option value="抢功">功劳被抢</option><option value="背后说坏话">被人背后说坏话</option><option value="和领导汇报">对领导张口困难</option></select>
+<div class="param-row">
+<div><label>🎯 沟通对象</label>
+<select id="target"><option value="平级同事" selected>平级同事</option><option value="上级领导">上级领导</option><option value="下属">下属</option></select></div>
+<div><label>🎨 语气风格</label>
+<select id="tone"><option value="温和" selected>温和坚定</option><option value="直接">直接坦诚</option><option value="幽默">轻松幽默</option></select></div>
+</div>
+<label>📝 补充说明（选填）</label>
+<textarea id="extra" placeholder="如：他上周说好负责的部分没做，结果甩给我说我也该帮忙…"></textarea>
+<button class="btn-gen" id="genBtn">✨ 生成沟通话术</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#fbbf24;font-weight:600;margin-bottom:12px">💬 沟通话术建议</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制话术</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const props={
+'甩锅':{mild:'我理解可能有失误，但这次出错的部分主要是你负责的模块。改的话你看什么时候方便一起过一遍？复盘完我们下次就能避免。',direct:'客观说明：这部分我是按你提供的需求做的，出错的地方在需求源头。建议我们把这个捋清楚，别让问题在大家之间来回传输。',humor:'兄弟，这锅我接不动——太重了，我腰不好。咱们一起看看哪儿出了问题，一起背总比我一个人扛强吧？'},
+'被迫加班':{mild:'我理解这周项目紧了，但我的排期已经满了。是否可以和领导沟通一下优先级？或者下周我调休时间来做？',direct:'收到任务，但我本周已有3个高优事项。能否明确优先级？如果都要完成，我需要额外支持或deadline调整。',humor:'我这周是真·超额负载了，再堵就要崩。老板要不帮我申请个"加班豪华套餐"？'},
+'指手画脚':{mild:'谢谢你的建议，不过这个需求是按确认过的方案做的。如果改动会影响整体计划，我们可以在下个迭代一起讨论。',direct:'这件事由我负责执行，如果你有不同想法，建议发到群里大家评审，而不是私聊改我方案。',humor:'哎哟，你怎么这么关心我的活儿？要不你来？哈哈 说真的，有建议可以发群里，咱一起决策。'},
+'抢功':{mild:'这次上线能顺利，是我和X一起完成的。功劳是团队的，特别想把X的部分也跟领导同步一下。',direct:'这次主要由我负责，数据和方案都是我跟进的。建议向领导汇报时把我的产出部分也一并提到。',humor:'功劳这东西吧，独享伤身，不如大家分着来。下次汇报咱们一起上？'},
+'背后说坏话':{mild:'听说你最近对我有些看法，如果是我哪里做得不好，我希望能和你直接沟通。这样比从别人嘴里听到更能解决问题。',direct:'直接说：关于你对我的评价，我希望能当面聊聊。咱们都是成年人，有话直说比我通过第三者知道好。',humor:'诶，我这人记性不太好，怕从别人那儿听说的事儿都是二手消息。你要是有想说的，咱直接唠。'},
+'和领导汇报':{mild:'领导，这阶段工作已经完成X%，剩下Y%在推进中。想占用您10分钟，同步进度并请教两个问题。',direct:'领导，请给我10分钟汇报本周成果与困难，需要您决策优先级。',humor:'领导，我汇报时间控制在10分钟内，超出部分您随便扣我KPI（开玩笑的）～'}
+};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 同事关系处理话术 | AgentGongju.com'))return;
+const scenario=document.getElementById('scenario').value;
+const target=document.getElementById('target').value;
+const tone=document.getElementById('tone').value;
+const extra=document.getElementById('extra').value.trim();
+const p=props[scenario];
+let out='【'+scenario+' · 沟通对象：'+target+'】\n\n';
+if(extra)out+='背景：「'+extra+'」\n\n';
+out+='— 💬 建议话术 —\n'+p[tone]+'\n\n';
+out+='— 🧠 沟通技巧要点 —\n';
+const tips={
+'甩锅':'- 先别急着解释，先"共情"对方处境\n- 用"我们"代替"你/我"：我们复盘一下\n- 把问题转移到"流程"而非"人"身上',
+'被迫加班':'- 先说"理解"，再说"我的排期"\n- 把议题从"我不想干"转成"如何分配更高效"\n- 实在避免不了，就明确要"调休/加班费"',
+'指手画脚':'- 先听完再回应，别当场反驳\n- 用"方案评审"挡回去：建议走流程\n- 守住边界：我的职责内容由我主导',
+'抢功':'- 平时就要不定期向领导同步进展（邮件/周会比较重要）\n- 汇报时用"数据+事实"说话\n- 别在公开场合撕，私下点明',
+'背后说坏话':'- 不回应谣言，直接与当事人对话\n- "以谣言止于智者"的态度转身去做好自己的事\n- 保留适当证据，必要时向HR说明',
+'和领导汇报':'- 先给结论再展开：结果→过程→问题→下一步\n- 汇报频率：每周固定一次（哪怕只有5分钟）\n- 遇到困难带上"方案"而非只带"问题"'
+};
+out+=tips[scenario]+'\n\n';
+out+='— 🚫 需要避免的 —\n'+(target==='上级领导'?'· 不要在公开场合反驳领导（可私下沟通）\n· 不抱怨、不带情绪，只讲事实与方案':'· 别当众让对方难堪\n· 不把"职责"挂在嘴边，用"协作"语言化解')+'\n\n';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 沟通话术已复制，愿你职场顺遂！'))}
+</script>
+</body>
+</html>

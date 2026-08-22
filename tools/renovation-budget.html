@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 装修预算规划 | AgentGongju.com</title>
+<meta name="description" content="从半包到全包，从简装到精装，输入户型与预算生成科学的装修预算分配方案，避免超支踩坑">
+<meta name="keywords" content="装修预算,装修费用,装修攻略,家装,半包全包,装修报价,毛坯房">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🏗 AI 装修预算规划</h1><p>预算不迷路，装修不白花</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>🏠 房屋面积（㎡）</label>
+<input type="number" id="area" placeholder="如：89" min="0"></div>
+<div><label>🔨 装修模式</label>
+<select id="mode"><option value="半包">半包（主材自理）</option><option value="全包" selected>全包（省心）</option><option value="清包">清包（自己买全部材料）</option></select></div>
+</div>
+<div class="param-row">
+<div><label>🎨 装修档次</label>
+<select id="tier"><option value="简装">简装（约800-1000元/㎡）</option><option value="中等" selected>中等装修（约1200-1800元/㎡）</option><option value="精装">精装修（约2000-3000元/㎡）</option></select></div>
+<div><label>🛋 需要翻新</label>
+<select id="house"><option value="新房">新房毛坯</option><option value="旧房" selected>二手房/旧房翻新</option></select></div>
+</div>
+<label>📝 特别需求（选填）</label>
+<textarea id="extra" placeholder="如：想做中央空调+地暖，预算有限…"></textarea>
+<button class="btn-gen" id="genBtn">✨ 生成预算方案</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22d3ee;font-weight:600;margin-bottom:12px">📊 装修预算分配方案</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制方案</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const modeNote={
+'半包':'- 主材（瓷砖、地板、卫浴、橱柜）自己买，质量可控\n- 需自己跑建材市场，时间成本高\n- 辅料+人工约占总价40%',
+'全包':'- 整包给装修公司，省心省力\n- 注意看好合同增项条款，防止后期加钱\n- 沟通好每个项目的品牌与型号',
+'清包':'- 所有材料自己买，最省钱但最累\n- 建议有熟人工地或有一定经验才用'
+};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 装修预算规划 | AgentGongju.com'))return;
+const area=parseFloat(document.getElementById('area').value)||89;
+const mode=document.getElementById('mode').value;
+const tierHtml=document.getElementById('tier').value;
+const house=document.getElementById('house').value;
+const extra=document.getElementById('extra').value.trim();
+const tier=tierHtml.split('（')[0];
+let costPer;
+if(tier==='简装')costPer=900;else if(tier==='中等')costPer=1500;else costPer=2500;
+const total=Math.round(area*costPer);
+if(house==='旧房')costPer=Math.round(costPer*1.15);
+const baseCost=Math.round(area*costPer);
+const budget=house==='旧房'?Math.round(baseCost*1.08):baseCost;
+let out='【'+area+'㎡ · '+tier+' · '+mode+' · '+house+'】\n\n';
+if(extra)out+='你提到：'+extra+'（预算将适当调整）\n\n';
+out+='— 💰 预算总额 —\n根据面积与档次，总预算（含软装约15%）：约 ¥'+budget.toLocaleString()+' 元\n（参考：'+costPer+'元/㎡ × '+area+'㎡ = ¥'+baseCost.toLocaleString()+'，另含软装/家电调节）\n\n';
+const alloc=[
+['硬装施工（水电/泥瓦/木工/油漆）',25],
+['主材（瓷砖/地板/洁具/门/窗）',30],
+['定制柜体（橱柜/衣柜）',15],
+['家电（厨房/卫浴/空调）',15],
+['软装（家具/窗帘/灯饰/饰品）',10],
+['预留其他（家电升级/突发）',5]
+];
+out+='— 📊 预算分配（合计约90-100%）—\n';
+alloc.forEach(a=>{out+='· '+a[0]+'：约 ¥'+Math.round(budget*a[1]/100).toLocaleString()+'（'+a[1]+'%）\n';});
+out+='\n— 📌 '+mode+' 模式注意事项 —\n'+modeNote[mode]+'\n\n';
+out+='— 🚨 常见超支坑 —\n1. 水电改造是隐形大项：预算至少报预留8-10%\n2. 全包合同要写清品牌/型号，防"同品牌换低端"\n3. 五金件（铰链/拉手/地漏）别省，小钱坏大事\n4. 灯具、窗帘"看着不贵"，加起来很惊人\n5. 签合同建议做"增项上限15%"条款\n\n⚠️ 以上为通用参考，实际价格因地区、材料品牌波动较大，请以当地市场为准。';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 预算方案已复制！'))}
+</script>
+</body>
+</html>

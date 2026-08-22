@@ -1,66 +1,111 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI 今日运势 | AgentGongju.com</title>
-<meta name="description" content="AI星座运势与幸运指引，选星座看今日健康事业感情财运">
-<meta name="keywords" content="今日运势,星座运势,每日占卜,幸运色">
-<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
+<title>AI生肖星座每日运势 | AgentGongju.com</title>
+<meta name="description" content="输入你的生肖或星座，AI为你生成今日专属运势：综合指数、事业、财运、爱情、健康与宜忌提醒，每天一份新鲜指引。">
+<meta name="keywords" content="每日运势,生肖运势,星座运势,今日运势,黄历宜忌,幸运数字">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
 <style>
-.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
 .tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
 .tool-header p{color:#94a3b8}
 .card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
 .card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
-select,textarea,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
-textarea{min-height:90px;resize:vertical}
-input:focus,select:focus,textarea:focus{border-color:#6366f1}
+input[type=text],select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus{border-color:#6366f1}
+.param-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 .btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
 .btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
 .result-area{display:none;margin-top:20px}
 .result-area.active{display:block}
-.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.9;white-space:pre-wrap;min-height:60px;margin-bottom:12px}
-.star-bar{height:10px;background:rgba(255,255,255,0.08);border-radius:5px;overflow:hidden;margin:6px 0 16px}
-.star-fill{height:100%;background:linear-gradient(90deg,#6366f1,#a855f7);border-radius:5px}
+.score-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.score-item{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:14px 16px}
+.score-item .k{color:#94a3b8;font-size:.8rem}
+.score-item .v{color:#a5b4fc;font-size:1.3rem;font-weight:700;margin-top:4px}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
 .copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
 .copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-grid,.score-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 <nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
 <div class="tool-container">
-<div class="tool-header"><h1>🔮 AI 今日运势</h1><p>看看今天的好运指数和专属小提醒</p></div>
+<div class="tool-header"><h1>✨ AI每日运势</h1><p>今天的状态，提前一点知道</p></div>
 
-<div class="card"><label>♈ 选择你的星座</label>
-<select id="zodiac"><option>白羊座</option><option>金牛座</option><option>双子座</option><option>巨蟹座</option><option>狮子座</option><option>处女座</option><option>天秤座</option><option>天蝎座</option><option>射手座</option><option>摩羯座</option><option>水瓶座</option><option>双鱼座</option></select>
-<button class="btn-gen" id="genBtn">🌠 今日运势</button></div>
-<div class="result-area" id="resultArea"><div class="card" id="resultCard"><div class="result-box" id="out"></div><button class="copy-btn" onclick="copyResult()">📋 复制</button></div></div>
+<div class="card">
+<div class="param-grid">
+<div><label>🐲 生肖</label>
+<select id="zodiac">
+<option>鼠</option><option>牛</option><option>虎</option><option>兔</option><option>龙</option><option>蛇</option><option>马</option><option>羊</option><option>猴</option><option>鸡</option><option>狗</option><option>猪</option>
+</select></div>
+<div><label>⭐ 星座</label>
+<select id="constellation">
+<option>白羊座</option><option>金牛座</option><option>双子座</option><option>巨蟹座</option><option>狮子座</option><option>处女座</option><option>天秤座</option><option>天蝎座</option><option>射手座</option><option>摩羯座</option><option>水瓶座</option><option>双鱼座</option>
+</select></div>
+</div>
+<button class="btn-gen" id="genBtn">🔮 查看今日运势</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">✨ 今日运势报告</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制运势</button>
+</div>
+</div>
 </div>
 <footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
 <script>
-function copyResult(){navigator.clipboard.writeText(document.getElementById('out').textContent).then(()=>alert('✅ 已复制！'))}
+const traitMap={
+'鼠':'机敏灵活','牛':'踏实稳重','虎':'果敢有魄力','兔':'温和细腻','龙':'气场强大','蛇':'睿智沉着','马':'奔放进取','羊':'善良随和','猴':'机智幽默','鸡':'认真细致','狗':'忠诚可靠','猪':'豁达宽厚'
+};
+const consMap={
+'白羊座':'行动力强','金牛座':'务实坚韧','双子座':'灵活多思','巨蟹座':'细腻感性','狮子座':'自信大方','处女座':'严谨追求完美','天秤座':'平衡得体','天蝎座':'洞察力强','射手座':'乐观自由','摩羯座':'目标导向','水瓶座':'特立独行','双鱼座':'浪漫富有想象'
+};
+const careerGood=['适合推进重要事项，宜主动表达自己的想法','沟通顺畅，与合作方的洽谈会有不错进展','灵感涌动，适合产出创意、敲定方案','贵人运在线，本职工作之外或有机会收获认可'];
+const careerMid=['进展平缓，按部就班推进即可，不必急于求成','注意细节与文档核对，避免忙中出错','计划可能临时调整，保持灵活应对'];
+const moneyGood=['正财稳定，或有小惊喜入账','适合做理性理财规划，稳健为上','消费注意克制，但可适当犒劳拼搏的自己'];
+const loveGood=['适合制造小浪漫，表达心意易有感','多与伴侣沟通，关系会更融洽','单身者今天社交运旺，或许会有心动相遇'];
+const healthTip=['注意作息，早点休息给身体充电','多喝水、适当运动，保持轻盈状态','情绪平稳是今天的养生关键'];
+const yi=['宜表达','宜行动','宜整理','宜联络故人','宜专注手头事'];
 document.getElementById('genBtn').addEventListener('click',()=>{
-if(!Paywall.countUse('AI 今日运势 | AgentGongju.com'))return;
+if(!Paywall.countUse('AI生肖星座每日运势 | AgentGongju.com'))return;
 const z=document.getElementById('zodiac').value;
-const r=n=>Math.floor(Math.random()*(100-n+1))+n;
-const overall=r(72),luck=r(65),wealth=r(60),love=r(60),work=r(62),health=r(65);
-const colors=['中国红','星空蓝','原野绿','香槟金','珊瑚橘','薰衣草紫','珍珠白','雾霾蓝'];
-const nums=[Math.floor(Math.random()*3)+1,Math.floor(Math.random()*9)+1,Math.floor(Math.random()*30)+1];
-const luckyColor=colors[Math.floor(Math.random()*colors.length)];
-const tips=['重要决策放上午，思路更清晰','多喝水，注意劳逸结合','适合跟老朋友聊聊近况','有新灵感就立刻记下来','财来财去，理性消费','花开有时，顺其自然'];
-const tip=tips[Math.floor(Math.random()*tips.length)];
-const d=new Date();const dateStr=d.getMonth()+1+'月'+d.getDate()+'日';
-let out='☀️ 『'+z+' · '+dateStr+' 今日运势』\n\n';
-out+='✨ 综合运势：'+overall+' 分\n';
-out+='🍀 幸运指数：'+luck+' 分\n';
-out+='💰 财运：'+wealth+' 分\n';
-out+='💗 爱情：'+love+' 分\n';
-out+='💼 事业：'+work+' 分\n';
-out+='🏃 健康：'+health+' 分\n\n';
-out+='🌈 幸运色：'+luckyColor+'\n🎯 幸运数字：'+nums.join(' · ')+'\n\n📌 今日小提醒：'+tip+'\n\n'+(overall>=85?'🌟 今天是你的高光日，冲吧！':overall>=70?'☀️ 平稳顺遂的一天，好好把握。':'🍵 放慢节奏，给自己一点缓冲的时间。');
+const c=document.getElementById('constellation').value;
+const today=new Date();
+const dstr=today.getMonth()+1+'月'+today.getDate()+'日';
+const comp=82+Math.floor(Math.random()*14);
+const careerScore=76+Math.floor(Math.random()*22);
+const moneyScore=72+Math.floor(Math.random()*26);
+const loveScore=75+Math.floor(Math.random()*23);
+const healthScore=74+Math.floor(Math.random()*24);
+const starRank=['★★★★★','★★★★','★★★★','★★★','★★★★'];
+const cg=Math.random()>0.4?careerGood[Math.floor(Math.random()*careerGood.length)]:careerMid[Math.floor(Math.random()*careerMid.length)];
+const mg=moneyGood[Math.floor(Math.random()*moneyGood.length)];
+const lg=loveGood[Math.floor(Math.random()*loveGood.length)];
+const hg=healthTip[Math.floor(Math.random()*healthTip.length)];
+const luckyNum=Math.floor(Math.random()*30)+1;
+const luckyColor=['紫色','青色','暖橙','浅蓝','象牙白'][Math.floor(Math.random()*5)];
+const luckyDir=['东南','正西','正北','西南'][Math.floor(Math.random()*4)];
+const pick2=(arr)=>{const a=arr.slice().sort(()=>Math.random()-0.5);return a.slice(0,2).join('、');};
+let out='『'+z+'年属相 · '+c+'　'+dstr+' 运势』\n\n';
+out+='【综合指数】'+comp+'/100　'+star(sc(comp))+'\n';
+out+='你'+traitMap[z]+'的性格底色，叠加'+consMap[c]+'的今日能量，整体状态稳中有进。\n\n';
+out+='【事业运】'+careerScore+'/100\n'+cg+'\n\n';
+out+='【财物运】'+moneyScore+'/100\n'+mg+'\n\n';
+out+='【爱情运】'+loveScore+'/100\n'+lg+'\n\n';
+out+='【健康运】'+healthScore+'/100\n'+hg+'\n\n';
+out+='【今日宜忌】\n宜：'+pick2(yi)+'\n忌：'+pick2(['忌冲动决策','忌拖延','忌熬夜','忌口舌之争'])+'\n\n';
+out+='【幸运签】幸运数字 '+luckyNum+'　幸运色 '+luckyColor+'　幸运方位 '+luckyDir+'\n';
+out+='—— 运势每日一签，仅供娱乐参考，愿你元气满满 ✨';
+document.getElementById('outputBox').innerText=out;
 document.getElementById('resultArea').classList.add('active');
-document.getElementById('out').textContent=out;
 });
+function sc(n){return n>=90?5:n>=80?4:n>=70?3:2;}
+function star(n){return '★'.repeat(n)+'☆'.repeat(5-n);}
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 运势已复制！'))}
 </script>
 </body>
 </html>

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 旅游攻略生成器 | AgentGongju.com</title>
+<meta name="description" content="输入目的地、天数与偏好，AI生成一份完整的旅游攻略，含行程安排、景点、美食与预算建议">
+<meta name="keywords" content="旅游攻略,旅行计划,行程安排,攻略生成,旅行,自由行,景点推荐">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:70px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{color:#94a3b8;font-size:.85rem;margin-bottom:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🧳 AI 旅游攻略生成器</h1><p>目的地 + 天数 + 偏好，一键生成吃住玩预算全套攻略</p></div>
+
+<div class="card">
+<label>🏙️ 目的地城市</label>
+<input type="text" id="city" placeholder="例如：西安、成都、厦门、大理…">
+<div class="param-row">
+<div><label>📅 游玩天数</label>
+<select id="days"><option value="1">1 天</option><option value="2">2 天</option><option value="3" selected>3 天</option><option value="4">4 天</option><option value="5">5 天</option><option value="7">7 天</option></select></div>
+<div><label>💼 出行方式</label>
+<select id="mode"><option value="自由行" selected>👣 自由行</option><option value="亲子">👨‍👩‍👧 亲子游</option><option value="情侣">💑 情侣游</option><option value="徒步">🥾 徒步/小众</option></select></div>
+</div>
+<div class="param-row">
+<div><label>💰 预算档位</label>
+<select id="budget"><option value="经济">🎫 经济型</option><option value="舒适" selected>🏨 舒适型</option><option value="奢华">👑 奢华型</option></select></div>
+<div><label>😋 美食偏好</label>
+<select id="food"><option value="all" selected>🍜 特色都要</option><option value="清淡">🥗 清淡养生</option><option value="重口">🌶️ 重口味</option></select></div>
+</div>
+<label>📝 特别想去的点（选填）</label>
+<textarea id="special" placeholder="例如：想看日出、想去博物馆、带娃去动物园"></textarea>
+<button class="btn-gen" id="genBtn">🗺️ 生成旅游攻略</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 你的专属旅游攻略</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制攻略</button>
+<div class="tip" style="margin-top:12px">💡 小贴士：旺季出行建议提前订酒店门票；行程别排太满，留半天机动，旅途更从容。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const spots=['地标景区','古城街区','博物馆','自然公园','夜市','网红打卡点','当地老街','观景台'];
+const foods=['当地特色菜','地道小吃','老字号餐厅','网红甜品','本地烧烤','清淡粤式','海鲜大餐'];
+const acts=['晨起散步','午后咖啡','傍晚看落日','夜间灯光秀'];
+const tipMap={经济:['住青旅/民宿，选择公共交通','门票优先免票及联票，搜索景区优惠'],舒适:['住3-4星或精品民宿，位置便利优先','提前预订门票含餐，体验特色项目'],奢华:['住豪华酒店/度假村，享行政礼遇','可预订私享导览与高端餐厅']};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 旅游攻略生成器 | AgentGongju.com'))return;
+const city=document.getElementById('city').value.trim();
+const days=parseInt(document.getElementById('days').value);
+const mode=document.getElementById('mode').value;
+const budget=document.getElementById('budget').value;
+const special=document.getElementById('special').value.trim();
+if(!city){alert('请先输入目的地城市');return;}
+const s=shuffle(spots).slice(0,days+2);
+const f=shuffle(foods).slice(0,days+2);
+const act=shuffle(acts);
+let out='【'+city+'】'+days+'天'+mode+'攻略（'+budget+'档）\n';
+out+='\n━━━━ 每日行程 ━━━━\n';
+for(let d=1;d<=days;d++){
+out+='\n【第'+d+'天】\n';
+out+='· 上午：'+s[(d*2-2)%s.length]+'\n';
+out+='· 中午：品尝 '+f[(d*2-1)%f.length]+'\n';
+out+='· 下午：'+s[(d*2-1)%s.length]+'\n';
+out+='· 傍晚：'+act[d%act.length]+'\n';
+if(d<days){out+='· 晚上：'+s[d%s.length]+' / 逛夜市'+'\n';}
+}
+out+='\n━━━━ 美食清单 ━━━━\n· '+f.slice(0,5).join('、')+'\n';
+out+='\n━━━━ 省钱建议（'+budget+'档）━━━━\n· '+tipMap[budget].join('\n· ');
+if(special){out+='\n\n【🎯 特别需求】\n· 已安排行程方向兼顾：'+special; }
+out+='\n\n【🎒 出行提醒】\n· 提前看天气预报，证件、充电宝、常用药随身带。\n· 下载离线地图，重要票据截图保存。';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function shuffle(arr){for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}return arr;}
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 攻略已复制！'))}
+</script>
+</body>
+</html>

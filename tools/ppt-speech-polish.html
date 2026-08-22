@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI PPT演讲稿优化 | AgentGongju.com</title>
+<meta name="description" content="粘贴你的PPT演讲稿，AI帮你润色得更口语化、更有感染力，附带演讲节奏与控场提示">
+<meta name="keywords" content="演讲稿,PPT讲稿,演讲优化,口播稿,演讲稿润色,汇报发言,演示文稿">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:130px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{color:#94a3b8;font-size:.85rem;margin-bottom:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🎤 AI PPT演讲稿优化</h1><p>把书面稿变得像说话一样自然，讲起来更有感染力</p></div>
+
+<div class="card">
+<label>📝 粘贴你的演讲稿 / PPT要点</label>
+<textarea id="content" placeholder="例如：我们团队研发了一套新系统，功能完善，性能稳定，可以提升效率，希望得到支持…"></textarea>
+<div class="param-row">
+<div><label>🎯 演讲场景</label>
+<select id="scene"><option value="汇报">📊 工作汇报</option><option value="路演" selected>💡 项目路演</option><option value="分享">🎓 经验分享</option><option value="答辩">🏫 毕设/方案答辩</option></select></div>
+<div><label>🎨 演讲风格</label>
+<select id="style"><option value="沉稳">🎗️ 沉稳有力</option><option value="激情" selected>🚀 富有激情</option><option value="亲和">☺️ 亲和自然</option></select></div>
+</div>
+<label>⏱️ 目标时长（分钟）</label>
+<select id="minutes"><option value="3">3分钟</option><option value="5" selected>5分钟</option><option value="10">10分钟</option><option value="15">15分钟</option></select>
+<button class="btn-gen" id="genBtn">🎤 优化我的演讲稿</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 优化后的演讲稿</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制演讲稿</button>
+<div class="tip" style="margin-top:12px">💡 小贴士：对口才没底气就多练两遍，用手机录下来听，语速放慢、停顿到位，比任何技巧都管用。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const opener={汇报:'各位领导、各位同事，大家好。今天由我向大家/汇报XX工作的最新进展。',路演:'感谢大家来到现场，很荣幸有机会向大家展示我们的项目。',分享:'大家好，今天想跟大家聊聊我的一点实践和思考。',答辩:'各位老师好，我是XXX，今天汇报的题目是《XXX》。'};
+const styleNote={沉稳:'我们以事实和数据说话，稳扎稳打。',激情:'请大家想象一下，如果我们把这件事真正做成了，会怎样？',亲和:'其实这件事并不复杂，我用大白话给大家讲明白。'};
+const closers=['以上就是我的汇报，感谢大家，也欢迎提出宝贵意见。','一句话总结：方向对了，方法对了，剩下的就是坚持。','感谢聆听，期待与大家进一步交流。'];
+const pacing={3:'适当提速，重点结论讲清楚即可',5:'每个环节控在1分钟上下，留出问答空间',10:'分三大段落，中间穿插例子缓冲',15:'内容要充实，每5分钟一个小高潮'};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI PPT演讲稿优化 | AgentGongju.com'))return;
+const content=document.getElementById('content').value.trim();
+const scene=document.getElementById('scene').value;
+const style=document.getElementById('style').value;
+const minutes=document.getElementById('minutes').value;
+if(!content){alert('请先粘贴你的演讲稿内容');return;}
+const sentences=content.split(/(?<=[。！？!?；])|(?<=[，,])/).map(s=>s.trim()).filter(s=>s.length>0);
+let out='【开场】\n'+opener[scene]+'\n\n';
+out+='【正文】\n首先，'+sentences.slice(0,3).join('')+'\n\n';
+out+='进一步来说，'+sentences.slice(3,8).join('')+'\n\n';
+out+='总而言之，这件事的核心价值在于：'+pickCore(scene)+'\n\n';
+out+='【风格点缀】\n'+styleNote[style]+'\n\n';
+out+='【收尾】\n'+closers[Math.floor(Math.random()*closers.length)]+'\n\n';
+out+='━━━ 演讲小贴士（'+minutes+'分钟稿）━━━\n· '+pacing[minutes]+'\n· 每页PPT停留20-30秒，重点页可稍停\n· 与听众眼神交流，自然运用手势';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function pickCore(scene){const m={汇报:'用数据证明工作价值，让成果看得见',路演:'直击痛点，突出差异化与落地可行性',分享:'提炼可复制的经验，让听众有收获',答辩:'紧扣创新点与可行性，回应核心关切'};return m[scene];}
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 演讲稿已复制！'))}
+</script>
+</body>
+</html>

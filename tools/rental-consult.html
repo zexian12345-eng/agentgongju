@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 租房纠纷应对助手 | AgentGongju.com</title>
+<meta name="description" content="租房遇到押金不退、随意涨租、中介乱收费？输入纠纷场景，生成维权步骤与沟通话术">
+<meta name="keywords" content="租房维权,押金退款,租金纠纷,租房法律,中介纠纷,租房合同">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:80px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🏠 AI 租房纠纷应对助手</h1><p>不再当"软柿子"，用对方法维护自己的权益</p></div>
+
+<div class="card">
+<label>📌 纠纷类型</label>
+<select id="issue"><option value="押金不退" selected>押金不退</option><option value="无理涨租">中途随意涨租</option><option value="中介乱收费">中介乱收费</option><option value="提前退租">提前退租被扣押金</option><option value="房屋质量问题">房屋质量问题（漏水/噪音）</option><option value="拖欠押金">退租后拖欠押金</option></select>
+<div class="param-row">
+<div><label>📄 是否有书面合同</label>
+<select id="contract"><option value="有">✅ 有</option><option value="无" selected>❌ 无/口头约定</option></select></div>
+<div><label>🏛 对方类型</label>
+<select id="opponent"><option value="个人房东" selected>个人房东</option><option value="中介">中介机构</option><option value="二房东">二房东</option></select></div>
+</div>
+<label>📝 补充描述（选填）</label>
+<textarea id="detail" placeholder="如：押金3000，退租时说墙面美缝脱落要扣钱…"></textarea>
+<button class="btn-gen" id="genBtn">✨ 生成维权方案</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#f97316;font-weight:600;margin-bottom:12px">⚖️ 你的维权方案</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制方案</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const laws={
+'押金不退':'依据《民法典》第585条，押金是担保，非违约金。若房屋无实际损坏，房东应在退租后限期退还（一般15日内）。',
+'无理涨租':'租赁期内单方涨价无法律依据，除非合同另有明确约定或协商一致。可按原租金继续履行。',
+'中介乱收费':'中介收取"看房费/服务费"需明码标价并开具票据，无依据收费可向市场监管部门举报。',
+'提前退租被扣押金':'提前退租违约金以约定为准，但上限不应超过实际损失；若约定畸高可主张调减。',
+'房屋质量问题':'出租方有义务保证房屋符合居住安全标准，因质量问题导致的损失应承担维修或赔偿责任。',
+'拖欠押金':'退租交接完成即为债权到期的开始，拖欠可主张返还+利息，必要时发律师函。'
+};
+const steps={
+'押金不退':[
+{step:'第一步：留存证据',act:'1. 交接当天拍照/录像全屋状态\n2. 保留微信聊天记录（关于押金的口头承诺）\n3. 打印银行转账或收据证明已付押金'},
+{step:'第二步：书面催告',act:'发微信/短信正式通知："您好，房屋已按合同交接完毕，押金3000元请于7日内退还至原账户，逾期我将采取法律途径。"'},
+{step:'第三步：找平台调解',act:'联系房屋中介（如有）、拨打12345市民热线或找所在街道办/社区居委会调解。'},
+{step:'第四步：法律途径',act:'金额小可走小额诉讼（法院立案约1个月），或先发律师函。证据齐全胜诉率高。'}
+],
+'无理涨租':[
+{step:'第一步：确认合同条款',act:'翻出合同看租金条款是否支持涨租；若没有，明确告知房东单方涨价无约束力。'},
+{step:'第二步：书面沟通',act:'发信息："合同期内租金未约定可调，我不接受涨价。如果坚持涨价且无法协商，我需要退租并要求退还押金及剩余租金。"'},
+{step:'第三步：寻求调解',act:'拨打12345或到街道办说明情况。'},
+{step:'第四步：必要时诉讼',act:'若房东以此为由威胁断水断电，可保留证据向法院起诉赔偿损失。'}
+],
+'中介乱收费':[
+{step:'第一步：索要收费依据',act:'要求出具收费明细单、发票和合同条款依据。口头收费一律不付。'},
+{step:'第二步：投诉举报',act:'拨打12345（市长热线）或12315（市场监管局）。说清中介名称、收费名目、金额、时间。'},
+{step:'第三步：行业投诉',act:'若通过链家/贝壳等平台，可向平台总部投诉，平台有内部处罚机制。'}
+
+],
+'提前退租被扣押金':[
+{step:'第一步：核对合同',act:'找到合同"违约责任"条款，确认违约金约定是否合理（一般不超过2个月租金）。'},
+{step:'第二步：与房东协商',act:'提出折中方案：如扣半个月租金+配合转租减损，比扣全押金合理。'},
+{step:'第三步：主张过高违约金无效',act:'若违约金远高于实际损失（如押金6000，实际损失仅2000），可起诉请求法院调减。'},
+{step:'第四步：及时诉讼',act:'证据齐全后走小额诉讼，标的1万以下案件一般很快。'}
+],
+'房屋质量问题':[
+{step:'第一步：书面报修',act:'微信/短信通知房东维修，留痕。房东不修可自行维修后要求承担合理费用。'},
+{step:'第二步：主张减免租金',act:'若漏水/噪音严重影响居住，可主张按比例减免租金。'},
+{step:'第三步：解除合同',act:'若问题导致无法正常居住，可要求解除合同并退还押金和剩余租金。'},
+{step:'第四步：索赔',act:'因房屋缺陷造成的财产损失（如家具泡水），保留购买凭证索赔，必要时法律途径。'}
+],
+'拖欠押金':[
+{step:'第一步：正式催告',act:'发文字通知（微信/短信），写明应退金额、最迟期限、逾期后果，留下证据。'},
+{step:'第二步：二次催告',act:'未答复可再发一次，语气升级，提到会报警/诉讼。'},
+{step:'第三步：提交争议',act:'金额小可申请司法调解（免费），或拨打12345投诉。'},
+{step:'第四步：起诉',act:'留好退租交接记录、转账凭证、催告记录，小额诉讼胜诉率高。'}
+]
+};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 租房纠纷应对助手 | AgentGongju.com'))return;
+const issue=document.getElementById('issue').value;
+const hasContract=document.getElementById('contract').value;
+const opponent=document.getElementById('opponent').value;
+const detail=document.getElementById('detail').value.trim();
+let out='【法律依据】\n'+laws[issue]+'\n\n';
+if(!hasContract){out+='⚠️ 无书面合同提示：口头约定同样受法律保护，但举证较难。请尽快补签或收集：转账备注"房租"、聊天记录里对方自认租约关系的证据。\n\n';}
+out+='【对方为'+opponent+'时注意】\n';
+if(opponent==='个人房东')out+='· 直接与房东本人对接，避免由二房东中间传话造成信息差\n· 房东个人如有违法行为（如断水电）保留证据报警\n';
+else if(opponent==='中介')out+='· 与中介沟通保留工号与ID，沟通全程录音/截图\n· 若中介跑路，可向注册地市场监管局投诉\n';
+else out+='· 确认二房东是否有权转租（查看与房东合同）\n· 若无权转租，可主张合同无效并要求退还全部押金\n';
+if(detail){out+='\n（你提到：'+detail+'。此类情况建议将上述法律依据一并引用，增强说服力）\n\n';}else{out+='补充建议：证据越全，维权成功率越高。\n\n';}
+steps[issue].forEach(s=>{out+='—— '+s.step+' ——\n'+s.act+'\n\n';});
+out+='📎 通用建议\n· 所有沟通建议录音/留文字，对方口头答应的马上要书面确认\n· 金额低于1万元可走小额诉讼，流程快、费用低\n· 必要时请专业律师起草律师函（约500-1000元）';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 维权方案已复制，祝顺利！'))}
+</script>
+</body>
+</html>

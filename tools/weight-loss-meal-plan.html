@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 科学减脂食谱 | AgentGongju.com</title>
+<meta name="description" content="输入你的体重、目标与运动习惯，AI生成一份科学健康的一周减脂食谱，吃得饱还能瘦">
+<meta name="keywords" content="减脂食谱,减肥餐,健康饮食,减重计划,营养餐,一周食谱,减脂餐">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:70px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{color:#94a3b8;font-size:.85rem;margin-bottom:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🥗 AI 科学减脂食谱</h1><p>身高体重 + 目标，生成吃得饱、还能瘦的一周餐饮计划</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>⚖️ 你的体重（kg）</label><input type="number" id="weight" placeholder="例如 60" min="30" max="200"></div>
+<div><label>🏃 运动习惯</label>
+<select id="activity"><option value="低">🛋️ 久坐为主</option><option value="中" selected>🚶 每周3-4次轻中运动</option><option value="高">🏋️ 每周5次以上高强运动</option></select></div>
+</div>
+<div class="param-row">
+<div><label>🎯 减脂目标</label>
+<select id="goal"><option value="瘦身">轻松塑形</option><option value="减重" selected>科学减重</option><option value="增肌">增肌减脂</option></select></div>
+<div><label>⏱️ 饮食偏好</label>
+<select id="style"><option value="中餐">🍚 中餐家常</option><option value="轻食">🥒 轻食沙拉</option><option value="无肉">🥦 素食为主</option></select></div>
+</div>
+<label>📝 忌口或过敏（选填）</label>
+<textarea id="restrict" placeholder="例如：不吃羊肉、乳糖不耐受"></textarea>
+<button class="btn-gen" id="genBtn">🥙 生成我的减脂食谱</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 你的专属一周食谱</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制食谱</button>
+<div class="tip" style="margin-top:12px">💡 减脂不是饿肚子，均衡蛋白质+膳食纤维+适量碳水，七分吃三分练更持久。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const days=['周一','周二','周三','周四','周五','周六','周日'];
+const eat={
+'中餐':{b:['全麦面包+鸡蛋+牛奶','燕麦粥+水煮蛋','玉米+无糖豆浆'],l:['鸡胸肉+杂粮饭+清炒西兰花','牛肉粒+糙米饭+凉拌黄瓜','虾仁+荞麦面+清炒时蔬'],d:['鱼肉+紫薯+白灼菜心','豆腐+玉米+炒时蔬','鸡腿肉+藜麦+西红柿蛋汤']},
+'轻食':{b:['希腊酸奶+坚果+水果','牛油果吐司+水煮蛋','隔夜燕麦杯'],l:['鸡胸肉沙拉+油醋汁','金枪鱼蔬菜碗','虾仁藜麦沙拉'],d:['烤三文鱼+烤时蔬','豆腐蔬菜汤+小份土豆泥','鸡胸肉卷饼+青菜']},
+'无肉':{b:['豆浆+全麦馒头','杂粮粥+水煮蛋','燕麦+水果'],l:['豆腐蔬菜煲+杂粮饭','鹰嘴豆沙拉+紫薯','豆芽炒粉+青菜'],d:['香菇豆腐汤+杂粮饭','红薯+炒时蔬+豆腐','西兰花+玉米+凉拌菌菇']}
+};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 科学减脂食谱 | AgentGongju.com'))return;
+const weight=parseFloat(document.getElementById('weight').value);
+const activity=document.getElementById('activity').value;
+const goal=document.getElementById('goal').value;
+const style=document.getElementById('style').value;
+const restrict=document.getElementById('restrict').value.trim();
+if(!weight||weight<30){alert('请先输入有效体重');return;}
+const kcal=Math.round((weight*30)*(activity==='低'?0.9:activity==='中'?1:1.15));
+const target=goal==='减重'?Math.round(kcal*0.85):goal==='增肌'?Math.round(kcal*1.05):Math.round(kcal*0.93);
+let out='你的基础代谢水平每日约 '+kcal+' 大卡，配合目标，建议一日总热量约 '+target+' 大卡。\n\n';
+out+='【🧾 一周餐饮计划】(每日可灵活替换同类)\n';
+days.forEach((d,i)=>{
+const m=eat[style];
+out+='\n━━ '+d+' ━━\n';
+out+='🌅 早餐：'+m.b[i%m.b.length]+'\n';
+out+='☀️ 午餐：'+m.l[i%m.l.length]+'\n';
+out+='🌙 晚餐：'+m.d[i%m.d.length];
+});
+out+='\n\n【🍎 加餐建议】\n· 上午/下午可加一个苹果或一小把坚果(约15g)\n· 口渴多喝温水，每天2L以上';
+if(goal==='增肌'){out+='\n· 运动后30分钟内补充一份蛋白(鸡蛋/牛奶/蛋白粉)';}
+out+='\n\n【⚠️ 注意事项】\n· 减重每周 0.5-1kg 最健康，切忌节食暴瘦\n· 多选蒸煮炖，少油少盐少糖\n'+(restrict?'· 已避开忌口：'+restrict+'，注意食材替代。\n':'· 若出现头晕乏力，及时增加碳水摄入。');
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 食谱已复制！'))}
+</script>
+</body>
+</html>

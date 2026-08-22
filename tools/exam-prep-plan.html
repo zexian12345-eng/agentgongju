@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI备考学习计划生成器 | AgentGongju.com</title>
+<meta name="description" content="输入考试目标、剩余天数和每天可学习时间，AI自动生成科学合理的分阶段备考计划，冲刺考试一站式规划。">
+<meta name="keywords" content="备考计划,学习计划,考试冲刺,复习计划,考研,高考,证书,学习规划">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:840px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+textarea,input[type=text],select,input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:60px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📚 AI备考学习计划生成器</h1><p>把「不知道从哪开始」，变成「每天知道做啥」</p></div>
+
+<div class="card">
+<label>🎯 考试/学习目标</label>
+<input type="text" id="target" placeholder="例如：考研英语二 / 注册会计师会计一科 / 高考数学"></input>
+<div class="param-grid">
+<div><label>📅 距离考试天数</label><input type="number" id="days" min="1" max="365" placeholder="例如：90"></div>
+<div><label>⏰ 每天可投入小时</label><input type="number" id="hours" min="1" max="16" placeholder="例如：6"></div>
+<div><label>📚 主要科目（用顿号分隔）</label><input type="text" id="subjects" placeholder="例如：数学、英语、政治"></div>
+<div><label>📖 当前基础</label>
+<select id="level"><option value="beginner">零基础/薄弱</option><option value="mid" selected>有基础/中等</option><option value="good">基础较好/冲刺</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">📅 生成备考计划</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">📚 你的分阶段备考计划</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制计划</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI备考学习计划生成器 | AgentGongju.com'))return;
+const target=document.getElementById('target').value.trim();
+const days=parseInt(document.getElementById('days').value);
+const hours=parseInt(document.getElementById('hours').value);
+if(!target){alert('请填写考试/学习目标');return;}
+if(!days||days<1){alert('请填写合理的剩余天数');return;}
+if(!hours||hours<1){alert('请填写合理的每日学习小时');return;}
+const subs=document.getElementById('subjects').value.trim().split(/[、，,]/).filter(s=>s.trim());
+const level=document.getElementById('level').value;
+let phase1Base,phase1Days,phase2,phase3;
+if(days>=90){
+  phase1Base=Math.ceil(days*0.45);phase1Days=phase1Base;phase2=Math.ceil(days*0.35);phase3=days-phase1Base-phase2;
+}else if(days>=45){
+  phase1Base=Math.ceil(days*0.4);phase1Days=phase1Base;phase2=Math.ceil(days*0.4);phase3=days-phase1Base-phase2;
+}else{
+  phase1Base=Math.ceil(days*0.35);phase1Days=phase1Base;phase2=Math.ceil(days*0.35);phase3=days-phase1Base-phase2;
+}
+const sList=subs.length?subs:['主科目'];
+let out='『'+target+' 备考计划』\n剩余 '+days+' 天，每天约 '+hours+' 小时\n\n';
+if(level==='beginner'){out+='【温馨提示】基础较薄弱，前期优先夯实基础知识，不建议一上来就刷难题。\n\n';}
+out+='【第一阶段｜基础搭建】约 '+phase1Days+' 天（第1-'+phase1Days+'天）\n';
+out+='· 目标：过完整基础知识，建立知识框架\n';
+sList.forEach((s,i)=>{const seg=Math.max(1,Math.round(phase1Days/sList.length/(i===0?1:1)));out+='· '+s+'：'+(i===0?'先完成一轮教材/基础课':'配合练习巩固')+'\n';});
+out+='· 每天：'+(hours>=5?hours-2:Math.max(2,hours-1))+'小时新知识 + 2小时配套练习\n';
+out+='· 每周留半天复盘错题，查漏补缺\n\n';
+out+='【第二阶段｜强化应用】约 '+phase2+' 天\n';
+out+='· 目标：刷大量真题/专项题，熟悉考点与套路\n';
+out+='· 每天：'+(sList.length>1?(sList[0]+'为主，')+'穿插其他科目':'集中专项突破')+'\n';
+out+='· 开始限时训练，记录正确率与耗时，针对性补强\n\n';
+out+='【第三阶段｜冲刺模拟】约 '+phase3+' 天\n';
+out+='· 目标：全真模拟，稳定临场状态\n';
+out+='· 每天1套完整模拟卷+复盘，重点回顾高频考点与易错题\n';
+out+='· 考前几天回归基础与错题本，调整作息，清淡饮食\n\n';
+out+='【每日作息建议】\n';
+out+='· 早：记忆类科目（英语/政治等）\n· 上午&下午：攻克难题与大科目\n· 晚上：复盘+错题整理\n· 每学习45-50分钟休息10分钟\n· 保持7小时左右睡眠\n\n';
+out+='祝『'+target+'』顺利上岸，坚持就是胜利 💪';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 备考计划已复制！'))}
+</script>
+</body>
+</html>

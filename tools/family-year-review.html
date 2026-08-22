@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 家庭年度总结 | AgentGongju.com</title>
+<meta name="description" content="把一年的家庭小事写成温暖的年度总结，PPT、公众号、家庭聚会都适用，记录平淡日子里的闪光时刻">
+<meta name="keywords" content="家庭总结,年度回顾,家庭回忆,感恩,年终总结,生活回顾">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:90px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🏡 AI 家庭年度总结</h1><p>一年走过的路，值得被好好书写</p></div>
+
+<div class="card">
+<label>📅 年份</label>
+<select id="year"><option value="2024">2024</option><option value="2025">2025</option><option value="2026" selected>2026</option><option value="2027">2027</option></select>
+<div class="param-row">
+<div><label>👨‍👩‍👧 家庭结构</label>
+<select id="famtype"><option value="小家庭" selected>小家庭（2-3人）</option><option value="大家庭">三代同堂</option><option value="新婚家庭">新婚家庭</option><option value="育儿家庭">有宝宝家庭</option></select></div>
+<div><label>🎨 文风</label>
+<select id="style"><option value="温暖" selected>温暖治愈</option><option value="幽默">轻松俏皮</option><option value="深情">深情走心</option><option value="正式">正式庄重</option></select></div>
+</div>
+<label>📝 今年大事记（选填，可写多条）</label>
+<textarea id="events" placeholder="如：5月搬了新家 / 8月孩子上幼儿园 / 10月全家去了大理…"></textarea>
+<button class="btn-gen" id="genBtn">✨ 生成家庭总结</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#34d399;font-weight:600;margin-bottom:12px">📖 家庭年度总结</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制总结</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const openings={
+'小家庭':'又到了岁末回头看的时候。这一年的日子没有惊心动魄，却在柴米油盐里偷偷长成了日子的模样。',
+'大家庭':'家里老人常说"一家人整整齐齐就是福"。今年，这份福气我们稳稳接住了。',
+'新婚家庭':'从"我"变成"我们"的第一年，学着把两个不一样的生活拼成一个家。',
+'育儿家庭':'一年过得飞快，宝宝的一个笑、一声"妈妈"，就把所有疲惫都治愈了。原来"牵绊"有时比"自由"更让人安心。'
+};
+const styles={
+'温暖':{years:'这一年最值得记录的，不是走了多远，而是我们始终在一起。',hope:'新的一年，愿家里的灯常亮、饭常热、人都齐。'},
+'幽默':{years:'重大进展：终于搞懂了洗衣机的九九八十一档模式！这一年不能说顺利，但肯定没认输。',hope:'新的一年愿望很朴素：少吵架，多干饭，存款翻倍是锦上添花。'},
+'深情':{years:'时间慢一点吧，让我把每一次回家的场景都记得再深一点。',hope:'一生所求不多：一屋两人（三人），三餐四季，平安喜乐。'},
+'正式':{years:'回顾过去的一年，我们稳步经营着小家的日常，增进了彼此的陪伴与理解。',hope:'愿来年我们在事业、家庭与身体上都更进一步，和睦美满。'}
+};
+const moments={
+'小家庭':['一起做了多少顿饭','深夜的夜宵与长谈','哪件事让彼此都开心坏了','一起看的电影和剧','谁又偷偷长大了'],
+'大家庭':['大家庭聚餐次数','老人身体如何','孩子们长高了多少','谁又带来了好消息'],
+'新婚家庭':['第一次共同装修/添置家具','第一次一起过节','学着做对方的拿手菜','一起长大的默契'],
+'育儿家庭':['宝宝第一次翻身/走路/说话','第一次发烧那几夜','第一次旅行','学会了做辅食的成就感']
+};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 家庭年度总结 | AgentGongju.com'))return;
+const year=document.getElementById('year').value;
+const fam=document.getElementById('famtype').value;
+const sty=document.getElementById('style').value;
+const events=document.getElementById('events').value.trim();
+const s=styles[sty];
+let out='【'+year+' 年家庭年度总结】\n\n';
+out+=openings[fam]+'\n\n';
+if(events){const list=events.split(/[\/\n，,、]+/).filter(x=>x.trim());out+='这一年的重要节点：\n'+list.map((e,i)=>'· '+e.trim()).join('\n')+'\n\n';}
+out+='值得记住的小事——\n'+moments[fam].map(m=>'· '+m+'：我们认真经历了，也认真记住了。').join('\n')+'\n\n';
+out+='—— 这一年的感悟 ——\n'+s.years+'\n\n';
+out+='—— 对来年的期待 ——\n'+s.hope+'\n\n';
+out+='"日子是过给自己看的，记录是为了不忘来路。"\n祝 '+(year==='2026'?'2026':'新')+' 年，家里的每一位都被温柔以待。';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 家庭总结已复制！'))}
+</script>
+</body>
+</html>

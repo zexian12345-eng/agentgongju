@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 元气早晨计划 | AgentGongju.com</title>
+<meta name="description" content="生成科学的晨间作息方案，让你精力满满地开启每一天，从起床到出门从容不迫">
+<meta name="keywords" content="早晨计划,晨间routine,早起计划,晨间习惯,元气满满,高效早晨">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🌅 AI 元气早晨计划</h1><p>早起1小时，赢在每一天的起跑线</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>⏰ 起床时间</label>
+<select id="wake"><option value="05:30">5:30 极致晨型人</option><option value="06:30" selected>6:30 标准晨型人</option><option value="07:30">7:30 温和起步</option></select></div>
+<div><label>🎯 早晨目标</label>
+<select id="focus"><option value="效率" selected>高效工作（提前进入状态）</option><option value="健康">健康生活（运动/饮食）</option><option value="学习">学习进步（读书/英语）</option></select></div>
+</div>
+<label>📝 其他情况（选填）</label>
+<textarea id="extra" placeholder="如：有孩子，9点上班通勤40分钟…"></textarea>
+<button class="btn-gen" id="genBtn">✨ 生成晨间计划</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#fbbf24;font-weight:600;margin-bottom:12px">🌅 我的完美早晨</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制晨间计划</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 元气早晨计划 | AgentGongju.com'))return;
+const wake=document.getElementById('wake').value;
+const focus=document.getElementById('focus').value;
+const extra=document.getElementById('extra').value.trim();
+let out='【'+wake+' 起床 · 目标：'+focus+'】\n\n';
+if(extra)out+='你的情况：'+extra+'\n\n';
+const w=wake==='05:30'?330:(wake==='06:30'?390:450);
+function pad(h,m){return String(h).padStart(2,'0')+':'+String(m).padStart(2,'0');}
+function mk(m){const base=w+m;const h=Math.floor(base/60);const mm=base%60;return pad(h%24,mm);}
+out+='— ⏰ 早晨时间表 —\n';
+if(focus==='效率'){
+out+=mk(0)+' 起床+拉伸/晨间唤醒\n';
+out+=mk(15)+' 喝水（一杯温水）+简单洗漱\n';
+out+=mk(25)+' 晨间冥想/呼吸 5 分钟\n';
+out+=mk(35)+' 早餐（高蛋白+碳水：蛋+燕麦+水果）\n';
+out+=mk(55)+' 通勤准备（穿衣/带包/列今日3件事）\n';
+out+=mk(70)+' 出门（出门后通勤路上无脑但不浪费时间）\n';
+out+=mk(110)+' 到工位：先做最重要的一件任务 30 分钟（深度工作黄金期）\n';
+}else if(focus==='健康'){
+out+=mk(0)+' 起床+拉伸 5 分钟\n';
+out+=mk(10)+' 上厕所+喝一杯温水\n';
+out+=mk(20)+' 晨跑/快走 30 分钟（或居家运动）\n';
+out+=mk(55)+' 冲澡+护肤\n';
+out+=mk(70)+' 健康早餐（蔬菜/蛋白质/粗粮）\n';
+out+=mk(90)+' 整理好"今日健康小目标"（如：走5000步/吃够3种蔬菜）\n';
+out+=mk(100)+' 出发一天！带着清醒的身体开工\n';
+}else{
+out+=mk(0)+' 起床+快速洗漱\n';
+out+=mk(15)+' 背单词/听播客 15 分钟\n';
+out+=mk(35)+' 早餐（边吃边听英语/知识）\n';
+out+=mk(50)+' 今日重点学习：阅读 20 分钟 + 笔记 5 分钟\n';
+out+=mk(75)+' 列今日3件要事\n';
+out+=mk(85)+' 出门（通勤中继续听书）\n';
+}
+out+='\n— 📌 让早起更容易的小技巧 —\n· 前一晚睡前把手机放远，用闹钟+窗帘拉开\n· 醒来先想"今天最期待的一件事"\n· 头三周是适应期，坚持过了就成习惯\n· 早起失败别自责，第二天继续就行\n\n— 🚀 晨间组合拳（可选）—\n· 番茄钟法：上班后先做25分钟最重要的事\n· "两分钟法则"：任何事情先动手2分钟再说\n· 早餐不要跳过：大脑需要葡萄糖\n\n🌞 每个美好的清晨都是自己给的，开始吧！';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 晨间计划已复制，明天开始行动！'))}
+</script>
+</body>
+</html>

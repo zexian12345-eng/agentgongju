@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 红包祝福语 | AgentGongju.com</title>
+<meta name="description" content="输入收红包的对象与场景，AI为你写出一句贴切又吉利的红包祝福语，发红包更有人情味">
+<meta name="keywords" content="红包祝福语,红包文案,生日红包,结婚红包,春节红包,发红包,祝福语">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:55px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{color:#94a3b8;font-size:.85rem;margin-bottom:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🧧 AI 红包祝福语</h1><p>发红包配句话，人情味一下就出来了</p></div>
+
+<div class="card">
+<label>🧧 红包发给谁？</label>
+<input type="text" id="who" placeholder="例如：老妈、闺蜜、女朋友、领导…">
+<div class="param-row">
+<div><label>🎉 什么场合</label>
+<select id="occasion"><option value="生日">🎂 生日</option><option value="春节">🧨 春节</option><option value="婚礼" selected>💒 结婚</option><option value="晋升">🏆 升职加薪</option><option value="感谢">🙏 感谢/还礼</option></select></div>
+<div><label>🎨 语气风格</label>
+<select id="style"><option value="正式">🎗️ 正式得体</option><option value="俏皮" selected>😜 俏皮亲切</option><option value="感伤">🌙 走心动人</option></select></div>
+</div>
+<label>📝 想额外说的话（选填）</label>
+<textarea id="extra" placeholder="例如：最近辛苦了 / 祝你考试顺利"></textarea>
+<button class="btn-gen" id="genBtn">🧧 生成祝福语</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🧧 你的红包祝福语</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制祝福语</button>
+<div class="tip" style="margin-top:12px">💡 小贴士：红包金额配吉利的数字更添彩，如 6.66（顺利）、8.88（发财）、99（长长久久）。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const bank={
+生日:{正式:['岁岁常欢愉，年年皆胜意','生日快乐，平安健康，万事顺遂'],俏皮:['又大了一岁，但要永远可爱呀','祝你寿比南山，钞票秒到账'],感伤:['愿你被这个世界温柔以待，生日快乐']},
+春节:{正式:['新春大吉，阖家幸福，万事如意','新年快乐，福气满满，财源广进'],俏皮:['祝你新年发大财，好运挡不住','红包虽薄，心意超厚，新年大吉']},
+婚礼:{正式:['百年好合，永结同心，早生贵子','恭喜新婚，愿你们白头偕老，幸福美满'],俏皮:['红包不大，福气翻倍，祝早生贵子','新婚快乐！随个份子，开心就好']},
+晋升:{正式:['恭喜高升，前程似锦，大展宏图','升职加薪，步步高升，再接再厉'],俏皮:['请客请客！升职了必须安排','恭喜恭喜，走上人生巅峰，别忘了请吃饭']},
+'感谢':{正式:['小小意思，不成敬意，聊表谢意','感谢有你，一点心意请笑纳'],俏皮:['一点心意，别嫌少，改天请你吃大餐','谢啦！收下红包，我们就两清（开玩笑的）']}
+};
+const suffix=['🧧','🎉','❤️','🌟','💰'];
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 红包祝福语 | AgentGongju.com'))return;
+const who=document.getElementById('who').value.trim()||'你';
+const occasion=document.getElementById('occasion').value;
+const style=document.getElementById('style').value;
+const extra=document.getElementById('extra').value.trim();
+const opts=bank[occasion][style];
+const jie=occasion==='生日'?'诞生喜乐':occasion==='春节'?'岁岁平安':occasion==='婚礼'?'百年好合':occasion==='晋升'?'步步高升':'好人一生平安';
+let out='给'+who+'的红包祝福：\n\n';
+out+=opts[Math.floor(Math.random()*opts.length)]+'\n\n';
+if(extra){out+='PS：'+extra+' '+suffix[Math.floor(Math.random()*suffix.length)]+'\n\n';}
+out+='祝'+who+' '+jie+' '+suffix[Math.floor(Math.random()*suffix.length)];
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 祝福语已复制！'))}
+</script>
+</body>
+</html>

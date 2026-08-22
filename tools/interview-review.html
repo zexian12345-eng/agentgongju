@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 面试复盘助手 | AgentGongju.com</title>
+<meta name="description" content="面试结束不知道表现如何？输入面试岗位与自述表现，生成结构化复盘报告，找出优势与短板，为下一场做准备">
+<meta name="keywords" content="面试复盘,面试复盘模板,面试总结,求职,面试技巧,面试官提问,面试评估">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:100px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🔄 AI 面试复盘助手</h1><p>每次面试都是一次成长，复盘让自己更强</p></div>
+
+<div class="card">
+<label>💼 应聘岗位</label>
+<input type="text" id="job" placeholder="如：前端开发 / 产品经理 / 运营">
+<div class="param-row">
+<div><label>📊 面试轮次</label>
+<select id="round"><option value="一面">一面（HR/初面）</option><option value="二面" selected>二面（业务面）</option><option value="三面">三面（终面）</option><option value="技术面">技术面/笔试题</option></select></div>
+<div><label>😊 自我感觉</label>
+<select id="feel"><option value="很好">😄 很顺利</option><option value="还可以" selected>🙂 还可以</option><option value="一般">😕 一般般</option><option value="很糟糕">😰 不太理想</option></select></div>
+</div>
+<label>📝 回忆面试内容（越详细越好）</label>
+<textarea id="detail" placeholder="如：自我介绍3分钟，HR问了我为什么离职，还问了一个编程手写题没做出来…"></textarea>
+<button class="btn-gen" id="genBtn">✨ 生成复盘报告</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#38bdf8;font-weight:600;margin-bottom:12px">📋 结构化复盘报告</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制报告</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const feelAdvice={
+'很好':{score:'预估通过率：高（建议继续跟进）',points:'你的整体表现不错，保持节奏，终面更多看气质与长期潜力'},
+'还可以':{score:'预估通过率：中偏高（有竞争力）',points:'表现合格但亮点不突出，建议强化"案例化"表达'},
+'一般':{score:'预估通过率：中等（有风险）',points:'有些点没答好，复盘重点：找到卡壳原因并准备加强版回答'},
+'很糟糕':{score:'预估通过率：偏低（但也别灰心）',points:'复盘重点：找到最大失误，将其变成下一次的避坑经验'}
+};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 面试复盘助手 | AgentGongju.com'))return;
+const job=document.getElementById('job').value.trim();
+const round=document.getElementById('round').value;
+const feel=document.getElementById('feel').value;
+const detail=document.getElementById('detail').value.trim();
+const f=feelAdvice[feel];
+let out='【'+round+(job?' · '+job:'')+' 面试复盘】\n\n';
+if(detail)out+='面试回顾：「'+detail+'」\n\n';
+out+='— 📊 总体评估 —\n'+f.score+'\n\n';
+out+='— ✅ 做得好的地方（继续保持）—\n'+(feel==='很好'?'1. 表达流畅自然\n2. 节奏把握得当\n3. 与面试官互动正常':'1. 完成了基本回答\n2. 职业形象端正\n3. 展现了基本沟通能力')+'\n\n';
+out+='— 🔍 可提升的方向 —\n'+(feel==='一般'||feel==='很糟糕'?handleWeak(detail):'1. 增强"数据化案例"表达（如：用具体数字说明成果）\n2. 准备1-2个反问问题，展示主动性\n3. 结尾总结时突出匹配度')+'\n\n';
+out+='— 🎯 下次面试改进计划 —\n1. 重新打磨自我介绍（30秒+90秒+3分钟各一版）\n2. 准备好「为什么选我们」的3个理由\n3. 针对岗位JD列5个高频问题+标准答案\n4. '+(round==='技术面'?'复试技术题：准备LeetCode热门50题+项目复盘':'准备STAR法则讲2个关键业绩案例')+'\n\n';
+out+='— 💡 面试官眼中你可能是谁 —\n· 如果答得很好：稳定型+潜力型\n· 如果答得一般：专业度有，但热情不足\n· 如果答得很差：准备不足，可看成"下次再来"的垫脚石\n\n📌 无论结果如何，复盘比猜测更有价值。保持节奏，下一场更好！';
+function handleWeak(d){
+let m='1. 找到"卡壳点"：本次最没把握的问题是哪个？整理并补充\n2. ';if(d&&d.indexOf('手写')>-1)m+='有代码/技能题，建议在LeetCode刷题并提前练习白板题';else m+='准备"行为面试法"：用Situation-Task-Action-Result讲完整案例';m+='\n3. 复盘时注意：不要在复盘时一味自责，把"失误"翻译成"下次如何做更好"';return m;
+}
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 复盘报告已复制！'))}
+</script>
+</body>
+</html>

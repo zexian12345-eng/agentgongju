@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI漫画分镜脚本生成器 | AgentGongju.com</title>
+<meta name="description" content="输入你的故事梗概，AI自动生成漫画分镜脚本，包含分镜画面、台词、动作情绪，适合漫画家、条漫作者、短视频创作者。">
+<meta name="keywords" content="漫画分镜,分镜脚本,条漫,漫画创作,分镜表,故事板">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:860px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+textarea,input[type=text],select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:80px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.9;white-space:pre-wrap;font-size:.9rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📖 AI漫画分镜脚本生成器</h1><p>把故事梗概，拆成一格格会讲戏的分镜</p></div>
+
+<div class="card">
+<label>📝 故事梗概</label>
+<textarea id="story" placeholder="例如：一个社畜加班到深夜，忽然发现电脑上弹出外星人的求救信号，他决定偷偷回应……"></textarea>
+<div class="param-grid">
+<div><label>🎬 分镜数量</label>
+<select id="count"><option>6格（中短篇）</option><option selected>8格（标准篇）</option><option>10格（长篇）</option></select></div>
+<div><label>😊 风格基调</label>
+<select id="mood"><option>轻松搞笑</option><option>热血燃情</option><option>温情治愈</option><option>悬疑反转</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">🎬 生成分镜脚本</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">📖 漫画分镜脚本</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制脚本</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const shotMap={6:['全景｜交代环境与人物出场','中景｜主角开始行动','特写｜关键表情或物件','中景｜冲突或转折','近景｜情绪升温','大全景｜收尾定格']};
+shotMap[8]=['远景空镜｜交代场景氛围','中景｜主角出场，引入日常','特写｜异常信号出现','近景｜主角犹豫抉择','中景｜行动开始','动作格｜高潮冲突','近景｜情绪释然或反转','全景｜结局定格'];
+shotMap[10]=['远景｜开篇定调','中景｜主角日常生活','近景｜引出目标或困境','特写｜第一个转折点','中景｜首次尝试受阻','动作格｜矛盾升级','特写｜关键抉择','中景｜主角爆发','近景｜情感落点','全景｜主题收束'];
+const moodTags={
+'轻松搞笑':['夸张的表情','搞笑的反差','幽默的吐槽台词','轻松明快的节奏'],
+'热血燃情':['汗水和呐喊','充满力量的动作','激昂的台词','燃点拉满的高潮'],
+'温情治愈':['温暖的光线','细腻的眼神','治愈系的独白','缓缓流淌的情绪'],
+'悬疑反转':['压抑的暗调','神秘的特写','留白的对话','意想不到的反转']
+};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI漫画分镜脚本生成器 | AgentGongju.com'))return;
+const story=document.getElementById('story').value.trim();
+if(!story){alert('请先填写故事梗概');return;}
+const n=parseInt(document.getElementById('count').value);
+const mood=document.getElementById('mood').value;
+const tags=moodTags[mood];
+const shots=shotMap[n];
+let out='脚本设定\n题材：'+mood+'向漫画｜分镜数：'+n+'格\n故事梗概：'+story+'\n\n'+(n>=8?'【开篇设计】\n第一格先用'+(shots[0].split('｜')[0])+'建立氛围，把读者带入故事的世界。\n\n':'');
+let si=0;
+for(const s of shots){
+  si++;
+  const [shot,act]=s.split('｜');
+  const tag=tags[(si-1)%tags.length];
+  out+='【第'+si+'格】'+shot+'\n';
+  out+='画面描述：'+getScene(story,si,act,tag)+'\n';
+  out+='台词/拟声：'+getLine(story,si,mood)+'\n';
+  out+='情绪提示：'+tag+'\n\n';
+}
+out+='【结尾提醒】\n结尾留一个钩子或情感落点，让读者意犹未尽，便于连载追更。';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function getScene(story,i,act,tag){
+  const scenes=['交代故事发生的地点与背景，人物置于其中','主角正式出场，动作自然，性格初见端倪','重点呈现关键物件或人物表情，镜头推近','主角与对手/障碍正面交锋，画面有张力','人物内心挣扎与情绪流露，光影配合','全篇的最高潮，动作与情绪同时爆发','情绪回落，人物豁然开朗或悬念浮现','画面开阔收尾，呼应开头，留下余味'];
+  const extra=(act||'推进剧情')+'，'+tag+'，整体符合「'+encodeURIComponent(story.slice(0,8))+'」的故事基调';
+  return scenes[(i-1)%scenes.length]+'。'+extra;
+}
+function getLine(story,i,mood){
+  const humorous=['（OS）事情的走向…好像不太对劲','「这也在你的计划之中吗？」','（OS）我就知道没那么简单！'];
+  const warm=['「还好有你，我一直都在。」','「原来，这就是答案啊。」','（OS）谢谢你，出现在我的世界里。'];
+  const hot=['「我绝不会在这里停下！」','「让开，接下来是我的主场！」','「一起冲啊——」'];
+  const mystery=['「我总觉得…有人在背后看着我。」','「真相，往往藏在习惯里。」','（OS）这件事，远没有看起来那么简单。'];
+  let lines;
+  if(mood==='轻松搞笑')lines=humorous;
+  else if(mood==='热血燃情')lines=hot;
+  else if(mood==='悬疑反转')lines=mystery;
+  else lines=warm;
+  return lines[(i-1)%lines.length];
+}
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 分镜脚本已复制！'))}
+</script>
+</body>
+</html>

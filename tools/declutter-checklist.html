@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 断舍离清单 | AgentGongju.com</title>
+<meta name="description" content="按家居区域梳理出该扔、该收、该留的物品清单，帮你清爽大扫除，给家减负也给心减负">
+<meta name="keywords" content="断舍离,整理收纳,大扫除,收纳清单,极简,扔东西,整理房间">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:60px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{color:#94a3b8;font-size:.85rem;margin-bottom:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🧹 AI 断舍离清单</h1><p>哪些该扔、哪些该留？按区域理一份清爽清单</p></div>
+
+<div class="card">
+<div><label>🏠 想整理的区域</label>
+<select id="zone"><option value="衣柜">👕 衣柜</option><option value="厨房" selected>🍳 厨房</option><option value="客厅">🛋️ 客厅</option><option value="书房">📚 书房/杂物</option><option value="全屋">🏠 全屋大扫除</option></select></div>
+<div class="param-row">
+<div><label>🎯 整理力度</label>
+<select id="level"><option value="温和">🙂 温和清理</option><option value="标准" selected>💪 标准整理</option><option value="彻底">🔥 彻底断舍离</option></select></div>
+<div><label>⏳ 可用时间</label>
+<select id="time"><option value="1">1小时</option><option value="3" selected>3小时</option><option value="6">半天以上</option></select></div>
+</div>
+<label>📝 特别难断的物品（选填）</label>
+<textarea id="stick" placeholder="例如：一直舍不得丢的旧衣服、二手厨具"></textarea>
+<button class="btn-gen" id="genBtn">🧹 生成断舍离清单</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 你的断舍离执行清单</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制清单</button>
+<div class="tip" style="margin-top:12px">💡 小贴士：断舍离不是空手扔，可以分『扔/送/捐/卖掉/闲鱼』几类，给物品更好的去处。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const items={
+衣柜:{扔:['明显起球变形的衣物','穿不下的旧牛仔裤','囤积多年的旧袜子','发黄的白色T恤'],送:['九成新但不合身的名牌衣','几乎没穿过的正装','闲置的配饰包包'],留:['高频穿着的百搭款','冬季保暖外套冬季','有纪念意义的物件']},
+厨房:{扔:['过期调料与酱料','缺盖缺把的锅具','老化的抹布海绵','空的包装罐'],送:['成套但多余的餐具','闲置的小家电','没用过的礼盒'],留:['每天在用的锅碗','常用调味料','顺手好用的工具']},
+客厅:{扔:['堆积的过期报纸杂志','断了线的数据线','没用的包装盒','落灰的装饰品'],送:['闲置的收纳盒','多余的靠垫','不用的书籍'],留:['常用电器遥控','充电线充电器','每天用得到的收纳']},
+书房:{扔:['堆满的草稿纸','过期的票据账单','没用的旧杂物','干涸的笔'],送:['读过的旧书','多余的文具','闲置电子配件'],留:['要用的课本资料','常用文具','正在看的书']},
+全屋:{扔:['全屋过期药品','过期洗护用品','积灰的闲置物','破损无法用的物件'],送:['九成新的旧衣服','闲置家电','不用的日用品'],留:['每天高频使用的刚需品','有纪念意义的少数好物','季节性但会用的物品']}};
+const rule={温和:'只处理明显没用的东西，不动情绪负担重的',标准:'按『使用频率』判断，一年没用+占用空间大的优先处理',彻底:'以『留下的每一件都要带来心流』为标准，大胆取舍'};
+const tips=['先开三个箱子：扔/暂留/送人，分类推进更快','犹豫的东西先放「暂留箱」，三个月没想起再处理','整理完记得拍照留念，视觉正反馈更有动力','按区域逐一攻克，不要同时摊开乱做'];
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 断舍离清单 | AgentGongju.com'))return;
+const zone=document.getElementById('zone').value;
+const level=document.getElementById('level').value;
+const time=document.getElementById('time').value;
+const stick=document.getElementById('stick').value.trim();
+const it=items[zone];
+let out='〔整理区域：'+zone+'｜力度：'+level+'型｜预计耗时约'+time+'小时〕\n';
+out+='\n【🗑️ 建议扔掉】\n· '+it.扔.join('\n· ')+'\n';
+out+='\n【💝 可送/可捐/可卖】\n· '+it.送.join('\n· ')+'\n';
+out+='\n【✅ 建议留下】\n· '+it.留.join('\n· ')+'\n';
+out+='\n【📏 取舍标准】\n· '+rule[level]+'\n';
+if(stick){out+='\n【🤔 难断特别提醒】\n· 你说舍不得「'+stick+'」——试试问自己：它上一次为你所用是什么时候？如果能接受离开，就果断放手。\n';}
+out+='\n【💡 执行小技巧】\n· '+tips[Math.floor(Math.random()*tips.length)]+'\n· '+tips[Math.floor(Math.random()*tips.length)];
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 断舍离清单已复制！'))}
+</script>
+</body>
+</html>

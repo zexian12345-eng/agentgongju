@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI朋友圈文案生成器 | AgentGongju.com</title>
+<meta name="description" content="输入你想发的内容，AI帮你写出有质感的微信朋友圈文案。覆盖日常、旅行、美食、心情、节日、晒娃晒宠等场景。">
+<meta name="keywords" content="朋友圈文案,微信朋友圈,发圈,文案,心情语录,晒照配文,日常文案">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+textarea,input[type=text],select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:60px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem;margin-right:8px}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📱 AI朋友圈文案生成器</h1><p>一张图配一句话，高级感扑面而来</p></div>
+
+<div class="card">
+<label>📝 你想发什么内容</label>
+<textarea id="content" placeholder="例如：去海边度假的日落照 / 和闺蜜吃了顿超好吃的火锅 / 今天加班到很晚终于搞定了大项目"></textarea>
+<div class="param-grid">
+<div><label>🖼️ 场景类型</label>
+<select id="scene"><option auto value="auto">自动识别</option><option>日常记录</option><option>旅行打卡</option><option>美食分享</option><option>心情语录</option><option>节日祝福</option></select></div>
+<div><label>🎨 文案风格</label>
+<select id="style"><option>文艺治愈</option><option>幽默俏皮</option><option>简短酷飒</option><option>温馨正能量</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">✨ 生成朋友圈文案</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">📱 你的朋友圈文案</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制文案</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const styleOpen={
+'文艺治愈':['生活明朗，万物可爱。','把普通的日子，过成值得纪念的模样。','慢慢来，好戏都在烟火里。','山水万程，皆是好运。'],
+'幽默俏皮':['是谁在凡尔赛？哦是我。','今天也是被食物/生活治愈的一天。','我可太会过日子了（指花钱）。','日常营业，敬请关注。'],
+'简短酷飒':['今日份更新。','见山见海。','下班快乐。','心情管理大师上线。'],
+'温馨正能量':['忙有所值，闲有所趣。','努力的人，运气都不会太差。','把日子过得热气腾腾。','一切美好，都在来的路上。']
+};
+const sceneTip={
+'旅行打卡':['山海自有归期，风雨自有相逢。','把脚印留在了日落里。','在路上，看世界，也找自己。'],
+'美食分享':['唯有美食与爱不可辜负。','人间烟火气，最抚凡人心。','这一口，值回所有疲惫。'],
+'日常记录':['日子好好过，照片慢慢存。','记录一下今天的小确幸。','平凡也值得被收藏。'],
+'心情语录':['情绪自由地活着，也是一种浪漫。','今天，和内心和解。','愿你始终有勇气做自己。'],
+'节日祝福':['愿你岁岁平安，万事顺遂。','把祝福送给每一个路过的人。','节日快乐，要一直快乐。']
+};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI朋友圈文案生成器 | AgentGongju.com'))return;
+const content=document.getElementById('content').value.trim();
+if(!content){alert('请填写你想发的内容');return;}
+const scene=document.getElementById('scene').value;
+const style=document.getElementById('style').value;
+const opens=styleOpen[style];
+const op=opens[Math.floor(Math.random()*opens.length)];
+let tip=null;
+if(scene==='auto'){
+  if(/海|日落|旅行|机票|山|风景/.test(content))tip='旅行打卡';
+  else if(/吃|火锅|美食|饭|菜|蛋糕/.test(content))tip='美食分享';
+  else if(/心情|难|累|开心|难过/.test(content))tip='心情语录';
+  else tip='日常记录';
+}else{tip=scene;}
+const tips=sceneTip[tip]||sceneTip['日常记录'];
+const tipText=tips[Math.floor(Math.random()*tips.length)];
+let out='【正文】\n'+op+'\n'+content+'\n'+tipText+'\n\n';
+out+='【话题标签】\n#'+tip.replace(/记录/,'')+' #记录生活 #日常 #小美好\n\n';
+out+='【配图建议】\n首图选最有氛围感的一张，画面简洁留白，配文更有格调。';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 文案已复制！'))}
+</script>
+</body>
+</html>

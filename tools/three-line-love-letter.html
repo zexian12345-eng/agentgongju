@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 三行情书 | AgentGongju.com</title>
+<meta name="description" content="输入对方昵称与你想说的话，AI为你生成温暖又走心的三行情书，告白/节日/日常都合适">
+<meta name="keywords" content="三行情书,情书,告白,情话,表白,浪漫文案,写给ta的话">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:70px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{color:#94a3b8;font-size:.85rem;margin-bottom:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>💌 AI 三行情书</h1><p>寥寥三行，说尽心里话 —— 生成写给 ta 的走心情书</p></div>
+
+<div class="card">
+<label>💖 对方的昵称</label>
+<input type="text" id="name" placeholder="例如：小兔、阿哲、老婆…">
+<div class="param-row">
+<div><label>🎭 感情阶段</label>
+<select id="stage"><option value="暗恋">🥺 暗恋/追求</option><option value="热恋" selected>💞 热恋中</option><option value="老夫老妻">🏡 老夫老妻</option><option value="异地">🌏 异地恋</option></select></div>
+<div><label>🎨 风格</label>
+<select id="style"><option value="文艺">📖 文艺诗意</option><option value="幽默" selected>😄 幽默调皮</option><option value="深情">🥰 深情直接</option></select></div>
+</div>
+<label>📝 想对 ta 说的话（选填）</label>
+<textarea id="words" placeholder="例如：谢谢你一直陪着我，想把每天的日落都分你一半"></textarea>
+<button class="btn-gen" id="genBtn">💝 生成三行情书</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">💌 送给 ta 的三行情书</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制情书</button>
+<div class="tip" style="margin-top:12px">💡 小贴士：手写在卡片上，或配一张你们的合照，比转发更打动人心。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const poems={
+文艺:{暗恋:['人群中我总先看见你的侧影','像月光落进湖面','而我学会了不动声色地喜欢'],热恋:['你是今天风里的一片温柔','是我所有的形容词','和三行情书写不完的喜欢'],'老夫老妻':['粥还温着，灯还亮着','你在我身边打着盹','这就是我写过最长的一行诗'],异地:['想念是一张车票的距离','我把晚安折成纸飞机','让它替我飞到你梦里']},
+幽默:{暗恋:['想约你喝奶茶又怕穿帮','于是我先请全办公室','就为了名正言顺请你那一杯'],热恋:['自从遇见你','我连打游戏的延迟','都开始计较起来'],'老夫老妻':['你刷剧我打游戏','一个眼神就懂谁去煮面','这默契比银行卡余额还实'],异地:['异地恋就像拼图','隔得很远','但拼上就严丝合缝']},
+深情:{暗恋:['喜欢你','是我藏在教科书里','不敢翻开的秘密'],热恋:['往后余生','春花秋月夏雨冬雪','都只想和你分享'],'老夫老妻':['前半生是我要来的你','后半生是你要来的我','这买卖怎么算都赚'],异地:['你在的城市下雨了','我很想问问你有没有带伞','但我忍住了，因为我更想你']}
+};
+const endings=['—— 只想把世间的甜都分你一半','—— 你的名字，是我写过最好看的字','—— 人间值得，因为有你在','—— 晚安，我亲爱的小宝贝'];
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 三行情书 | AgentGongju.com'))return;
+const name=document.getElementById('name').value.trim()||'亲爱的你';
+const stage=document.getElementById('stage').value;
+const style=document.getElementById('style').value;
+const words=document.getElementById('words').value.trim();
+const l=poems[style][stage];
+let out='亲爱的 '+name+'：\n\n';
+out+=l[0]+'\n'+l[1]+'\n'+l[2]+'\n\n';
+out+=endings[Math.floor(Math.random()*endings.length)]+'\n';
+if(words){out+='\n（你说：'+words+' —— 我都记在心里了 ♥）\n';}
+out+='\n—— 一个想被你宠爱的小心思';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 情书已复制！'))}
+</script>
+</body>
+</html>

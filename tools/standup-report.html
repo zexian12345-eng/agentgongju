@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI每日站会报告生成器 | AgentGongju.com</title>
+<meta name="description" content="输入昨天做了什么、今天计划、遇到的卡点，AI快速生成简洁专业的敏捷站会发言，日常展示、敏捷团队必备。">
+<meta name="keywords" content="站会,每日汇报,敏捷开发,晨会,工作日志,日报,standup">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+textarea,input[type=text],select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:60px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.opt-row{display:flex;gap:8px;align-items:center;margin-bottom:12px;color:#cbd5e1;font-size:.85rem}
+.opt-row input[type=checkbox]{width:auto;margin:0}
+@media(max-width:600px){.param-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📢 AI每日站会报告生成器</h1><p>三句话讲清站会，告别「干巴」汇报</p></div>
+
+<div class="card">
+<label>📌 昨天做了什么（重点完成的事）</label>
+<textarea id="done" placeholder="例如：完成了订单模块的联调，修复了3个Bug"></textarea>
+<label>🎯 今天计划做什么</label>
+<textarea id="plan" placeholder="例如：推进支付流程开发，下午和测试对齐用例"></textarea>
+<label>🚧 遇到的困难或卡点（选填）</label>
+<textarea id="block" placeholder="例如：等待第三方的接口文档，暂未到位"></textarea>
+<div class="opt-row"><input type="checkbox" id="detail" checked><span>输出条理版（分点列出，更正式）</span></div>
+<button class="btn-gen" id="genBtn">📢 生成站会发言</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">📢 今日站会发言稿</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制发言</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI每日站会报告生成器 | AgentGongju.com'))return;
+const done=document.getElementById('done').value.trim();
+const plan=document.getElementById('plan').value.trim();
+const block=document.getElementById('block').value.trim();
+const detail=document.getElementById('detail').checked;
+if(!done&&!plan){alert('请至少填写「昨天做了什么」或「今天计划」');return;}
+const doneList=done?done.split(/[；;，,]/).map(s=>s.trim()).filter(Boolean):[];
+const planList=plan?plan.split(/[；;，,]/).map(s=>s.trim()).filter(Boolean):[];
+let out='『每日站会发言』\n\n';
+if(detail){
+  out+='【昨天】\n';
+  if(doneList.length){doneList.forEach((d,i)=>out+=(i+1)+'. '+d+'\n');}
+  else out+='. 推进中\n';
+  out+='【今天】\n';
+  if(planList.length){planList.forEach((p,i)=>out+=(i+1)+'. '+p+'\n');}
+  else out+='. 按计划推进\n';
+  if(block){out+='【卡点】\n· '+block+'\n';}
+}else{
+  out+='昨天我完成了'+((doneList.length?doneList.join('、'):'当前任务的推进')+((block&&block.length)?'，过程中遇到「'+block+'」正在跟进解决':''))+'。\n';
+  out+='今天计划'+((planList.length?planList.join('、'):'继续推进手头任务'))+'。\n';
+  if(block&&!doneList.length){out+='目前需要同步的卡点是：'+block+'，如能协调会加快进度。\n';}
+}
+out+='\n—— 发言简洁明了，控制在1分钟内更专业 ✨';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 站会发言已复制！'))}
+</script>
+</body>
+</html>

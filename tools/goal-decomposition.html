@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 年度目标拆解器 | AgentGongju.com</title>
+<meta name="description" content="把模糊的年度目标拆成季度计划、月计划、周计划与日行动，让大目标一步步变成现实">
+<meta name="keywords" content="目标管理,年度目标,OKR,拆解目标,制定计划,执行力,个人成长">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:70px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🎯 AI 年度目标拆解器</h1><p>把大梦想拆成可执行的小脚印</p></div>
+
+<div class="card">
+<label>🎯 你的年度目标（尽量具体）</label>
+<textarea id="goal" placeholder="如：减肥20斤 / 存款10万 / 学完前端 / 读完24本书…"></textarea>
+<div class="param-row">
+<div><label>🗓 时间周期</label>
+<select id="period"><option value="一年">一年</option><option value="半年">半年</option><option value="一季度">一个季度</option></select></div>
+<div><label>⏱ 每天可投入</label>
+<select id="daily"><option value="30分钟">30分钟</option><option value="1小时" selected>1小时</option><option value="2小时">2小时</option><option value="3小时以上">3小时以上</option></select></div>
+</div>
+<label>⚠️ 潜在障碍（选填）</label>
+<textarea id="barrier" placeholder="如：工作忙、晚上容易葛优躺刷手机…"></textarea>
+<button class="btn-gen" id="genBtn">✨ 拆解目标</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#38bdf8;font-weight:600;margin-bottom:12px">📐 目标拆解方案</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制方案</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const stepTips={
+'减肥20斤':{metric:'每月减2-3斤，4周为一个循环',action:'每天：快走/跑步30分钟 + 记录饮食热量\n每周：3次力量训练 + 1次称重记录\n每月：拍对比照、复盘饮食日记'},
+'存款10万':{metric:'每月存8300元，前3个月先存2.5万打底',action:'每天：记账APP记每一笔支出\n每周：周日复盘本周预算\n每月：发薪日当天自动转存固定金额'},
+'学完前端':{metric:'每月学完1个模块（HTML→CSS→JS→框架）',action:'每天：1小时学习+敲代码练习\n每周：完成1个小项目（todo/计时器）\n每月：输出1篇总结文章'},
+'读完24本书':{metric:'每月2本书，每2周1本',action:'每天：30分钟阅读（通勤/睡前）\n每周：周末写100字读书笔记\n每月：月底复盘书单'}
+};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 年度目标拆解器 | AgentGongju.com'))return;
+const goal=document.getElementById('goal').value.trim();
+const period=document.getElementById('period').value;
+const daily=document.getElementById('daily').value;
+const barrier=document.getElementById('barrier').value.trim();
+if(!goal){alert('请先输入你的目标');return;}
+const g=goal.slice(0,30);
+const periodQ=period==='一年'?4:(period==='半年'?2:1);
+const months=period==='一年'?12:(period==='半年'?6:3);
+let out='【'+g+' · 周期：'+period+'】\n\n';
+out+='— 📐 拆解逻辑 —\n目标 ÷ '+months+' 个月 = 每月目标 ÷ 4周 = 每周目标 ÷ 7天 = 每日行动\n\n';
+// 匹配已知模板
+let matched=false;
+Object.keys(stepTips).forEach(k=>{
+if(goal.indexOf(k.slice(0,2))>-1&&!matched){
+matched=true;out+=stepTips[k].metric+'\n\n';
+out+='— 📅 执行方案 —\n'+stepTips[k].action+'\n\n';
+}
+});
+if(!matched){
+out+='— 📅 通用拆解模板 —\n· 前20%时间：学习+准备（找方法/找工具）\n· 中间60%：持续执行（每日固定投入）\n· 后20%：冲刺+复盘（查漏补缺）\n\n';
+}
+out+='— ⏰ 每日行动清单（'+daily+'/天）—\n';
+const dMap={'30分钟':['前10分钟：列今日3件事（含目标相关1件）','中间10分钟：执行目标相关行动','后10分钟：记录+复盘'],'1小时':['前15分钟：热身/学习新内容','中间30分钟：核心执行（专注）','后15分钟：复盘+计划明天'],'2小时':['前30分钟：系统学习/输入','中间60分钟：深度执行（写作/锻炼/训练）','后30分钟：总结+打卡'],'3小时以上':['前60分钟：系统学习/输入','中间90分钟：深度执行+突破','后30分钟：总结+周度复盘']};
+out+=dMap[daily].join('\n')+'\n\n';
+if(barrier)out+='— 🚧 障碍应对预案 —\n你提到："'+barrier+'"\n· 应对：把这当作"已知风险"，提前设好兜底方案（如：先做15分钟再决定要不要继续）\n· 提醒：把"5%"原则用起来——只比昨天好一点点就够了\n\n';
+out+='— ✅ 设置检查点 —\n· 每'+Math.max(2,Math.round(months/3))+'个月：做一次中期复盘\n· 完成80%就算赢，别追求100%\n· 每周日晚上花10分钟简单回顾\n\n💪 大目标不怕大，就怕不小步走。从今天开始！';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 目标拆解已复制，马上开始行动！'))}
+</script>
+</body>
+</html>

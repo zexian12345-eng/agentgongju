@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 独特宝宝名 | AgentGongju.com</title>
+<meta name="description" content="根据宝宝的性别、生肖与心愿，AI生成不重名、寓意深远又独特的宝宝名字方案">
+<meta name="keywords" content="宝宝取名,起名,婴儿名字,独特名字,小名,宝宝起名,好听名字">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:60px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.name-line{padding:10px 0;border-bottom:1px dashed rgba(255,255,255,0.08)}
+.name-line:last-child{border-bottom:none}
+.name-main{font-size:1.1rem;font-weight:700;color:#a5b4fc}
+.name-desc{color:#94a3b8;font-size:.88rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem;margin-top:10px}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{color:#94a3b8;font-size:.85rem;margin-bottom:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>👶 AI 独特宝宝名</h1><p>结合性别、生肖与心愿，起一个不重名又有好寓意的名字</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>👼 宝宝性别</label>
+<select id="gender"><option value="男">👦 男宝宝</option><option value="女" selected>👧 女宝宝</option><option value="中性">🎀 中性/不限</option></select></div>
+<div><label>🐲 生肖（蛇/龙/马…）</label>
+<select id="zodiac"><option value="蛇" selected>🐍 蛇</option><option value="马">🐴 马</option><option value="龙">🐉 龙</option><option value="兔">🐰 兔</option><option value="猴">🐵 猴</option><option value="鸡">🐔 鸡</option><option value="狗">🐶 狗</option><option value="猪">🐷 猪</option><option value="牛">🐮 牛</option><option value="虎">🐯 虎</option></select></div>
+</div>
+<div><label>💕 对宝宝的期待</label>
+<select id="wish"><option value="健康">🍀 健康平安</option><option value="智慧">📚 聪明智慧</option><option value="前程">✨ 前程远大</option><option value="温婉">🌸 温婉美好</option><option value="大气">🏔️ 大气沉稳</option></select></div>
+<label>🧩 想包含的偏旁/字（选填，如 氵、木）</label>
+<textarea id="radical" placeholder="例如：喜欢木字旁的字，或想要带"宁"字"></textarea>
+<button class="btn-gen" id="genBtn">🌟 生成宝宝名</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🌟 为宝宝挑选的好名字</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制全部名字</button>
+<div class="tip" style="margin-top:12px">💡 小贴士：起名兼顾读音顺口、书写简单、寓意美好即可，同时可在当地户籍网站查重名率。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const data={
+'男':{男:['亦辰','子墨','浩然','以恒','景行','文昊','泽宇','卓然','博然','俊熙','天翊','云舟','承御','明哲','嘉树','书言'],女:['一诺','初然','念安','清妍','知夏','婉宁','若曦','梓萱','璇玑','沐晚','星澜','安晨','语汐','思齐','晚晴','姝芸'],'中性':['星野','慕白','南乔','知遥','依旧','予安','清和','晚舟']},
+'女':{男:['亦辰','子墨','浩然','以恒','文昊','泽宇'],女:['初然','念安','清妍','知夏','婉宁','若曦','梓萱','沐晚','星澜','安晨','语汐','晚晴','姝芸','灵犀','沁如','梦瑶','静姝','乐瑶'],'中性':['星野','慕白','南乔','知遥','予安','清和','晚舟']},
+'中性':{男:['景行','泽宇','云舟','嘉树'],女:['慕白','南乔','知遥','清和'],'中性':['星野','慕白','南乔','知遥','予安','清和','晚舟','亦安','疏影']}
+};
+const wishDesc={'健康':['寓意身体康健、一生平安','愿宝贝无病无灾、茁壮成长'],'智慧':['寓意聪慧过人、才思敏捷','愿宝贝博学多才、学有所成'],'前程':['寓意前程似锦、鹏程万里','愿宝贝志存高远、大有可为'],'温婉':['寓意温柔娴雅、气质如玉','愿宝贝知书达理、温婉大方'],'大气':['寓意沉稳大气、胸襟开阔','愿宝贝刚毅果敢、处事从容']};
+const zDesc={'蛇':'蛇宝宝取名宜带口、宝、木、宀等字，寓意安居有福','马':'马宝宝宜带艹、宀、禾等字，寓意有草有屋','龙':'龙宝宝宜带水、王、宀等字，寓意属水得势'};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 独特宝宝名 | AgentGongju.com'))return;
+const gender=document.getElementById('gender').value;
+const zodiac=document.getElementById('zodiac').value;
+const wish=document.getElementById('wish').value;
+const radical=document.getElementById('radical').value.trim();
+const pool=data[gender][gender]; 
+const chosen=shuffle(pool).slice(0,4);
+const xiao=shuffle(['安安','乐乐','糯米','团团','糖糖','笑笑','果果','豆豆']).slice(0,2);
+let out='为'+gender+'宝宝挑选的好名字（生肖：'+zodiac+'）：\n\n';
+out+='【✨ 大名单】\n';
+chosen.forEach(n=>out+='· '+n+'\n');
+out+='\n【🌸 名字寓意】\n· '+wishDesc[wish][0]+'，'+wishDesc[wish][1]+'。\n';
+if(radical){out+='· 已按你的偏好（'+radical+'）融入选字思路。\n';}
+out+='\n【🐲 生肖小贴士】\n· '+zDesc[zodiac]+'\n';
+out+='\n【🍭 可爱小名】\n· '+xiao.join('、');
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function shuffle(arr){for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}return arr;}
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 名字方案已复制！'))}
+</script>
+</body>
+</html>

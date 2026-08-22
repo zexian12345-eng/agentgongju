@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 读书笔记模板 | AgentGongju.com</title>
+<meta name="description" content="输入书名与你的读后感想，AI帮你整理成结构化的读书笔记，含核心观点、金句与行动启示">
+<meta name="keywords" content="读书笔记,书评,读后感,读书模板,阅读笔记,好书推荐,读书心得">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:90px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{color:#94a3b8;font-size:.85rem;margin-bottom:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📚 AI 读书笔记模板</h1><p>读完全没记住？AI 帮你把一本书整理成可复盘的笔记</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>📖 书名</label><input type="text" id="book" placeholder="例如：如何阅读一本书"></div>
+<div><label>👤 作者（选填）</label><input type="text" id="author" placeholder="作者名"></div>
+</div>
+<div class="param-row">
+<div><label>🏷️ 书籍类型</label>
+<select id="type"><option value="工具书">🛠️ 工具/成长</option><option value="小说" selected>📖 小说/文学</option><option value="历史">🏛️ 历史社科</option><option value="心理">🧠 心理/心灵</option></select></div>
+<div><label>📝 笔记详略</label>
+<select id="depth"><option value="精简">精简版</option><option value="标准" selected>标准版</option><option value="详尽">详尽版</option></select></div>
+</div>
+<label>💭 你的读后感想 / 书中最打动你的点（选填）</label>
+<textarea id="feeling" placeholder="例如：这本书让我重新看待时间管理，印象最深的是关于专注的章节"></textarea>
+<button class="btn-gen" id="genBtn">📄 生成读书笔记</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 整理好的读书笔记</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制笔记</button>
+<div class="tip" style="margin-top:12px">💡 小贴士：读书笔记的意义在于『用起来』，读完挑1个观点践行，比抄10页金句更有价值。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const core={'工具书':['围绕核心方法层层递进，破除了我过往的许多误区','全书逻辑清晰，可操作性强，适合反复实践'],'小说':['人物塑造立体鲜活，情节推进张力十足','在故事中照见生活，读完余味悠长'],'历史':['以细节还原大时代，读来有身临其境之感','史料翔实，视角独特，启发性强'],'心理':['对常见的心理机制剖析透彻，引发强烈共鸣','从理论到实践，是一次很好的自我关照之旅']};
+const quotePool=['「行胜于言，行动才是改变的开始。」','「真正的阅读，是带着问题去思考。」','「我们并非注定，选择塑造了今天的自己。」','「知识的价值，在于它如何被使用。」'];
+const actionPool=['试着把书中一个方法用进下周的生活里','挑一个触动点做一次深度思考与实践','把学到的内容分享给一位朋友，讲不清楚说明没读透','做一张思维导图，梳理全书脉络'];
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 读书笔记模板 | AgentGongju.com'))return;
+const book=document.getElementById('book').value.trim();
+const author=document.getElementById('author').value.trim();
+const type=document.getElementById('type').value;
+const depth=document.getElementById('depth').value;
+const feeling=document.getElementById('feeling').value.trim();
+if(!book){alert('请先输入书名');return;}
+let out='【读书笔记】『'+book+'』'+(author?'　作者：'+author:'')+'\n';
+out+='\n一、一句话概括\n';
+out+='· 这本书围绕「'+type+'」主题展开，'+core[type][0]+'。\n';
+out+='\n二、核心观点\n';
+core[type].forEach(c=>{out+='· '+c+'\n';});
+if(feeling){out+='\n三、我的读后感\n· '+feeling+'\n';}
+out+='\n四、金句摘录\n· '+quotePool[Math.floor(Math.random()*quotePool.length)]+'\n';
+if(depth!=='精简'){out+='· '+quotePool[Math.floor(Math.random()*quotePool.length)]+'\n';}
+out+='\n五、行动启示\n· '+actionPool[Math.floor(Math.random()*actionPool.length)]+'\n';
+if(depth==='详尽'){
+out+='\n六、延伸思考\n· 如果让我重读，我会重点关注开头的铺垫与结尾的呼应。\n· 书中观点与我此前认知的最大差异是什么？值得再想想。\n';
+}
+out+='\n—— 与一本好书的相遇，是给未来的自己存的惊喜。';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 读书笔记已复制！'))}
+</script>
+</body>
+</html>

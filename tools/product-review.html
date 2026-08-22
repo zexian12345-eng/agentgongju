@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI商品评价生成器 | AgentGongju.com</title>
+<meta name="description" content="根据你的真实体验和商品特点，生成自然、真实、有细节的电商好评文案。淘宝/京东/拼多多买家秀必备，拒绝假大空。">
+<meta name="keywords" content="商品评价,好评文案,买家秀,淘宝评价,电商文案,购物评价,晒单">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+textarea,input[type=text],select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:70px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🛒 AI商品评价生成器</h1><p>评得真实、写得走心，晒单再也不词穷</p></div>
+
+<div class="card">
+<label>📦 商品名称</label>
+<input type="text" id="product" placeholder="例如：XX品牌保温杯 500ml"></input>
+<label>💭 你的真实使用感受（选填，越好写）</label>
+<textarea id="feel" placeholder="例如：保温效果很好，外观颜值高，用了一周很满意"></textarea>
+<div class="param-grid">
+<div><label>😊 评价基调</label>
+<select id="tone"><option>真诚实感</option><option>热情推荐</option><option>中性客观</option></select></div>
+<div><label>📝 评价长度</label>
+<select id="len"><option>简短（20-40字）</option><option selected>标准（60-90字）</option><option>详细（100字+）</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">✨ 生成商品评价</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🛒 你的商品评价</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制评价</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const openers=['实物和图片基本一致，','收到啦，包装很严实，','用了一段时间来回馈一下，','物流很快，东西比想象中要好，'];
+const enhancers=['做工细节处理得不错','颜值在线，摆在那都好看','性价比很高，物有所值','用起来顺手上手快','品质对得起这个价格'];
+const closers=['总体很满意，回购的话还会考虑这家','值得入手，推荐给有需要的小伙伴','暂时没发现什么缺点，整体满意','以后有需要会一直回购'];
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI商品评价生成器 | AgentGongju.com'))return;
+const product=document.getElementById('product').value.trim();
+if(!product){alert('请填写商品名称');return;}
+const feel=document.getElementById('feel').value.trim();
+const tone=document.getElementById('tone').value;
+const len=document.getElementById('len').value;
+const feelS=feel?feel.replace(/[。！!]/g,'。').split('。').filter(Boolean):[];
+let core;
+if(feelS.length){
+  core=feelS.join('，');
+}else{
+  core=enhancers.slice(0,2).join('，');
+}
+let out=openers[Math.floor(Math.random()*openers.length)];
+out+=product+'，使用后'+core+'。';
+if(tone==='热情推荐'){out+='强烈安利！';}
+else if(tone==='真诚实感'){out+='谈不上很惊艳，但确实超出预期。';}
+else{out+='整体表现符合这个价位。';}
+out+=' '+closers[Math.floor(Math.random()*closers.length)];
+if(len==='详细'){out+='物流也很快，客服有问必答，体验不错，五星好评～';}
+else if(len==='简短'){out=out.slice(0,50)+'～';}
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 评价已复制！'))}
+</script>
+</body>
+</html>

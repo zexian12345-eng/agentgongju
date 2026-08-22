@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 催款话术生成器 | AgentGongju.com</title>
+<meta name="description" content="面对借款不还说辞难开口？生成得体、不伤和气又能施压的催款话术，微信短信电话皆可用">
+<meta name="keywords" content="催款,催收,借款,要账,追讨,还款提醒,催款话术">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:60px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>💰 AI 催款话术生成器</h1><p>借钱出去容易收回来难？用话术得体施压、不伤和气</p></div>
+
+<div class="card">
+<label>💵 借款金额（元）</label>
+<input type="number" id="amount" placeholder="如：5000" min="0">
+<div class="param-row">
+<div><label>⏳ 欠款时长</label>
+<select id="duration"><option value="1个月内">1个月内</option><option value="1-3个月" selected>1-3个月</option><option value="3个月以上">3个月以上</option><option value="1年以上">1年以上</option></select></div>
+<div><label>🛠 催款方式</label>
+<select id="channel"><option value="微信" selected>微信</option><option value="电话">电话</option><option value="短信">短信</option></select></div>
+</div>
+<label>🎯 对方身份</label>
+<select id="relation"><option value="朋友">朋友</option><option value="亲戚">亲戚</option><option value="同事" selected>同事</option><option value="同学">同学</option><option value="前同事">前同事</option></select>
+<button class="btn-gen" id="genBtn">✨ 生成催款话术</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#f59e0b;font-weight:600;margin-bottom:12px">📢 催款话术（3 段式：温和提醒 → 明确商定 → 最后通牒）</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制话术</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const firstStep={
+'朋友':'嗨，最近咋样呀？之前那笔钱我这边有点急用，方便的话看能不能安排一下呀，不急的话也跟我说一声哈～',
+'亲戚':'最近家里有点事情需要用钱周转，之前那笔借款方便的话能不能安排一下呀？让你费心了～',
+'同事':'兄弟/姐妹，之前借你的那笔钱方便的时候我可以收一下吗？我这边近期有几个大额支出。',
+'同学':'老同学，之前那笔钱我最近有点周转需要，方便的话能否整理一下呀？',
+'前同事':'你好呀，之前离职前那笔借款，我这边近期需要用钱，方便结清一下吗？'
+};
+const midStep={
+'朋友':'咱们认识这么久，我也不好意思开口，但真的有点急用。你看能不能这周（或下周）内还一部分，剩下的咱们再商量？',
+'亲戚':'我这边真的也有难处，不是催您，是我这边需要用。您看能不能先还一部分，剩下的缓缓？',
+'同事':'耽误您时间了，主要是这笔金额对我来说也不小。能否在本月内结清？或者分期也可以，咱们定个时间。',
+'同学':'也不是催你，主要是日期也过了挺久了。能不能定个准确时间，比如下月底之前？',
+'前同事':'已经过去挺久了，我需要对方给我个明确答复。你看什么时候方便安排？'
+};
+const finalStep={
+'朋友':'实在不行我就先借别处的吧，但咱们之间的事情还是要处理清楚的。麻烦尽快给我个准信。',
+'亲戚':'我也是被逼无奈才再开口，希望您理解。麻烦本周内给我个确切还款计划。',
+'同事':'这笔钱已经拖欠较久了，对我来说影响比较大。如果下周还没落实，我可能只能走一些流程了，希望不要闹到那一步。',
+'同学':'我不是要闹僵，但真的需要这笔钱。如果月底前还是没动静，我可能没办法当没发生了。',
+'前同事':'已经拖了一年多，我需要一个明确结果。如果月底前仍未解决，我只能考虑法律途径了，希望我们还能好好商量。'
+};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 催款话术生成器 | AgentGongju.com'))return;
+const amount=document.getElementById('amount').value||'5000';
+const duration=document.getElementById('duration').value;
+const channel=document.getElementById('channel').value;
+const relation=document.getElementById('relation').value;
+let out='【第 1 条 · 温和提醒】\n';
+out+=firstStep[relation]+'\n\n';
+if(duration==='1年以上')out+='（对方已长时间沉默，可跳过温和阶段，直接用第 2、3 条）\n\n';
+out+='【第 2 条 · 明确提出时限】\n';
+out+=midStep[relation]+'\n';
+if(duration==='1-3个月')out+='（已过约定期限，语气适度加重，强调具体时间）\n\n';
+else if(duration==='3个月以上')out+='（超期已很久，明确"这次不能再拖了"）\n\n';
+else out+='（友好但把期限说清，给对方留面子）\n\n';
+out+='【第 3 条 · 最后通牒（已到时限且无回应时使用）】\n';
+out+=finalStep[relation]+'\n\n';
+out+='📎 使用建议\n· '+(channel==='微信'?'微信建议先发"在吗+表情"试探，再发正式话术':'电话注意挑对方方便的时间段')+'\n· 全程语气稳定，不对骂、不威胁\n· 若对方一直拖，可把聊天记录留存，必要时走法律途径';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 话术已复制，注意保持语气平和！'))}
+</script>
+</body>
+</html>

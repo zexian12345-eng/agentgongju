@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 菜市场采购清单 | AgentGongju.com</title>
+<meta name="description" content="输入家庭人数与用餐需求，AI智能生成菜市场采购清单，荤素搭配、营养均衡、拒绝浪费">
+<meta name="keywords" content="买菜清单,采购清单,菜市场,菜谱,买菜助手,食材采购,买菜规划">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:80px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{color:#94a3b8;font-size:.85rem;margin-bottom:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🛒 AI 菜市场采购清单</h1><p>按人数与口味，一键生成荤素搭配、不浪费的买菜清单</p></div>
+
+<div class="card">
+<label>👨‍👩‍👧 家里几口人吃饭？</label>
+<select id="people"><option value="1">1 人</option><option value="2">2 人</option><option value="3" selected>3 人</option><option value="4">4 人</option><option value="5">5 人及以上</option></select>
+<div class="param-row">
+<div><label>🍚 打算吃几天</label>
+<select id="days"><option value="1">1 天</option><option value="2">2 天</option><option value="3" selected>3 天</option><option value="5">5 天</option><option value="7">7 天</option></select></div>
+<div><label>🥩 偏爱口味</label>
+<select id="flavor"><option value="家常">🥘 家常下饭</option><option value="清淡">🥗 清淡养生</option><option value="川湘">🌶️ 川湘重口</option><option value="儿童">👶 儿童营养</option></select></div>
+</div>
+<label>📝 补充食材或忌口（选填）</label>
+<textarea id="extra" placeholder="例如：不吃香菜、家里有土豆、孩子海鲜过敏"></textarea>
+<button class="btn-gen" id="genBtn">🥦 生成采购清单</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 你的菜市场采购清单</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制清单</button>
+<div class="tip" style="margin-top:12px">💡 小贴士：蔬菜按需按天买更新鲜，肉类可一次多买分装冷冻，减少浪费更省钱。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const vegs={'家常':['番茄','青椒','茄子','土豆','洋葱','菠菜'],'清淡':['西兰花','胡萝卜','山药','冬瓜','生菜','金针菇'],'川湘':['尖椒','蒜苗','藕片','土豆','木耳','莴笋'],'儿童':['胡萝卜','西兰花','玉米','番茄','南瓜','菠菜']};
+const meats={'家常':['里脊肉','鸡腿','鸡蛋','虾仁'],'清淡':['鸡胸肉','鲈鱼','豆腐','鸡蛋'],'川湘':['瘦肉','五花肉','鸭肠','鸡爪'],'儿童':['龙利鱼','鸡胸脯','鸡蛋','豆腐']};
+const staple=['大米','面条','鸡蛋','水饺皮'];
+const spice={'家常':'葱姜蒜、干辣椒、生抽、老抽、蚝油、料酒','清淡':'葱姜、盐、橄榄油、蒸鱼豉油、白胡椒','川湘':'蒜末、干辣椒、郫县豆瓣、花椒、醋、生抽','儿童':'葱姜、核桃油/玉米油、少量盐、番茄酱'};
+const fruits=['苹果','香蕉'];const misc=['盐','食用油','酱油','醋','料酒','鸡精'];
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 菜市场采购清单 | AgentGongju.com'))return;
+const people=parseInt(document.getElementById('people').value);
+const days=parseInt(document.getElementById('days').value);
+const flavor=document.getElementById('flavor').value;
+const extra=document.getElementById('extra').value.trim();
+const p=people>=5?5:people;
+const vegList=vegs[flavor].slice(0,3+ (p>3?1:0));
+const meatList=meats[flavor].slice(0,3+(p>3?1:0));
+const staples=staple.slice(0,2+Math.ceil(days/3));
+const vegAmt=(p*days*0.6).toFixed(1);
+const meatAmt=(p*days*0.45).toFixed(1);
+let out='依据 '+p+' 人 × '+days+' 天，口味「'+flavor+'」\n\n';
+out+='【🥬 蔬菜类】(约 '+vegAmt+' 斤)\n· '+vegList.join('、')+' —— 按顿分装冷藏\n· 香菜、小葱(调味)\n\n';
+out+='【🥩 肉/蛋/豆制品】(约 '+meatAmt+' 斤)\n· '+meatList.join('、')+'\n· 建议肉类切小份冷冻，随取随用\n\n';
+out+='【🍚 主食】\n· '+staples.join('、')+'\n\n';
+out+='【🍎 水果】(约 '+(p*days/3).toFixed(1)+' 斤)\n· '+fruits.join('、')+'\n\n';
+out+='【🥫 调味料】\n· '+spice[flavor]+'（家里有的可不重复买）\n';
+out+=(days>=5?'\n· 可加购：'+['鸡蛋一板','冷冻虾仁一斤','速冻水饺'].join('、')+'\n':'');
+if(extra){out+='\n【⚠️ 特别注意】\n· 已记录：'+extra+'\n· 采购时请避开上述忌口/食材。\n';}
+out+='\n【💡 省心建议】\n· 蔬菜周末买 3 天量，周末再补一次，新鲜又省钱。\n· 对照清单逛，避免冲动购物，单次可省 20% 左右。';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 采购清单已复制！'))}
+</script>
+</body>
+</html>

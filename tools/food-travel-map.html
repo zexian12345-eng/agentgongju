@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 旅游美食地图 | AgentGongju.com</title>
+<meta name="description" content="输入旅行目的地，生成当地必吃美食、特色小吃、避坑指南与美食路线，让味蕾不虚此行">
+<meta name="keywords" content="旅游美食,美食地图,当地美食,地方小吃,旅行攻略,美食推荐,特色菜">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🍜 AI 旅游美食地图</h1><p>到了一个新城市，跟着这张地图吃就对了</p></div>
+
+<div class="card">
+<label>📍 目的地</label>
+<select id="city"><option value="成都" selected>成都</option><option value="重庆">重庆</option><option value="西安">西安</option><option value="广州">广州</option><option value="长沙">长沙</option><option value="上海">上海</option><option value="北京">北京</option><option value="杭州">杭州</option><option value="昆明">昆明</option><option value="兰州">兰州</option><option value="厦门">厦门</option><option value="桂林">桂林</option></select>
+<div class="param-row">
+<div><label>😋 吃货偏好</label>
+<select id="pref"><option value="什么都吃" selected>什么都吃/来者不拒</option><option value="无辣不欢">无辣不欢</option><option value="清淡">清淡/养生党</option><option value="甜品">甜品控</option><option value="海鲜">海鲜爱好者</option></select></div>
+<div><label>📅 旅行天数</label>
+<select id="days"><option value="1-2天">1-2天</option><option value="3-4天" selected>3-4天</option><option value="5天以上">5天以上</option></select></div>
+</div>
+<label>🌶 口味其他要求（选填）</label>
+<input type="text" id="extra" placeholder="如：爱吃碳水、预算偏高等">
+<button class="btn-gen" id="genBtn">✨ 生成美食地图</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#fbbf24;font-weight:600;margin-bottom:12px">🗺 美食推荐</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制美食攻略</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const foodData={
+'成都':{must:['火锅（麻辣牛油锅底）','串串香（冷锅串串一绝）','担担面','抄手（红油/清汤）','兔头（双流兔头）'],street:['建设路小吃街','玉林路串串','锦里/春熙路周边'],sweet:['冰粉（玫瑰红糖）','红糖糍粑','蛋烘糕'],light:['豆花（咸口）','汤羹粥品'],note:'川菜以麻辣著称，但成都也有清淡的"河鲜"和"甜水面"，别只盯麻辣。'},
+'重庆':{must:['重庆火锅（九宫格必吃）','小面（豌杂面）','酸辣粉','毛血旺','江湖菜'],street:['解放碑好吃街','较场口夜市','观音桥商圈'],sweet:['醪糟汤圆','山城小汤圆'],light:['清汤抄手','老鸭汤'],note:'重庆火锅讲究老油香辣，外地游客建议选微辣起步，别逞强！'},
+'西安':{must:['肉夹馍（腊汁肉/猪蹄）','羊肉泡馍','凉皮（米皮/面皮）','Biangbiang面','胡辣汤'],street:['回民街（注意选老店）','永兴坊','大唐不夜城周边'],sweet:['甑糕','柿子饼','醪糟'],light:['豆腐脑（咸口）','疙瘩汤'],note:'回民街游客多，建议多往小巷子钻找本地人吃的店，肉夹馍要选现烙的饼。'},
+'广州':{must:['早茶（虾饺/流沙包/烧卖）','烧鹅','白切鸡','肠粉','艇仔粥'],street:['上下九步行街','北京路步行街','西关美食街'],sweet:['双皮奶','姜撞奶','杨枝甘露'],light:['生滚粥','老火靓汤'],note:'"食在广州"名不虚传，早茶至少留一上午，晚上再安排一顿夜宵（砂锅粥/打边炉）。'},
+'长沙':{must:['湘菜（剁椒鱼头）','长沙米粉','臭豆腐','糖油粑粑','小龙虾'],street:['太平街','坡子街','五一广场周边'],sweet:['糖油粑粑','甜米酒'],light:['费大厨辣椒炒肉'],note:'长沙夜生活早，晚上10点还在排队是常态；辣度是真的，建议量力而行。'},
+'上海':{must:['本帮菜（红烧肉/响油鳝糊）','生煎包','蟹粉小笼','炸猪排','葱油拌面'],street:['城隍庙小吃街','南京东路步行街周边'],sweet:['奶油小方','条头糕'],light:['日料/粤菜（上海选择丰富）'],note:'上海口味偏甜，粤菜/日料/西餐档位选择极多，想吃啥都有。'},
+'北京':{must:['北京烤鸭','炸酱面','铜锅涮羊肉','炒肝/卤煮','驴打滚'],street:['前门大街','南锣鼓巷（偏游客）','簋街（夜宵）'],sweet:['豌豆黄','驴打滚','糖葫芦'],light:['豆汁（挑战型）','豌豆黄'],note:'烤鸭选老字号（全聚德/四季民福），涮肉要铜锅+清汤底才正宗。'},
+'杭州':{must:['西湖醋鱼','龙井虾仁','东坡肉','片儿川拌面','叫花鸡'],street:['河坊街','南宋御街','吴山夜市'],sweet:['龙井茶冰淇淋','桂花糕','定胜糕'],light:['西湖莼菜汤','素斋（灵隐寺）'],note:'杭州菜清淡鲜美，但景区价高，建议往老城区巷子找本地饭馆。'},
+'昆明':{must:['过桥米线','汽锅鸡','粑粑','野生菌火锅（夏季）','官渡粑粑'],street:['祥云美食城','南屏街周边'],sweet:['鲜花饼','乳扇'],light:['菌子汤（七、八月最佳）'],note:'昆明四季如春，野生菌是重头戏！但必须去正规餐厅吃菌，别去路边摊冒险。'},
+'兰州':{must:['牛肉面（一清二白三红四绿五黄）','凉皮','灰豆子','烤羊肉串','酿皮'],street:['正宁路小吃街','黄河边夜市'],sweet:['灰豆子（甜）','鸡蛋醪糟'],light:['牛肉面清汤','茶饮'],note:'兰州牛肉面"毛细、细、二细、韭叶"粗细各有讲究，早上吃最地道！'},
+'厦门':{must:['沙茶面','土笋冻','海蛎煎','姜母鸭','花生汤'],street:['中山路步行街','鼓浪屿龙头路','曾厝垵'],sweet:['花生汤','烧仙草','芒果冰'],light:['清蒸海鲜','沙茶面（微辣）'],note:'厦门的海鲜别在鼓浪屿吃（贵），去中山路或者岛外的海鲜大排档更划算。'},
+'桂林':{must:['桂林米粉（卤粉）','啤酒鱼','田螺酿','油茶','荔浦芋扣肉'],street:['东西巷','正阳步行街','西街（阳朔）'],sweet:['桂花糕','油茶配糯米糍'],light:['白粥小菜','汤粉'],note:'桂林米粉讲究"先干拌后加汤"，本地人早上必嗦一碗。'}
+};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 旅游美食地图 | AgentGongju.com'))return;
+const city=document.getElementById('city').value;
+const pref=document.getElementById('pref').value;
+const days=document.getElementById('days').value;
+const extra=document.getElementById('extra').value.trim();
+const d=foodData[city];
+let out='【'+city+' · '+pref+' · '+days+'】\n\n';
+if(extra)out+='你的偏好补充：'+extra+'\n\n';
+out+='— 🔥 必吃榜单 —\n'+d.must.map(x=>'· '+x).join('\n')+'\n\n';
+out+='— 🌮 小吃街/觅食向导 —\n'+d.street.map(x=>'· '+x).join('\n')+'\n\n';
+if(pref==='无辣不欢'){out+='— 🌶 无辣不欢加持 —\n· 多尝试当地"辣味heavy"菜品，别怕\n· 温馨提示：配一杯当地凉饮缓冲\n\n';}
+if(pref==='清淡')out+='— 🍃 清淡之选 —\n'+d.light.map(x=>'· '+x).join('\n')+'\n\n';
+if(pref==='甜品')out+='— 🍰 甜品地图 —\n'+d.sweet.map(x=>'· '+x).join('\n')+'\n\n';
+out+='— 💡 本地吃货贴士 —\n'+d.note+'\n\n';
+out+='— 📅 '+days+'行程美食安排 —\n';
+if(days==='1-2天')out+='· 第1天：早起嗦/碗特色主食，中午进馆子吃正餐，晚上钻夜市\n· 第2天：上午吃"本地人早饭"，下午景区小吃，晚上大餐收尾';
+else if(days==='3-4天')out+='· 第1天：落地尝特色主食\n· 第2-3天：正餐轮换2家常菜馆 + 夜市1晚\n· 第4天：早上买点伴手礼（当地特产糕点）';
+else out+='· 前两天扫遍必吃榜，后几天按"老街→新店"轮换\n· 中间穿插1-2顿"轻食/甜品"调节口味\n· 最后一天留一顿"最爱重刷"收尾';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 美食攻略已复制，祝吃得开心！'))}
+</script>
+</body>
+</html>

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 购车决策助手 | AgentGongju.com</title>
+<meta name="description" content="根据预算、用途、能源类型与家庭需求，帮你梳理购车决策要点，从热销车型对比到落地价清单，理性选车不踩坑">
+<meta name="keywords" content="买车,购车指南,选车,新车推荐,购车预算,买车攻略,电动车">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🚗 AI 购车决策助手</h1><p>不被销售带节奏，做理性的车主</p></div>
+
+<div class="card">
+<label>💰 购车预算（万元）</label>
+<input type="number" id="budget" placeholder="如：15" min="0">
+<div class="param-row">
+<div><label>⚡ 能源类型</label>
+<select id="energy"><option value="纯电" selected>纯电动</option><option value="混动">混动/插混</option><option value="燃油">传统燃油</option><option value="不限">不限/都可以</option></select></div>
+<div><label>👨‍👩‍👧 用车场景</label>
+<select id="use"><option value="通勤为主" selected>日常通勤</option><option value="家庭为主">接送家人/家用</option><option value="长途商务">长途/商务</option><option value="越野">越野/自驾游</option></select></div>
+</div>
+<label>🚦 特别需求（选填，逗号分隔）</label>
+<input type="text" id="needs" placeholder="如：大空间、智能驾驶、低油耗、好看">
+<button class="btn-gen" id="genBtn">✨ 生成购车建议</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#38bdf8;font-weight:600;margin-bottom:12px">🧭 购车决策参考</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制方案</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const energyAdvice={
+'纯电':'- 使用成本低：约0.1元/公里（家充）\n- 智能化程度高，科技感强\n- 注意：没有固定车位充电的话，需评估充电便利性',
+'混动':'- 既能加油又能充电，无续航焦虑\n- 城市通勤用电省钱+长途用油\n- 注意：电池容量小，纯电续航一般50-150km',
+'燃油':'- 技术成熟，保值率稳定\n- 加油网点密集，无续航顾虑\n- 注意：油价上涨，用车成本相对高',
+'不限':'- 建议先设定"核心诉求"（省钱/续航/智能），再选能源类型'
+};
+const useAdvice={
+'通勤为主':'- 推荐车型偏好：车身小好停车、能耗低\n- 里程不多选纯电性价比高；每天100km以上可考虑增程/混动',
+'家庭为主':'- 空间是第一位：后排腿部空间、后备箱容积\n- 推荐MPV或大空间SUV，安全配置要全',
+'长途商务':'- 续航表现和乘坐舒适度优先\n- 推荐轿车或中大型SUV，底盘稳重',
+'越野':'- 必须四驱+高离地间隙\n- 混动四驱兼顾城市和越野的场景'
+};
+const budgetTips={
+'10万以下':'- 国产车性价比高，比亚迪海鸥/五菱星光/吉利星愿等\n- 省钱重点：选低配+谈落地价',
+'10-20万':'- 主流是纯电比亚迪/埃安，混动比亚迪秦L/宋PLUS等\n- 建议试驾3家再定',
+'20-30万':'- 国产品牌旗舰（极氪/蔚来/小鹏）+合资热销款都可考虑\n- 纯电主流续航600km+，注意智驾包的叠加价格',
+'30万以上':'- 豪华品牌/AI智驾旗舰\n- 建议对比试驾至少2款不同风格'
+};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 购车决策助手 | AgentGongju.com'))return;
+const budget=document.getElementById('budget').value||'15';
+const energy=document.getElementById('energy').value;
+const use=document.getElementById('use').value;
+const needs=document.getElementById('needs').value.trim();
+const b=parseFloat(budget);
+let range=b<10?'10万以下':(b<20?'10-20万':(b<30?'20-30万':'30万以上'));
+let out='【预算 '+budget+' 万 · '+energy+' · '+use+'】\n\n';
+out+='— 📋 预算 '+(budgetTips[range]?budgetTips[range]:'')+'\n\n';
+out+='— ⚡ '+energy+' 选择建议 —\n'+energyAdvice[energy]+'\n\n';
+out+='— 🏁 '+use+' 用车建议 —\n'+useAdvice[use]+'\n\n';
+if(needs){const ns=needs.split(/[、，,]+/).filter(x=>x.trim());out+='— 🎯 你的特别需求 —\n'+ns.map(n=>'· '+n+'：选车时要重点确认此项配置'+'（'+n+'相关的配置优先级最高）').join('\n')+'\n\n';}
+out+='— 💡 购车流程提醒 —\n1. 网上比加实车试驾，至少2家\n2. 谈价注意：裸车价+保险+上牌费是否含在落地价\n3. 新能源注意：是否符合当地补贴政策\n4. 提车时检查车架号、里程数、外观\n\n📌 提醒：以上仅为辅助参考，具体价格、参数请以4S店实测和官方参数为准。祝购车顺利！';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 购车方案已复制！'))}
+</script>
+</body>
+</html>

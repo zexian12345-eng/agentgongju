@@ -2,91 +2,141 @@
 <html lang="zh-CN">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AI藏头诗生成器 | AgentGongju.com</title>
-<meta name="description" content="AI藏头诗生成器，输入名字或词语，自动生成押韵的七言藏头诗">
-<meta name="keywords" content="藏头诗,诗词生成,藏头诗生成,藏尾诗,姓名诗">
+<meta name="description" content="输入姓名、祝福语或任意文字，AI为你量身打造藏头诗。支持五言、七言、嵌字诗多种体裁，情诗、生日诗、祝福诗一键生成。">
+<meta name="keywords" content="藏头诗,藏尾诗,嵌字诗,姓名诗,情诗生成,祝福诗,微信昵称诗">
 <link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
 <style>
-.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
 .tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
 .tool-header p{color:#94a3b8}
 .card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
 .card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
-select,textarea,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px;color-scheme:dark}
+input[type=text],textarea,select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:70px;resize:vertical}
 input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 .btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
 .btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
 .result-area{display:none;margin-top:20px}
 .result-area.active{display:block}
-.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2.2;white-space:pre-wrap;min-height:60px;margin-bottom:12px;font-size:1.05rem;text-align:center}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2.2;white-space:pre-wrap;font-size:1rem;text-align:center;margin-bottom:12px}
 .copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 <nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
 <div class="tool-container">
-<div class="tool-header"><h1>✒️ AI藏头诗生成器</h1><p>输入名字或任意词语，为你生成唯美的七言藏头诗</p></div>
-<div class="card"><label>📝 藏头内容（姓名/祝福语/任意词）</label>
-<input type="text" id="words" placeholder="例如：李小白 / 生日快乐 / 事业有成">
-<div class="param-row">
-<div><label>诗歌风格</label><select id="style">
-<option value="豪迈壮阔">豪迈壮阔</option>
-<option value="婉约唯美">婉约唯美</option>
-<option value="励志昂扬">励志昂扬</option>
-<option value="田园闲适">田园闲适</option>
-<option value="古风典雅">古风典雅</option>
-<option value="深情浪漫">深情浪漫</option>
-</select></div>
-<div><label>诗体形式</label><select id="form"><option value="七言绝句">七言绝句</option><option value="四字短句">四字短句</option></select></div>
+<div class="tool-header"><h1>📜 AI藏头诗生成器</h1><p>把名字藏进诗里，把心意写得动人</p></div>
+
+<div class="card">
+<label>💎 藏头文字</label>
+<input type="text" id="head" placeholder="例如：小明 / 生日快乐 / 我爱你 / 公司名称等"></input></label>
+<div class="param-grid">
+<div><label>📐 诗体</label>
+<select id="style"><option value="5">五言绝句</option><option value="7" selected>七言绝句</option></select></div>
+<div><label>🎀 主题</label>
+<select id="theme"><option selected>祝福励志</option><option>浪漫爱情</option><option>生日庆祝</option><option>事业前程</option><option>离别思念</option><option>友谊长存</option></select></div>
 </div>
-<button class="btn-gen" id="genBtn">📜 生成藏头诗</button></div>
-<div class="result-area" id="resultArea"><div class="card"><div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 诗词已生成</div>
-<div class="result-box" id="out"></div>
-<button class="copy-btn" onclick="copyResult()">📋 复制诗句</button></div></div>
+<button class="btn-gen" id="genBtn">✨ 生成藏头诗</button>
+<label style="margin-top:12px;color:#94a3b8;font-size:.8rem">💡 提示：字数不限，支持姓名、祝福语、任何有意义的短语</label>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">📜 你的专属藏头诗</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制诗句</button>
+</div>
+</div>
 </div>
 <footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
 <script>
-function copyResult(){navigator.clipboard.writeText(document.getElementById('out').textContent).then(()=>alert('✅ 已复制！'))}
-const LH=['长','江','山','风','月','云','花','雨','星','天','春','秋','龙','鹏','鹤','舟'];
-const CONT={
-'豪迈壮阔':['凌云壮志冲霄汉','挥斥方遒气如虹','仗剑天涯心向远','俯仰天地自从容'],
-'婉约唯美':['轻舟已过万重山','烟雨朦胧忆江南','红袖添香心自暖','月下花前共清欢'],
-'励志昂扬':['奋发图强志更高','鲲鹏展翅上九霄','披荆斩棘无所惧','直挂云帆步云霄'],
-'田园闲适':['采菊东篱沐晚风','闲看云卷与云舒','一壶清酒伴明月','淡泊悠然乐自如'],
-'古风典雅':['玉砌雕栏金作台','诗书满腹气自华','清风徐来水波兴','翰墨飘香在君家'],
-'深情浪漫':['心若琉璃映月明','此情可待共此生','星沉海底当窗见','为你写下永恒名']};
+// 字典：为每个字随机生成搭配
+const dict={
+'我':['我心似明月','我愿乘风起','我笑红尘远','我志在凌云','我方年少时'],
+'爱':['爱意满山川','爱如春风至','爱在江南岸','爱此青天阔','爱君久未央'],
+'你':['你如画中人','你心向暖阳','你立万花间','你笑一倾城','你来正当时'],
+'生':['生逢盛世中','生长向阳处','生来不羁客','生当展宏图','生如夏花灿'],
+'日':['日暖山花开','日出天边红','日新又日进','日升光万丈','日光映笑颜'],
+'快':['快意趁年华','快马踏清秋','快哉此风起','快然会知音','快意且高歌'],
+'乐':['乐享逍遥日','乐此不知疲','乐看云卷舒','乐将心事寄','乐在山水间'],
+'祝':['祝君多福寿','祝语寄云端','祝愿事事顺','祝福暖心田','祝君展鹏翼'],
+'恭':['恭贺新气象','恭逢好时节','恭敬致诚心','恭颂事业兴','恭迎喜进门'],
+'喜':['喜气满门庭','喜庆连年有','喜上眉梢处','喜见春花开','喜乐伴君行'],
+'顺':['顺利过千帆','顺心如意时','顺风扬帆去','顺势展宏图','顺遂岁岁安'],
+'发':['发财亦安然','发奋正当时','发轫新征程','发光自有时','发旺满乾坤'],
+'财':['财源滚滚来','财运照门庭','财气聚四方','财丰人更才','财旺家和顺'],
+'年':['年年有今朝','年前岁更新','年少不知愁','年好景常在','年临福更嘉'],
+'平':['平安岁月长','平生志气高','平地起高楼','平心待万事','平安常相守'],
+'安':['安然度春秋','安康伴四季','安得广厦间','安闲自在心','安享好时光'],
+'好':['好景在心头','好事自多磨','好风凭借力','好月正当空','好事总成双'],
+'运':['运至福自生','运气旺门庭','运筹帷幄中','运启新征程','运通万事兴'],
+'万':['万事皆顺意','万紫千红开','万象更新时','万里好前程','万般皆自在'],
+'事':['事事皆如意','事成在人谋','事兴家业旺','事顺心遂愿','事圆人更圆'],
+'成':['成功看我辈','成事在天时','成就辉煌业','成竹已在胸','成就趁今朝'],
+'幸':['幸福满人间','幸得遇知音','幸逢盛世年','幸运常相伴','幸见花开早'],
+'福':['福如东海流','福气盈门绕','福星高照处','福至心自宁','福到满堂春'],
+'永':['永夜挂明灯','永志此初心','永葆青春意','永相随左右','永结同心缘'],
+'远':['远志在四方','远眺高峰壮','远路始足下','远望更从容','远帆济沧海'],
+'鹏':['鹏程万里行','鹏翼展青云','鹏飞上九霄','鹏程正当行','鹏起九月天'],
+'程':['程途无限美','程门立雪诚','程功自勤苦','程途尽坦途','程锦似花开']
+};
+const themeTail={
+'祝福励志':['愿向青云步步高，前程万里自逍遥。','长风破浪会有时，直挂云帆济沧海。','人生何处不春风，得意还须趁早行。'],
+'浪漫爱情':['此情可待成追忆，愿与君心共白头。','山盟海誓言犹在，执手相看两不厌。','相思无尽处，此意共君铭。'],
+'生日庆祝':['良辰美景庆华年，愿你岁岁皆欢颜。','烛光摇曳共欢声，愿以此心寄深情。','庆贺芳辰喜气盈，此生顺遂乐常鸣。'],
+'事业前程':['鸿鹄之志在青云，骏马奔腾万里春。','事业如虹步步升，宏图大展任君行。','乘势而上展宏才，锦绣前程指日开。'],
+'离别思念':['此后山高水又长，愿君珍重莫相忘。','临别依依话不尽，惟盼他乡早重逢。','离别不是长久事，来日方长再举杯。'],
+'友谊长存':['桂花煮酒话当年，友谊长馨岁岁延。','高山流水知音在，海内存君不孤单。','携手同行万里路，情谊绵绵永不休。']
+};
+function getWord(ch,pos){
+  const pool=dict[ch];
+  if(!pool)return null;
+  const line=pool[Math.floor(Math.random()*pool.length)];
+  return line;
+}
 document.getElementById('genBtn').addEventListener('click',()=>{
 if(!Paywall.countUse('AI藏头诗生成器 | AgentGongju.com'))return;
-let words=document.getElementById('words').value.trim();
-if(!words){alert('请输入藏头内容');return}
-if(words.length>8)words=words.substring(0,8);
-const st=document.getElementById('style').value;
-const form=document.getElementById('form').value;
-const base=CONT[st];
-const chars=words.split('');
-let title=words+'·藏头诗';
-let lines=chars.map((c,i)=>{
-const bank=base[i%base.length].match(/[\u4e00-\u9fa5]/g)||[];
-const mid=bank.slice(1,bank.length-1);
-let line=c+mid.join('');
-if(line.length<7){while(line.length<7)line+=LH[Math.floor(Math.random()*LH.length)];}
-return line;
-});
-while(lines.length<4){
-lines.push(('').slice(0,0)+base[Math.floor(Math.random()*base.length)]+LH[Math.floor(Math.random()*LH.length)]);
+const head=document.getElementById('head').value.trim();
+if(!head){alert('请先输入藏头文字');return;}
+const unit=parseInt(document.getElementById('style').value);
+const theme=document.getElementById('theme').value;
+const chars=head.split('');
+const tail=themeTail[theme][Math.floor(Math.random()*themeTail[theme].length)];
+let poem='`藏头诗 · '+head+'`\n\n';
+for(let i=0;i<chars.length;i++){
+  const c=chars[i];
+  let firstClause=dict[c]?dict[c][Math.floor(Math.random()*dict[c].length)]:null;
+  if(!firstClause){
+    firstClause=c+'（此字暂缺词库，可稍后人工润色）';
+  }
+  // 第二句按行数生成
+  const secondClause=buildSecond(i,chars.length,theme);
+  if(unit===7){
+    poem+=firstClause+'，'+secondClause+'\n';
+  }else{
+    poem+=firstClause.split('，')[0]&&false?'':'';
+    // 五言：截取前半句，并进行补全
+    const fiveFirst=firstClause.length>5?firstClause.slice(0,5):firstClause.padEnd(5,'　');
+    const fiveSecond=secondClause.length>5?secondClause.slice(0,5):secondClause.padEnd(5,'　');
+    poem+=fiveFirst+'，'+fiveSecond+'\n';
+  }
 }
-const last=lines[lines.length-1];
-const lastChar=last.charAt(last.length-1);
-let out='《'+title+'》\n\n';
-if(form==='七言绝句'){
-lines.forEach((l,i)=>{out+=l+(i<lines.length-1?'\n':'');});
-}else{
-out=lines.join('　');
-}
-out+='\n\n—— 七言'+(form==='七言绝句'?'绝句':'短句')+'·'+st+'风';
+poem+='\n'+tail;
+document.getElementById('outputBox').innerText=poem;
 document.getElementById('resultArea').classList.add('active');
-document.getElementById('out').textContent=out;
 });
+function buildSecond(i,total,theme){
+  const t=themeTail[theme];
+  const base=t[i%t.length]||'愿将心意寄云端，祝福常伴君左右。';
+  // 简单拆分,取后半句作为第二句
+  const parts=base.split('，');
+  return parts[1]||parts[0]||'祝福常伴君左右。';
+}
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 诗句已复制！'))}
 </script>
 </body>
 </html>

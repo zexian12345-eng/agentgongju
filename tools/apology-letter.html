@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 道歉信生成器 | AgentGongju.com</title>
+<meta name="description" content="根据道歉对象、事件严重程度与关系类型，智能生成真诚得体的道歉信，挽回关系不尴尬">
+<meta name="keywords" content="道歉信,道歉话术,挽回,认错,道歉文案,道歉模板">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:80px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🙇 AI 道歉信生成器</h1><p>为一时冲动买单，让真诚有处表达</p></div>
+
+<div class="card">
+<label>👤 道歉对象</label>
+<select id="target"><option value="恋人">❤️ 恋人/伴侣</option><option value="家人" selected>👨‍👩‍👧 家人</option><option value="朋友">🤝 朋友</option><option value="同事">💼 同事/领导</option><option value="客户">📞 客户</option></select>
+<div class="param-row">
+<div><label>📊 事件严重程度</label>
+<select id="level"><option value="轻微">😊 小误会</option><option value="中等" selected>😟 吵了一架</option><option value="严重">😢 伤到对方</option></select></div>
+<div><label>🎨 语气风格</label>
+<select id="tone"><option value="温柔">温柔诚恳</option><option value="正式" selected>正式得体</option><option value="幽默">轻松幽默</option><option value="深情">深情走心</option></select></div>
+</div>
+<label>📝 发生了什么（选填）</label>
+<textarea id="reason" placeholder="如：昨晚因为加班的事大声吼了你，事后很后悔…"></textarea>
+<button class="btn-gen" id="genBtn">✨ 生成道歉信</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 你的道歉信</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制道歉信</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const opens={
+'恋人':['亲爱的','宝贝','我最在意的人'],
+'家人':['爸/妈','亲爱的家人','您'],
+'朋友':['兄弟/姐妹','老朋友','你'],
+'同事':['X经理','X哥','团队伙伴'],
+'客户':['尊敬的X总','X老师','X女士/先生']
+};
+const opens2={
+'恋人':['我知道这次我让你很难过，对不起。','这段时间我想了很多，是我做得不对。'],
+'家人':['请原谅我的不懂事，让您操心了。','我反思了很久，是我错了。'],
+'朋友':['这次是我不对，真的对不起你。','咱们这么多年交情，是我没处理好。'],
+'同事':['对给您带来的困扰深表歉意。','我认真反思了自己的做法，确实欠妥。'],
+'客户':['十分抱歉给贵方造成了不便。','我们对此次失误深感自责。']
+};
+const mid={
+'轻微':['其实大多是误会，把话说开就好。','希望我们能重新说清楚。','我知道自己太敏感了。'],
+'中等':['我知道这句话/这件事伤到你了，我真的很后悔。','我仔细想了想，错在我这边。','这段时间你大概也很难过，对不起。'],
+'严重':['我不知道怎么弥补才能让你好受些，但我想努力做到。','这次确实是我做得过分了，我每天都在自责。','如果你愿意，我想当面认真道歉。']
+};
+const ends={
+'温柔':['以后我会学着多体谅你、多站在你的角度想。','余生还长，我想好好珍惜你。','给我一个弥补的机会，好吗？'],
+'正式':['今后我会引以为戒，绝不再犯。','恳请接受我诚挚的歉意。','感谢您的宽容与理解。'],
+'幽默':['为了赎罪，我决定承包一周的洗碗+奶茶，领导请批示！','求原谅buff已叠加，就等你点个赞了😄','我保证下次把你排在加班前面（划掉），排在你前面！'],
+'深情':['你是我心里最柔软的地方，我不该让你难过。','千言万语汇成一句：对不起，我爱你。','希望时间能让我们回到从前。']
+};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 道歉信生成器 | AgentGongju.com'))return;
+const target=document.getElementById('target').value;
+const level=document.getElementById('level').value;
+const tone=document.getElementById('tone').value;
+const reason=document.getElementById('reason').value.trim();
+const who=opens[target];
+const who2=opens2[target];
+let out='';
+out+=(who[0]+'：\n\n');
+out+=(who2[0]+'\n\n');
+if(reason)out+=('关于「'+reason+'」，我真的很抱歉。\n\n');
+out+=('我反复回想了这件事，'+mid[level][1]+'。\n\n');
+out+=('我明白道歉一句话是不够的，'+(level==='严重'?'我愿意用实际行动来证明，给你时间和空间去消化。':'但我希望你能知道我的诚意。')+'\n\n');
+out+=(ends[tone][0]+'\n\n');
+out+=('—— 真心的\n“对不起”');
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 道歉信已复制，勇敢去发送吧！'))}
+</script>
+</body>
+</html>

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 情绪疗愈站 | AgentGongju.com</title>
+<meta name="description" content="说说你此刻的心情，AI用温柔的话语治愈你，帮你舒缓压力、找回内心的平静与力量">
+<meta name="keywords" content="情绪疗愈,心情不好,压力,焦虑,安慰的话,暖心,治愈,心理舒缓">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:110px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.95rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{color:#94a3b8;font-size:.85rem;margin-bottom:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🌷 AI 情绪疗愈站</h1><p>把不开心的说出来，这里有一句温柔的话想对你说</p></div>
+
+<div class="card">
+<label>💬 此刻你的心情/发生了什么？</label>
+<textarea id="feel" placeholder="例如：最近工作压力好大，感觉自己什么都做不好，有点崩溃"></textarea>
+<div class="param-row">
+<div><label>🎯 疗愈方向</label>
+<select id="need"><option value="安慰">🤗 求安慰</option><option value="鼓励" selected>💪 求鼓励</option><option value="平静">🧘 求平静</option><option value="方法">🛠️ 想要建议</option></select></div>
+<div><label>📖 表达风格</label>
+<select id="style"><option value="温柔" selected>🌙 温柔治愈</option><option value="理性">📘 理性清醒</option><option value="元气">☀️ 元气满满</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">🌷 收下这句话</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">💌 送你一段话</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 收藏这段话</button>
+<div class="tip" style="margin-top:12px">💡 情绪低落时，试着深呼吸、喝杯温水、出门散步十分钟，身体动起来心情会松动不少。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const bank={
+安慰:{温柔:['没关系的，你已经很努力了','抱抱你，累了就歇一歇','哭也是可以的，我陪着你','你不是一个人，我一直都在'],理性:['先别急着否定自己，事情没有你想的那么糟','把担心写下来，你会发现大多数只是想象','允许自己难过，这是你很正常的反应'],元气:['乌云只是暂时遮住太阳呀','嘿，你比你以为的坚强多了','明天又是崭新的开始！']},
+鼓励:{温柔:['你已经走了很远的路，别轻易回头','相信你自己，你可以的','慢慢来，会越来越好的'],理性:['过去的失败不等于未来的你','把大目标拆小，每一步都算数','你的潜力远比你想象的更大'],元气:['冲鸭！你一定能做到！','发光吧，天选打工人！','全世界都在为你加油！']},
+平静:{温柔:['深吸一口气，一切都会过去的','把心放平，潮起潮落终有时','静下来，听听你自己的呼吸'],理性:['让情绪像云一样飘过，别抓住不放','脑海里乱糟糟，试着只关注此刻','平静也是一种力量'],元气:['深呼吸，世界很美好','心有多大，快乐就有多大','放轻松，好事在后头！']},
+'方法':{温柔:['试着把烦恼写下来，你会清晰很多','先安排一件事下手，动起来就不慌了','给自己一点独处时间，慢慢恢复能量'],理性:['列出当下能控制的三件事，先专注它们','用清单把乱麻梳理成一条条可执行的线','情绪背后往往是期待，问问自己真正想要什么'],元气:['列个新鲜的小计划，给生活加点糖','今天也要元气满满解决每一个小麻烦！','换个发型/换个路线，日子就不一样了！']}
+};
+const tips=['天大的事，睡一觉起来都会变小一点。','记得多喝水，身体舒服了心也就通畅了。','别人没你说的那么好，你也没你想的那么差。','把今天过好，就已经很棒了。'];
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 情绪疗愈站 | AgentGongju.com'))return;
+const feel=document.getElementById('feel').value.trim();
+const need=document.getElementById('need').value;
+const style=document.getElementById('style').value;
+if(!feel){alert('先和我说说你的心情吧');return;}
+const opts=bank[need][style];
+let out='亲爱的，我听见了你的心声：\n「'+feel+'」\n\n';
+out+=opts[Math.floor(Math.random()*opts.length)]+'\n\n';
+out+=tips[Math.floor(Math.random()*tips.length)]+'\n\n';
+if(need==='方法'||need==='鼓励'){
+out+='【给你一个小小的行动提议】\n· 挑一件最小的事先做，比如整理桌面、喝杯水、走几步。\n· 完成后给自己一个肯定：今天也有好好照顾自己。\n';
+}
+out+='—— 愿此刻的你，被温柔以待。🌷';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 这段话已收藏！'))}
+</script>
+</body>
+</html>

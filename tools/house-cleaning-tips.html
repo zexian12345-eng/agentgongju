@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 家务清洁技巧 | AgentGongju.com</title>
+<meta name="description" content="每天10分钟做大扫除？根据区域和清洁目标生成科学清洁清单与生活小窍门，让家务变轻松">
+<meta name="keywords" content="家务清洁,清洁技巧,大扫除,厨房清洁,卫生间清洁,生活妙招,家政">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🧽 AI 家务清洁技巧</h1><p>清洁有章法，家务不头疼</p></div>
+
+<div class="card">
+<label>🧹 清洁区域</label>
+<select id="zone"><option value="厨房" selected>厨房</option><option value="卫生间">卫生间</option><option value="客厅">客厅</option><option value="全屋">全屋大扫除</option></select>
+<div class="param-row">
+<div><label>⏱ 可投入时间</label>
+<select id="time"><option value="15分钟">每天15分钟</option><option value="1小时" selected>周末1小时</option><option value="半天">半天（大扫除）</option></select></div>
+<div><label>👨👩👧 居住人数</label>
+<select id="people"><option value="1-2人">1-2人</option><option value="3-4人" selected>3-4人</option><option value="5人以上">5人以上</option></select></div>
+</div>
+<label>📝 特别困扰（选填）</label>
+<textarea id="extra" placeholder="如：油烟机特别油，水垢很重…"></textarea>
+<button class="btn-gen" id="genBtn">✨ 生成清洁方案</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22d3ee;font-weight:600;margin-bottom:12px">🧽 清洁方案</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制方案</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const zones={
+'厨房':{always:['洗碗+擦灶台（每天）','擦台面/水槽（每天）','倒垃圾（每天）'],weekly:['擦油烟机表面','擦冰箱门和内部隔板','微波炉内部加热柠檬水清除异味'],monthly:['油烟机滤网浸泡清洗','冰箱彻底清空除菌','擦墙砖/吊柜','下水道疏通（用小苏打+白醋）'],trick:'· 油污重灾区：小苏打+白醋糊状敷15分钟再擦，轻松去油\n· 钢丝球别刷不粘锅，会破坏涂层\n· 厨房纸+洗洁精搞定油烟机日常'},
+'卫生间':{always:['冲马桶+擦马桶圈（每天）','洗手池随手擦干（每天）','地面水渍随手拖（每天）'],weekly:['刷马桶内部','镜子+水龙头擦亮','地漏清理毛发','毛巾/浴巾换洗'],monthly:['瓷砖缝隙清洁','淋浴头除水垢（白醋泡）','马桶水箱清理','储物柜整理'],trick:'· 水垢克星：白醋+柠檬酸浸泡一晚，清水一冲锃亮\n· 硫磺皂+马桶刷清洁隔层\n· 头发堵地漏：用一次性过滤网'},
+'客厅':{always:['收拾茶几/遥控器归位（每天）','沙发上坐垫拍拍回正（每天）'],weekly:['吸尘器/扫地机全屋','茶几+电视柜除尘','窗台擦灰','抱枕套换洗'],monthly:['窗户玻璃里外擦','沙发缝吸尘','书架/装饰品除尘','地毯吸尘+局部清洗'],trick:'· 除尘顺序：从上到下、由内到外，最后才拖地\n· 玻璃清洁：旧报纸+水，比毛巾更亮不花\n· 遥控器等高频触碰物每周消毒'},
+'全屋':{always:['每天顺手的归位+扫地/拖地（选1间）'],weekly:['厨房+卫生间重点（可选1天1个）','全屋吸地+拖地2次','垃圾满即扔'],monthly:['全屋除尘（从高到低）','玻璃/窗帘/地毯/油烟机深清','整理储物柜/衣柜一次'],trick:'· "十分钟法则"：每天固定10分钟快速清洁，周末就轻松\n· 分区大扫除，勿一次全扛\n· 清洁顺序：厨房→卫生间→客厅→卧室（越往后越"轻"）'}
+};
+const timeMap={'15分钟':['每天只做「always」清单里的1-2项','用计时器设15分钟，快速扫一遍高频区域'],'1小时':['做「weekly」清单全部（预计40-60分钟）','+ 处理1个平时忽略的角落'],'半天':['「monthly」清单全部做一遍（预计2-3小时）','+ 整理储物/换季衣物/收纳专项']};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 家务清洁技巧 | AgentGongju.com'))return;
+const zone=document.getElementById('zone').value;
+const time=document.getElementById('time').value;
+const people=document.getElementById('people').value;
+const extra=document.getElementById('extra').value.trim();
+const z=zones[zone];
+let out='【'+zone+' · '+people+' · '+time+'】\n\n';
+if(extra)out+='你的困扰：'+extra+'\n\n';
+out+='— 🔁 每天必做（保持基本干净）—\n'+z.always.join('\n')+'\n\n';
+out+='— 🗓 每周安排 —\n'+z.weekly.join('\n')+'\n\n';
+out+='— 🌙 每月深度清洁 —\n'+z.monthly.join('\n')+'\n\n';
+out+='— 💡 生活小窍门 —\n'+z.trick+'\n\n';
+out+='— ⏰ '+time+' 场景执行 —\n'+timeMap[time].join('\n')+'\n\n';
+out+='— 🧰 必备清洁三件套 —\n· 碱性清洁剂（除油污）\n· 酸性清洁剂（除水垢，白醋即可）\n· 百洁布/海绵刷（不同区域分开用）\n\n📌 记住：做比完美重要，保持比突击更重要！';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 清洁方案已复制！'))}
+</script>
+</body>
+</html>

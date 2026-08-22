@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 孩子兴趣班选择助手 | AgentGongju.com</title>
+<meta name="description" content="从孩子的性格、年龄、特长和家庭预算出发，科学推荐适合的兴趣班方向，不盲从别家孩子">
+<meta name="keywords" content="兴趣班,孩子特长,儿童教育,兴趣培养,少儿培训,选兴趣班,育儿">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🎨 AI 孩子兴趣班选择助手</h1><p>帮孩子找到真正热爱的那件事</p></div>
+
+<div class="card">
+<label>🎂 孩子年龄段</label>
+<select id="age"><option value="3-5岁">3-5岁（学龄前）</option><option value="6-9岁" selected>6-9岁（小学低年级）</option><option value="10-12岁">10-12岁（小学高年级）</option><option value="13-15岁">13-15岁（初中）</option></select>
+<div class="param-row">
+<div><label>🌟 孩子性格特点</label>
+<select id="personality"><option value="活泼好动" selected>活泼好动</option><option value="安静专注">安静专注</option><option value="开朗外向">开朗外向</option><option value="内向害羞">内向害羞</option><option value="有主见">有主见、有主见强</option></select></div>
+<div><label>💪 突出优势</label>
+<select id="strength"><option value="运动">运动天赋</option><option value="艺术" selected>艺术/画画</option><option value="语言">语言表达</option><option value="逻辑">逻辑/数学</option><option value="音乐">音乐节奏</option></select></div>
+</div>
+<div class="param-row">
+<div><label>💰 每月预算</label>
+<select id="budget"><option value="500以内">500元以内</option><option value="500-1000" selected>500-1000元</option><option value="1000-2000">1000-2000元</option><option value="2000以上">2000元以上</option></select></div>
+<div><label>📅 每周可投入时间</label>
+<select id="time"><option value="1-2次">1-2次</option><option value="3-4次" selected>3-4次</option><option value="每天">每天可练</option></select></div>
+</div>
+<label>📝 额外说明（选填）</label>
+<textarea id="extra" placeholder="如：孩子特别喜欢恐龙，想让他尝试编程…"></textarea>
+<button class="btn-gen" id="genBtn">✨ 生成选班建议</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#34d399;font-weight:600;margin-bottom:12px">🎯 兴趣班推荐方案</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制方案</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const ageAdvice={
+'3-5岁':['以"玩中学"为主','推荐：创意美术、奥尔夫音乐、平衡车/游泳\n（激发兴趣>追求技能）'],
+'6-9岁':['可以开始系统学习','推荐：书法/钢琴/游泳/乐高编程/拉丁舞\n（可报1-2个长期班+1个体验课）'],
+'10-12岁':['技能与学科兼顾','可深入：编程/OI竞赛路线、羽毛球/跆拳道、声乐\n（适合培养"一技之长"）'],
+'13-15岁':['应试与兴趣平衡','可选：中考加分体育项目、乐器合奏、演讲\n（以孩子意愿为主，避免强加）']
+};
+const matchAdvice={
+'活泼好动':{sports:true,model:'游泳/跆拳道/篮球 → 消耗精力+锻炼专注力',art:false,logic:false,music:false,lang:false},
+'安静专注':{sports:false,model:'书法/围棋/编程 → 发挥安静专注的长处',art:true,logic:true,music:false,lang:false},
+'开朗外向':{sports:true,model:'演讲/小主持人/表演 → 放大表达能力',art:false,logic:false,music:false,lang:true},
+'内向害羞':{sports:true,model:'乐器合奏/绘画班/团队运动（低对抗）→ 温和建立自信',art:true,logic:false,music:true,lang:false},
+'有主见':{sports:false,model:'尊重孩子自己选的（可让其投票）→ 更愿意坚持',art:true,logic:true,music:true,lang:true}
+};
+const strengthTip={
+'运动':{'3-5岁':'平衡车/感统课','6-9岁':'游泳（增强体质）+ 球类','10-12岁':'羽毛球/田径（可走特长）','13-15岁':'中考体育项目 + 校队'},
+'艺术':{'3-5岁':'创意美术 + 手工','6-9岁':'素描/水彩系统课','10-12岁':'美术考级/设计方向探索','13-15岁':'艺考规划或深入研究'},
+'语言':{'3-5岁':'绘本阅读/亲子英语','6-9岁':'口才演讲 / 主持课','10-12岁':'作文/辩论赛','13-15岁':'演讲比赛/外语角'},
+'逻辑':{'3-5岁':'简单积木/逻辑思维游戏','6-9岁':'Scratch编程启蒙','10-12岁':'Python/C++ 编程','13-15岁':'信息学奥赛/机器人竞赛'},
+'音乐':{'3-5岁':'奥尔夫音乐启蒙','6-9岁':'钢琴/小提琴启蒙','10-12岁':'乐器进阶+乐理','13-15岁':'管弦乐团/声乐'}
+};
+const budgetTip={
+'500以内':['优先：社区少年宫、学校课后兴趣班（¥100-300/月）','次选：线上录播课+自己带着练（¥100-200/月）'],
+'500-1000':['可选：机构小班课1-2门','提醒：单门+教材费用 300-600/月'],
+'1000-2000':['可报：2-3门不同方向课程','建议：1门长期技能+2门体验课'],
+'2000以上':['可定制：素养综合课程套餐','建议：别贪多，聚焦1-2个长期项目']
+};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 孩子兴趣班选择助手 | AgentGongju.com'))return;
+const age=document.getElementById('age').value;
+const personality=document.getElementById('personality').value;
+const strength=document.getElementById('strength').value;
+const budget=document.getElementById('budget').value;
+const time=document.getElementById('time').value;
+const extra=document.getElementById('extra').value.trim();
+const a=ageAdvice[age];
+const s=strengthTip[strength];
+let out='【'+personality+' · '+strength+' · '+budget+'/月】\n\n';
+if(extra)out+='你提到：'+extra+'\n\n';
+out+='— 🎂 '+age+' 阶段建议 —\n'+a[0]+'\n'+a[1]+'\n\n';
+out+='— 🌟 匹配你的孩子 —\n推荐方向：'+s[age]+'\n\n';
+out+='— 🧠 性格匹配 —\n'+matchAdvice[personality].model+'\n\n';
+out+='— 💰 预算规划 —\n'+budgetTip[budget].join('\n')+'\n\n';
+out+='— 📅 每周安排建议 —\n'+(time==='1-2次'?'1-2次：选1门最喜欢的主课，先坚持三个月看效果':(time==='3-4次'?'3-4次：主课2次/周 + 兴趣体验1次/周':'每天可练：可加家庭练习时间，但注意留白放松时间'))+'\n\n';
+out+='— 📌 选班避坑指南 —\n· 先试听再交费！看孩子表情比看机构宣传更准\n· 不盲选"热门"，跟孩子聊过再定\n· 兴趣培养前期不建议直接报名上百节课\n· 每3个月复盘一次：孩子在开心吗？有进步吗？';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 选班方案已复制！'))}
+</script>
+</body>
+</html>

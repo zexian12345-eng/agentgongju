@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Excel公式生成器 | AgentGongju.com</title>
+<meta name="description" content="用大白话描述你想实现的功能，AI帮你生成对应的Excel公式、函数用法与WPS兼容写法。办公族的效率神器。">
+<meta name="keywords" content="Excel公式,函数,WPS,电子表格,公式生成,VLOOKUP,数据统计,办公效率">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:840px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+textarea,input[type=text],select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:70px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem;margin-right:8px}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.demo-chip{display:inline-block;padding:5px 12px;background:rgba(99,102,241,0.12);border:1px solid rgba(99,102,241,0.25);border-radius:20px;color:#a5b4fc;cursor:pointer;font-size:.8rem;margin:3px}
+.demo-chip:hover{background:rgba(99,102,241,0.25)}
+.fcode{background:#0f172a;border:1px solid rgba(99,102,241,0.4);border-radius:8px;padding:10px 14px;color:#a5b4fc;font-family:monospace;margin:8px 0}
+@media(max-width:600px){.param-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📊 AI Excel公式生成器</h1><p>用大白话描述需求，秒出公式</p></div>
+
+<div class="card">
+<label>🧩 快速示例</label>
+<div>
+<span class="demo-chip" onclick="demo('在A列中查找B2对应的值并返回C列')">VLOOKUP 查找</span>
+<span class="demo-chip" onclick="demo('统计A列中大于100的单元格数量')">条件计数</span>
+<span class="demo-chip" onclick="demo('把A列和B列用-合并')">文本合并</span>
+<span class="demo-chip" onclick="demo('对B列数据按A列分类求和')">分类求和</span>
+</div>
+<label>💬 用大白话描述你的数据需求</label>
+<textarea id="req" placeholder="例如：根据员工编号，在工资表里自动匹配对应员工的姓名"></textarea>
+<button class="btn-gen" id="genBtn">✨ 生成 Excel 公式</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">📊 公式与用法说明</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制公式</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const rules=[
+{keys:['查找','匹配','vlookup','根据.编号','根据.名字','对应'],make:(r)=>('【推荐公式】\n=VLOOKUP('+cell(r)+', 数据区域, 列序号, FALSE)\n\n【说明】\n· 第一参数是要查找的内容\n· 第二个参数框选包含查找列的整体数据区域\n· 第三参数填要返回内容所在的列序号\n· FALSE 表示精确匹配\n\n【示例】根据员工编号查找姓名：\n=VLOOKUP(A2, 工资表!A:D, 2, FALSE)')},
+{keys:['求和','合计','汇总','sum'],make:(r)=>('【推荐公式】\n=SUM('+cell(r)+')\n\n【说明】\n· 括号里填要求和的单元格区域\n· 可多选区域，用逗号隔开\n\n【示例】对A1到A20求和：\n=SUM(A1:A20)')},
+{keys:['计数','多少个','数量','个数'],make:(r)=>('【推荐公式】\n=COUNTIF(区域, 条件)\n\n【说明】\n· 第一参数填要判断的数据区域\n· 第二参数填条件，如">100"或"苹果"\n\n【示例】统计大于100的个数：\n=COUNTIF(B1:B20, ">100")')},
+{keys:['合并','连接','组合','加-','拼接'],make:(r)=>('【推荐公式】\n=TEXTJOIN("分隔符", TRUE, 文本1, 文本2,...)\n兼容写法：=A1&"-"&B1\n\n【说明】\n· & 符号可用于拼接单元格内容\n\n【示例】A列和B列用-合并：\n=A1&"-"&B1')},
+{keys:['分类','按.求和','分组','类目','类别'],make:(r)=>('【推荐公式】\n=SUMIF(条件区域, 条件, 求和区域)\n\n【说明】\n· 第一个参数是根据哪个列分类\n· 第二个是具体分类值\n· 第三个是要汇总的数值列\n\n【示例】按A列分类汇总B列：\n=SUMIF(A:A, A2, B:B)')},
+{keys:['平均','均值','avc','average'],make:(r)=>('【推荐公式】\n=AVERAGE('+cell(r)+')\n\n【说明】\n· 括号里填要算平均值的区域\n\n【示例】求A1到A20平均值：\n=AVERAGE(A1:A20)')},
+{keys:['如果','判断','条件','if','大于','小于'],make:(r)=>('【推荐公式】\n=IF(条件, 满足时结果, 不满足时结果)\n\n【说明】\n· 可以嵌套多个IF实现多条件判断\n\n【示例】成绩大于60显示"及格"，否则"不及格"：\n=IF(A2>60,"及格","不及格")')}
+];
+function cell(r){
+  const m=r.match(/[A-Z]{1,2}[0-9]+/);
+  return m?m[0]:'A2';
+}
+function detect(req){
+  for(const rule of rules){
+    for(const k of rule.keys){
+      if(k.includes('.')&&new RegExp(k.replace('.','.*')).test(req))return rule;
+      if(!k.includes('.')&&req.includes(k))return rule;
+    }
+  }
+  return null;
+}
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI Excel公式生成器 | AgentGongju.com'))return;
+const req=document.getElementById('req').value.trim();
+if(!req){alert('请描述你的数据需求');return;}
+const rule=detect(req)||rules[0];
+let out='需求：'+req+'\n\n'+rule.make(req)+'\n\n【通用小贴士】\n· 公式前要加 = 号\n· 区域用冒号（A1:A10），多个用逗号\n· 文本条件要加英文双引号 " "\n· 不知道区域可先用鼠标框选，公式会自动填充\n· WPS 与 Excel 函数基本通用';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function demo(v){document.getElementById('req').value=v;}
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 公式已复制！'))}
+</script>
+</body>
+</html>

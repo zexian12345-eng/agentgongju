@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 孩子每日时间规划 | AgentGongju.com</title>
+<meta name="description" content="根据孩子的年龄与作息，生成科学合理的每日时间表，兼顾学习、运动、玩耍与睡眠">
+<meta name="keywords" content="孩子作息,儿童时间管理,每日计划,小孩安排,学习计划,亲子时间">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>⏰ AI 孩子每日时间规划</h1><p>让孩子的每一天，规律又充实</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>🎂 孩子年龄</label>
+<select id="age"><option value="3-5岁">3-5岁（学龄前）</option><option value="6-9岁" selected>6-9岁（小学低年级）</option><option value="10-12岁">10-12岁（小学高年级）</option><option value="13-15岁">13-15岁（初中）</option></select></div>
+<div><label>📅 星期</label>
+<select id="day"><option value="工作日" selected>上学日（工作日）</option><option value="周末">周末/假期</option></select></div>
+</div>
+<label>📝 额外安排（选填）</label>
+<textarea id="extra" placeholder="如：周三要上钢琴课，作业一般一小时写完…"></textarea>
+<button class="btn-gen" id="genBtn">✨ 生成时间表</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#4ade80;font-weight:600;margin-bottom:12px">📅 每日时间表</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制时间表</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const ageTimes={
+'3-5岁':{sleep:['21:00 睡前准备','21:30 入睡'],wake:'7:00',study:'亲子阅读/识字/画画',play:'2小时户外'},
+'6-9岁':{sleep:['21:00 开始洗漱','21:30 入睡'],wake:'6:50',study:'课后作业+课外阅读',play:'1小时运动'},
+'10-12岁':{sleep:['22:00 前入睡'],wake:'6:40',study:'课后作业+预习复习',play:'40分钟运动'},
+'13-15岁':{sleep:['22:30 前入睡'],wake:'6:30',study:'学业加强+自主时间',play:'30-60分钟运动'}
+};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 孩子每日时间规划 | AgentGongju.com'))return;
+const age=document.getElementById('age').value;
+const day=document.getElementById('day').value;
+const extra=document.getElementById('extra').value.trim();
+const at=ageTimes[age];
+const isSchool=day==='工作日';
+let out='【'+age+' · '+(isSchool?'上学日':'周末/假期')+' · 建议作息表】\n\n';
+if(extra)out+='你提到：'+extra+'\n\n';
+if(isSchool){
+if(age==='3-5岁')out+='07:00 起床+洗漱\n07:30 早餐\n08:30 幼儿园/亲子班\n11:30 午饭\n12:30 午睡（1-1.5小时）\n14:30 下午玩耍/专注游戏\n17:30 晚餐\n18:30 亲子阅读\n19:30 洗澡\n20:00 自由玩\n21:00 入睡\n\n';
+else if(age==='6-9岁')out+='06:50 起床\n07:10 早餐\n07:40 出门上学\n12:00 午餐（学校）\n16:30 到家+小点心\n17:00 课后作业（30-45分钟）\n18:00 晚餐\n18:45 运动/课外兴趣1\n19:45 自主阅读/练习\n20:30 洗漱\n21:00 放松\n21:30 入睡\n\n';
+else if(age==='10-12岁')out+='06:40 起床\n07:15 早餐\n07:40 上学\n12:00 午餐\n16:40 放学\n17:00 做作业（60分钟）\n18:00 晚餐\n18:45 运动/兴趣（30-40分钟）\n19:30 预习+课外\n20:30 自由/亲子聊天\n21:00 洗漱\n22:00 入睡\n\n';
+else out+='06:30 起床\n07:00 早餐\n07:30 上学\n12:00 午餐\n17:00 放学\n17:30 作业（60-90分钟）\n19:00 晚餐\n19:45 运动/放松\n20:30 复习/预习\n21:30 洗漱\n22:00 入睡\n\n';
+}else{
+if(age==='3-5岁')out+='周末\n08:00 自然醒+buff\n09:00 早餐\n09:30 亲子活动（公园/早教）\n11:30 午餐\n13:00 午睡\n15:00 自由玩耍/画画\n16:30 户外运动\n18:00 晚餐\n19:00 家庭电影/手工\n20:30 规律晚作息（同上学日）\n\n';
+else if(age==='6-9岁')out+='周末加餐\n09:00 起床（可多睡）\n09:30 早餐+晨读\n10:00 户外/兴趣班\n12:00 午餐\n13:30 午休或安静活动\n14:30 兴趣班/自主玩\n16:30 运动\n18:00 晚餐\n19:00 家庭时光\n20:30 洗漱睡觉\n\n';
+else if(age==='10-12岁')out+='周六\n09:00 起床\n09:30 兴趣班（上午1个）\n12:30 午餐\n14:00 作业集中做（60-90分钟）\n16:00 户外/朋友玩\n18:30 晚餐\n19:30 家庭聊天/电影\n21:30 洗漱\n22:00 入睡\n周日\n上午：复习+预习（60分钟）\n下午：家庭活动/运动\n晚上：早睡，准备好周一\n\n';
+else out+='周末自主时间更多，重点平衡学习与休息：\n· 上午2段学习（60分钟/段）\n· 下午安排1段运动+1段兴趣\n· 留出与朋友/家人的社交时间\n· 晚上10点前洗漱，不熬夜\n\n';
+}
+out+='— 📌 执行小贴士 —\n· 起床时间尽量稳定（每天同一时间）\n· 周末不过度补觉超过1小时\n· 用"番茄钟"帮孩子进入专注状态\n· 每完成一件给孩子一句正反馈\n· 全家作息一致，孩子更容易坚持';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 时间表已复制！'))}
+</script>
+</body>
+</html>

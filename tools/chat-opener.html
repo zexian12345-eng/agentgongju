@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI聊天开场白生成器 | AgentGongju.com</title>
+<meta name="description" content="不知道如何开口？输入聊天对象与情景，AI帮你生成自然、有趣、不尴尬的开场白，覆盖社交、相亲、职场、日常等场景。">
+<meta name="keywords" content="聊天开场白,撩妹,搭讪,社交话术,破冰,聊天技巧,相亲开场">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+textarea,input[type=text],select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:60px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>💬 AI聊天开场白生成器</h1><p>第一句话别尬聊，破冰从会说开始</p></div>
+
+<div class="card">
+<label>🎯 聊天场景</label>
+<select id="scene">
+<option>认识不久的朋友</option><option>相亲对象</option><option>喜欢的人（破冰）</option><option>许久未联系的老友</option><option>工作/职场同事</option><option>同学/群聊搭话</option>
+</select>
+<label>📝 对方的一些信息或共同话题（选填）</label>
+<textarea id="info" placeholder="例如：她养了只柯基，喜欢看悬疑剧，最近在减肥"></textarea>
+<button class="btn-gen" id="genBtn">✨ 生成开场白</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">💬 为你生成的开场白</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制开场白</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const sceneOpen={
+'认识不久的朋友':[
+'最近在忙什么呀？看你过的挺充实的',
+'突然想到你上次说的那件事，后来怎么样了？',
+'最近发现一家不错的店，改天可以一起去试试',
+'今天天气超好，突然想找人聊聊天，就想到你了'
+],
+'相亲对象':[
+'你好呀，上次聊得很开心，一直想着再跟你聊聊',
+'看到你更新的动态啦，感觉你是个很有想法的女生/男生',
+'咱们年龄相仿，我也喜欢xxx，感觉挺有共同话题的',
+'周末过得怎么样？想找个机会多了解你一点'
+],
+'喜欢的人（破冰）':[
+'嗨，刚才看到个有趣的东西，莫名想到特别适合你',
+'最近好吗？其实一直想找机会跟你说说话',
+'那个….我好像有点想你了（轻松点的语气）',
+'你上次推荐的那部剧我看完了，想找人聊聊结局'
+],
+'许久未联系的老友':[
+'老朋友，好久不见，最近过得咋样？突然有点想你了',
+'翻到以前的照片，一下就想到我们那会儿的日子',
+'最近咋样？出来聚聚不，很想见见你',
+'嘿，听说你最近换了新工作？恭喜呀，有空聊聊'
+],
+'工作/职场同事':[
+'嗨，刚看到你做的那个方案，挺有想法的，想跟你取取经',
+'下午的开会有个点想跟你再碰一下，方便吗？',
+'你上次提的那个思路我试了下，效果真不错，谢谢呀',
+'最近项目进度还顺利吗？有需要搭把手的说一声'
+],
+'同学/群聊搭话':[
+'有人在吗？刚才聊到的话题我有点想法',
+'最近都在忙啥呢，群里安静好久了',
+'那个…我也在追这部剧，一起讨论呀',
+'周末有安排没，要不要组个局？'
+]
+};
+const topics=['最近在忙什么','分享一个你的生活小确幸','最近有没有什么开心的事','如果放个假你最想去哪','最近有在看什么剧/书','你最近的搞钱/学习小心得'];
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI聊天开场白生成器 | AgentGongju.com'))return;
+const scene=document.getElementById('scene').value;
+const info=document.getElementById('info').value.trim();
+const opens=sceneOpen[scene];
+const count=4;
+let out='💬 为「'+scene+'」场景生成 4 条开场白：\n\n';
+const useInfo=info&&info.length>0;
+const used=new Set();
+for(let i=0;i<count;i++){
+  let base=opens[Math.floor(Math.random()*opens.length)];
+  if(useInfo&&i<2){
+    const kw=info.split(/[，,。]/)[0].slice(-4);
+    base=coffee(info,scene);
+  }
+  if(used.has(base)){i--;continue;}
+  used.add(base);
+  out+=(i+1)+'. '+base+'\n\n';
+}
+out+='—— 发送小贴士：'+(useInfo?'基于对方信息的开场最真诚，成功率更高。':'适当加一个与对方相关的细节（名字、头像、朋友圈），瞬间拉近距离。')+' 语气自然放松，切忌查户口式连续提问。';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function coffee(info,scene){
+  const kw=info.split(/[，,。]/).filter(s=>s.trim());
+  const t=kw[0]?kw[0]:'你分享的这件事';
+  const follow=[
+    '看到你提到'+t+'，我觉得太有意思了，能给我多讲讲吗？',
+    '你说的'+t+'，正好我也挺有共鸣，改天想跟你细聊',
+    '刚看到'+(kw[0]||'你的动态')+'，感觉特别有共鸣，冒昧来打个招呼'
+  ];
+  return follow[Math.floor(Math.random()*follow.length)];
+}
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 开场白已复制！'))}
+</script>
+</body>
+</html>

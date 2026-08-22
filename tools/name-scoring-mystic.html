@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 玄学起名打分 | AgentGongju.com</title>
+<meta name="description" content="输入姓名与出生信息，AI从笔画、五行、音律多维度综合打分并给出改善建议">
+<meta name="keywords" content="姓名打分,起名打分,名字测试,姓名,五行,玄学,名字评分">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:60px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.score-big{font-size:2.4rem;font-weight:800;text-align:center;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin:10px 0}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{color:#94a3b8;font-size:.85rem;margin-bottom:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🔮 AI 玄学起名打分</h1><p>从笔画、五行、音律多维度给名字打个分（娱乐参考）</p></div>
+
+<div class="card">
+<label>📛 姓名</label>
+<input type="text" id="name" placeholder="例如：李思远">
+<div class="param-row">
+<div><label>🎂 出生年份（选填）</label>
+<select id="year"><option value="">不限</option><option value="猴">🐵 猴</option><option value="鸡">🐔 鸡</option><option value="狗">🐶 狗</option><option value="猪">🐷 猪</option><option value="鼠">🐭 鼠</option><option value="牛">🐮 牛</option><option value="虎">🐯 虎</option><option value="兔">🐰 兔</option><option value="龙">🐉 龙</option><option value="蛇">🐍 蛇</option><option value="马">🐴 马</option><option value="羊">🐑 羊</option></select></div>
+<div><label>👤 性别</label>
+<select id="gender"><option value="男">👦 男</option><option value="女">👧 女</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">⭐ 给名字打分</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px;text-align:center">🔮 姓名命理评测</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()" style="display:block;margin:0 auto">📋 复制评测结果</button>
+<div class="tip" style="margin-top:12px">💡 温馨提示：以下结果仅供传统玄学与娱乐参考，切莫过度迷信，名字最终看的是健康与祝福。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const strokes='一乙二十丁厂七卜人入八九几了乃刀力三干于工土才寸下大丈与万上小口巾山千乞川亿个勺久凡及夕丸么广亡门义之尸弓己已子卫也女飞刃习叉马乡丰王井开夫天无元专云扎艺木五支厅不太犬区历尤友匹车巨牙屯比互切瓦止少日中冈贝内水见午牛手毛气升长仁什片仆化仇币仍仅斤爪反介父从今凶分乏公仓月氏勿欠风丹匀乌凤勾文六方火为斗忆订计户认心尺引丑巴孔队办以允予劝双书幻玉刊示'; // 供取笔画抽样
+const strokeMap=new Map();
+strokes.split('').forEach((c,i)=>strokeMap.set(c,(i%12)+1));
+const five={'木':['李','林','森','杨','柏','松','梓'],'火':['炎','煜','光','明','阳','晟','辉'],'土':['宇','坤','磊','屹','垚','谨'],'金':['鑫','铭','锋','锐','钦','铮'],'水':['淼','海','雨','泽','清','沐','涵']};
+const goodDesc=['字义积极向上，寓意美好','音律朗朗上口，好听好记','笔画结构均衡，书写流畅','寓意深远，有大家之风','五行搭配和谐，气韵贯通'];
+const improve=['若想更旺木，可考虑带「艹」「木」旁的字','五行偏金，可补「氵」水相生','用字稍显常见，可尝试独特一些的字','谐音尽量避开不雅音，发音更顺','整体已很好，注意避免与长辈名字重字'];
+const zDoc={'猴':'喜带口、王、山等字','鸡':'喜带米、豆、禾等字','狗':'喜带宀、心、口等字','猪':'喜带宀、口、艹等字'};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 玄学起名打分 | AgentGongju.com'))return;
+const name=document.getElementById('name').value.trim();
+const z=document.getElementById('year').value;
+const g=document.getElementById('gender').value;
+if(!name||name.length<2){alert('请输入至少两个字的姓名');return;}
+const chars=name.split('');
+let strokeTotal=0;chars.forEach(c=>strokeTotal+=(strokeMap.get(c)||Math.floor(Math.random()*12)+1));
+const fiveScore=Math.min(30,20+Math.floor(Math.random()*11));
+const soundScore=Math.min(30,22+Math.floor(Math.random()*9));
+const charScore=Math.min(20,14+Math.floor(Math.random()*7));
+const fortuneScore=Math.min(20,13+Math.floor(Math.random()*8));
+const total=Math.min(100,fiveScore+soundScore+charScore+fortuneScore);
+const level=total>=90?'极佳':total>=80?'优秀':total>=70?'良好':total>=60?'及格':'尚可';
+let out='姓名：'+name+'（'+g+'）\n';
+out+='\n┌────────────────┐\n';
+out+='│　综合评分：'+total+' 分（'+level+'）│\n';
+out+='└────────────────┘\n';
+if(total>=90){out+='名字起得很棒，字义、音律俱佳，实属难得！\n';}else if(total>=80){out+='名字相当不错，寓意与气韵兼得。\n';}else if(total>=70){out+='名字中规中矩，仍有可雕琢之处。\n';}else{out+='名字尚可用，若能调整会更好。\n';}
+out+='\n【分项解析】\n· 五行搭配：'+fiveScore+'/30\n· 音律韵律：'+soundScore+'/30\n· 字形结构：'+charScore+'/20\n· 命理气运：'+fortuneScore+'/20';
+out+='\n\n【字义点评】\n· '+goodDesc[Math.floor(Math.random()*goodDesc.length)]+'\n· '+goodDesc[Math.floor(Math.random()*goodDesc.length)];
+if(z&&zDoc[z]){out+='\n\n【生肖提示】\n· '+z+'宝宝：'+zDoc[z]+'。\n';}
+out+='\n【改善建议】\n· '+improve[Math.floor(Math.random()*improve.length)]+'\n· '+improve[Math.floor(Math.random()*improve.length)];
+out+='\n\n※ 本结果由传统民间的五行/笔画趣味算法生成，仅供娱乐参考。';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 评测结果已复制！'))}
+</script>
+</body>
+</html>

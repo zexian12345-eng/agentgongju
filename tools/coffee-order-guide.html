@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 咖啡点单助手 | AgentGongju.com</title>
+<meta name="description" content="不知道点哪杯咖啡？AI根据你的口味、预算与提神需求，推荐最合适的一杯及点单攻略">
+<meta name="keywords" content="咖啡点单,咖啡推荐,咖啡选择,拿铁,美式,喝什么咖啡,咖啡攻略">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:55px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.pick{font-size:1.2rem;font-weight:700;color:#a855f7}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{color:#94a3b8;font-size:.85rem;margin-bottom:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>☕ AI 咖啡点单助手</h1><p>一眼看菜单就头大？AI 帮你对号入座点对咖啡</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>😋 你偏好的口味</label>
+<select id="taste"><option value="苦">☕ 醇苦醇厚</option><option value="奶香" selected>🥛 奶香顺滑</option><option value="甜">🍬 香甜好喝</option><option value="清爽">🧊 清爽解腻</option></select></div>
+<div><label>💰 预算（元/杯）</label>
+<select id="budget"><option value="平价">15-25</option><option value="适中" selected>25-40</option><option value="高端">40以上</option></select></div>
+</div>
+<div class="param-row">
+<div><label>⚡ 提神需求</label>
+<select id="energy"><option value="强">🔥 重度提神</option><option value="中" selected>适中</option><option value="弱">🌙 不想太提神</option></select></div>
+<div><label>🕒 饮用时段</label>
+<select id="time"><option value="早上">🌄 早上</option><option value="下午" selected>☀️ 下午</option><option value="晚上">🌙 晚上</option></select></div>
+</div>
+<label>📝 想喝的环境/心情（选填）</label>
+<textarea id="mood" placeholder="例如：在加班，想喝点甜的犒劳自己 / 第一次喝咖啡想入门"></textarea>
+<button class="btn-gen" id="genBtn">☕ 帮我选一杯</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">☕ 为你推荐</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制点单攻略</button>
+<div class="tip" style="margin-top:12px">💡 小贴士：下午和晚上咖啡因敏感者可选中杯或低因豆；怕酸选深烘，喜欢果香选中浅烘。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const map={
+苦:{pick:'美式咖啡',desc:'最纯粹的咖啡本味，醇苦回甘，提神一绝',note:'怕太苦可选「深烘美式」或加一点冷水，别加糖才能喝出花果香'},
+'奶香':{pick:'拿铁',desc:'奶香与咖啡香交织，入口顺滑，入门友好',note:'怕苦可以点「燕麦拿铁」，喜欢浓郁选「澳白」'},
+'甜':{pick:'焦糖玛奇朵',desc:'焦糖的香甜裹着奶泡，好喝不齁',note:'喜欢清爽一点可点「香草拿铁」，更甜可加双份糖浆'},
+'清爽':{pick:'冰美式',desc:'冰爽微苦，一杯下去神清气爽',note:'不怕酸可以试「冷萃/气泡美式」，更轻盈解腻'}};
+const strong={强:'建议直接上双份浓缩，或大杯冰美式',中:'标准份量即可，精神不够可悄悄加一份浓度',弱:['选低因豆','一杯就够，避免影响晚上睡眠']};
+const timeNote={早上:'早餐后半小时喝吸收更好，别空腹猛灌',下午:'下午3点前喝完，避免影响晚上睡眠',晚上:'晚上建议选低因咖啡或改水果茶'};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 咖啡点单助手 | AgentGongju.com'))return;
+const taste=document.getElementById('taste').value;
+const budget=document.getElementById('budget').value;
+const energy=document.getElementById('energy').value;
+const time=document.getElementById('time').value;
+const mood=document.getElementById('mood').value.trim();
+const m=map[taste];
+const price=budget==='平价'?'15-25':budget==='适中'?'25-40':'40+';
+let out='✨ 为你挑中的这一杯：\n';
+out+='　'+m.pick+'\n\n';
+out+='【口感特点】\n· '+m.desc+'\n\n';
+out+='【点单小贴士】\n· '+m.note+'\n';
+out+='· 预算 '+price+' 元：'+(budget==='平价'?'优选高性价比中杯，Q券更划算':budget==='适中'?'可升级大杯或燕麦奶': '可尝试精品手冲/SOE')+'\n';
+out+='· 提神方案：'+(typeof strong[energy]==='string'?strong[energy]:strong[energy].join('、'))+'\n';
+out+= '· '+timeNote[time]+'\n';
+if(mood){out+='\n【你的心情解读】\n· 你说「'+mood+'」——'+ (mood.includes('甜')||mood.includes('犒劳')?'那今天这杯带点甜正合适！':mood.includes('入门')?'这杯口感平衡，很适合入门！':'放心下单，这杯不会踩雷！')+'\n';}
+out+='\n【🔥 隐藏选择】\n· 若想尝新，同店可试「'+(taste==='苦'?'燕麦澳白':taste==='甜'?'冰椰乳拿铁':'茶咖特调')+'」';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 点单攻略已复制！'))}
+</script>
+</body>
+</html>

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 婚礼誓言生成器 | AgentGongju.com</title>
+<meta name="description" content="在最重要的时刻说出最想说的话，AI 帮你写婚礼誓言与证婚词，真诚走心不套路">
+<meta name="keywords" content="婚礼誓言,结婚誓词,证婚词,婚礼致辞,结婚致辞,婚礼主持词">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:70px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>💍 AI 婚礼誓言生成器</h1><p>把深藏在心的爱意，郑重地说给对方听</p></div>
+
+<div class="card">
+<label>❓ 需要哪种内容</label>
+<select id="type"><option value="婚礼誓言" selected>结婚誓言（新郎/新娘）</option><option value="证婚词">证婚人致辞</option><option value="敬酒词">双方父母敬酒词</option></select>
+<div class="param-row">
+<div><label>💗 相处年限</label>
+<select id="years"><option value="1-3年">1-3年</option><option value="4-8年" selected>4-8年</option><option value="9年以上">9年以上/十年爱情长跑</option></select></div>
+<div><label>🎨 风格</label>
+<select id="tone"><option value="深情">深情走心</option><option value="温暖" selected>温暖治愈</option><option value="幽默">轻松风趣</option></select></div>
+</div>
+<label>📝 你们的故事（选填）</label>
+<textarea id="story" placeholder="如：在图书馆认识的，他那天穿了白色衬衫…"></textarea>
+<button class="btn-gen" id="genBtn">✨ 生成婚礼词</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#f472b6;font-weight:600;margin-bottom:12px">💝 你的婚礼词</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制内容</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const tones={
+'深情':{o:'（深情版）',love:'从认识你的那天起，我就知道，我要找的人是你。',vow:'我愿意用一生守护你，在你需要时成为你的港湾；在你快乐时，做第一个为你鼓掌的人。',end:'我爱你，胜过昨天，更胜明天。'},
+'温暖':{o:'（温暖版）',love:'遇见你之前，我总觉得生活就该按部就班；遇见你之后，才知道"平淡"原来可以这么甜。',vow:'我承诺为我们的家添一把筷子、一盏灯、一颗糖，把日子过成你最喜欢的样子。',end:'谢谢你选择我，成为我余生最温柔的确定。'},
+'幽默':{o:'（幽默版）',love:'我们在一起的这些年，最大的成就就是在"谁洗碗"这件事上达成了初步共识（进度还在推进）。',vow:'我保证：以后看球是爱好，微信置顶是老婆；重要的日子绝不忘记——当然，如果忘了，请你用更贵的口红提醒我。',end:'余生请多指教，我先磕个头！'}
+};
+const witness={
+'证婚词':['各位来宾，大家好！今天，我十分荣幸受邀担任两位新人的证婚人。','在座共同见证：新郎X同志与新娘X同志，经自由恋爱，结为合法夫妻。','希望你们在未来的日子里，互敬互爱、互谅互让，共同经营美好的小家庭。','我在此郑重宣布：你们是合法夫妻！祝百年好合、永结同心！'],
+'敬酒词':['各位亲朋好友，感谢大家百忙之中来见证孩子们的婚礼！','他们从相识相知到携手走进婚姻殿堂，作为父母，我们心里满是欣慰与祝福。','感谢你们多年的照顾，今天这一杯，敬大家的到来，也敬孩子们的幸福。','祝两个孩子和和美美、儿孙满堂（笑），也祝大家万事顺遂！']
+};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 婚礼誓言生成器 | AgentGongju.com'))return;
+const type=document.getElementById('type').value;
+const years=document.getElementById('years').value;
+const tone=document.getElementById('tone').value;
+const story=document.getElementById('story').value.trim();
+const t=tones[tone];
+let out='';
+if(type==='婚礼誓言'){
+out+=(tone==='幽默'?'（新郎/新娘婚礼誓言 · 幽默版）':'婚礼誓言 · '+tone+'版')+'\n\n';
+out+='亲爱的【对方的名字】：\n\n';
+out+='今天，当着所有我爱的人在座，我想对你说——\n\n';
+if(story)out+='还记得'+(years==='1-3年'?'我们初遇的那天':'这'+(years==='4-8年'?'几年':'十年'))+'吗？'+(story.length>0?story.split('\n')[0].slice(0,50):'')+'\n\n';
+out+=t.love+'\n\n';
+out+='今天，我郑重向你承诺：\n'+t.vow+'\n\n';
+out+=(years==='9年以上'?'时间证明了我对你的选择，余生也请你继续指教。':'')+'\n';
+out+=t.end;
+}else if(type==='证婚词'){
+out+=witness['证婚词'].join('\n\n');
+}else{
+out+=witness['敬酒词'].join('\n\n');
+}
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 内容已复制，祝幸福久久！'))}
+</script>
+</body>
+</html>

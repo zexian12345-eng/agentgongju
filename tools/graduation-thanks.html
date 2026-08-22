@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 毕业致谢词生成器 | AgentGongju.com</title>
+<meta name="description" content="毕业论文致谢、毕业典礼致辞、朋友圈毕业感言，一键生成情真意切的毕业话语">
+<meta name="keywords" content="毕业致谢,毕业论文致谢,毕业感言,毕业致辞,致老师,致谢词">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:60px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🎓 AI 毕业致谢词生成器</h1><p>把那些说不出口的感谢，写成一封封动人的信</p></div>
+
+<div class="card">
+<label>📄 致谢场景</label>
+<select id="type"><option value="论文致谢" selected>毕业论文致谢</option><option value="典礼致辞">毕业典礼致辞</option><option value="朋友圈">朋友圈/社交平台告别</option></select>
+<div class="param-row">
+<div><label>🎓 学历阶段</label>
+<select id="degree"><option value="本科" selected>本科</option><option value="硕士">硕士</option><option value="博士">博士</option><option value="大专">大专</option><option value="高中">高中</option></select></div>
+<div><label>🎨 语调</label>
+<select id="tone"><option value="真挚" selected>真挚朴实</option><option value="深情">深情走心</option><option value="幽默">轻松幽默</option></select></div>
+</div>
+<label>🌟 特别想感谢的人（选填，用、分隔）</label>
+<input type="text" id="thanks" placeholder="如：导师王老师、室友小李、爸妈">
+<button class="btn-gen" id="genBtn">✨ 生成致谢词</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#8b5cf6;font-weight:600;margin-bottom:12px">📜 你的致谢词</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制致谢词</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const degreeTx={
+'博士':'回望读博的这些年，从晨光初露的实验室到深夜亮着的屏幕，每一段经历都塑造了现在的我。',
+'硕士':'两年多的硕士生涯转瞬而逝，那些在图书馆、机房并肩作战的日子，成为我最好的时光。',
+'本科':'四年本科时光如白驹过隙，从入学时的懵懂到如今的从容，每一步都离不开身边人的帮助。',
+'大专':'三年的学习生活虽短暂，却让我完成了从学生到职业人的蜕变。',
+'高中':'三年高中时光，是青春最炽热的章节，让我学会了坚持与热爱。'
+};
+const opens={
+'论文致谢':['本论文的完成，离不开许多人的帮助与支持。','在此，谨向所有给予我关心和指导的人致以最诚挚的谢意。'],
+'典礼致辞':['各位老师、同学们，大家好！今天能站在这里，我无比荣幸。','回望来路，最想说的就是"谢谢"二字。'],
+'朋友圈':['终于毕业了！谢谢这四（三/二/五）年遇见的每一个人。','致我最喜欢的校园时光，道一声再见与感谢。']
+};
+const tones={
+'真挚':{t:'师者——感谢我的导师在选题、框架与逐稿往返中不厌其烦的指导，您的严谨让我学会"认真"二字的分量。',f:'同窗——那些一起熬夜、一起吃饭、互相打气的日子，会是我永远珍贵的收藏。',family:'家人——谢谢你们始终是我最踏实的退路，从不多问"为什么"，只默默做我的后盾。'},
+'深情':{t:'尊敬的导师，您不仅教会我怎么做学术，更教会我怎么做一个有人格、有温度的知识分子。您深夜回复的每一封邮件，我都记得。',f:'亲爱的朋友们，我们一起走过的青春会一直发光。愿我们散作满天星，仍记得彼此的名字。',family:'爸爸妈妈，这些年你们把"心酸"藏起来，只把"温暖"递给我。等我长大，换我来保护你们。'},
+'幽默':{t:'致导师：感谢您在八百次改稿中仍保持着耐心（和一点点嫌弃），学生不才，全靠您捞。',f:'致室友：感谢你们容忍我凌晨的灯和冬天的空调之争。愿友谊长存，改天约饭！',family:'致爸妈：终于"毕业"了可以自力更生了，不过放心吧，我还会经常回来蹭饭的！'}
+};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 毕业致谢词生成器 | AgentGongju.com'))return;
+const type=document.getElementById('type').value;
+const degree=document.getElementById('degree').value;
+const tone=document.getElementById('tone').value;
+const thanks=document.getElementById('thanks').value.trim();
+const t=tones[tone];
+let out='';
+if(type==='论文致谢'){
+out+='致 谢\n\n';
+out+='本论文的完成，离不开许多人的帮助与支持。\n\n';
+out+=t.t+'\n\n';
+out+=t.f+'\n\n';
+out+=t.family+'\n\n';
+if(thanks){const list=thanks.split(/[、，,]+/).filter(x=>x.trim());out+='特别致谢：'+list.join('、')+'。愿你们一切安好。\n\n';}
+out+='谢谢每一位在我求学路上停驻片刻的人。你们赋予这段旅程的意义，远超过论文本身。';
+}else if(type==='典礼致辞'){
+out+='毕业典礼致辞\n\n';
+out+=opens['典礼致辞'][1]+'\n\n';
+out+=t.t+'\n\n';
+out+=t.f+'\n\n';
+out+='我'+degreeTx[degree]+'\n\n';
+out+='最后，'+(tone==='幽默'?'愿大家都前程似锦，我是说——真的那种！':'愿我们不负时光，各自发光。')+'';
+}else{
+out+='🎓 '+(degree==='高中'?'高中':'大学')+'毕业啦！\n\n';
+out+=degreeTx[degree]+'\n\n';
+out+=t.f+'\n\n';
+out+=t.family+'\n\n';
+out+='从今天起，我们就是'+(degree==='高中'?'大学生':'社会人')+'了。再见，我的校园。你好，我的未来！\n\n#毕业季 #青春不散场';
+}
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 致谢词已复制！'))}
+</script>
+</body>
+</html>

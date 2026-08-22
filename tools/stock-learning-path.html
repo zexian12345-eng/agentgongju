@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 股票入门学习路径 | AgentGongju.com</title>
+<meta name="description" content="零基础学炒股？从开户到技术分析，生成科学有序的股票投资入门学习路径，避开新手常踩的坑">
+<meta name="keywords" content="股票入门,炒股学习,A股,投资理财,技术分析,K线,新手炒股">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📈 AI 股票入门学习路径</h1><p>从小白到入门，科学规划你的投资学习之路</p></div>
+
+<div class="card">
+<label>🎓 当前水平</label>
+<select id="level"><option value="零基础" selected>零基础（完全没接触过）</option><option value="了解概念">听说过一些概念</option><option value="已入市">已开户但操作不多</option></select>
+<div class="param-row">
+<div><label>⏰ 每周可投入</label>
+<select id="time"><option value="1-2小时">1-2小时</option><option value="3-5小时" selected>3-5小时</option><option value="10小时以上">10小时以上/专职</option></select></div>
+<div><label>💼 投资风格意向</label>
+<select id="style"><option value="长期价值" selected>长期价值投资</option><option value="短线交易">短线/波段交易</option><option value="稳健理财">稳健理财（低风险）</option></select></div>
+</div>
+<label>📝 其他说明（选填）</label>
+<textarea id="extra" placeholder="如：主要想看A股，预算5万左右…"></textarea>
+<button class="btn-gen" id="genBtn">✨ 生成学习路径</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#4ade80;font-weight:600;margin-bottom:12px">📚 定制学习路径</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制学习路径</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const styleAdvice={
+'长期价值':{skill:'财报分析、ROE、PE/PB、护城河、行业研究',act:'跟着好公司长持仓，做时间的朋友'},
+'短线交易':{skill:'K线、MACD、KDJ、量价关系、情绪周期、止损纪律',act:'复盘每日行情，记录每一笔交易的盈亏'},
+'稳健理财':{skill:'指数基金定投、债股配比、风险控制',act:'ETF定投（宽基/红利），波动小才是王道'}
+};
+const weekTips={
+'1-2小时':['每周看1篇投资科普 + 1次实操观察'],'3-5小时':['每周2-3小时课程 + 1-2小时复盘/模拟'],'10小时以上':['可系统学习 + 每日复盘 + 参与实盘（小仓位）']
+};
+const levels={
+'零基础':{'month1':'第1个月 · 认知搭建\n· 弄懂开户流程（券商APP即可，佣金选万2.5以下）\n· 掌握基本术语：K线、均线、涨停、T+1、印花税\n· 学会看：上证指数、个股F10资料\n· 用模拟盘（同花顺/券商都有）随便点点熟悉界面','month2':'第2个月 · 框架学习\n· 通读一本《穷查理宝典》或《漫步华尔街》\n· 学会查财务报表（看ROE/净利润/负债率）\n· 建立"我为什么买它"的思考框架','month3':'第3个月 · 模拟实战\n· 模拟盘做3-5笔模拟交易，记录买卖理由\n· 每天记录大盘涨跌，感受市场情绪','month4':'第4-6个月 · 小仓位实盘\n· 用闲钱（不超过总资产的10%）试水\n· 每次买卖写交易笔记\n· 前三笔交易亏了不要慌，这是学费'},
+'了解概念':{'month1':'第1个月 · 补齐知识\n· 系统学习指数基金与ETF入门\n· 掌握大盘与板块轮动的基本逻辑','month2':'第2个月 · 建立体系\n· 选择1个持久的策略（价值/成长/指数）\n· 学习仓位管理和止损线','month3':'第3个月 · 实盘优化\n· 模拟盘与实盘对照复盘\n· 记录自己常犯的错，归纳"错误清单"'},
+'已入市':{'month1':'第1个月 · 复盘以往交易\n· 翻出以前所有交易记录，算总盈亏\n· 找出最多亏损的共同原因（追涨？频繁操作？）','month2':'第2个月 · 跑赢基准\n· 将你的策略与指数ETF对比\n· 若跑不赢指数，不如直接定投ETF','month3':'第3个月 · 纪律化\n· 设定明确的买入/卖出/止损规则\n· 每周固定时间做周复盘'}
+};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 股票入门学习路径 | AgentGongju.com'))return;
+const level=document.getElementById('level').value;
+const time=document.getElementById('time').value;
+const style=document.getElementById('style').value;
+const extra=document.getElementById('extra').value.trim();
+const lv=levels[level];
+const st=styleAdvice[style];
+const wt=weekTips[time];
+let out='【'+level+' · '+time+'/周 · '+style+'】\n\n';
+if(extra)out+='你的说明：'+extra+'\n\n';
+out+='— 🎯 核心学习重点 —\n要掌握：'+st.skill+'\n行动思路：'+st.act+'\n\n';
+out+='— 📖 分阶段学习路径 —\n\n';
+out+=lv['month1']+'\n\n';
+out+=lv['month2']+'\n\n';
+out+=lv['month3']+'\n\n';
+if(lv['month4'])out+=lv['month4']+'\n\n';
+out+='— ⏰ 每周安排 —\n'+wt[0]+'\n\n';
+out+='— 🚨 新手避雷清单 —\n1. 不要借钱/加杠杆炒股\n2. 不要跟着"大V荐股"无脑买\n3. 不要满仓单只票\n4. 不要（高频）日内做T\n5. 任何"保本高收益"都是骗局\n\n⚠️ 风险提示：股市有风险，投资需谨慎。本工具仅提供学习路径参考，不构成投资建议。';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 学习路径已复制，稳住慢慢来！'))}
+</script>
+</body>
+</html>

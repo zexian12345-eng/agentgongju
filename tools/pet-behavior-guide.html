@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 宠物行为纠正助手 | AgentGongju.com</title>
+<meta name="description" content="狗狗乱叫拆家、猫咪抓沙发咬人？根据问题场景生成科学的正向训练方案，用爱和理解重塑好习惯">
+<meta name="keywords" content="宠物行为,狗狗训练,猫咪行为,拆家,乱尿,咬人,宠物训练,训犬">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🐶 AI 宠物行为纠正助手</h1><p>不打不骂，用科学方法重建默契</p></div>
+
+<div class="card">
+<label>🐾 宠物类型</label>
+<select id="pet"><option value="狗狗" selected>🐕 狗狗</option><option value="猫咪">🐈 猫咪</option></select>
+<div class="param-row">
+<div><label>⚠️ 问题行为</label>
+<select id="issue"><option value="乱叫" selected>乱叫/吠叫</option><option value="拆家">拆家/咬坏东西</option><option value="乱尿">乱尿/标记</option><option value="咬人">扑咬/抓挠</option><option value="分离焦虑">分离焦虑（一出门就叫）</option></select></div>
+<div><label>🎂 宠龄</label>
+<select id="age"><option value="幼年期">幼年期（0-1岁）</option><option value="成年期" selected>成年期（1-7岁）</option><option value="老年期">老年期（7岁以上）</option></select></div>
+</div>
+<label>📝 补充描述（选填）</label>
+<textarea id="extra" placeholder="如：平时上班没人，一回家就翻垃圾桶…"></textarea>
+<button class="btn-gen" id="genBtn">✨ 生成训练方案</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a78bfa;font-weight:600;margin-bottom:12px">🐾 行为矫正方案</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制方案</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const plans={
+'乱叫':{cause:'乱叫通常是焦虑（分离）、领土守卫、无聊、或社交需求未被满足的表现。',train:['1. 找出诱因：观察它在什么场景下叫（门外声/陌生人/你出门时）\n2. "安静"口令：当它叫时平静说"安静",停下就给奖励\n3. 脱敏训练：让它适应诱因频率逐渐升高\n4. 提供充足运动：每天遛够，消耗多余精力'],avoid:['× 打骂（会让它更焦虑）\n× 在它叫时开门（会强化"叫=开门"）']},
+'拆家':{cause:'拆家多为精力过剩、分离焦虑或磨牙期的表现，不是"故意"搞破坏。',train:['1. 充足运动：每天至少遛30-60分钟（大型犬更多）\n2. 提供咀嚼玩具：牛骨、Kong零食球、磨牙棒\n3. "替换法"：看见它咬不该咬的东西，用玩具替换并奖励\n4. 离开前布置"任务"：塞零食的漏食球让它专注'],avoid:['× 回来后大声斥责（它早已忘记几小时前做过什么）\n× 把"咬"和"玩"混为一谈——区分正误']},
+'乱尿':{cause:'乱尿可能是疾病（尿路感染）、发情标记、没教好或环境压力导致，先排查生理原因。',train:['1. 先看医生排除疾病\n2. 固定排泄区：带它去定点区域，成功后立刻奖励\n3. 掌握规律：吃喝后15分钟带它去室外/猫砂盆\n4. 清洁旧气味：用酶清洁剂去除残留气味\n5. 增加外出频率：上班族午休最好能回一次'],avoid:['× 用暴力按压它的头（会导致更隐蔽的乱尿）\n× 处罚发生在"发现时"，往往不是"发生时"']},
+'咬人':{cause:'扑咬/抓挠多是"玩闹没有边界"或防御性反应，需要建立清晰的规则。',train:['1. "停止"指令：它咬手时，立即停止玩耍+转身背对30秒\n2. "咬玩具"替代：它想咬时，把玩具塞进它嘴里\n3. 修剪指甲（猫）减少抓伤\n4. 增加互动训练：用响片标记"松手/停"的行为'],avoid:['× 用手去逗猎物（会让它以为手是可以咬的）\n× 大声尖叫（狗狗可能以为你在和它玩）']},
+'分离焦虑':{cause:'分离焦虑多出现于太粘人的狗/猫，主人在出门前后过度安抚会加重。',train:['1. "来来去去"练习：短时间出门（5分钟）→回来不夸张迎接\n2. 逐渐拉长离开时间：5分钟→10分钟→30分钟→1小时\n3. 离开前10分钟布置"任务"（漏食球/啃咬玩具）\n4. 不追着告别：出门前不拥抱不逗它，轻描淡写出门\n5. 可装摄像头观察它的真实反应'],avoid:['× 出门前反复说"别难过别难过"（增加焦虑）\n× 回来后马上安抚道歉']}
+};
+const ageNote={
+'幼年期':'幼年期是习惯养成的黄金期，训练效果最好，但要耐心、循序渐进。',
+'成年期':'成年期习惯已定型，矫正需要更多重复和耐心，通常需坚持2-4周。',
+'老年期':'注意区分是疾病/退化性问题行为还是习惯问题，多借助兽医判断，训练强度要降低。'
+};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 宠物行为纠正助手 | AgentGongju.com'))return;
+const pet=document.getElementById('pet').value;
+const issue=document.getElementById('issue').value;
+const age=document.getElementById('age').value;
+const extra=document.getElementById('extra').value.trim();
+const p=plans[issue];
+let out='【'+pet+' · '+issue+' · '+age+'】\n\n';
+if(extra)out+='你描述：'+extra+'\n\n';
+out+='— 🔍 行为原因分析 —\n'+p.cause+'\n\n';
+out+='— 🎯 正向训练步骤 —\n'+p.train.join('\n')+'\n\n';
+out+='— ⛔ 常见误区避免 —\n'+p.avoid+'\n\n';
+out+='— '+age+'特别提醒 —\n'+ageNote[age]+'\n\n';
+out+='📌 通用要点\n· 全程用"奖励好行为、忽视坏行为"做正向强化\n· 每次训练5-10分钟，每天2-3次，别一次练太久\n· 全家口径一致，说"安静"就都用这个词\n· 观察2-4周，若问题未改善建议咨询专业宠物行为师或兽医\n\n🌈 耐心是训练最好的伙伴，你家小可爱值得被温柔以待。';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 训练方案已复制，坚持就是胜利！'))}
+</script>
+</body>
+</html>

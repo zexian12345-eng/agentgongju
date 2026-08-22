@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI加薪升职申请书生成器 | AgentGongju.com</title>
+<meta name="description" content="把你想表达的贡献与诉求，变成一封专业、得体、有说服力的加薪或升职申请书，提高职场沟通的成功率。">
+<meta name="keywords" content="加薪申请,升职申请,调薪申请书,涨薪,职场沟通,晋升述职">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+textarea,input[type=text],select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:70px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📈 AI加薪升职申请书</h1><p>底气要足，语气要得体，让诉求被认真对待</p></div>
+
+<div class="card">
+<div class="param-grid">
+<div><label>👤 你的姓名</label><input type="text" id="name" placeholder="你的名字"></div>
+<div><label>📮 收件人（领导/HR）</label><input type="text" id="to" placeholder="尊敬的XX领导"></div>
+</div>
+<div class="param-grid">
+<div><label>🎯 申请类型</label>
+<select id="type"><option>加薪申请</option><option>升职申请</option><option>加薪+升职</option></select></div>
+<div><label>⏳ 入职/任职时长</label>
+<input type="text" id="tenure" placeholder="例如：入职已满2年"></div>
+</div>
+<label>🏆 近期的突出贡献（可写多条）</label>
+<textarea id="contribution" placeholder="例如：主导了核心项目上线，营收提升25%；带教3名新人；多次承接紧急任务"></textarea>
+<button class="btn-gen" id="genBtn">📝 生成申请书</button>
+<label style="margin-top:12px;color:#64748b;font-size:.8rem">* 申请书立场温和、有理有据，最终沟通请结合实际语境</label>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">📈 加薪/升职申请书</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制申请书</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI加薪升职申请书生成器 | AgentGongju.com'))return;
+const name=document.getElementById('name').value.trim()||'本人';
+const to=document.getElementById('to').value.trim()||'尊敬的领导';
+const type=document.getElementById('type').value;
+const tenure=document.getElementById('tenure').value.trim()||'入职至今';
+const contrib=document.getElementById('contribution').value.trim();
+if(!contrib){alert('请填写你的突出贡献');return;}
+const cList=contrib.split(/[；;，,]/).map(s=>s.trim()).filter(Boolean);
+const d=new Date();
+const date=d.getFullYear()+'年'+(d.getMonth()+1)+'月'+d.getDate()+'日';
+let out=''+to+'：\n\n您好！我是'+name+'，'+tenure+'。冒昧打扰，想就个人的工作与发展问题，向您坦诚沟通：\n\n';
+out+='一、任职以来的工作回顾\n自加入团队以来，我始终以认真负责的态度投入工作，主动承担、持续成长。'+(cList.length?'特别是近期：':'')+'\n';
+cList.forEach((c,i)=>{out+=(i+1)+'. '+c+'\n';});
+out+='\n二、申请理由\n';
+out+='基于以上工作表现与持续贡献，并结合目前承担的责任范围与市场水平，'+(type.includes('加薪')?'我诚恳地提出调薪申请':'我诚恳地提出岗位晋升的申请')+'。'+(type==='加薪+升职'?'希望能在职级与薪酬上获得相应的认可。':'');
+out+='我理解公司有完善的考核体系，也感谢平台给予的每一次锻炼机会。我会以更饱满的状态投入后续工作，持续创造价值。\n\n';
+out+='三、后续计划\n如蒙考虑，我将继续在负责领域深挖专业、带好团队/项目，配合公司目标稳步推进，力争交出更好的成绩。\n\n';
+out+='再次感谢您抽出时间阅读。期待您的反馈，也随时愿意与您当面详细沟通。\n\n祝工作顺利，万事顺意！\n\n此致\n敬礼！\n\n'+name+'\n'+date;
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 申请书已复制！'))}
+</script>
+</body>
+</html>
