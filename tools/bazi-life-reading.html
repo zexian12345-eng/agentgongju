@@ -213,7 +213,7 @@ const ZHI_WX = {子:"Water",丑:"Earth",寅:"Wood",卯:"Wood",辰:"Earth",巳:"F
 const YY_EN = {阳:"Yang",阴:"Yin"};
 const NAYIN_EN = {海中金:"Sea Metal",炉中火:"Furnace Fire",大林木:"Forest Wood",路旁土:"Road Earth",剑锋金:"Sword Metal",山头火:"Hill Fire",涧下水:"Ravine Water",城头土:"City Earth",白蜡金:"Wax Metal",杨柳木:"Willow Wood",泉中水:"Spring Water",屋上土:"Roof Earth",霹雳火:"Thunder Fire",松柏木:"Pine Wood",长流水:"Flowing Water",沙中金:"Sand Metal",山下火:"Mountain Fire",平地木:"Plain Wood",壁上土:"Wall Earth",金箔金:"Gold Foil Metal",覆灯火:"Lamp Fire",天河水:"Sky River Water",大驿土:"Highway Earth",钗钏金:"Hairpin Metal",桑柘木:"Mulberry Wood",大溪水:"Stream Water",沙中土:"Sand Earth",天上火:"Sky Fire",石榴木:"Pomegranate Wood",大海水:"Ocean Water"};
 const SS_EN = {比肩:"Peer (Bi Jian)",劫财:"Rob Wealth (Jie Cai)",食神:"Eating God (Shi Shen)",伤官:"Hurting Officer (Shang Guan)",偏财:"Indirect Wealth (Pian Cai)",正财:"Direct Wealth (Zheng Cai)",偏印:"Indirect Resource (Pian Yin)",正印:"Direct Resource (Zheng Yin)",七杀:"Seven Killings (Qi Sha)",正官:"Direct Officer (Zheng Guan)"};
-const SHEN_EN = {天乙贵人:"Heavenly Noble",文昌:"Wen Chang (Scholar Star)",桃花:"Peach Blossom (Romance)",驿马:"Travel Horse (Movement)",华盖:"Hua Gai (Solitude & Wisdom)",魁罡:"Kui Gang (Firm Will)",红鸾:"Hong Luan (Wedding Star)",羊刃:"Yang Ren (Blade Star)",将星:"General Star",丧门:"Sang Men (Mourning)",吊客:"Diao Ke (Bereavement)",月德:"Monthly Virtue"};
+const SHEN_EN = {天乙贵人:"Heavenly Noble",文昌:"Wen Chang (Scholar Star)",桃花:"Peach Blossom (Romance)",驿马:"Travel Horse (Movement)",华盖:"Hua Gai (Solitude & Wisdom)",魁罡:"Kui Gang (Firm Will)",红鸾:"Hong Luan (Wedding Star)",羊刃:"Yang Ren (Blade Star)",将星:"General Star",丧门:"Sang Men (Mourning)",吊客:"Diao Ke (Bereavement)",月德:"Monthly Virtue",天德:"Heavenly Virtue",金舆:"Golden Chariot",孤辰:"Solitary Star",寡宿:"Widowhood Star"};
 const REL_EN = {冲:"Clash",合:"Combination",刑:"Punishment",害:"Harm",破:"Break"};
 const SANHE_EN = {水局:"Water Bureau",火局:"Fire Bureau",金局:"Metal Bureau",木局:"Wood Bureau"};
 const LUNAR_MONTH_EN = {正:"1st",二:"2nd",三:"3rd",四:"4th",五:"5th",六:"6th",七:"7th",八:"8th",九:"9th",十:"10th",冬:"11th",腊:"12th"};
@@ -302,6 +302,8 @@ const EN_MAP = {
   "透干取格":"revealed in stems",
   "按本气":"by primary qi",
   "取格依据：《子平真诠》以月令本气藏干透出天干者为格（本气优先），不透干则按本气取；喜忌按八格总表。":"Method per Zi Ping Zhen Quan: the pattern is set by the Month Branch's primary hidden stem when it appears among the stems (primary qi first); if not revealed, use the primary qi. Favorable/Avoid follows the Eight Patterns table.",
+  "🌡️ 调候用神（据《穷通宝鉴》通行版本）":"🌡️ Seasonal Adjustors (per Qiong Tong Bao Jian)",
+  "调候依据：《穷通宝鉴》以月令气候定寒暖燥湿，先调候后扶抑；十干各月用神表为通行版本，流派间略有出入，本卡仅作命局特点提示，不作硬性断吉凶。":"Reference: Qiong Tong Bao Jian adjusts warmth/moisture by month climate — season first, balance second. The per-stem monthly table is the common edition (schools differ slightly); this card is only a chart-character hint, not a hard judgment.",
   "🚀 起运与大运":"🚀 Luck Cycles (Da Yun)",
   "阳男/阴女顺排":"Yang male / Yin female — forward order",
   "阴男/阳女逆排":"Yin male / Yang female — reverse order",
@@ -563,7 +565,11 @@ const EN_PLAIN_SHEN = {
   "吊客":"Diao Ke also relates to bereavement — be alert for illness or loss among relatives.",
   "羊刃":"Blade is a fierce star: injury, blood, accidents, hot temper, and conflict.",
   "天乙贵人":"Heavenly Noble is the great helper: someone pulls you through at the critical moment — disaster turns to fortune.",
-  "华盖":"Hua Gai = solitude and wisdom: good for quiet study and thought, but you may feel lonely."
+  "华盖":"Hua Gai = solitude and wisdom: good for quiet study and thought, but you may feel lonely.",
+  "天德贵人":"Heavenly Virtue is a benevolent blessing: few disasters in life, troubles often dissolve with a helper's aid — kindness widens your path.",
+  "金舆":"Golden Chariot = a dignified, steady life: smooth travel and errands, possibly support from your spouse's family.",
+  "孤辰":"Solitary Star: independent and quiet-loving — comfortable alone, but kinship bonds are thinner; nurture relationships actively.",
+  "寡宿":"Widowhood Star: rich inner world but prone to loneliness — stay socially active to dissolve it."
 };
 
 // 中国主要城市英文名
@@ -963,7 +969,7 @@ const SHENG={木:"火",火:"土",土:"金",金:"水",水:"木"};
 const KE={木:"土",土:"水",水:"火",火:"金",金:"木"};
 function shishen(dayGan,otherGan){if(dayGan===otherGan)return"比肩";const dw=WX_GAN[dayGan],ow=WX_GAN[otherGan];const same=YY_GAN[dayGan]===YY_GAN[otherGan];if(dw===ow)return same?"比肩":"劫财";if(SHENG[dw]===ow)return same?"食神":"伤官";if(KE[dw]===ow)return same?"偏财":"正财";if(SHENG[ow]===dw)return same?"偏印":"正印";if(KE[ow]===dw)return same?"七杀":"正官";return"?";}
 function sanheGroup(z){for(const k of["申子辰","寅午戌","巳酉丑","亥卯未"])if(k.includes(z))return k;return null;}
-function shensha(dg,dz,yg,yz,mz,hz){const out={};const tianyi={甲:["丑","未"],戊:["丑","未"],庚:["丑","未"],乙:["子","申"],己:["子","申"],丙:["亥","酉"],丁:["亥","酉"],壬:["卯","巳"],癸:["卯","巳"],辛:["午","寅"]};for(const[g,src]of[[dg,"日"],[yg,"年"]])for(const[z,col]of[[dz,"日"],[mz,"月"],[hz,"时"],[yz,"年"]])if(tianyi[g]&&tianyi[g].includes(z))out["天乙贵人("+src+"干起)"]=col+"支";const taohua={"申子辰":"酉","寅午戌":"卯","巳酉丑":"午","亥卯未":"子"};const yima={"申子辰":"寅","寅午戌":"申","巳酉丑":"亥","亥卯未":"巳"};const huagai={"申子辰":"辰","寅午戌":"戌","巳酉丑":"丑","亥卯未":"未"};const jiangxing={"申子辰":"子","寅午戌":"午","巳酉丑":"酉","亥卯未":"卯"};for(const[z,src]of[[yz,"年"],[dz,"日"]]){const grp=sanheGroup(z);if(grp){for(const[tz,nm]of[[taohua[grp],"桃花"],[yima[grp],"驿马"],[huagai[grp],"华盖"],[jiangxing[grp],"将星"]])for(const[z2,col]of[[dz,"日"],[mz,"月"],[hz,"时"],[yz,"年"]])if(z2===tz)out[nm+"("+src+"支起)"]=col+"支";}}const yangren={甲:"卯",丙:"午",戊:"午",庚:"酉",壬:"子"};if(yangren[dg])for(const[z2,col]of[[dz,"日"],[mz,"月"],[hz,"时"],[yz,"年"]])if(z2===yangren[dg])out["羊刃(日干起)"]=col+"支";const dayIdx=encodeGZ(dg,dz);const kong=[((Math.floor(dayIdx/10)*10)+10)%12,((Math.floor(dayIdx/10)*10)+11)%12];for(const[z2,col]of[[yz,"年"],[mz,"月"],[dz,"日"],[hz,"时"]])if(kong.includes(zhiIndex(z2)))out["空亡(日柱旬)"]=col+"支";const wenchang={甲:"巳",乙:"午",丙:"申",丁:"酉",戊:"申",己:"酉",庚:"亥",辛:"子",壬:"寅",癸:"卯"};if(wenchang[dg])for(const[z2,col]of[[dz,"日"],[mz,"月"],[hz,"时"],[yz,"年"]])if(z2===wenchang[dg])out["文昌(日干起)"]=col+"支";const hongluan={子:"卯",丑:"寅",寅:"丑",卯:"子",辰:"亥",巳:"戌",午:"酉",未:"申",申:"未",酉:"午",戌:"巳",亥:"辰"};const hl=hongluan[yz];for(const[z2,col]of[[dz,"日"],[mz,"月"],[hz,"时"],[yz,"年"]])if(z2===hl)out["红鸾(年支起)"]=col+"支";const sm=ZHI[(zhiIndex(yz)+2)%12],dk=ZHI[(zhiIndex(yz)+10)%12];for(const[z2,col]of[[yz,"年"],[mz,"月"],[dz,"日"],[hz,"时"]])if(z2===sm)out["丧门(年支起)"]=col+"支";for(const[z2,col]of[[yz,"年"],[mz,"月"],[dz,"日"],[hz,"时"]])if(z2===dk)out["吊客(年支起)"]=col+"支";const yuede={寅:"丙",午:"丙",戌:"丙",申:"壬",子:"壬",辰:"壬",亥:"甲",卯:"甲",未:"甲",巳:"庚",酉:"庚",丑:"庚"};if(yuede[mz])for(const[g2,col]of[[dg,"日"],[yg,"年"]])if(g2===yuede[mz])out["月德(月支起)"]=col+"干";if([["庚","辰"],["庚","戌"],["壬","辰"],["戊","戌"]].some(x=>x[0]===dg&&x[1]===dz))out["魁罡(日柱)"]="日柱";return out;}
+function shensha(dg,dz,yg,yz,mz,hz){const out={};const tianyi={甲:["丑","未"],戊:["丑","未"],庚:["丑","未"],乙:["子","申"],己:["子","申"],丙:["亥","酉"],丁:["亥","酉"],壬:["卯","巳"],癸:["卯","巳"],辛:["午","寅"]};for(const[g,src]of[[dg,"日"],[yg,"年"]])for(const[z,col]of[[dz,"日"],[mz,"月"],[hz,"时"],[yz,"年"]])if(tianyi[g]&&tianyi[g].includes(z))out["天乙贵人("+src+"干起)"]=col+"支";const taohua={"申子辰":"酉","寅午戌":"卯","巳酉丑":"午","亥卯未":"子"};const yima={"申子辰":"寅","寅午戌":"申","巳酉丑":"亥","亥卯未":"巳"};const huagai={"申子辰":"辰","寅午戌":"戌","巳酉丑":"丑","亥卯未":"未"};const jiangxing={"申子辰":"子","寅午戌":"午","巳酉丑":"酉","亥卯未":"卯"};for(const[z,src]of[[yz,"年"],[dz,"日"]]){const grp=sanheGroup(z);if(grp){for(const[tz,nm]of[[taohua[grp],"桃花"],[yima[grp],"驿马"],[huagai[grp],"华盖"],[jiangxing[grp],"将星"]])for(const[z2,col]of[[dz,"日"],[mz,"月"],[hz,"时"],[yz,"年"]])if(z2===tz)out[nm+"("+src+"支起)"]=col+"支";}}const yangren={甲:"卯",丙:"午",戊:"午",庚:"酉",壬:"子"};if(yangren[dg])for(const[z2,col]of[[dz,"日"],[mz,"月"],[hz,"时"],[yz,"年"]])if(z2===yangren[dg])out["羊刃(日干起)"]=col+"支";const dayIdx=encodeGZ(dg,dz);const kong=[((Math.floor(dayIdx/10)*10)+10)%12,((Math.floor(dayIdx/10)*10)+11)%12];for(const[z2,col]of[[yz,"年"],[mz,"月"],[dz,"日"],[hz,"时"]])if(kong.includes(zhiIndex(z2)))out["空亡(日柱旬)"]=col+"支";const wenchang={甲:"巳",乙:"午",丙:"申",丁:"酉",戊:"申",己:"酉",庚:"亥",辛:"子",壬:"寅",癸:"卯"};if(wenchang[dg])for(const[z2,col]of[[dz,"日"],[mz,"月"],[hz,"时"],[yz,"年"]])if(z2===wenchang[dg])out["文昌(日干起)"]=col+"支";const hongluan={子:"卯",丑:"寅",寅:"丑",卯:"子",辰:"亥",巳:"戌",午:"酉",未:"申",申:"未",酉:"午",戌:"巳",亥:"辰"};const hl=hongluan[yz];for(const[z2,col]of[[dz,"日"],[mz,"月"],[hz,"时"],[yz,"年"]])if(z2===hl)out["红鸾(年支起)"]=col+"支";const sm=ZHI[(zhiIndex(yz)+2)%12],dk=ZHI[(zhiIndex(yz)+10)%12];for(const[z2,col]of[[yz,"年"],[mz,"月"],[dz,"日"],[hz,"时"]])if(z2===sm)out["丧门(年支起)"]=col+"支";for(const[z2,col]of[[yz,"年"],[mz,"月"],[dz,"日"],[hz,"时"]])if(z2===dk)out["吊客(年支起)"]=col+"支";const yuede={寅:"丙",午:"丙",戌:"丙",申:"壬",子:"壬",辰:"壬",亥:"甲",卯:"甲",未:"甲",巳:"庚",酉:"庚",丑:"庚"};if(yuede[mz])for(const[g2,col]of[[dg,"日"],[yg,"年"]])if(g2===yuede[mz])out["月德(月支起)"]=col+"干";const tiande={寅:"丁",卯:"申",辰:"壬",巳:"辛",午:"亥",未:"甲",申:"癸",酉:"寅",戌:"丙",亥:"乙",子:"巳",丑:"庚"};const td=tiande[mz];if(td){const isGan="甲乙丙丁戊己庚辛壬癸".includes(td);if(isGan){for(const[g2,col]of[[dg,"日"],[yg,"年"]])if(g2===td)out["天德(月支起)"]=col+"干";}else{for(const[z2,col]of[[dz,"日"],[mz,"月"],[hz,"时"],[yz,"年"]])if(z2===td)out["天德(月支起)"]=col+"支";}}const jinyu={甲:"辰",乙:"巳",丙:"未",戊:"未",丁:"申",己:"申",庚:"戌",辛:"亥",壬:"丑",癸:"寅"};if(jinyu[dg])for(const[z2,col]of[[dz,"日"],[mz,"月"],[hz,"时"],[yz,"年"]])if(z2===jinyu[dg])out["金舆(日干起)"]=col+"支";const guchen={亥:"寅",子:"寅",丑:"寅",寅:"巳",卯:"巳",辰:"巳",巳:"申",午:"申",未:"申",申:"亥",酉:"亥",戌:"亥"};const guasu={亥:"戌",子:"戌",丑:"戌",寅:"丑",卯:"丑",辰:"丑",巳:"辰",午:"辰",未:"辰",申:"未",酉:"未",戌:"未"};for(const[z2,col]of[[dz,"日"],[mz,"月"],[hz,"时"],[yz,"年"]])if(z2===guchen[yz])out["孤辰(年支起)"]=col+"支";for(const[z2,col]of[[dz,"日"],[mz,"月"],[hz,"时"],[yz,"年"]])if(z2===guasu[yz])out["寡宿(年支起)"]=col+"支";if([["庚","辰"],["庚","戌"],["壬","辰"],["戊","戌"]].some(x=>x[0]===dg&&x[1]===dz))out["魁罡(日柱)"]="日柱";return out;}
 function calcDayun(monthGZIdx,forward,birthUtcJd,jtMap){const years=Object.keys(jtMap).map(Number);const all=[];for(const y of years)for(const name of JIE_LIST)all.push(jtMap[y][name]);let target;if(forward)target=Math.min(...all.filter(t=>t>birthUtcJd));else target=Math.max(...all.filter(t=>t<birthUtcJd));const diffH=Math.abs(target-birthUtcJd)*24;const yearsN=Math.floor(diffH/72);const rem=diffH%72;const months=Math.floor(rem/6);const days=Math.floor((rem%6)*5);const startAge=yearsN+months/12.0+days/365.0;const steps=[];for(let i=0;i<8;i++){const idx=((forward?monthGZIdx+(i+1):monthGZIdx-(i+1))%60+60)%60;const[g,z]=decodeGZ(idx);const s=startAge+i*10;steps.push({gz:g+z,start:Math.round(s*100)/100,end:Math.round((s+10)*100)/100});}return{qiYun:[yearsN,months,days],steps};}
 // 农历
 function newMoonJDE(k){const T=k/1236.85;let JDE=2451550.09766+29.530588861*k+0.00015437*T*T-0.000000150*T*T*T+0.00000000073*Math.pow(T,4);const M=(2.5534+29.10535670*k-0.0000014*T*T)*Math.PI/180;const Mp=(201.5643+385.81693528*k+0.0107582*T*T+0.00001238*T*T*T-0.000000058*Math.pow(T,4))*Math.PI/180;const F=(160.7108+390.67050284*k-0.0016118*T*T-0.00000227*T*T*T+0.000000011*Math.pow(T,4))*Math.PI/180;const Om=(124.7746-1.56375588*k+0.0020672*T*T+0.00000215*T*T*T)*Math.PI/180;JDE+=-0.40720*Math.sin(Mp)+0.17241*Math.sin(M)+0.01608*Math.sin(2*Mp)+0.01039*Math.sin(2*F)+0.00739*Math.sin(Mp-M)-0.00514*Math.sin(Mp+M)+0.00208*Math.sin(2*M)-0.00111*Math.sin(Mp-2*F)-0.00057*Math.sin(Mp+2*F)+0.00056*Math.sin(2*Mp+M)-0.00042*Math.sin(2*Mp-M)+0.00042*Math.sin(M)+0.00038*Math.sin(M-2*F)+0.00024*Math.sin(2*Mp-2*F)-0.00017*Math.sin(Om)-0.00007*Math.sin(Mp+2*M)+0.00004*Math.sin(2*Mp-2*M)+0.00004*Math.sin(2*F+Om)+0.00003*Math.sin(2*Mp+2*F)+0.00003*Math.sin(Mp+M-2*F)+0.00003*Math.sin(M-Mp-2*F)-0.00002*Math.sin(M-Mp+F)-0.00002*Math.sin(3*Mp)+0.00002*Math.sin(Om);return JDE;}
@@ -1315,8 +1321,67 @@ const PLAIN_SHEN = {
   "吊客": "吊客星也主白事，慎防亲属生病或离世之事。",
   "羊刃": "羊刃是刚烈的星，代表伤病血光、意外磕碰，也主脾气大、容易起冲突。",
   "天乙贵人": "天乙贵人是大贵人，关键时刻有人拉你一把，遇事能逢凶化吉。",
-  "华盖": "华盖星主孤独和智慧，适合静心学习思考，也容易感到孤单。"
+  "华盖": "华盖星主孤独和智慧，适合静心学习思考，也容易感到孤单。",
+  "天德贵人": "天德贵人是仁德福星，逢凶化吉：一生少灾少难，遇麻烦常有贵人化解，为人仁慈厚道。",
+  "金舆": "金舆是福气车马星，主日子体面、出行安稳，也代表妻家或夫家的助力。",
+  "孤辰": "孤辰主孤独独立：性格偏独、喜清净，六亲缘分淡一些，感情上要主动经营。",
+  "寡宿": "寡宿主孤寡：容易感到孤单、想得多，多交朋友、多走动可化解。"
 };
+
+// ==================== 调候用神（《穷通宝鉴》通行版本） ====================
+// 十干各月调候速查表（知识库§二；注：流派间有出入，仅作命局特点参考提示，不硬性断吉凶）
+// 月支→调候序列：寅正月 卯二月 辰三月 巳四月 午五月 未六月 申七月 酉八月 戌九月 亥十月 子冬月 丑腊月
+const TIAOHOU = {
+  "甲": {寅:"丙癸",卯:"庚丙丁",辰:"庚壬",巳:"癸丁庚",午:"癸丁庚",未:"癸庚丁",申:"丁庚",酉:"庚丁丙",戌:"庚甲丁壬",亥:"庚丁戊",子:"庚丁",丑:"丁庚丙"},
+  "乙": {寅:"丙癸",卯:"丙癸",辰:"癸丙戊",巳:"癸丙",午:"癸丙",未:"癸丙",申:"癸丙",酉:"癸丙丁",戌:"癸辛丙",亥:"丙戊",子:"丙戊",丑:"丙戊"},
+  "丙": {寅:"壬庚",卯:"壬己",辰:"壬甲",巳:"壬庚癸",午:"壬庚",未:"壬庚",申:"壬戊",酉:"壬癸",戌:"甲壬",亥:"甲戊庚壬",子:"壬戊",丑:"壬甲戊"},
+  "丁": {寅:"甲庚",卯:"庚甲",辰:"甲庚",巳:"甲庚壬癸",午:"壬庚癸",未:"庚甲壬",申:"甲庚丙",酉:"甲庚丙",戌:"甲庚戊壬",亥:"甲庚戊",子:"甲庚戊",丑:"甲庚"},
+  "戊": {寅:"丙甲癸",卯:"丙癸甲",辰:"丙癸甲",巳:"甲丙癸",午:"壬癸甲",未:"癸丙甲",申:"丙癸甲",酉:"丙癸",戌:"甲丙癸",亥:"丙甲戊",子:"丙甲戊",丑:"丙甲"},
+  "己": {寅:"丙癸",卯:"丙癸甲",辰:"癸丙",巳:"癸丙",午:"癸丙",未:"癸丙",申:"癸丙",酉:"丙癸",戌:"甲丙癸",亥:"丙甲戊",子:"丙甲戊",丑:"丙甲"},
+  "庚": {寅:"戊甲丁",卯:"丁甲庚",辰:"甲壬",巳:"壬甲丁",午:"壬癸",未:"壬癸",申:"丁甲",酉:"丁甲丙",戌:"甲壬",亥:"丁甲丙",子:"丁甲丙",丑:"丁甲丙"},
+  "辛": {寅:"己壬庚",卯:"壬甲己",辰:"壬甲",巳:"壬甲癸",午:"壬癸",未:"壬癸",申:"壬甲",酉:"壬甲",戌:"壬甲",亥:"壬丙",子:"壬丙",丑:"壬丙戊"},
+  "壬": {寅:"庚丙戊",卯:"戊庚丁",辰:"甲庚",巳:"壬庚辛癸",午:"癸庚辛",未:"癸庚辛",申:"戊丁甲",酉:"甲庚",戌:"甲丙",亥:"戊丙庚",子:"戊丙",丑:"丙丁戊"},
+  "癸": {寅:"丙辛",卯:"丙庚",辰:"甲癸丙",巳:"辛癸丙",午:"壬癸辛",未:"辛癸甲",申:"丁甲癸",酉:"丙癸辛",戌:"甲癸辛",亥:"壬戊",子:"丙戊",丑:"丙丁"}
+};
+// 调候用神分析：返回该日主此月需要的调候用神、命局带/缺情况与大白话提示
+function tiaohouInfo(bazi){
+  const dg = bazi.pillars.day.g;
+  const mz = bazi.monthZhi;
+  const need = (TIAOHOU[dg]||{})[mz] || "";
+  if(!need) return null;
+  const ganList = [bazi.pillars.year.g, bazi.pillars.month.g, bazi.pillars.day.g, bazi.pillars.hour.g];
+  const zhiList = [bazi.pillars.year.z, bazi.pillars.month.z, bazi.pillars.day.z, bazi.pillars.hour.z];
+  const present = []; // 命局天干/地支藏干里出现的调候用神
+  for(const c of need){
+    if(ganList.includes(c)) present.push(c);
+    else if(zhiList.some(z => (CANG[z]||[]).includes(c))) present.push(c);
+  }
+  const missing = [...need].filter(c => !present.includes(c));
+  // 寒暖燥湿定性（据《穷通宝鉴》总论：寒需暖、暖需寒、燥需润、湿需燥）
+  const coldMonths = ["亥","子","丑","寅"];
+  const hotMonths = ["巳","午","未"];
+  let season = "平";
+  if(coldMonths.includes(mz)) season = "寒";
+  else if(hotMonths.includes(mz)) season = "热";
+  // 调候首字五行决定大白话方向（首字即《穷通宝鉴》最先需要的字）
+  const firstWx = {丙:"火",丁:"火",壬:"水",癸:"水",甲:"木",乙:"木",庚:"金",辛:"金",戊:"土",己:"土"}[need[0]];
+  const plainByWx = {
+    "火": season==="寒" ? "你生在寒月，最需要火来暖局：适合往南方、靠暖气的地方发展，多晒太阳、多跟热情的人打交道，越暖越顺。" : "调候首取火：你天生需要热情和光明，适合往南方、明亮热闹的环境发展，越有干劲越旺。",
+    "水": season==="热" ? "你生在热月，最需要水来润局：适合往北方、近水的地方发展，多补水、多静心，越冷静越有财。" : "调候首取水：你天生需要冷静和流动，适合往北方、近水的地方发展，多接触新事物，越灵活越顺。",
+    "木": "调候首取木：你天生需要生长和疏通，适合多学习、多接触新事物，往东方、绿色环境发展有利，越舒展越旺。",
+    "金": "调候首取金：你天生需要磨练和规整，适合做需要干脆利落、有章法的事，往西方、金属器械类环境发展有利。",
+    "土": "调候首取土：你天生需要稳定和承载，适合按部就班、稳住根基，在本乡本地发展有利，越踏实越旺。"
+  };
+  let plain = plainByWx[firstWx] || (season==="寒" ? "你生在寒月，注意保暖御寒，多晒太阳、多运动，心情暖了运势就暖。" : season==="热" ? "你生在热月，注意防燥降火，多喝水、多静心，心静自然凉。" : "你生在不冷不热的平月，调候压力不大，按部就班发展即可。");
+  const plainEn = {
+    "火": season==="寒" ? "Born in a cold month, your chart runs cold and most needs fire to warm it: develop southward or in warm surroundings; more sun and warm company — the warmer, the smoother." : "First adjustor is fire: you naturally need warmth and light — develop southward or in bright, lively settings; the more drive, the better.",
+    "水": season==="热" ? "Born in a hot month, your chart runs dry and most needs water to moisten it: develop northward or near water; stay hydrated and calm — the cooler the head, the richer the luck." : "First adjustor is water: you naturally need calm and flow — develop northward or near water, seek new things; the more flexible, the smoother.",
+    "木": "First adjustor is wood: you need growth and opening — study more, seek new things, favor the east or green environments; the more you stretch, the better.",
+    "金": "First adjustor is metal: you need refinement and order — favor decisive, well-structured work; western or metal/machinery settings suit you.",
+    "土": "First adjustor is earth: you need stability and grounding — steady, step-by-step progress; staying rooted in your hometown favors you."
+  }[firstWx] || (season==="寒" ? "Born in a cold month — keep warm, get sun and exercise; a warm heart warms your luck." : season==="热" ? "Born in a hot month — guard against dryness, drink water and stay calm; a cool head cools the heat." : "Born in a mild month — little seasonal adjustment needed; proceed steadily.");
+  return {dg, mz, need, present, missing, season, plain, plainEn};
+}
 
 // 细分事件字典：名称 → 展示标签（含emoji）
 const SUBCAT = {
@@ -1391,6 +1456,15 @@ function flowShensha(lz, bazi){
   if((tianyi[bazi.pillars.day.g]||[]).includes(lz)) out.push("天乙贵人");
   const huagai={"申子辰":"辰","寅午戌":"戌","巳酉丑":"丑","亥卯未":"未"};
   if(grp&&huagai[grp]===lz) out.push("华盖");
+  // 流年引动命局天德贵人：流年支=命局月支起天德位（知识库§三）
+  const tiande={寅:"丁",卯:"申",辰:"壬",巳:"辛",午:"亥",未:"甲",申:"癸",酉:"寅",戌:"丙",亥:"乙",子:"巳",丑:"庚"};
+  const td = tiande[bazi.monthZhi];
+  if(td && !"甲乙丙丁戊己庚辛壬癸".includes(td) && lz===td) out.push("天德贵人");
+  // 流年孤辰寡宿：流年支=年支起孤寡位（知识库§三，以年支查四支）
+  const guchen={亥:"寅",子:"寅",丑:"寅",寅:"巳",卯:"巳",辰:"巳",巳:"申",午:"申",未:"申",申:"亥",酉:"亥",戌:"亥"};
+  const guasu ={亥:"戌",子:"戌",丑:"戌",寅:"丑",卯:"丑",辰:"丑",巳:"辰",午:"辰",未:"辰",申:"未",酉:"未",戌:"未"};
+  if(guchen[yz]===lz) out.push("孤辰");
+  if(guasu[yz]===lz) out.push("寡宿");
   return out;
 }
 
@@ -1610,6 +1684,9 @@ function analyzeYear(yy, bazi, step, age){
     if(s==="羊刃") add("伤病",2, "羊刃当值，防伤病血光、意外磕碰，注意交通安全和身体保养。","羊刃逢值",18);
     if(s==="天乙贵人") add("贵人相助",2, "天乙贵人临年，关键时刻有人拉一把，遇事能逢凶化吉。","天乙贵人临年");
     if(s==="华盖") add("进修独处",1, "华盖入命，适合静心学习思考，也容易感到孤单，耐得住寂寞就有收获。","华盖入命",16);
+    if(s==="天德贵人") add("贵人相助",1.5, "流年引动天德贵人（仁德福星）：逢凶化吉，遇麻烦常有长辈、贵人或官方化解，为人处事厚道些更顺。","流年天德贵人临");
+    if(s==="孤辰") add("进修独处",1, "流年孤辰临：这年偏孤独、喜清净，六亲走动少，适合静心学习、独处充电；也提示多主动联系家人朋友。","流年孤辰临",16);
+    if(s==="寡宿") add("进修独处",1, "流年寡宿临：内心容易孤单、想得多，感情上偏平淡，多参加集体活动、多交朋友可化解。","流年寡宿临",16);
   }
 
   // 4. 组合细化规则
@@ -2368,7 +2445,7 @@ function preciseSummary(bazi){
   const wxSorted = Object.entries(wx).sort((a,b)=>b[1]-a[1]);
   const most = wxSorted[0], least = wxSorted[wxSorted.length-1];
   const missing = Object.entries(wx).filter(x=>x[1]<0.5).map(x=>x[0]);
-  const ssList = Object.entries(bazi.shensha).map(([k])=>k.replace(/（.*/,""));
+  const ssList = Object.entries(bazi.shensha).map(([k])=>k.replace(/[（(].*/,""));
   const out = [];
   const zh = LANG==="zh";
   // 1. 日主+季节寒暖
@@ -2433,6 +2510,10 @@ function preciseSummary(bazi){
   if(ssList.includes("驿马")) out.push(["你命中带驿马，是个闲不住爱跑的命，出外发展、跑业务比守在家里强。","You carry the Travel Horse star: born to move — developing away from home or in business travel beats staying put."]);
   if(ssList.includes("华盖")) out.push(["你命中带华盖，骨子里有点孤独，适合钻研一门学问或技艺，耐得住寂寞就有成就。","You carry the Hua Gai star: a solitary soul — deep study of one craft rewards your patience."]);
   if(ssList.includes("魁罡")) out.push(["你命中带魁罡，性格刚直、眼里不揉沙子，有领导范儿，但脾气要收着点。","You carry the Kui Gang star: upright and sharp-eyed with a leader's air — keep your temper in check."]);
+  if(ssList.includes("天德")) out.push(["你命中带天德贵人，是仁德福星：一生少灾少难，遇麻烦常有贵人化解，为人厚道、心存善念，路越走越宽。","You carry the Heavenly Virtue star: a benevolent blessing — few disasters, troubles often dissolve with a helper's aid; kindness widens your path."]);
+  if(ssList.includes("金舆")) out.push(["你命中带金舆，是福气车马星：日子过得体面安稳，出门办事顺当，也可能得到配偶家的助力。","You carry the Golden Chariot star: a dignified, steady life — smooth travel and errands, possibly support from your spouse's family."]);
+  if(ssList.includes("孤辰")) out.push(["你命中带孤辰，性格偏独立、爱清净，自己待得住，但六亲缘分淡一些，感情上要主动经营、多走动。","You carry the Solitary star: independent and quiet-loving — comfortable alone, but kinship bonds are thinner; nurture relationships actively."]);
+  if(ssList.includes("寡宿")) out.push(["你命中带寡宿，内心世界丰富、想得多，容易感到孤单，多交朋友、多参加集体活动能化解。","You carry the Widowhood star: rich inner world but prone to loneliness — stay socially active to dissolve it."]);
   return out.filter(x=>x&&x[0]).map(x=>x[zh?0:1]).join("");
 }
 
@@ -2563,6 +2644,17 @@ function renderReport(bazi, input){
     h.push(`<div style="line-height:1.9;color:#475569;margin-top:6px">🧭 ${zh?gj.plain:gj.en.plain}</div>`);
     if(gj.cong) h.push(`<div style="line-height:1.9;color:#b45309;margin-top:4px">${zh?`（${gj.cong}：日主极弱无根，满盘异党，顺势而行反得助力，行运喜异党、忌印比帮身。）`:`(${gj.cong}: Day Master extremely weak and rootless among opposing stars — go with the current; favorable cycles are the opposing group, avoid Resource/Peer support.)`}</div>`);
     h.push(`<div style="color:#94a3b8;font-size:.72rem;margin-top:6px">${T("取格依据：《子平真诠》以月令本气藏干透出天干者为格（本气优先），不透干则按本气取；喜忌按八格总表。")}</div>`);
+    h.push(`</div>`);
+  }
+  // 调候用神卡（《穷通宝鉴》十干各月调候表，仅作命局特点提示）
+  const th = tiaohouInfo(bazi);
+  if(th){
+    h.push(`<div class="section-title">${T("🌡️ 调候用神（据《穷通宝鉴》通行版本）")}</div>`);
+    h.push(`<div class="gua-box" style="font-size:.9rem">`);
+    h.push(`<div class="gua-name">${zh?`${th.dg}${th.mz}日主 → 调候用神 ${th.need}`:`Day ${th.dg} in ${th.mz} → seasonal adjustors ${th.need}`} <span class="tag">${zh?(th.season==="寒"?"寒月需暖":th.season==="热"?"热月需润":"平月"):(th.season==="寒"?"Cold: need warmth":th.season==="热"?"Hot: need moisture":"Mild")}</span></div>`);
+    h.push(`<div style="line-height:1.9;margin-top:6px">${zh?th.plain:th.plainEn}</div>`);
+    h.push(`<div style="line-height:1.9;color:#475569;margin-top:6px">${zh?(th.present.length?`✅ 命局已带调候用神：${th.present.join("、")}${th.missing.length?`；缺：${th.missing.join("、")}`:"，调候到位"}`:`⚠️ 命局未带任何调候用神（${th.need}），一生注意寒暖调节，大运流年逢之可补`):(th.present.length?`Carried: ${th.present.join(", ")}${th.missing.length?`; missing: ${th.missing.join(", ")}`:" — seasonal adjustment in place"}`:`Chart lacks all seasonal adjustors (${th.need}) — mind warmth/moisture; luck periods carrying them help`)}</div>`);
+    h.push(`<div style="color:#94a3b8;font-size:.72rem;margin-top:6px">${T("调候依据：《穷通宝鉴》以月令气候定寒暖燥湿，先调候后扶抑；十干各月用神表为通行版本，流派间略有出入，本卡仅作命局特点提示，不作硬性断吉凶。")}</div>`);
     h.push(`</div>`);
   }
   h.push(`</div>`);
