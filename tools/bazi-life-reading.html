@@ -171,8 +171,8 @@ textarea#inEvents:focus{outline:none;border-color:rgba(167,139,250,0.6)}
 </div>
 <div style="margin-top:14px">
 <label data-i18n="📝 您已发生的大事（选填，越准越贴合您本人）">📝 您已发生的大事（选填，越准越贴合您本人）</label>
-<textarea id="inEvents" rows="4" data-i18n-ph="每行一条：年份 + 事件，例如：&#10;1998参军&#10;2005结婚&#10;2011转业&#10;2014生女儿&#10;2018投资失败" placeholder="每行一条：年份 + 事件，例如：&#10;1998参军&#10;2005结婚&#10;2011转业&#10;2014生女儿&#10;2018投资失败"></textarea>
-<div class="city-hint" data-i18n="填上后，报告会先核验这些事和命盘是否吻合，再围绕您本人展开分析。事件关键词：参军 / 转业 / 结婚 / 生子 / 换工作 / 升职 / 破财 / 伤病 / 搬家 / 买房 / 创业 / 考试">填上后，报告会先核验这些事和命盘是否吻合，再围绕您本人展开分析。事件关键词：参军 / 转业 / 结婚 / 生子 / 换工作 / 升职 / 破财 / 伤病 / 搬家 / 买房 / 创业 / 考试</div>
+<textarea id="inEvents" rows="4" data-i18n-ph="每行一条：年份 + 事件，例如：&#10;1998参军&#10;2003恋爱&#10;2005结婚&#10;2011转业&#10;2014生女儿&#10;2018投资失败" placeholder="每行一条：年份 + 事件，例如：&#10;1998参军&#10;2003恋爱&#10;2005结婚&#10;2011转业&#10;2014生女儿&#10;2018投资失败"></textarea>
+<div class="city-hint" data-i18n="填上后，报告会先核验这些事和命盘是否吻合，再围绕您本人展开分析。事件关键词：恋爱 / 参军 / 转业 / 结婚 / 生子 / 换工作 / 升职 / 破财 / 伤病 / 搬家 / 买房 / 创业 / 考试。也支持用逗号分隔写在同一行，如：1998参军,2005结婚">填上后，报告会先核验这些事和命盘是否吻合，再围绕您本人展开分析。事件关键词：恋爱 / 参军 / 转业 / 结婚 / 生子 / 换工作 / 升职 / 破财 / 伤病 / 搬家 / 买房 / 创业 / 考试。也支持用逗号分隔写在同一行，如：1998参军,2005结婚</div>
 </div>
 <button class="btn-gen" onclick="run()" data-i18n="🔮 开始排盘">🔮 开始排盘</button>
 </div>
@@ -1934,6 +1934,7 @@ function aggregateSection(sec, bazi){
 // 用户输入事件关键词 → 事件类型（中英文）
 function mapUserEvent(text){
   const t = String(text||"");
+  if(/恋爱|谈恋爱|处对象|拍拖|搞对象|找对象|脱单|相亲|女友|女朋友|男朋友|dating|girlfriend|boyfriend|romance|fall in love/.test(t)) return "恋爱缘";
   if(/参军|入伍|当兵|军校|警队|从军|army|military|enlist|joined|join the|conscription|draft/.test(t)) return "当兵入伍";
   if(/转业|退伍|退役|复员|discharge|transfer (from|out)|veteran|leave the (army|military|service)/.test(t)) return "转业";
   if(/结婚|领证|成家|订婚|marry|marriage|wedding|engaged|got married/.test(t)) return "婚喜";
@@ -1950,15 +1951,17 @@ function mapUserEvent(text){
   return null;
 }
 
-// 解析用户输入"年份+事件"多行文本
+// 解析用户输入"年份+事件"文本（支持换行/逗号/顿号/分号/空格分隔，支持"1998参军 2005结婚"、"1998 参军"、"2005年1月25日结婚"等写法）
 function parseUserEvents(text){
   const out = [];
-  for(const line of String(text||"").split(/\n|;|；/)){
-    const m = line.match(/(\d{4})/);
-    if(!m) continue;
-    const year = +m[1];
-    const sub = mapUserEvent(line);
-    if(sub) out.push({year, sub, raw: line.trim()});
+  const parts = String(text||"").split(/[\n,，、;；|。\s]+/).map(s=>s.trim()).filter(Boolean);
+  let pendingYear = null;
+  for(const part of parts){
+    const m = part.match(/(\d{4})/);
+    const sub = mapUserEvent(part);
+    if(m && sub){ out.push({year:+m[1], sub, raw: part}); pendingYear = null; }
+    else if(m && !sub){ pendingYear = +m[1]; } // 纯年份段：等下一段事件词
+    else if(!m && sub && pendingYear != null){ out.push({year:pendingYear, sub, raw: pendingYear+" "+part}); pendingYear = null; }
   }
   return out;
 }
@@ -1971,19 +1974,26 @@ function verifyUserEvents(bazi, userEvents){
   const results = [];
   for(const ue of userEvents){
     let best = null, bestGap = 99;
-    for(let g=-1; g<=1; g++){
-      const ye = yearMap[ue.year+g];
-      if(!ye) continue;
-      for(const [sub, score] of Object.entries(ye.points)){
-        if(sub !== ue.sub) continue;
-        if(score < 2) continue;
-        const gap = Math.abs(g);
-        if(gap < bestGap){
-          bestGap = gap;
-          best = {year: ye.year, sub, score, plain: ((ye.bases.find(b=>b.sub===sub))||{}).plain||"", all: Object.entries(ye.points).map(([s,v])=>[s,v]).sort((a,b)=>b[1]-a[1]).slice(0,4)};
+    const tryMatch = (subList) => {
+      for(const want of subList){ // 按顺序优先：前面的 sub 在同 gap 时胜出
+        for(let g=-1; g<=1; g++){
+          const ye = yearMap[ue.year+g];
+          if(!ye) continue;
+          for(const [sub, score] of Object.entries(ye.points)){
+            if(sub !== want) continue;
+            if(score < 2) continue;
+            const gap = Math.abs(g);
+            if(gap < bestGap){
+              bestGap = gap;
+              best = {year: ye.year, sub, score, plain: ((ye.bases.find(b=>b.sub===sub))||{}).plain||"", all: Object.entries(ye.points).map(([s,v])=>[s,v]).sort((a,b)=>b[1]-a[1]).slice(0,4)};
+            }
+          }
         }
       }
-    }
+    };
+    tryMatch([ue.sub]);
+    // 恋爱容错：该年婚喜/感情波动信号强，也算恋爱缘分到位（婚喜文案优先，更贴切）
+    if(!best && ue.sub==="恋爱缘") tryMatch(["婚喜","感情波动"]);
     results.push({...ue, matched: !!best, match: best});
   }
   return results;
@@ -1992,9 +2002,9 @@ function verifyUserEvents(bazi, userEvents){
 // 一生大事列表：按时间排序，每年最多2件大事，全生命周期取信号最强的
 function buildLifeEvents(bazi, userEventsText){
   const sections = analyzeLife(bazi);
-  const MAJOR_W = {"婚喜":1.4,"怀孕生子":1.4,"当兵入伍":1.3,"转业":1.3,"车祸意外":1.3,"破财":1.15,"升职加薪":1.15,"置业买房":1.1,"二次择业":1.1,"工作变动":1.0,"出行迁居":0.9,"创业契机":1.1,"伤病":1.05,"偏财进账":0.8,"岁运并临":1.3,"伏吟":0.8};
+  const MAJOR_W = {"婚喜":1.4,"怀孕生子":1.4,"当兵入伍":1.3,"转业":1.3,"车祸意外":1.3,"破财":1.15,"升职加薪":1.15,"置业买房":1.1,"二次择业":1.1,"工作变动":1.0,"恋爱缘":1.1,"出行迁居":0.9,"创业契机":1.1,"伤病":1.05,"偏财进账":0.8,"岁运并临":1.3,"伏吟":0.8};
   const SPECIAL = ["当兵入伍","转业","二次择业","车祸意外","出轨"];
-  const ageOK = {"婚喜":[20,60],"怀孕生子":[22,50],"当兵入伍":[16,24],"转业":[20,45],"二次择业":[25,55],"工作变动":[18,60],"升职加薪":[18,65],"创业契机":[20,65],"置业买房":[20,70],"破财":[18,75],"偏财进账":[18,75],"伤病":[0,99],"车祸意外":[16,80],"出行迁居":[0,99],"岁运并临":[18,99],"伏吟":[18,99]};
+  const ageOK = {"婚喜":[20,60],"怀孕生子":[22,50],"当兵入伍":[16,24],"转业":[20,45],"二次择业":[25,55],"工作变动":[18,60],"恋爱缘":[16,55],"升职加薪":[18,65],"创业契机":[20,65],"置业买房":[20,70],"破财":[18,75],"偏财进账":[18,75],"伤病":[0,99],"车祸意外":[16,80],"出行迁居":[0,99],"岁运并临":[18,99],"伏吟":[18,99]};
   // 用户确认的事件加权，确保出现在列表里
   const boost = {};
   for(const ue of parseUserEvents(userEventsText)) boost[ue.year+"_"+ue.sub] = true;
