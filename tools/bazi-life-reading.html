@@ -288,6 +288,7 @@ const EN_MAP = {
   "时柱":"Hour Pillar",
   "藏干：":"Hidden stems: ",
   "纳音：":"Na Yin: ",
+  "六亲：":"Six Relations: ",
   "✨ 命里带的星（神煞）":"✨ Special Stars in Your Chart (Shen Sha)",
   "这些是命里带的'特殊星'：天乙贵人是贵人星、文昌是聪明星、桃花是异性缘、驿马是奔波星、华盖主孤独智慧……您对应的每个星在白话总结里都有解释。":"These are special stars in your chart: Heavenly Noble = helping people; Wen Chang = intelligence; Peach Blossom = charm/romance; Travel Horse = movement; Hua Gai = solitude & wisdom... Each is explained in your summary below.",
   "🧭 命主总评":"🧭 Life Summary",
@@ -304,6 +305,12 @@ const EN_MAP = {
   "取格依据：《子平真诠》以月令本气藏干透出天干者为格（本气优先），不透干则按本气取；喜忌按八格总表。":"Method per Zi Ping Zhen Quan: the pattern is set by the Month Branch's primary hidden stem when it appears among the stems (primary qi first); if not revealed, use the primary qi. Favorable/Avoid follows the Eight Patterns table.",
   "🌡️ 调候用神（据《穷通宝鉴》通行版本）":"🌡️ Seasonal Adjustors (per Qiong Tong Bao Jian)",
   "调候依据：《穷通宝鉴》以月令气候定寒暖燥湿，先调候后扶抑；十干各月用神表为通行版本，流派间略有出入，本卡仅作命局特点提示，不作硬性断吉凶。":"Reference: Qiong Tong Bao Jian adjusts warmth/moisture by month climate — season first, balance second. The per-stem monthly table is the common edition (schools differ slightly); this card is only a chart-character hint, not a hard judgment.",
+  "🧭 职业方向（用神五行 → 行业）":"🧭 Career Direction (Favorable Element → Fields)",
+  "职业依据：用神五行对应行业（知识库§六）；取法为简化规则（身强喜克泄耗、身弱喜生扶，从格顺势；调候先于扶抑），仅作方向参考，择业仍以现实条件与个人兴趣为准。":"Reference: favorable element maps to industries (knowledge base §6); simplified method (strong favors draining, weak favors support, following patterns go with the flow; season before balance) — direction only; real-world conditions and interest still decide.",
+  "📅 未来12个月逐月提醒（流月）":"📅 Next 12 Months, Month by Month (Liu Yue)",
+  "节气定月 · 月月细看":"Solar-term months · month-level detail",
+  "大运看十年、流年看一年、流月看一个月：下面把未来12个月的‘流月’逐月拆开，看每个月大致往哪个方向使劲、要留意什么。流月力量远弱于流年，只作当月参考，不必过度解读。":"Decade luck covers 10 years, year luck covers 1 year, month luck covers 1 month: the next 12 monthly cycles (Liu Yue) are broken down below — which direction each month leans and what to watch. Month luck is far weaker than year luck; treat it as a light reference only.",
+  "流月依据：以节气为月界（同八字月柱取法），月干以流年干五虎遁起（甲己之年丙作首…）；流月与命局刑冲合害规则同流年，力量按 年>月 递减，仅作当月参考。":"Reference: months follow solar terms (same as the natal month pillar); month stems derive from the year stem via the Five Tigers rule. Clash/combine/punish/harm rules match yearly analysis; strength decays year > month — reference only.",
   "🚀 起运与大运":"🚀 Luck Cycles (Da Yun)",
   "阳男/阴女顺排":"Yang male / Yin female — forward order",
   "阴男/阳女逆排":"Yin male / Yang female — reverse order",
@@ -1871,6 +1878,138 @@ function postProcess(sections, bazi){
   }
 }
 
+// ==================== 流月细化（未来12个月逐月提醒） ====================
+// 流月以节气为月界（同八字月柱取法），月干以流年干五虎遁起（甲己之年丙作首…）；
+// 流月与命局刑冲合害规则同流年，力量按 年 > 月 递减，措辞从宽，仅作当月参考（知识库§四 + 五虎遁）
+const MONTH_THEME = {
+  "正财": ["财星当值：收入、攒钱、置业之事是本月主调，适合踏实进财、谈钱谈生意、盘算家底。", "Wealth star in charge: income, saving, and property matters lead — a good month for steady earning and money talks."],
+  "偏财": ["偏财当值：意外之财、人情往来、投资机会多，来得快去得也快，见好就收，别贪大。", "Indirect Wealth: windfalls, social spending, and investment chances abound — quick in, quick out; take profits early."],
+  "正官": ["官星当值：工作名分、被认可、守规矩是主调，适合推进正事、争取职位、落实流程。", "Officer star in charge: recognition, position, and following rules — good for advancing formal matters and seeking titles."],
+  "七杀": ["七杀当值：压力竞争大，宜稳扎稳打，防口舌是非和身体劳累，把压力当磨刀石。", "Seven Killings: heavy pressure and rivalry — stay steady, mind disputes and fatigue; turn pressure into drive."],
+  "正印": ["印星当值：文书、考试、贵人长辈之事顺，适合学习进修、办手续、考证、求人帮忙。", "Resource star: documents, exams, mentors, and elders — good for study, paperwork, certifications, and asking favors."],
+  "偏印": ["偏印当值：适合钻研独门技艺、冷门学问，想法多，防钻牛角尖，学精一门就是本钱。", "Indirect Resource: good for niche skills and deep study; many ideas — avoid overthinking, mastery pays."],
+  "食神": ["食神当值：才华口福好，适合创作、享受、聚会、做美食，日子过得滋润，人缘也旺。", "Eating God: talent and enjoyment — create, savor, socialize, and eat well; popularity rises."],
+  "伤官": ["伤官当值：表达欲强、点子多，容易出彩也容易得罪人，管住嘴，别跟领导顶牛。", "Hurting Officer: expressive and inventive — shine but watch your words; avoid clashing with superiors."],
+  "比肩": ["比肩当值：朋友往来多，适合合伙、协作、抱团，人多力量大，注意别被攀比带偏。", "Peer: social activity rises — partnership and teamwork favored; don't let rivalry distract you."],
+  "劫财": ["劫财当值：花钱快、防破财，借贷担保要谨慎，朋友之间账目算清，亲兄弟明算账。", "Rob Wealth: fast spending, guard against loss; be cautious with loans and guarantees; settle accounts clearly with friends."]
+};
+
+// 未来12个节气月的流月列表：{gz, mz, ss, d0, d1, notes[], shen[]}
+function liuyueList(bazi, tzOffset, count){
+  count = count || 12;
+  const now = new Date();
+  const nowJd = jdn(now.getFullYear(), now.getMonth()+1, now.getDate()) - 0.5 + (now.getHours() + now.getMinutes()/60)/24.0;
+  const Y = now.getFullYear();
+  const jtMap = {};
+  for(const yy of [Y-1, Y, Y+1, Y+2]) jtMap[yy] = jieqiTimes(yy);
+  const timeline = [];
+  for(const yy of [Y-1, Y, Y+1, Y+2])
+    for(let i=0;i<12;i++) timeline.push({jd: jtMap[yy][JIE_LIST[i]] + (tzOffset||8)/24.0, z: JIE_MONTH_ZHI[i]});
+  timeline.sort((a,b)=>a.jd-b.jd);
+  let idx = 0;
+  for(let i=0;i<timeline.length-1;i++){ if(nowJd >= timeline[i].jd && nowJd < timeline[i+1].jd){ idx = i; break; } }
+  const out = [];
+  const dayG = bazi.pillars.day.g;
+  const yz=bazi.pillars.year.z, mm=bazi.pillars.month.z, dz=bazi.pillars.day.z, hz=bazi.pillars.hour.z;
+  for(let k=1;k<=count;k++){
+    const seg = timeline[idx+k], nxt = timeline[idx+k+1];
+    if(!seg || !nxt) break;
+    const mz = seg.z;
+    // 流年干支：找到满足 立春(yy) <= seg.jd < 立春(yy+1) 的 yy（节气月所属流年）
+    let ly = Y-1;
+    for(const yy of [Y-1, Y, Y+1]){
+      const lc = jtMap[yy]["立春"] + (tzOffset||8)/24.0;
+      const lcNext = jtMap[yy+1] ? jtMap[yy+1]["立春"] + (tzOffset||8)/24.0 : lc + 365.25;
+      if(seg.jd >= lc && seg.jd < lcNext){ ly = yy; break; }
+    }
+    const yearIdx = yearGZ(ly, false);
+    const monthIdx = monthGZ(yearIdx, mz);
+    const [mg] = decodeGZ(monthIdx);
+    const ss = shishen(dayG, mg);
+    const lyZ = decodeGZ(yearIdx)[1];
+    const notes = [];
+    const pillarsZ = [["年支",yz,"长辈家宅","elders/home"],["月支",mm,"事业家宅","career/home"],["日支",dz,"感情自身","romance/self"],["时支",hz,"子女晚年","children/later years"]];
+    const nameEn = {"年支":"year branch","月支":"month branch","日支":"day branch","时支":"hour branch"};
+    for(const [name, z, scope, scopeEn] of pillarsZ){
+      if(LIUCHONG[mz]===z) notes.push(["冲"+name+"："+scope+"易有变动，宜稳", "Clashes "+nameEn[name]+": "+scopeEn+" may shift — stay steady"]);
+      if(LIUHE[mz]===z) notes.push(["合"+name+"："+scope+"之事顺遂，有助力", "Combines "+nameEn[name]+": "+scopeEn+" goes smoothly, with support"]);
+      if((XING[mz]||"").includes(z)) notes.push(["刑"+name+"：防口舌小摩擦", "Punishes "+nameEn[name]+": mind small disputes"]);
+      if((HAI[mz]||"").includes(z)) notes.push(["害"+name+"：防暗耗、防小人", "Harms "+nameEn[name]+": guard against hidden loss & schemers"]);
+    }
+    if(LIUCHONG[mz]===lyZ) notes.push(["冲流年支：本月是全年主题变动的关口，大事宜缓", "Clashes the year branch: a turning point for the year's theme — postpone big moves"]);
+    if(LIUHE[mz]===lyZ) notes.push(["合流年支：本月顺应全年大势，办事顺", "Combines the year branch: aligned with the year's trend — smooth sailing"]);
+    const shen = flowShensha(mz, bazi);
+    out.push({gz: mg+mz, mz, ss, d0: dtFromJd(seg.jd), d1: dtFromJd(nxt.jd), notes, shen});
+  }
+  return out;
+}
+
+// ==================== 职业方向（用神五行 → 行业，知识库§六） ====================
+const CAREER_WX = {
+  "木": {zh:"教育文化、出版传媒、木材家具、服装纺织、园林医药、中医", en:"Education & culture, publishing & media, wood & furniture, textiles & fashion, gardening & medicine, TCM"},
+  "火": {zh:"能源电力、电子科技、餐饮美食、美容化妆、影视传媒、军警", en:"Energy & power, electronics & tech, food & catering, beauty & cosmetics, film & media, military & police"},
+  "土": {zh:"房地产建筑、农业矿产、仓储物流、陶瓷建材", en:"Real estate & construction, agriculture & mining, warehousing & logistics, ceramics & building materials"},
+  "金": {zh:"金融证券、机械五金、汽车制造、司法军警、精密仪器", en:"Finance & securities, machinery & hardware, auto manufacturing, law & military, precision instruments"},
+  "水": {zh:"贸易流通、物流运输、水产旅游、通信网络、饮品酒水", en:"Trade & logistics, transport, aquatic products & tourism, telecom & networks, beverages"}
+};
+const CAREER_PLAIN = {
+  "木": ["木主生长与人文：往‘长本事、传知识、做实业’的方向走，越深耕越有出息。", "Wood rules growth & culture: grow skills, share knowledge, build real things — depth pays off."],
+  "火": ["火主光明与能量：往‘技术、热度、服务大众’的方向走，越有干劲越旺。", "Fire rules light & energy: tech, trending fields, serving the public — drive brings prosperity."],
+  "土": ["土主承载与稳定：往‘根基、房产、实物’的方向走，越踏实越稳当。", "Earth rules stability & substance: property, foundations, tangible goods — steadiness wins."],
+  "金": ["金主规整与决断：往‘金融、机械、规矩’的方向走，越干脆利落越顺。", "Metal rules order & decisiveness: finance, machinery, structured fields — crispness succeeds."],
+  "水": ["水主流通与智慧：往‘流动、信息、交际’的方向走，越灵活路子越宽。", "Water rules flow & wisdom: logistics, information, networking — flexibility opens roads."]
+};
+
+// 职业方向分析：旺衰用神五行（主） + 调候用神五行（补），返回行业方向与白话
+function careerInfo(bazi){
+  const dg = bazi.pillars.day.g, dw = WX_GAN[dg];
+  const sa = strengthAnalysis(bazi);
+  const keWo = Object.keys(KE).find(k=>KE[k]===dw);   // 克我者（官杀）五行
+  const shengWo = Object.keys(SHENG).find(k=>SHENG[k]===dw); // 生我者（印星）五行
+  const gj = gejuAnalysis(bazi);
+  let mainWx, altWx, reasonZh, reasonEn, noteZh="", noteEn="";
+  if(gj && gj.cong){ // 从格：顺势而行，喜异党五行
+    const congMap = {"从财格":KE[dw], "从官格":keWo, "从杀格":keWo, "从儿格":SHENG[dw]};
+    mainWx = congMap[gj.cong] || KE[dw];
+    altWx = [keWo, SHENG[dw]];
+    reasonZh = "你是"+gj.cong+"（日主极弱从势），用神取顺势的异党五行，忌逆势硬扛：往"+CAREER_WX[mainWx].zh+"方向走最顺。";
+    reasonEn = "Following pattern ("+gj.cong+"): go with the dominant opposing elements — "+CAREER_WX[mainWx].en+" suit you best.";
+  } else if(sa.strong){
+    mainWx = KE[dw];   // 财星五行（我克）
+    altWx = [keWo, SHENG[dw]];
+    reasonZh = "你身强，喜克泄耗：用神为财星（我克）、官杀（克我）、食伤（我生）之五行，其中财星为主。";
+    reasonEn = "Strong Day Master favors draining: Wealth (I control), Officer (controls me), Output (I produce) — Wealth primary.";
+  } else {
+    mainWx = shengWo;  // 印星五行（生我）
+    altWx = [dw];
+    reasonZh = "你身弱，喜生扶：用神为印星（生我）、比劫（同我）之五行，其中印星为主，比劫为辅。";
+    reasonEn = "Weak Day Master favors support: Resource (generates me), Peer (same element) — Resource primary, Peer secondary.";
+  }
+  // 调候修正（《穷通宝鉴》先调候后扶抑）：寒月喜暖（火）、热月喜润（水）
+  const th = tiaohouInfo(bazi);
+  let tiaohouWx = null;
+  if(th && (th.season==="寒"||th.season==="热")){
+    const twx = {丙:"火",丁:"火",壬:"水",癸:"水",甲:"木",乙:"木",庚:"金",辛:"金",戊:"土",己:"土"}[th.need[0]];
+    tiaohouWx = twx;
+    const needTxt = "（《穷通宝鉴》"+th.dg+"日主"+th.mz+"月调候："+th.need+"）";
+    if(th.season==="寒"){
+      noteZh = "你生在"+th.mz+"月（寒月），调候首取"+twx+""+needTxt+"："+twx+"行行业（"+CAREER_WX[twx].zh+"）可作重要补充（详见上方调候卡的方向提示）。";
+      noteEn = "Born in "+th.mz+" (cold month): seasonal adjustor leads with "+twx+" (per Qiong Tong Bao Jian, "+th.dg+" in "+th.mz+": "+th.need+") — "+twx+" fields ("+CAREER_WX[twx].en+") complement you (see the adjustor card above for direction hints).";
+    } else {
+      noteZh = "你生在"+th.mz+"月（热月），调候首取"+twx+""+needTxt+"："+twx+"行行业（"+CAREER_WX[twx].zh+"）可作重要补充（详见上方调候卡的方向提示）。";
+      noteEn = "Born in "+th.mz+" (hot month): seasonal adjustor leads with "+twx+" (per Qiong Tong Bao Jian, "+th.dg+" in "+th.mz+": "+th.need+") — "+twx+" fields ("+CAREER_WX[twx].en+") complement you (see the adjustor card above for direction hints).";
+    }
+  }
+  // 五行所缺提示：缺的若是用神五行，更需主动补足
+  const wx = wuxingStats(bazi);
+  const missing = Object.entries(wx).filter(x=>x[1]<0.5).map(x=>x[0]);
+  if(missing.includes(mainWx)){
+    noteZh += "你命局缺"+mainWx+"（又是用神五行），此方向更需后天主动补足：多接触"+mainWx+"行行业与人事，方向对路反而能补命。";
+    noteEn += "Your chart lacks "+mainWx+" (which is also favorable) — actively engage "+mainWx+"-element fields to compensate.";
+  }
+  return {mainWx, altWx, reasonZh, reasonEn, noteZh, noteEn, tiaohouWx};
+}
+
 // 事件→类别
 const CAT_GROUP = {
   "升职加薪":"事业","工作变动":"事业","创业契机":"事业","口舌官非":"事业","当兵入伍":"事业","转业":"事业","二次择业":"事业",
@@ -2612,6 +2751,7 @@ function renderReport(bazi, input){
     h.push(`<div class="cang">${T("藏干：")}${cangDisplay(CANG[col.z])}</div>`);
     h.push(`<div class="nayin">${T("纳音：")}${nayinName(NAYIN[Math.floor(col.idx/2)])}</div>`);
     h.push(`<div class="ss-god">${ssName(shishen(dg, col.g))}(${wxName(WX_GAN[col.g])})</div>`);
+    h.push(`<div class="liuqin" style="opacity:.78;font-size:.72rem">${T("六亲：")}${sixQin(shishen(dg, col.g), bazi.gender)}</div>`);
     h.push(`</div>`);
   }
   h.push(`</div>`);
@@ -2665,6 +2805,19 @@ function renderReport(bazi, input){
     h.push(`<div style="line-height:1.9;margin-top:6px">${zh?th.plain:th.plainEn}</div>`);
     h.push(`<div style="line-height:1.9;color:#475569;margin-top:6px">${zh?(th.present.length?`✅ 命局已带调候用神：${th.present.join("、")}${th.missing.length?`；缺：${th.missing.join("、")}`:"，调候到位"}`:`⚠️ 命局未带任何调候用神（${th.need}），一生注意寒暖调节，大运流年逢之可补`):(th.present.length?`Carried: ${th.present.join(", ")}${th.missing.length?`; missing: ${th.missing.join(", ")}`:" — seasonal adjustment in place"}`:`Chart lacks all seasonal adjustors (${th.need}) — mind warmth/moisture; luck periods carrying them help`)}</div>`);
     h.push(`<div style="color:#94a3b8;font-size:.72rem;margin-top:6px">${T("调候依据：《穷通宝鉴》以月令气候定寒暖燥湿，先调候后扶抑；十干各月用神表为通行版本，流派间略有出入，本卡仅作命局特点提示，不作硬性断吉凶。")}</div>`);
+    h.push(`</div>`);
+  }
+  // 职业方向卡（用神五行 → 行业，知识库§六）
+  const cd = careerInfo(bazi);
+  if(cd){
+    h.push(`<div class="section-title">${T("🧭 职业方向（用神五行 → 行业）")}</div>`);
+    h.push(`<div class="gua-box" style="font-size:.9rem">`);
+    h.push(`<div class="gua-name">${zh?`主用神五行：${cd.mainWx}`:`Primary favorable element: ${WX_EN[cd.mainWx]}`} <span class="tag">${zh?"旺衰取用":"by strength"}</span>${cd.tiaohouWx?` <span class="tag" style="color:#b45309">${zh?`调候补：${cd.tiaohouWx}`:`seasonal: ${WX_EN[cd.tiaohouWx]}`}</span>`:``}</div>`);
+    h.push(`<div style="line-height:1.9;margin-top:6px">✅ ${zh?`适合行业：${CAREER_WX[cd.mainWx].zh}`:`Suitable fields: ${CAREER_WX[cd.mainWx].en}`}</div>`);
+    h.push(`<div style="line-height:1.9;color:#475569;margin-top:4px">🧭 ${zh?CAREER_PLAIN[cd.mainWx][0]:CAREER_PLAIN[cd.mainWx][1]}</div>`);
+    h.push(`<div style="line-height:1.9;color:#475569;margin-top:4px">📋 ${zh?`取法说明：${cd.reasonZh}`:`Method: ${cd.reasonEn}`}${cd.altWx&&cd.altWx.length?zh?`（次选：${cd.altWx.join("、")}）`:` (alternates: ${cd.altWx.map(w=>WX_EN[w]||w).join(", ")})`:""}</div>`);
+    if(cd.noteZh) h.push(`<div style="line-height:1.9;color:#b45309;margin-top:4px">💡 ${zh?cd.noteZh:cd.noteEn}</div>`);
+    h.push(`<div style="color:#94a3b8;font-size:.72rem;margin-top:6px">${T("职业依据：用神五行对应行业（知识库§六）；取法为简化规则（身强喜克泄耗、身弱喜生扶，从格顺势；调候先于扶抑），仅作方向参考，择业仍以现实条件与个人兴趣为准。")}</div>`);
     h.push(`</div>`);
   }
   h.push(`</div>`);
@@ -2749,6 +2902,28 @@ function renderReport(bazi, input){
     h.push(`<div style="color:#64748b;font-size:.85rem">${T("往后暂无高信号年份，平稳为主，安心过日子。")}</div>`);
   }
   h.push(`</div>`);
+
+  // ===== 未来12个月逐月提醒（流月） =====
+  try{
+    const lym = liuyueList(bazi, input.tz, 12);
+    if(lym.length){
+      h.push(`<div class="rp-card"><h2>${T("📅 未来12个月逐月提醒（流月）")} <span class="tag">${T("节气定月 · 月月细看")}</span></h2>`);
+      h.push(`<div class="warn" style="border-color:rgba(99,102,241,.3);background:rgba(99,102,241,.06);color:#c7d2fe">${T("大运看十年、流年看一年、流月看一个月：下面把未来12个月的‘流月’逐月拆开，看每个月大致往哪个方向使劲、要留意什么。流月力量远弱于流年，只作当月参考，不必过度解读。")}</div>`);
+      for(const m of lym){
+        const d0=m.d0, d1=m.d1;
+        const dateStr = zh? `${d0.y}年${d0.m}月${d0.d}日—${d1.y}年${d1.m}月${d1.d}日` : `${d0.y}-${pad2(d0.m)}-${pad2(d0.d)} — ${d1.y}-${pad2(d1.m)}-${pad2(d1.d)}`;
+        const theme = MONTH_THEME[m.ss];
+        h.push(`<div class="ev-item" style="margin-bottom:8px">`);
+        h.push(`<div class="ev-head"><span class="ev-cat">${gzDisplay(m.gz)}</span><span class="tag" style="font-size:.72rem">${ssName(m.ss)}</span><span style="font-size:.72rem;color:#64748b;margin-left:6px">${dateStr}</span></div>`);
+        h.push(`<div class="ev-plain" style="margin-top:4px">${theme?theme[zh?0:1]:m.gz}</div>`);
+        if(m.notes.length) h.push(`<div class="ev-plain" style="color:#b45309;font-size:.82rem;margin-top:3px">⚠️ ${zh?m.notes.map(n=>n[0]).join("；"):m.notes.map(n=>n[1]).join("; ")}</div>`);
+        if(m.shen.length) h.push(`<div class="ev-plain" style="color:#0f766e;font-size:.8rem;margin-top:2px">✨ ${zh?m.shen.join("、"):m.shen.map(s=>shenName(s)).join(", ")}</div>`);
+        h.push(`</div>`);
+      }
+      h.push(`<div style="color:#94a3b8;font-size:.72rem;margin-top:6px">${T("流月依据：以节气为月界（同八字月柱取法），月干以流年干五虎遁起（甲己之年丙作首…）；流月与命局刑冲合害规则同流年，力量按 年>月 递减，仅作当月参考。")}</div>`);
+      h.push(`</div>`);
+    }
+  }catch(e){ console.error("liuyue err", e); }
 
   // 免责
   h.push(`<div class="rp-card"><h2>${T("📖 说明")}</h2>`);
