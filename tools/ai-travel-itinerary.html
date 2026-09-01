@@ -1,84 +1,78 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI 旅游行程规划 | AgentGongju.com</title>
-<meta name="description" content="输入目的地与天数，AI生成合理的每日行程安排，含景点、美食与注意事项"><meta name="keywords" content="旅游攻略,行程规划,旅行计划,目的地,攻略">
+<title>AI旅行行程规划 | AgentGongju.com</title>
+<meta name="description" content="输入目的地、天数与预算，AI为你规划每日行程安排，含景点推荐、用餐建议与出行提示，旅行不踩坑。">
+<meta name="keywords" content="AI旅行,行程规划,旅游攻略,旅行计划,目的地推荐,自由行">
 <link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
 <style>
-.tool-container{max-width:740px;margin:100px auto 60px;padding:0 20px}
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
 .tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
 .tool-header p{color:#94a3b8}
 .card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
 .card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
 select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
-input:focus,select:focus{border-color:#6366f1}
+textarea{min-height:70px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
 .param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 .btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
 .btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
 .result-area{display:none;margin-top:20px}
 .result-area.active{display:block}
-.sec{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:16px 20px;color:#e2e8f0;line-height:2;font-size:.92rem;margin-bottom:12px}
-.sec h4{color:#a855f7;margin:0 0 6px 0;font-size:1rem}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
 .copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
 .copy-btn:hover{background:rgba(99,102,241,0.25)}
-.tip{background:rgba(168,85,247,0.08);border:1px solid rgba(168,85,247,0.3);border-radius:12px;padding:16px;color:#cbd5e1;line-height:1.9;font-size:.88rem}
+.tip{color:#94a3b8;font-size:.85rem;margin-bottom:12px}
 @media(max-width:600px){.param-row{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 <nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
 <div class="tool-container">
-<div class="tool-header"><h1>🧳 AI 旅游行程规划</h1><p>把旅程安排得明明白白，玩得尽兴不赶路</p></div>
+<div class="tool-header"><h1>🧳 AI 旅行行程规划</h1><p>目的地、天数、预算一键配齐，轻松出行</p></div>
+
 <div class="card">
+<label>📍 目的地</label>
+<textarea id="dest" placeholder="例如：云南大理、成都、厦门鼓浪屿、日本东京、三亚……"></textarea>
 <div class="param-row">
-<div><label>📍 目的地</label><input type="text" id="dest" placeholder="例如：成都、大理、杭州"></div>
-<div><label>🗓️ 玩几天</label>
-<select id="days"><option value="1">1 天</option><option value="2">2 天</option><option value="3" selected>3 天</option><option value="4">4 天</option><option value="5">5 天</option></select></div>
+<div><label>📅 出行天数</label>
+<select id="days"><option value="2">2天</option><option value="3" selected>3天</option><option value="5">5天</option><option value="7">7天</option></select></div>
+<div><label>💰 预算范围</label>
+<select id="budget"><option value="经济型">💰 经济型</option><option value="舒适型" selected>💼 舒适型</option><option value="豪华型">👑 豪华型</option></select></div>
 </div>
-<div><label>👣 旅行风格</label>
-<select id="style"><option value="休闲" selected>🌿 休闲放松</option><option value="打卡">📸 必打卡</option><option value="美食">🍜 美食之旅</option><option value="亲子">👨‍👩‍👧 亲子出行</option></select></div>
-<button class="btn-gen" id="genBtn">✨ 生成行程</button>
+<button class="btn-gen" id="genBtn">🗺️ 生成行程</button>
 </div>
+
 <div class="result-area" id="resultArea">
 <div class="card">
-<div class="sec"><h4>🗺️ <span id="destName"></span>每日行程</h4><div id="dayBox"></div></div>
-<div class="sec"><h4>🍽️ 当地必吃</h4><div id="foodBox"></div></div>
-<div class="sec"><h4>⚠️ 出行小贴士</h4><div id="tipBox"></div></div>
-<div style="text-align:right"><button class="copy-btn" onclick="copyAll()">📋 复制全部</button></div>
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 你的旅行行程</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制行程</button>
+<div class="tip" style="margin-top:12px">💡 出行提示：提前订好住宿与热门景点门票，避开高峰时段，关注当地天气与交通，带好防晒和证件。</div>
 </div>
 </div>
 </div>
 <footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
 <script>
-const foods=['当地特色小吃街','老字号招牌菜','人气奶茶/甜品','市场现做早点','招牌餐厅推荐菜','夜市美食'];
-const tips=['提前在官方渠道预约热门景点门票，避开人流高峰时段；','带上身份证与常用药品，留意实时天气带好衣物雨具；','备好零钱和移动支付，出行优先公共交通避免拥堵；','下载地图离线包，行程别排太满，留点惊喜给偶遇。'];
-const openers={
-休闲:['上午睡到自然醒，从当地市集/老街悠闲逛起，午后找家茶馆或咖啡馆歇脚，傍晚看落日。','上午逛一处人文景点，午后慢下来喝个下午茶，晚上找条老街慢慢踱。'],
-打卡:['早起直奔地标景点拍照，中午打卡网红餐厅，下午转战博物馆/观景台出片。','上午安排最想去的两个必到点，下午顺路到网红街区，傍晚登高俯瞰城市夜景。'],
-美食:['上午从老字号早点开始，一路寻味当地人开的苍蝇馆子，午后甜品、晚间夜市吃到尽兴。','早餐吃地道面食，午餐安排一顿招牌正餐，下午逛市场淘特产，晚上碳水狂欢收尾。'],
-亲子:['上午安排孩子感兴趣的科技馆/动物园，午后回酒店午休，傍晚到公园或亲子餐厅放电。','上午户外亲近自然，下午室内乐园避暑，晚上让孩子早点休息保存体力。']};
+const ACTS=[['本地特色老街漫步','网红打卡地拍照','地道小吃街探店'],['标志性景点深度游','当地博物馆/文化馆','日落观景点'],['自然风光徒步/骑行','农贸市场/夜市体验','特色美食餐厅体验'],['周边一日游','水上/山地户外活动','城市地标夜景']];
+const FOOD=[['当地特色小吃','老字号早餐','夜市美食'],['评分高的本地菜馆','海边/江边景致餐厅','甜品下午茶'],['特色火锅/烧烤','本地人气餐厅','早餐铺体验']];
 document.getElementById('genBtn').addEventListener('click',()=>{
-if(!Paywall.countUse('AI 旅游行程规划 | AgentGongju.com'))return;
-const dest=document.getElementById('dest').value.trim()||'目的地';
+if(!Paywall.countUse('AI旅行行程规划 | AgentGongju.com'))return;
+const dest=document.getElementById('dest').value.trim();
 const days=parseInt(document.getElementById('days').value);
-const style=document.getElementById('style').value;
-document.getElementById('destName').textContent=dest;
-const dayBox=document.getElementById('dayBox');dayBox.innerHTML='';
-const op=openers[style];
-for(let i=1;i<=days;i++){
-const isMorning=i%2===1;
-dayBox.innerHTML+='<div style="padding:6px 0"><b style="color:#a5b4fc">Day '+i+'</b>：'+(isMorning?op[0]:op[1])+'</div>';
+const budget=document.getElementById('budget').value;
+if(!dest){alert('请先填写目的地');return;}
+let out='【'+dest+' · '+days+'天 · '+budget+' 行程规划】\n\n';
+out+='━━ 出行准备 ━━\n· 提前预订往返交通与住宿；\n· 下载离线地图，备好现金与移动支付；\n· 查询当地天气与公共交通。\n\n';
+for(let d=1;d<=days;d++){
+out+='━━ 第'+d+'天 ━━\n· 上午：'+ACTS[(d-1)%4][0]+'；\n· 下午：'+ACTS[(d-1)%4][1]+'；\n· 傍晚：'+ACTS[(d-1)%4][2]+'。\n· 用餐：'+FOOD[(d-1)%3][0]+'、'+FOOD[(d-1)%3][1]+'。\n'+(budget==='经济型'?'· 预算提示：以公交/地铁+平价餐厅为主，控制开销。':budget==='豪华型'?'· 可升级高端酒店与包车服务，尽情享受旅程。':'· 预算适中，住品质民宿/连锁酒店，吃住安心。')+'\n\n';
 }
-const foodBox=document.getElementById('foodBox');
-const fi=(i)=>foods[(i*3+dest.length)%foods.length];
-foodBox.innerHTML='<div>① '+fi(0)+'　② '+fi(1)+'　③ '+fi(2)+'</div>';
-const tipBox=document.getElementById('tipBox');tipBox.innerHTML='';
-tips.forEach((t,i)=>{tipBox.innerHTML+='<div>'+(i+1)+'. '+t+'</div>';});
-window._copyText='【'+dest+' '+days+'日行程】\n'+dayBox.innerText+'\n【必吃】'+foodBox.innerText+'\n【贴士】\n'+tipBox.innerText;
+out+='━━ 温馨提醒 ━━\n· 行程不必太满，留出喘息与拍照时间；\n· 热门景点错峰前往，体验更佳；\n· 结伴出行，注意安全与天气变化。\n\n【旅途愉快，遇见美好风景 🌄】';
+document.getElementById('outputBox').innerText=out;
 document.getElementById('resultArea').classList.add('active');
 });
-function copyAll(){navigator.clipboard.writeText(window._copyText||document.body.innerText).then(()=>alert('✅ 已复制！'))}
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 行程已复制！'))}
 </script>
 </body>
 </html>

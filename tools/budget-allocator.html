@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI月度预算分配 | AgentGongju.com</title>
+<meta name="description" content="输入你的月收入和花销重点，AI按常见比例为你规划住房、餐饮、储蓄、娱乐等各项目支出预算，帮你告别月光族。">
+<meta name="keywords" content="预算,理财,记账,月度预算,存钱,支出规划,理财规划">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+textarea,input[type=text],select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tag-btn{display:inline-block;padding:5px 12px;background:rgba(99,102,241,0.12);border:1px solid rgba(99,102,241,0.25);border-radius:20px;color:#a5b4fc;cursor:pointer;font-size:.8rem;margin:3px;transition:all .2s}
+.tag-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>💰 AI月度预算分配</h1><p>科学的支出结构，让你攒得住钱</p></div>
+
+<div class="card">
+<label>💵 每月税后收入（元）</label>
+<input type="text" id="income" placeholder="例如：15000">
+<label>🧑‍🤝‍🧑 家庭情况</label>
+<select id="family"><option value="single">单身独居</option><option value="couple">二人世界</option><option value="family">三口之家</option></select>
+<label>✨ 计划目标</label>
+<div>
+<span class="tag-btn" onclick="setGoal('存钱')">🐷 多存钱</span>
+<span class="tag-btn" onclick="setGoal('平衡')">⚖️ 均衡生活</span>
+<span class="tag-btn" onclick="setGoal('还债')">💳 还清负债</span>
+</div>
+<label>📝 特殊固定支出（可选，如房贷）</label>
+<input type="text" id="fixed" placeholder="例如：房贷4000、车贷1500……">
+<button class="btn-gen" id="genBtn">📊 生成预算方案</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">📊 你的月度预算方案</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制预算方案</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('AI月度预算分配 | AgentGongju.com'))return;
+const income=parseFloat(document.getElementById('income').value);
+const family=document.getElementById('family').value;
+const goal=document.getElementById('goal')?document.getElementById('goal').value:'平衡';
+const fixed=document.getElementById('fixed').value.trim();
+if(!income||isNaN(income)||income<=0){alert('请填写有效的月收入');return;}
+// 比例方案
+const ratio={
+'存钱':{housing:0.28,food:0.22,transport:0.06,utility:0.06,saving:0.28,fund:0.06,play:0.04},
+'平衡':{housing:0.3,food:0.25,transport:0.07,utility:0.07,saving:0.2,fund:0.06,play:0.05},
+'还债':{housing:0.3,food:0.22,transport:0.06,utility:0.06,saving:0.1,fund:0.2,play:0.06}
+};
+const fatAdj={single:1,family:0.8,couple:0.9};
+const r=ratio[goal]||ratio['平衡'];
+function yuan(p){return Math.round(income*p*100)/100;}
+let out='【月度预算方案 · 月收入 '+income+' 元】\n\n';
+(function build(){
+out+='🏠 住房(+物业) 约 '+yuan(r.housing)+' 元（'+(r.housing*100)+'%）\n';
+out+='🍚 餐饮 约 '+yuan(r.food*fatAdj[family])+' 元\n';
+out+='🚌 交通 约 '+yuan(r.transport)+' 元\n';
+out+='💡 水电通讯 约 '+yuan(r.utility)+' 元\n';
+out+='💰 储蓄/应急 约 '+yuan(r.saving)+' 元\n';
+out+='📈 投资/还债 约 '+yuan(r.fund*fatAdj[family])+' 元\n';
+out+='🎉 娱乐社交 约 '+yuan(r.play)+' 元\n';
+})();
+if(fixed){out+='\n📌 固定支出「'+fixed+'」：建议先从收入中扣除，再调整其余项比例。\n';}
+out+='\n💡 理财提醒：先储蓄后消费（发薪日先把储蓄转走），日常用记账App追踪，月底复盘超支项。';
+out+='\n—— 比例是参考，请结合你的城市消费和实际需求灵活调整 📝';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function setGoal(v){var el=document.getElementById('goal');if(el){el.value=v;}else{var s=document.createElement('select');s.id='goal';s.innerHTML='<option>'+v+'</option>';document.body.appendChild(s);}}
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 预算方案已复制！'))}
+</script>
+</body>
+</html>

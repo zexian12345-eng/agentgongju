@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Excel公式助手 | AgentGongju.com</title>
+<meta name="description" content="用大白话描述你的Excel需求，AI帮你写出可用的Excel公式，并附带WPS/Excel中英文双版本。">
+<meta name="keywords" content="Excel公式,WPS公式,函数,sheet,表格,公式生成,办公效率">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:80px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{color:#94a3b8;font-size:.85rem;margin-bottom:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🧮 AI Excel公式助手</h1><p>大白话描述需求，AI帮你把公式写明白</p></div>
+
+<div class="card">
+<label>📝 用大白话描述你要做什么</label>
+<textarea id="desc" placeholder="例如：B列是每个人的分数，我想在C列显示出90分以上就是优秀、60-90是及格、不到60是不及格…… 或：统计A列里面不重复的名字有几个"></textarea>
+<div class="param-row">
+<div><label>📊 软件环境</label>
+<select id="soft"><option value="both" selected>两个都要</option><option value="excel">Excel</option><option value="wps">WPS</option></select></div>
+<div><label>📁 复杂度</label>
+<select id="level"><option value="简单" selected>👌 初级</option><option value="进阶">🚀 进阶</option><option value="高级">💎 高级</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">✨ 生成公式</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 生成结果</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制公式</button>
+<div class="tip" style="margin-top:12px">💡 小贴士：公式里 A1、B2 等单元格引用请按你的实际数据位置调整；WPS与Excel公式基本通用。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const ruleMap=[
+{kw:['不重复','唯一','去重','有几个名字','有几个'],title:'统计不重复数量',formula:'=SUMPRODUCT(1/COUNTIF(A2:A100,A2:A100))',note:'统计A2:A100范围中不重复单元格的个数',zh:'不重复个数',level:['简单','进阶']},
+{kw:['求和','合计','加起来'],title:'条件求和',formula:'=SUMIF(A2:A100,"条件",B2:B100)',note:'当A列满足条件时，对B列对应值求和',zh:'条件求和',level:['简单']},
+{kw:['平均','平均数'],title:'平均值',formula:'=AVERAGE(B2:B100)',note:'计算B2:B100的平均值',zh:'平均值',level:['简单']},
+{kw:['优秀','不及格','及格','分级','判断','if'],title:'多条件分级判断',formula:'=IF(B2>=90,"优秀",IF(B2>=60,"及格","不及格"))',note:'B列分数90以上优秀、60-90及格、60以下不及格',zh:'多条件判断',level:['简单','进阶']},
+{kw:['匹配','查找','查一下','对应'],title:'VLOOKUP精确查找',formula:'=VLOOKUP(A2,区域!A:B,2,FALSE)',note:'在另一区域查找A2对应的值',zh:'VLOOKUP匹配',level:['进阶']},
+{kw:['中位数','中间值'],title:'中位数',formula:'=MEDIAN(B2:B100)',note:'返回B列数值的中位数',zh:'中位数',level:['简单']},
+{kw:['第几大','排名','名次'],title:'排名',formula:'=RANK(B2,$B$2:$B$100,0)',note:'对B列数值降序排名（0降序）',zh:'RANK排名',level:['进阶']},
+{kw:['今天','到期','还剩','剩余天数'],title:'日期差值',formula:'=DATEDIF(TODAY(),B2,"d")',note:'计算今天到B列日期的剩余天数',zh:'到期天数',level:['进阶']},
+{kw:['去空格','清空格','trim'],title:'去除前后空格',formula:'=TRIM(A2)',note:'去掉A2单元格文字前后的多余空格',zh:'清除空格',level:['简单']},
+{kw:['连接','合并','拼起来','组合'],title:'文本连接',formula:'=A2&" - "&B2',note:'将A、B两列内容用" - "连接起来',zh:'文本拼接',level:['简单']}
+];
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI Excel公式助手 | AgentGongju.com'))return;
+const desc=document.getElementById('desc').value.trim();
+const soft=document.getElementById('soft').value;
+const level=document.getElementById('level').value;
+if(!desc){alert('请先描述你的需求');return;}
+let rule=null;
+for(const r of ruleMap){if(r.kw.some(k=>desc.includes(k))&&(r.level.includes(level)||r.level.includes('进阶')===false)){rule=r;break;}}
+// fallback logic
+if(!rule){for(const r of ruleMap){if(r.kw.some(k=>desc.includes(k))){rule=r;break;}}}
+const f=rule||{title:'通用求和',formula:'=SUM(B2:B100)',note:'对B列数据求和',zh:'求和'};
+let out='【AI公式助手 · '+level+'· '+soft==='both'?'Excel/WPS':soft+'】\n\n';
+out+='━━ 你的需求 ━━\n'+desc+'\n\n';
+out+='━━ 推荐公式：'+f.title+' ━━\n';
+out+='■ 公式：\n'+f.formula+'\n\n';
+out+='■ 说明：'+f.note+'\n';
+if(soft==='both'||soft==='wps'){out+='\n■ WPS版本（含义相同）：\n'+f.zh+' 同样适用上述公式，WPS兼容Excel函数。\n';}
+if(level==='高级'){out+='\n■ 进阶写法（数组公式版）：\n请将公式中的区域范围按需调整，按 Ctrl+Shift+Enter 确认。\n';}
+out+='\n━━ 使用提醒 ━━\n· 将公式中的单元格区域（如 B2:B100）替换为你的实际数据范围；\n· 若数据较多，建议用绝对引用（加$）防止下拉时变化，例如 $B$2:$B$100。';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 公式已复制！'))}
+</script>
+</body>
+</html>

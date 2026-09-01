@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI猫咪行为解读器 | AgentGongju.com</title>
+<meta name="description" content="输入你家猫咪的怪行为，帮你解读背后的真实含义，尾巴、叫声、蹭人、拆家，让铲屎官更懂猫咪的心。">
+<meta name="keywords" content="猫咪,猫,行为,解读,铲屎官,宠物,养猫,撸猫">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+textarea,input[type=text],select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:80px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.9;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🐱 AI猫咪行为解读器</h1><p>读不懂猫主子的心？帮你翻译TA的每一个小动作</p></div>
+
+<div class="card">
+<label>📢 描述你家喵的行为？</label>
+<textarea id="behavior" placeholder="例如：它趴在我键盘上，还一直用屁股对着我用尾巴扫我"></textarea>
+<div class="param-grid">
+<div><label>🐾 猫咪年龄段</label>
+<select id="age"><option>幼猫（1年内）</option><option>成猫（1-7岁）</option><option>老年猫（7岁以上）</option></select></div>
+<div><label>💓 它最近的状态</label>
+<select id="state"><option>刚到家不久</option><option>日常状态</option><option>似乎生病了</option><option>刚绝育/生产过</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">🔍 解读猫语</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🐱 猫语翻译结果</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制解读</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const rules=[
+{keys:['尾巴','摇','甩'],msg:'尾巴平稳摆动通常表示放松惬意；若快速抽打则可能在表达烦躁或专注捕猎，注意观察哈。'},
+{keys:['咕噜','呼噜','咕咕'],msg:'咕噜咕噜既是满足的信号，也有自愈放松的作用，说明它正处于安心状态。'},
+{keys:['蹭','蹭我','靠'],msg:'用脸颊、下巴蹭你是它在你身上留下气味标记，等于给你盖章认证——你是它的人啦！'},
+{keys:['踩奶','抓','按'],msg:'爪子一下一下踩踏是在回忆幼年喝奶时的安全感，是极度信任与依恋的表现。'},
+{keys:['屁股','背对','尾巴扫'],msg:'把屁股对着你其实是它极度信任你（这是把最脆弱的一面交给你），并顺便用尾巴给你“按摩打招呼”。'},
+{keys:['拆家','抓沙发','磨爪'],msg:'磨爪是为了打磨指甲、标记领地，属于天性。别生气，配个猫抓板就能两全其美。'},
+{keys:['盯着','瞪','凝视'],msg:'盯着你不眨眼可能是“专注观察”，也可能是在好奇。缓缓眨眼是猫式飞吻，你可以回应它。'},
+{keys:['呕吐','不吃','拉稀','蔫'],msg:'持续呕吐或食欲不振可能是健康预警，建议尽快带去靠谱的宠物医院检查。'}
+];
+function interpret(text,age,state){
+let hits=[];
+for(const r of rules){
+if(r.keys.some(k=>text.includes(k)))hits.push(r.msg);
+}
+let out=hits.length?hits.join('\n\n'):'暂时没匹配到典型猫语，不过结合你的描述，它大概率是在用它的方式表达「需要你的关注或安心」。';
+let ageNote='';
+if(age==='幼猫（1年内）')ageNote='幼猫正处于探索期，行为多源于好奇与习得，给足安全感与正向引导即可。';
+else if(age==='老年猫（7岁以上）')ageNote='老年猫行为变化要更多留意健康，建议定期体检，布置舒适的低矮休息区。';
+let stateNote='';
+if(state==='刚到家不久')stateNote='新环境会让它不安，多给隐蔽角落和固定作息，很快就能适应。';
+else if(state==='似乎生病了')stateNote='若伴随精神差、发烧、拒食，别犹豫，及时就医更稳妥。';
+else if(state==='刚绝育/生产过')stateNote='术后或产后猫咪更敏感，注意保暖与安静，减少打扰。';
+return out+'\n\n【年龄段建议】'+ageNote+'\n【状态提醒】'+stateNote;
+}
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI猫咪行为解读器 | AgentGongju.com'))return;
+const b=document.getElementById('behavior').value.trim();
+if(!b){alert('请先描述猫咪的行为');return;}
+const age=document.getElementById('age').value;
+const st=document.getElementById('state').value;
+const out='【喵星人行为】\n'+b+'\n\n【猫语翻译】\n'+interpret(b,age,st)+'\n\n💛 懂它，才能更爱它。';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 解读已复制！'))}
+</script>
+</body>
+</html>

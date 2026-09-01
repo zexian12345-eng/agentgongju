@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>办公健康小贴士 | AgentGongju.com</title>
+<meta name="description" content="根据你的工作类型和时长，生成针对性的久坐护颈、护眼、手腕保健等办公健康小贴士，并自动计算劳逸安排。">
+<meta name="keywords" content="办公健康,久坐,颈椎,护眼,鼠标手,工位保健,职业病预防">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+textarea,input[type=text],select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:60px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>💺 办公健康小贴士</h1><p>久坐党必备，守护你的颈肩腰手腕</p></div>
+
+<div class="card">
+<label>💼 工作类型</label>
+<select id="job"><option value="sit" selected>久坐电脑办公</option><option value="stand">久站工作（如导购/医护）</option><option value="mix">久坐+偶尔走动</option></select>
+<label>⏱️ 每天工作时长（小时）</label>
+<select id="hours"><option value="4">4小时以内</option><option value="8" selected>5-8小时</option><option value="10">8小时以上</option></select>
+<label>🖥️ 我主要的不适/关注（可多选）</label>
+<div style="display:flex;flex-wrap:wrap;gap:10px">
+<label style="display:flex;align-items:center;gap:6px;font-size:.85rem;margin:0"><input type="checkbox" id="cNeck" style="width:auto;margin:0">颈椎/肩颈</label>
+<label style="display:flex;align-items:center;gap:6px;font-size:.85rem;margin:0"><input type="checkbox" id="cEye" style="width:auto;margin:0">眼睛干涩</label>
+<label style="display:flex;align-items:center;gap:6px;font-size:.85rem;margin:0"><input type="checkbox" id="cWrist" style="width:auto;margin:0">手腕/鼠标手</label>
+<label style="display:flex;align-items:center;gap:6px;font-size:.85rem;margin:0"><input type="checkbox" id="cBack" style="width:auto;margin:0">腰背</label>
+</div>
+<button class="btn-gen" id="genBtn">💡 生成健康贴士</button>
+<label style="margin-top:12px;color:#64748b;font-size:.8rem">* 贴士为通用保健建议，如有明显不适请及时就医</label>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">💺 你的办公健康贴士</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制贴士</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('办公健康小贴士 | AgentGongju.com'))return;
+const job=document.getElementById('job').value;
+const hours=parseInt(document.getElementById('hours').value);
+const concerns=[];
+if(document.getElementById('cNeck').checked)concerns.push('neck');
+if(document.getElementById('cEye').checked)concerns.push('eye');
+if(document.getElementById('cWrist').checked)concerns.push('wrist');
+if(document.getElementById('cBack').checked)concerns.push('back');
+if(!concerns.length)concerns.push('neck','eye');
+const breakMin=hours>=8?45:(hours>=5?60:90);
+let out='【我的办公健康提醒】\n';
+out+='工作类型：'+(job==='sit'?'久坐电脑办公':job==='stand'?'久站工作':'久坐+走动')+'　每日约 '+hours+' 小时\n\n';
+out+='一、劳逸节奏\n';
+out+='· 建议每工作 '+(job==='stand'?'30':'50')+' 分钟就起身活动 '+(breakMin)+' 秒，打破久'+(job==='stand'?'站':'坐')+'状态。\n';
+if(hours>=8)out+='· 工作时长较长，务必安排午间休息，避免连续高强度工作。\n';
+out+='· 设置闹钟或使用番茄钟，定时提醒自己站起来喝口水、伸个懒腰。\n\n';
+out+='二、针对性建议\n';
+if(concerns.includes('eye'))out+='【护眼】\n· 遵循20-20-20法则：每20分钟看向6米外远处20秒。\n· 屏幕亮度与室内光线协调，避免直射眩光；可适当眨眼、滴人工泪液缓解干涩。\n\n';
+if(concerns.includes('neck'))out+='【护颈】\n· 显示器顶部与视线齐平，避免长时间低头；屏幕尽量正对、不歪头。\n· 每小时做转颈、耸肩放松，肩部放松下沉，避免耸肩。\n\n';
+if(concerns.includes('wrist'))out+='【护手腕】\n· 手腕保持自然平直，可用腕托支撑，避免长时间悬空或过度弯曲。\n· 每隔一段时间活动手腕、手指，避免鼠标手/腱鞘炎。\n\n';
+if(concerns.includes('back'))out+='【护腰背】\n· 坐时腰背挺直，加靠垫支撑腰部，双脚平放地面。\n· 每工作1小时做腰背后伸、拉伸，避免久坐骨盆后倾。\n\n';
+if(job==='stand')out+='【久站提醒】\n· 穿有支撑的鞋，定时抬脚活动并做小腿伸展，避免长时间固定站姿下肢疲劳。\n\n';
+out+='三、日常习惯\n· 每天饮水量约1500-2000ml，多走动利于代谢与血循环。\n· 下班后适度运动（快走、拉伸）有助缓解一天伏案/久站的僵硬。\n· 保持充足睡眠，睡姿与枕头高度也影响颈肩健康。\n\n';
+out+='—— 身体是革命的本钱，点滴坚持见成效 💪';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 贴士已复制！'))}
+</script>
+</body>
+</html>

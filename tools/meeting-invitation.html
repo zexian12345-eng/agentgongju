@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>会议邀约通知文案 | AgentGongju.com</title>
+<meta name="description" content="输入会议主题、时间、地点和对象，AI一键生成得体专业的会议邀约通知，支持正式邮件、微信群等多种语气。">
+<meta name="keywords" content="会议通知,邀约文案,会议邀请,办公通知,会议邮件,工作通知">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+textarea,input[type=text],select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:70px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📅 会议邀约通知文案</h1><p>轻松写出得体专业的会议通知</p></div>
+
+<div class="card">
+<label>📌 会议主题</label>
+<input type="text" id="topic" placeholder="例如：Q3 季度经营分析会、新产品方案评审会">
+<label>⏰ 时间</label>
+<input type="text" id="time" placeholder="例如：本周五（8/28）下午 14:00-15:00">
+<label>📍 地点/方式</label>
+<input type="text" id="place" placeholder="例如：3楼会议室 / 腾讯会议 123-456-789">
+<label>👥 通知对象（受邀方）</label>
+<input type="text" id="audience" placeholder="例如：各部门负责人、项目组全体成员">
+<label>🎙️ 通知语气/渠道</label>
+<select id="tone"><option value="mail">正式邮件（商务）</option><option value="wechat" selected>微信群通知（简洁友好）</option><option value="notice">公告栏/内部通知</option></select>
+<label>📝 补充事项（可选，如需带什么、议程）</label>
+<textarea id="extra" placeholder="例如：请提前准备各自进展汇报；会议需投影，""></textarea>
+<button class="btn-gen" id="genBtn">📄 生成会议通知</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">📅 会议邀约通知</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制通知</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('会议邀约通知文案 | AgentGongju.com'))return;
+const topic=document.getElementById('topic').value.trim()||'部门工作协调会';
+const time=document.getElementById('time').value.trim()||'（时间另行通知）';
+const place=document.getElementById('place').value.trim()||'（地点另行通知）';
+const audience=document.getElementById('audience').value.trim()||'相关人员';
+const tone=document.getElementById('tone').value;
+const extra=document.getElementById('extra').value.trim();
+let out='';
+if(tone==='mail'){
+  out+='【会议邀约通知】\n\n';
+  out+='尊敬的各位'+(audience)+'：\n\n';
+  out+='您好！为推进相关工作，兹定于召开「'+topic+'」会议，现将有关事项通知如下：\n\n';
+  out+='一、会议时间：'+time+'\n';
+  out+='二、会议地点：'+place+'\n';
+  out+='三、参会人员：'+audience+'\n';
+  if(extra){out+='四、注意事项：'+extra+'\n';}
+  out+='\n请各位合理安排工作，准时参加。如有特殊情况无法出席，请提前告知。\n\n';
+  out+='期待您的参与，谢谢！\n此致\n敬礼';
+}else if(tone==='wechat'){
+  out+='【会议通知】📢\n\n';
+  out+='各位'+audience+'大家好！\n\n';
+  out+='📌 主题：'+topic+'\n';
+  out+='⏰ 时间：'+time+'\n';
+  out+='📍 方式：'+place+'\n';
+  if(extra){out+='📝 提醒：'+extra+'\n';}
+  out+='\n请准时参加，收到请回复～感谢配合！🙏';
+}else{
+  out+='【会议通知】\n\n';
+  out+='会议主题：'+topic+'\n';
+  out+='会议时间：'+time+'\n';
+  out+='会议地点：'+place+'\n';
+  out+='参会人员：'+audience+'\n';
+  if(extra){out+='注意事项：'+extra+'\n';}
+  out+='\n请相关人员准时出席，谢谢配合！';
+}
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 通知已复制！'))}
+</script>
+</body>
+</html>

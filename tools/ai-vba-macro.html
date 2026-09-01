@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Excel VBA宏生成 | AgentGongju.com</title>
+<meta name="description" content="用大白话描述你想让Excel自动完成的操作，AI帮你生成可直接复制运行的VBA宏代码，并附使用说明，让重复工作一键搞定。">
+<meta name="keywords" content="Excel,VBA,宏,自动处理,办公自动化,excel公式,工作效率">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+textarea,input[type=text],select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:90px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:16px;color:#e2e8f0;line-height:1.7;white-space:pre-wrap;font-size:.85rem;margin-bottom:12px;font-family:Menlo,Consolas,monospace}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem;margin-right:8px}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tag-btn{display:inline-block;padding:5px 12px;background:rgba(99,102,241,0.12);border:1px solid rgba(99,102,241,0.25);border-radius:20px;color:#a5b4fc;cursor:pointer;font-size:.8rem;margin:3px;transition:all .2s}
+.tag-btn:hover{background:rgba(99,102,241,0.25)}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>⚙️ AI Excel VBA宏生成</h1><p>大白话描述需求，自动生成可用的VBA代码</p></div>
+
+<div class="card">
+<label>✨ 常用需求模版</label>
+<div>
+<span class="tag-btn" onclick="setDesc('对A列去重，并把结果放到C列')">去重</span>
+<span class="tag-btn" onclick="setDesc('把B列所有空格删除')">去空格</span>
+<span class="tag-btn" onclick="setDesc('对C列数据求和并显示在D1')">求和</span>
+<span class="tag-btn" onclick="setDesc('高亮显示A列重复的值')">标重复</span>
+<span class="tag-btn" onclick="setDesc('把A1到A100填充序号1到100')">填序号</span>
+</div>
+<label>💬 用大白话描述你想自动完成的操作</label>
+<textarea id="desc" placeholder="例如：我想把A列的重复项去掉，同时把B列的空白单元格标成红色，最后自动筛选出销售额大于1000的行。"></textarea>
+<button class="btn-gen" id="genBtn">⚙️ 生成VBA代码</button>
+<label style="margin-top:12px;color:#64748b;font-size:.8rem">* 生成的代码为通用模板，请结合你的实际表结构调整列号</label>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">⚙️ 生成的VBA代码</div>
+<div class="output-box" id="outputBox"></div>
+<div>
+<button class="copy-btn" onclick="copyCode()">📋 复制代码</button>
+<button class="copy-btn" onclick="copyGuide()">📄 复制使用说明</button>
+</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function buildCode(desc){
+const d=desc||'';
+let code='Sub MyMacro()\n';
+if(d.match(/去重|重复项|去重/)) code+='    Range("A:A").AdvancedFilter Action:=xlFilterCopy, CopyToRange:=Range("C1"), Unique:=True\n';
+if(d.match(/空\s*格|空格/)) code+='    Range("B:B").SpecialCells(xlCellTypeBlanks).Delete Shift:=xlUp\n';
+if(d.match(/标.*红|红色|变色/)) code+='    Range("B:B").SpecialCells(xlCellTypeBlanks).Interior.Color = RGB(255, 0, 0)\n';
+if(d.match(/求和|合计|sum/i)) code+='    Range("D1").Value = Application.WorksheetFunction.Sum(Range("C:C"))\n';
+if(d.match(/序号/)) code+='    For i = 1 To 100\n        Range("A" & i).Value = i\n    Next i\n';
+if(d.match(/大于|>|筛选/)) code+='    ActiveSheet.Range("A1:D1000").AutoFilter Field:=1, Criteria1:=">1000"\n';
+if(d.match(/高亮.*重复|重复.*高亮|标.*重复/)) code+='    For i = 1 To Cells(Rows.Count, 1).End(xlUp).Row\n        If Application.CountIf(Range("A:A"), Cells(i,1)) > 1 Then\n            Cells(i,1).Interior.Color = RGB(255,255,0)\n        End If\n    Next i\n';
+code+='    MsgBox "处理完成！"\nEnd Sub\n';
+return code;
+}
+const guide='【使用说明】\n1. 按 Alt+F11 打开VBA编辑器。\n2. 菜单：插入 → 模块(Module)。\n3. 把上方代码粘贴进模块窗口。\n4. 关闭编辑器，回到Excel。\n5. 按 Alt+F8 选择 MyMacro 运行即可。\n⚠️ 首次使用需在"开发工具→宏安全性"中启用宏。\n如需调整操作对象，修改代码里的列号(如A、B、C)即可。';
+window._code='';
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('AI Excel VBA宏生成 | AgentGongju.com'))return;
+const desc=document.getElementById('desc').value.trim();
+if(!desc){alert('请描述你想实现的操作');return;}
+const code=buildCode(desc);
+window._code=code;
+document.getElementById('outputBox').innerText=code;
+document.getElementById('resultArea').classList.add('active');
+});
+function setDesc(v){document.getElementById('desc').value=v;}
+function copyCode(){navigator.clipboard.writeText(window._code).then(()=>alert('✅ VBA代码已复制！'))}
+function copyGuide(){navigator.clipboard.writeText(guide).then(()=>alert('✅ 使用说明已复制！'))}
+</script>
+</body>
+</html>

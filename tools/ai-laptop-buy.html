@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI笔记本选购指南 | AgentGongju.com</title>
+<meta name="description" content="根据你的使用场景（办公、学习、编程、设计、游戏）和预算，AI帮你梳理笔记本电脑选购要点，帮你理清CPU、内存、屏幕该怎么选。">
+<meta name="keywords" content="笔记本,笔记本电脑,选购,电脑推荐,办公本,游戏本,配置">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+textarea,input[type=text],select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:60px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:600px){.param-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>💻 AI笔记本选购指南</h1><p>按需选购，不花冤枉钱</p></div>
+
+<div class="card">
+<label>🎯 主要用途</label>
+<select id="use"><option value="office">办公/上网</option><option value="study">学习/上网课</option><option value="coding">编程开发</option><option value="design">设计/视频剪辑</option><option value="gaming">游戏</option></select>
+<div class="param-grid">
+<div><label>💰 预算范围</label><select id="budget"><option value="low">4000元以下</option><option value="mid">4000-6000元</option><option value="high">6000-9000元</option><option value="pro">9000元以上</option></select></div>
+<div><label>🔋 需要便携/续航吗</label><select id="portable"><option value="yes">要轻薄便携</option><option value="no">无所谓</option></select></div>
+</div>
+<label>📝 其他需求（可选）</label>
+<input type="text" id="need" placeholder="例如：需要触摸屏、要能装独显、有指定品牌">
+<button class="btn-gen" id="genBtn">💡 生成选购建议</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">💻 选购建议</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制建议</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const rec={
+office:{cpu:'主流i5/R5或轻量级处理器足够',mem:'16GB',disk:'512GB SSD优先，品牌轻薄本为主',note:'办公上网对性能要求不高，重点看续航、键盘手感和重量'},
+study:{cpu:'中端处理器即可',mem:'16GB',disk:'512GB SSD',note:'上网课、写文档为主，可关注屏幕护眼和摄像头清晰度'},
+coding:{cpu:'i5/R5及以上，多核优先',mem:'16GB起，开发建议32GB',disk:'512GB-1TB SSD',note:'编程重点在内存和键盘，可留意是否方便扩展'},
+design:{cpu:'标压i7/R7或更高',mem:'16GB起，建议32GB',disk:'1TB SSD',note:'视频剪辑/设计吃性能，重点关注独立显卡和高色域屏幕'},
+gaming:{cpu:'标压i7/R7以上',mem:'16GB-32GB',disk:'1TB SSD',note:'游戏本重点看独立显卡(如RTX)、散热和高刷屏'}
+};
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('AI笔记本选购指南 | AgentGongju.com'))return;
+const use=document.getElementById('use').value;
+const budget=document.getElementById('budget').value;
+const portable=document.getElementById('portable').value;
+const need=document.getElementById('need').value.trim();
+const r=rec[use];
+let out='【笔记本选购建议】用途：'+useName(use)+'｜预算：'+budgetName(budget)+'\n\n';
+out+='1️⃣ 配置参考\n· CPU：'+r.cpu+'\n· 内存：'+r.mem+'\n· 硬盘：'+r.disk+'\n· 其他：'+r.note+'\n';
+out+='\n2️⃣ 预算怎么花\n'+budgetTip[budget]+'\n';
+if(portable==='yes')out+='\n3️⃣ 便携建议\n· 优先1.4kg以下、续航长、支持PD快充的轻薄本。\n· 接口要够用，最好带Type-C和HDMI。\n';
+if(need)out+='\n4️⃣ 你的补充需求\n· '+need+'（选购时务必核对是否满足）\n';
+out+='\n\n【下单前提醒】\n· 认准官方渠道或正规授权店，警惕低价陷阱。\n· 看真实评测和用户口碑，别只看参数堆料。\n· 新机到手先检查外观、验机、激活备份。💻';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+const budgetTip={low:'低预算优先选上一代清仓高性价比机型，别过分追求最新配置。',mid:'中端预算可选主流处理器+16GB内存+512GB SSD的平衡机型，性能够用。',high:'可入手标压处理器+独显的中高性能本，设计/游戏都能兼顾。',pro:'预算充足可选旗舰处理器+顶级独显+高品质屏幕，注意按需搭配。'};
+function useName(u){return{office:'办公/上网',study:'学习/上网课',coding:'编程开发',design:'设计/视频剪辑',gaming:'游戏'}[u];}
+function budgetName(b){return{low:'4000以下',mid:'4000-6000',high:'6000-9000',pro:'9000以上'}[b];}
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 建议已复制！'))}
+</script>
+</body>
+</html>

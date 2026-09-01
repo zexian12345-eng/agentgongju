@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI约会行程规划器 | AgentGongju.com</title>
+<meta name="description" content="根据城市、预算和偏好，一键生成浪漫实用的约会行程安排，含时间线、餐厅选择、约会话题卡，让每次约会都难忘。">
+<meta name="keywords" content="约会,行程,情侣,浪漫,餐厅,电影,周末,攻略">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+textarea,input[type=text],select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:60px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.9;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🌹 AI约会行程规划器</h1><p>把浪漫安排得明明白白，让每次约会都心动</p></div>
+
+<div class="card">
+<label>🏙️ 所在城市</label>
+<input type="text" id="city" placeholder="例如：上海">
+<label>💰 本次预算（元）</label>
+<input type="text" id="budget" placeholder="例如：500">
+<div class="param-grid">
+<div><label>🎠 约会类型</label>
+<select id="type"><option>初次约会</option><option>浪漫晚餐</option><option>周末短途</option><option>文艺电影</option><option>户外踏青</option></select></div>
+<div><label>⏰ 时段安排</label>
+<select id="time"><option>下午+晚上半天</option><option>全天约会</option><option>晚上约会</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">✨ 生成约会行程</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🌹 你的专属约会行程单</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制行程</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function pick(a){return a[Math.floor(Math.random()*a.length)];}
+const restaurants=[
+{name:'精致小资餐厅',cui:'点一桌颜值与口味兼具的招牌菜，吃的是氛围'},{name:'本地人气口碑店',cui:'地道风味，烟火气最能拉近心距'},
+{name:'江景/夜景餐厅',cui:'边吃边看城市灯火，浪漫值拉满'},{name:'静谧咖啡馆+轻食',cui:'安静的环境适合慢慢聊天了解彼此'}
+];
+const activities={
+'初次约会':['citywalk 沿老街小巷散步','逛本地美术馆/小展览','在河边长椅吃冰淇淋聊聊天'],
+'浪漫晚餐':['提前订好靠窗/有view的位置','准备一份小惊喜/手写卡片','散步消食，看城市夜景'],
+'周末短途':['近郊公园野餐（备好野餐垫和零食）','逛文创园区/市集','骑行或徒步一小段，亲近自然'],
+'文艺电影':['选一部口碑好片，避开烂片坑','买好爆米花和热饮','看完一起聊聊观后感，话题自然就来了'],
+'户外踏青':['植物园/公园赏花拍照','骑共享单车沿河骑行','在草坪铺垫子晒太阳吹风']
+};
+const topics=['最近最开心的一件小事','如果突然有三天假期想去做什么','至今难忘的一道菜/一次旅行','小时候的梦想是什么','最想改掉的一个小习惯','喜欢什么类型的音乐/电影'];
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI约会行程规划器 | AgentGongju.com'))return;
+const city=document.getElementById('city').value.trim();
+const budget=document.getElementById('budget').value.trim();
+const type=document.getElementById('type').value;
+const time=document.getElementById('time').value;
+const budgetTxt=budget?('预算约'+budget+'元'):'预算适中';
+const r=pick(restaurants);
+const acts=activities[type];
+const actsTxt=acts.slice(0,2).join('\n· ');
+timeLine = time==='全天约会'?
+'10:00 集合，先来一杯早咖啡醒神\n11:30 '+acts[0]+'\n13:00 共进午餐：'+r.name+'（'+r.cui+'）\n15:00 '+acts[1]+'\n17:30 傍晚'+acts[2]+'\n19:00 晚餐：'+r.cui+'，慢享二人时光\n21:00 散着步送TA回家，预约下一次':
+time==='晚上约会'?
+'17:30 下班后碰头，先在老城区灯火下散步\n18:30 晚餐：'+r.name+'（'+r.cui+'）\n20:00 '+acts[1]+'\n21:30 找家安静小店喝杯饮品，聊聊天\n22:30 依依不舍地道别':
+'14:00 午后见面，先来一杯特调饮品\n15:00 '+acts[0]+'\n17:00 '+acts[1]+'\n18:30 晚餐：'+r.name+'（'+r.cui+'）\n20:30 夜晚城市漫步，甜点收尾\n21:00 愉快返程，约好下次再见';
+const t1=pick(topics),t2=pick(topics),t3=pick(topics);
+const out='【🌹 约会主题】'+(city?city:'你所在城市')+'｜'+type+'｜'+budgetTxt+'\n\n【📅 时间线】\n'+timeLine+'\n\n【🍽 餐饮亮点】\n'+r.cui+'，建议提前电话确认座位与营业时间。\n\n【💬 话题急救卡（冷场时救场）】\n· '+t1+'\n· '+t2+'\n· '+t3+'\n\n【🌟 加分小贴士】\n主动一点、真诚倾听、记得夸对方，把手机收起来——专心陪伴是最好的浪漫。祝约会顺利，甜度满分！';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 行程已复制！'))}
+</script>
+</body>
+</html>

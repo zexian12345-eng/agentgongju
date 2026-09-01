@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI聚会策划 | AgentGongju.com</title>
+<meta name="description" content="输入聚会类型与人数，AI为你策划一场有氛围的聚会，含主题、场地建议、活动游戏、餐饮安排与流程表。">
+<meta name="keywords" content="聚会策划,聚会活动,团建,同学聚会,生日派对,活动策划,破冰游戏">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:70px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{color:#94a3b8;font-size:.85rem;margin-bottom:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🎉 AI 聚会策划</h1><p>主题、游戏、流程一键安排，聚会氛围拉满</p></div>
+
+<div class="card">
+<label>🎊 聚会类型</label>
+<select id="type"><option value="同学聚会" selected>同学聚会</option><option value="生日派对">生日派对</option><option value="公司团建">公司团建</option><option value="朋友小聚">朋友小聚</option></select>
+<div class="param-row">
+<div><label>👥 预计人数</label>
+<input type="text" id="people" placeholder="例如：10"></div>
+<div><label>🏠 聚会场地</label>
+<select id="place"><option value="家里">家里</option><option value="餐厅" selected>餐厅/包间</option><option value="户外">户外/公园</option><option value="轰趴馆">轰趴馆</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">🎈 生成聚会方案</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 你的聚会方案</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制方案</button>
+<div class="tip" style="margin-top:12px">💡 组织小技巧：提前1-3天确认到场人数，安排好交通与保险；准备破冰小游戏最怕冷场，可根据人气灵活调整。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const THEMES={ '同学聚会':['青春不散场','那些年我们一起奋斗的日子','毕业这些年','好久不见，老同学'], '生日派对':['遇见更好的自己','生日快乐，不止今天','成长快乐','许愿时刻'], '公司团建':['同心同行，共创未来','破浪前行，团队制胜','融合·协作·共赢','一起拼，一起赢'], '朋友小聚':['好久不见，叙叙旧','把酒言欢','美食与老友','今日宜相聚'] };
+const GAMES=[['你画我猜','真心话大冒险','谁是卧底','你演我猜'],['K歌大比拼','桌游局','才艺show','趣味问答'],['抢凳子','萝卜蹲','团队接力挑战','猜歌词']];
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI聚会策划 | AgentGongju.com'))return;
+const type=document.getElementById('type').value;
+const people=document.getElementById('people').value.trim()||'10';
+const place=document.getElementById('place').value;
+const themes=THEMES[type];
+const theme=themes[(people.length+type.length)%themes.length];
+let out='【'+type+' · 约'+people+'人 · 场地：'+place+' 策划方案】\n\n';
+out+='━━ 聚会主题 ━━\n「'+theme+'」\n\n';
+out+='━━ 场地与布置 ━━\n· '+(place==='家里'?'布置简单温馨，准备坐垫、靠枕、小彩灯，营造轻松氛围':'选择空间开阔、交通便利的'+place+'，提前订位避免排队')+'；\n· 准备主题装饰（气球/横幅/照片墙）；\n· 备好蓝牙音箱，音乐是氛围担当。\n\n';
+out+='━━ 活动流程 ━━\n· 开局破冰（15-20分钟）：'+GAMES[0][(people.length)%4]+'或作简单自我介绍，让气氛热起来；\n· 核心游戏：'+GAMES[1][(people.length+1)%3]+'组队PK，输的接受小惩罚（唱歌/真心话）；\n· '+((type==='生日派对')?'切蛋糕、许愿、送祝福环节':'自由交流+分享近况，围坐畅聊')+'；\n· 收尾：'+(place==='户外'?'合影留念、清理场地':'合影留念、互道晚安')+'。\n\n';
+out+='━━ 餐饮安排 ━━\n· '+(people>8?'建议自助/分餐制，照顾不同口味':'家常小菜+特色饮品，温暖走心')+'；\n· 备好饮用水与解腻小食，爱拍照的可准备饮品摆拍；\n· 记住收集忌口与过敏信息。\n\n';
+out+='━━ 人员分工 ━━\n· 主策划1人：把控流程节奏；\n· 后勤1-2人：采购、场地、交通；\n· 摄影师1人：记录精彩瞬间。\n\n';
+out+='【聚的是情谊，散场后各奔山海，愿你我都好 ✨】';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 方案已复制！'))}
+</script>
+</body>
+</html>

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI短视频神评论生成器 | AgentGongju.com</title>
+<meta name="description" content="输入短视频内容和类型，一键生成爆款神评论，幽默吐槽、励志暖心、悬念共鸣多种风格，帮你轻松冲热评。">
+<meta name="keywords" content="短视频,神评论,热评,评论,抖音,快手,爆款,段子">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+textarea,input[type=text],select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:80px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.9;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.regen-btn{margin-left:10px;padding:8px 20px;background:rgba(168,85,247,0.15);border:1px solid rgba(168,85,247,0.4);border-radius:8px;color:#d8b4fe;cursor:pointer;font-size:.85rem}
+@media(max-width:600px){.param-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>💬 AI短视频神评论生成器</h1><p>动动手指，生成让人眼前一亮的高赞神评</p></div>
+
+<div class="card">
+<label>🎬 视频内容简述</label>
+<textarea id="content" placeholder="例如：一只橘猫试图抓鱼，结果扑通一声掉进了水桶里"></textarea>
+<div class="param-grid">
+<div><label>📌 评论风格</label>
+<select id="style"><option>幽默吐槽</option><option>脑洞反转</option><option>励志暖心</option><option>激情共鸣</option><option>凡尔赛</option><option>疑问好奇</option></select></div>
+<div><label>🎯 评论类型</label>
+<select id="vtype"><option>搞笑视频</option><option>美食视频</option><option>萌宠视频</option><option>旅行风景</option><option>学习干货</option><option>社会热点</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">✨ 生成神评论</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">💬 你的爆款神评论</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制</button>
+<button class="regen-btn" onclick="regen()">🔄 再来一条</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+let lastText='';
+function build(){
+const content=document.getElementById('content').value.trim();
+if(!content){alert('请先填写视频内容');return '';}
+const st=document.getElementById('style').value;
+const vt=document.getElementById('vtype').value;
+const banks={
+'幽默吐槽':[
+()=>'这'+(vt==='萌宠视频'?'猫':vt==='美食视频'?'味道':'剧情')+'已经不能吐槽了，这简直是'+(vt==='萌宠视频'?'年度最佳喜剧演员':'神级演绎')+'，建议导演笑纳，原地出道。',
+()=>'看到这里我笑出腹肌，这'+(vt==='搞笑视频'?'事故':'名场面')+'也太丝滑了，建议上春晚，比小品还顶。',
+()=>'别人家的是'+(vt==='萌宠视频'?'猫主子':'剧情')+'，我家的是'+(vt==='萌宠视频'?'拆迁队':'催泪苦情剧')+'，差距这不是一般的大。',
+()=>'这'+(vt==='美食视频'?'吃法':'操作')+'属实硬核，看得我这个老饕都沉默了，只能说高手在民间。'
+],
+'脑洞反转':[
+()=>'真相其实是这样的：'+(vt==='萌宠视频'?'它掉水桶那一刻，其实是在给人类表演一场预谋已久的“浴缸秀”':'这个反转我早就看穿了，结尾必定藏着最大的彩蛋')+'，编剧都没它敢想。',
+()=>'如果我告诉你，这个'+(vt==='萌宠视频'?'掉水桶的动作':'结尾')+'其实是它自导自演的蹭热度剧本，你会信吗？反正我信了。',
+()=>'看到最后我才发现，原来'+(vt==='萌宠视频'?'这猫':'这剧情')+'从头到尾都是个局，我才是那个被套路的人。'
+],
+'励志暖心':[
+()=>'别人看到的是'+(vt==='萌宠视频'?'好玩':'热闹')+'，我看到的是它对'+(vt==='旅行风景'?'生活的热爱':'目标的执着')+'——每一次跌倒，都是'+(vt==='萌宠视频'?'蓄势':'成长')+'的一跃。',
+()=>'这'+(vt==='学习干货'?'坚持学习的样子':'画面')+'感动到我了，生活不就是这样吗？即使掉进水里，也要'+(vt==='萌宠视频'?'甩甩毛继续喵':'笑着站起来')+'。',
+()=>'为这条视频的'+(vt==='萌宠视频'?'主角':'创作者')+'点赞，认真生活的人（猫）都值得被温柔以待。'
+],
+'激情共鸣':[
+()=>'这'+(vt==='社会热点'?'世道':'画面')+'咱就是说太真实了，看完直接破防，说的就是我本人的日常。',
+()=>'评论区有没有同道中人？！这'+(vt==='美食视频'?'吃相':'画风')+'简直跟我一模一样，一键三连给爷整破防了。',
+()=>'别赞了家人们，这'+(vt==='旅行风景'?'风景':'剧情')+'看得我热血沸腾，立刻打开了'+(vt==='旅行风景'?'订票软件':'外卖软件')+'。'
+],
+'凡尔赛':[
+()=>'就这？我家'+(vt==='萌宠视频'?'猫都学会':'山清水秀')+'比我'+(vt==='美食视频'?'厨艺':'院子')+'强多了，不过跟我比还是差点意思。',
+()=>'还行吧，勉强能看，虽然不如我家'+(vt==='萌宠视频'?'那只会','')+'但胜在真实，给个中评。',
+()=>'这'+(vt==='旅行风景'?'景色':'演技')+'和我上次去的'+(vt==='旅行风景'?'马尔代夫':'片场')+'比还是粉了，笑死。'
+],
+'疑问好奇':[
+()=>'想问问博主，这'+(vt==='萌宠视频'?'猫':'视频')+'后面'+(vt==='萌宠视频'?'有没有洗澡':'还有后续')+'？在线蹲一个，感觉后面还有大瓜。',
+()=>'弱弱问一句，'+(vt==='美食视频'?'这个配方':'这个地点')+'能分享下坐标吗？我也想去'+(vt==='美食视频'?'尝尝':'看看')+'。',
+()=>'有人知道这'+(vt==='萌宠视频'?'是什么品种':'背景音乐')+'吗？评论区蹲一个懂哥。'
+]
+};
+const pool=banks[st]||banks['幽默吐槽'];
+const one=pool[Math.floor(Math.random()*pool.length)]();
+return one;
+}
+function regen(){
+if(!lastText)return;
+document.getElementById('outputBox').innerText=lastText;
+document.getElementById('resultArea').classList.add('active');
+}
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI短视频神评论生成器 | AgentGongju.com'))return;
+const out=build();
+if(!out)return;
+lastText=out;
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 评论已复制！'))}
+</script>
+</body>
+</html>

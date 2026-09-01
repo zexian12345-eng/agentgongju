@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI古诗词接龙 | AgentGongju.com</title>
+<meta name="description" content="输入一句诗词的结尾字或任意诗词，AI为你接上一句符合平仄意境的下句，还能给出出处和解析，玩转古诗词接龙、学诗对句两不误。">
+<meta name="keywords" content="古诗词接龙,诗词接龙,飞花令,对诗,古诗词,接诗句,诗词游戏,格律">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+textarea,input[type=text],select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.verseline{background:rgba(168,85,247,0.08);border-left:3px solid #a855f7;border-radius:8px;padding:16px 20px;color:#e9d5ff;font-size:1.15rem;line-height:1.9;margin-bottom:14px;font-style:italic}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:600px){.param-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🦋 AI古诗词接龙</h1><p>出口成诗，和 AI 玩一局诗词飞花令</p></div>
+
+<div class="card">
+<div class="param-grid">
+<div><label>💡 接龙方式</label><select id="mode"><option value="lastchar">接上一个字的字音/字义</option><option value="anyline">输入任意诗句让我接下句</option></select></div>
+<div><label>🎲 随机主题</label><button class="btn-sm" style="width:100%;padding:12px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:10px;color:#a5b4fc;cursor:pointer" onclick="rollRandom()">🎲 随机来一句</button></div>
+</div>
+<label>📜 输入上句或结尾字</label>
+<input type="text" id="verse" placeholder="例如：床前明月光">
+<button class="btn-gen" id="genBtn">🪄 接过一句</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🦋 接龙对句</div>
+<div class="verseline" id="verseBox"></div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function rnd(n){return Math.floor(Math.random()*n)}
+const pool=[
+['海上生明月',['天涯共此时','张九龄《望月怀远》','写月夜思念，意境开阔旷远']],
+['床前明月光',['疑是地上霜','李白《静夜思》','月白如霜，思乡之情油然而生']],
+['不知天上宫阙',['今夕是何年','苏轼《水调歌头》','借月问天，旷达超脱之境']],
+['落霞与孤鹜齐飞',['秋水共长天一色','王勃《滕王阁序》','色彩绚烂，动静相映的经典名句']],
+['长风破浪会有时',['直挂云帆济沧海','李白《行路难》','豪情万丈，坚定信念']],
+['举头望明月',['低头思故乡','李白《静夜思》','以月为媒，勾起重重心事']],
+['春眠不觉晓',['处处闻啼鸟','孟浩然《春晓》','春晨生意盎然，闲适自得']],
+['国破山河在',['城春草木深','杜甫《春望》','忧国忧民，苍凉沉郁']],
+['两个黄鹂鸣翠柳',['一行白鹭上青天','杜甫《绝句》','色彩明丽，充满生机']],
+['停车坐爱枫林晚',['霜叶红于二月花','杜牧《山行》','写秋景，红于二月花的名喻']],
+['会当凌绝顶',['一览众山小','杜甫《望岳》','豪情壮志，俯瞰群山的胸怀']],
+['欲穷千里目',['更上一层楼','王之涣《登鹳雀楼》','积极进取，站得高望得远']],
+['但愿人长久',['千里共婵娟','苏轼《水调歌头》','美好祝愿，流传千古']],
+['墙角数枝梅',['凌寒独自开','王安石《梅花》','咏梅清高，傲雪绽放']],
+['野火烧不尽',['春风吹又生','白居易《赋得古原草送别》','象征顽强生命力']],
+['大漠孤烟直',['长河落日圆','王维《使至塞上》','写沙漠壮阔，意境雄浑']],
+['明月几时有',['把酒问青天','苏轼《水调歌头》','开篇即设问，豪迈浪漫']],
+['白日依山尽',['黄河入海流','王之涣《登鹳雀楼》','写景壮阔，气势磅礴']],
+['采菊东篱下',['悠然见南山','陶渊明《饮酒》','田园隐逸，心境恬淡']],
+['我寄愁心与明月',['随风直到夜郎西','李白《闻王昌龄左迁》','借月传情，深切真挚']]];
+const randomStarts=['春江潮水连海平','天生我材必有用','人生得意须尽欢','鹅鹅鹅','锄禾日当午','离离原上草','慈母手中线','月落乌啼霜满天','两岸猿声啼不住','桃花潭水深千尺'];
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('AI古诗词接龙 | AgentGongju.com'))return;
+run(document.getElementById('verse').value.trim(),document.getElementById('mode').value);
+});
+function rollRandom(){const v=randomStarts[rnd(randomStarts.length)];document.getElementById('verse').value=v;run(v,document.getElementById('mode').value);}
+function run(input,mode){
+if(!input){alert('请输入一句诗或结尾字');return;}
+const verseBox=document.getElementById('verseBox'),out=document.getElementById('outputBox');
+const text=input;
+if(mode==='anyline'){
+  let found=pool.find(p=>text.includes(p[0])||p[0].includes(text));
+  if(text.includes('光')&&!found)found=['床前明月光',['疑是地上霜'],''];
+  if(found){
+    verseBox.innerHTML='“'+found[0]+'”　→　<span style="color:#a5b4fc">“'+found[1][0]+'”</span>';
+    out.innerText='【对句】'+found[1][0]+'\n【出处】'+(found[1][1]||'佚名')+'\n【解析】'+(found[1][2]||'');
+  }else{
+    verseBox.innerHTML='“'+text+'”';
+    out.innerText='抱歉，内置诗库暂未收录该句。建议以结尾字方式接龙，或换个常见诗句试试～（这是一款离线小工具，诗库有限）';
+  }
+}else{
+  const lastChar=text[text.length-1];
+  let matched=pool.filter(p=>p[0].indexOf(lastChar)>-1||p[0].endsWith(lastChar));
+  if(matched.length===0)matched=pool.filter(p=>fuzzyEnd(p[0],lastChar));
+  if(matched.length===0){
+    verseBox.innerHTML='以“'+lastChar+'”字接龙，AI 一时间没找到恰好的名句，不妨换个字或换句试试～';
+    out.innerText='';
+  }else{
+    const m=matched[rnd(matched.length)];
+    verseBox.innerHTML='接“<span style="color:#fbbf24">'+lastChar+'</span>”：　<span style="color:#a5b4fc">“'+m[0]+'”</span>';
+    out.innerText='【接句】'+m[0]+'\n【出处】'+(m[1][1]||'佚名')+'\n【解析】'+(m[1][2]||'');
+  }
+}
+document.getElementById('resultArea').classList.add('active');
+}
+function fuzzyEnd(line,ch){const last=line[line.length-1];return /[aiueo]/.test(ch)&&/[aiueo]/.test(last)||/n/.test(ch)&&/n/.test(last)||/ng/.test(ch)&&/ng/.test(last);}
+function copyResult(){navigator.clipboard.writeText(document.getElementById('verseBox').innerText.replace(/<[^>]+>/g,' ')+'\n'+document.getElementById('outputBox').innerText).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

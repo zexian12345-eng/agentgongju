@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI让数据会说话 | AgentGongju.com</title>
+<meta name="description" content="把枯燥的数据变成一句有说服力的话。输入你的数据发现，AI帮你提炼成汇报金句与结论，升级你的周报和述职。">
+<meta name="keywords" content="数据文案,数据汇报,数据分析,汇报金句,周报,述职,办公工具,数据可视化文案">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:80px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{color:#94a3b8;font-size:.85rem;margin-bottom:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📈 AI 让数据会说话</h1><p>把干巴巴的数字，翻译成自带说服力的汇报金句</p></div>
+
+<div class="card">
+<label>📊 你的数据发现（数字 + 事实）</label>
+<textarea id="data" placeholder="例如：本月新增用户1200人，环比上月增长35%；次日留存率从28%提升到41%；获客成本下降20%。"></textarea>
+<div class="param-row">
+<div><label>🎯 汇报场景</label>
+<select id="scene"><option value="周报" selected>📝 周报/月报</option><option value="述职">🎤 述职/晋升</option><option value="融资路演">💼 路演/融资</option><option value="对外宣传">📣 对外宣传</option></select></div>
+<div><label>🎨 语气</label>
+<select id="tone"><option value="专业" selected>🧪 专业理性</option><option value="感染力">🔥 有感染力</option><option value="严谨">📏 严谨克制</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">✨ 提炼数据金句</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 你的数据表达方案</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制结果</button>
+<div class="tip" style="margin-top:12px">💡 好数据表达=关键数字+对比参照+一句结论。汇报时先说结论，再摆数据佐证。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI让数据会说话 | AgentGongju.com'))return;
+const data=document.getElementById('data').value.trim();
+const scene=document.getElementById('scene').value;
+const tone=document.getElementById('tone').value;
+if(!data){alert('请先输入你的数据发现');return;}
+const hasPct=/%/.test(data);
+const nums=data.match(/\d+(\.\d+)?/g)||[];
+const maxN=nums.length?Math.max(...nums.map(Number)):0;
+const maxStr=hasPct?maxN+'%':maxN+'';
+const open={
+'周报':`本周核心进展：从数据看，${data} 这组数字背后，是团队把「×」做对了的结果。`,
+'述职':`这段经历里，我用自己的方法论把「问题」拆解落地，数据为证：${data}，它不只是数字，更是把一件事做成的证明。`,
+'融资路演':`我们用一个可验证的增长模型证明市场空间：${data}。这不是预言，是已经发生的业绩。`,
+'对外宣传':`越来越多的人选择了我们：${data}，因为我们在每一处细节上都更用心。`
+}[scene];
+const mid={
+'专业':`用一个公式概括：${data}，趋势清晰、复利可见，边际改善仍在继续。`,
+'感染力':`别人看到的是${maxStr}，我们看到的是每一个真实用户的信任 — ${data}。`,
+'严谨':`基于以上数据（${data}），可合理推断整体处于上行通道，但仍需持续观测以确认拐点。`
+}[tone];
+const kw=nums.length?nums[0]+(hasPct?'%':''):'显著增长';
+let out=`📈 「${scene}」数据金句方案（${tone}向）\n\n`;
+out+='━━ 开场一句话 ━━\n'+open+'\n\n';
+out+='━━ 数据落地段 ━━\n'+mid+'\n\n';
+out+='━━ 收尾结论 ━━\n';
+out+=scene==='对外宣传'?'· 数字会说话，诚意看得见 — 欢迎你也来体验这份「更好」。':`· 结论：${kw} 这一信号，建议作为下一阶段的行动依据，持续放大并固化。`;
+out+='\n\n━━ 表达小技巧 ━━\n· 挑 1 个最突出的数字当"锚点"，其余作支撑；\n· 加上"环比/同比增长""占总量比例"等参照系，让数字有上下文；\n· 汇报顺序：结论 → 数据 → 归因 → 下一步。';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 金句已复制！'))}
+</script>
+</body>
+</html>

@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI 学习计划制定 | AgentGongju.com</title>
-<meta name="description" content="AI学习计划制定，输入学习目标与可支配时间，自动生成分阶段、可执行的周计划表，涵盖复习/练习/复盘，学生与自学必备">
-<meta name="keywords" content="学习计划,备考计划,自律计划,时间管理,学习方法,学习安排">
-<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
+<title>AI学习计划生成器 | AgentGongju.com</title>
+<meta name="description" content="输入想学的内容、目标与可支配时间，AI帮你规划一份可执行的分阶段学习计划。">
+<meta name="keywords" content="学习计划,学习,计划表,备考,自律,目标,时间管理">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -13,99 +13,94 @@
 .card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
 .card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
 select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
-textarea{min-height:70px;resize:vertical}
+textarea{min-height:60px;resize:vertical}
 input:focus,select:focus,textarea:focus{border-color:#6366f1}
 .param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 .btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
 .btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
 .result-area{display:none;margin-top:20px}
 .result-area.active{display:block}
-.phase{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.25);border-radius:12px;padding:16px;margin-bottom:14px}
-.phase .ph{color:#a855f7;font-weight:700;margin-bottom:8px;font-size:.92rem}
-.phase .prow{color:#e2e8f0;line-height:1.9;font-size:.88rem}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
 .copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
 .copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{color:#94a3b8;font-size:.85rem;margin-bottom:12px}
 @media(max-width:600px){.param-row{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 <nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
 <div class="tool-container">
-<div class="tool-header"><h1>📚 AI 学习计划制定</h1><p>科学拆解目标，把「想学」变成可执行的每周安排</p></div>
+<div class="tool-header"><h1>📚 AI 学习计划生成器</h1><p>目标 + 时间，AI为你排布可落地的分阶段学习路线</p></div>
 
 <div class="card">
-<label>🎯 你的学习目标</label>
-<textarea id="goal" placeholder="例如：三个月内通过雅思6.5分 / 一个月掌握Python基础"></textarea>
+<label>🎯 想学什么 / 学习目标</label>
+<textarea id="goal" placeholder="例如：零基础三个月学会Python编程，能独立写爬虫和处理数据；或：12月前考过雅思6.5…"></textarea>
 <div class="param-row">
-<div><label>⏱️ 每天可投入时间</label>
-<select id="time">
-<option value="1-2小时">🌱 挤出型 1-2h/天</option>
-<option value="2-3小时">🌿 规律型 2-3h/天</option>
-<option value="3-5小时">🌳 冲刺型 3-5h/天</option>
-<option value="全天">🔥 全天候备考</option>
-</select></div>
-<div><label>📅 目标周期</label>
-<select id="weeks">
-<option value="2">2 周速成</option>
-<option value="4">1 个月</option>
-<option value="8">2 个月</option>
-<option value="12" selected>3 个月</option>
-<option value="24">半年</option>
-</select></div>
+<div><label>⏱️ 每天可用时间</label>
+<select id="time"><option value="1">⏳ 1 小时</option><option value="2" selected>⏰ 2 小时</option><option value="3">🔥 3 小时</option><option value="5">🚀 5 小时+</option></select></div>
+<div><label>📅 学习总时长</label>
+<select id="weeks"><option value="2">2 周</option><option value="4">1 个月</option><option value="8">2 个月</option><option value="12" selected>3 个月</option><option value="24">6 个月</option></select></div>
 </div>
-<div class="param-row">
-<div><label>🧠 学习阶段划分</label>
-<select id="stage">
-<option value="3">3 段（基础/强化/冲刺）</option>
-<option value="4">4 段（入门/进阶/强化/冲刺）</option>
-</select></div>
-<div><label>📖 学习内容关键词</label>
-<input type="text" id="kw" placeholder="例如：单词、听力、口语 / 语法、函数、练习"></div>
-</div>
-<button class="btn-gen" id="genBtn">🗓️ 生成学习计划</button>
+<label>🧭 你的基础（选填）</label>
+<select id="base"><option value="零基础" selected>🌱 零基础</option><option value="有基础">🌿 有一定基础</option><option value="进阶">🌳 进阶提升</option></select>
+<button class="btn-gen" id="genBtn">✨ 生成学习计划</button>
 </div>
 
 <div class="result-area" id="resultArea">
 <div class="card">
-<div style="color:#a855f7;font-weight:600;margin-bottom:16px">⏳ 你的分阶段学习计划</div>
-<div id="phasesBox"></div>
-<button class="copy-btn" onclick="copyResult()">📋 复制学习计划</button>
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 你的专属学习计划</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制计划</button>
+<div class="tip" style="margin-top:12px">💡 小贴士：计划别排太满，留20%机动时间；每周日复盘一次，及时调整节奏效果更好。</div>
 </div>
 </div>
 </div>
 <footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
 <script>
-const dailyTips={'1-2小时':['碎片时间背知识卡片','单点突破，每天只攻一个模块'],'2-3小时':['黄金2小时高浓度练习+30分钟复盘','分主次模块交替推进'],'3-5小时':['上午新学、下午练习、晚间复盘','保持节奏避免疲劳'],'全天':['上午理论、下午实操、晚间总结','留出30分钟运动舒缓']};
-function rand(a){return a[Math.floor(Math.random()*a.length)]}
+const stages=[
+{name:'打基础 / 入门',desc:'建立整体认知，熟悉核心概念与工具，完成基础练习'},
+{name:'核心突破',desc:'攻克重难点，跟着项目边学边练，建立知识体系'},
+{name:'实战巩固',desc:'独立完成小项目/真题，查漏补缺，形成输出作品'},
+{name:'提升冲刺',desc:'综合进阶，模拟真实场景，复盘优化到稳定水平'}
+];
+const dailyPlan={
+1:['25分钟 进度学习','25分钟 配套练习','10分钟 回顾笔记'],
+2:['50分钟 核心内容','40分钟 实践练习','30分钟 整理笔记/复习'],
+3:['70分钟 学习新内容','60分钟 实操项目','50分钟 复盘与拓展'],
+5:['120分钟 深度学习','90分钟 大量练习','90分钟 项目实战']
+};
 document.getElementById('genBtn').addEventListener('click',()=>{
-if(!Paywall.countUse('AI 学习计划制定 | AgentGongju.com'))return;
+if(!Paywall.countUse('AI学习计划生成器 | AgentGongju.com'))return;
 const goal=document.getElementById('goal').value.trim();
-if(!goal){alert('请先填写学习目标');return;}
 const time=document.getElementById('time').value;
 const weeks=parseInt(document.getElementById('weeks').value);
-const stage=document.getElementById('stage').value;
-const kw=document.getElementById('kw').value.trim()||'待定模块';
-const perStage=Math.round(weeks/(stage==='3'?3:4));
-const names=stage==='3'?['基础夯实','强化提升','冲刺通关']:['入门探索','进阶提升','强化实战','冲刺通关'];
-const box=document.getElementById('phasesBox');box.innerHTML='';
-window._plan='';
-names.forEach((nm,si)=>{
-const days=perStage*7;
-const div=document.createElement('div');div.className='phase';
-const opens=['建立系统认知','聚焦核心难点','转向实战验证','全力冲刺'];
-const mid=si===0?'每日安排如下，保持节奏：':si===names.length-1?'安排如下，稳住心态：':'具体安排如下：';
-div.innerHTML=`<div class="ph">第 ${si+1} 阶段 · ${nm}（约 ${perStage} 周 / ${days} 天）</div>
-<div class="prow">➊ 目标：${nm}——${opens[Math.min(si,opens.length-1)]}「${goal}」。\n➋ 内容：围绕「${kw}」展开${si===0?'系统学习+基础练习':si===names.length-1?'全真模拟+查漏补缺':'专题强化+项目实践'}。\n➌ 每日节奏（${time}）：${dailyTips[time].join('；')}。\n➍ 周复盘：每周日花30分钟总结本周${kw}进展，调整下一周计划。</div>`;
-box.appendChild(div);
-window._plan+=`【第${si+1}阶段 · ${nm}】${perStage}周/${days}天\n 目标：${nm}「${goal}」\n 内容：${kw}\n 节奏（${time}）：${dailyTips[time].join('；')}\n 复盘：每周日总结调整\n\n`;
+const base=document.getElementById('base').value;
+if(!goal){alert('请先填写学习目标');return;}
+const hour=parseInt(time);
+const phaseMath=Math.round(weeks/4)||1;
+const phases=Math.min(stages.length,phaseMath+1);
+let out='【'+base+' · 目标】'+goal+'\n';
+out+='【周期】'+weeks+'周 · 每天 '+hour+' 小时\n\n';
+out+='━━ 总体安排 ━━\n';
+for(let p=0;p<phases;p++){
+const wPer=Math.floor(weeks/phases);
+out+='\n【阶段'+(p+1)+'】'+stages[p].name+'（约'+wPer+'周）\n';
+out+='· 定位：'+stages[p].desc+'\n';
+out+='· 每周安排：\n';
+['周一,三,五','周二,四','周六','周日'].forEach((d,i)=>{
+out+='  '+d+'：'+([hashPick(p,i),'整理知识图谱/学案','做周测与错题复盘','留白/查漏补缺+制定下周'][i%4])+'\n';
 });
-const extra=document.createElement('div');extra.className='phase';
-extra.innerHTML=`<div class="ph">💡 高效执行建议</div><div class="prow">· 用番茄钟专注25+5，保持可持续节奏。<br>· ${rand(['先做难事再感轻松','卡片化复习对抗遗忘曲线','找到学伴互相监督'])}。<br>· 计划是地图不是枷锁，每周弹性微调。</div>`;
-box.appendChild(extra);
-window._plan+='💡 '+(extra.querySelector('.prow').textContent);
+}
+out+='\n━━ 每日任务（每天'+hour+'小时）━━\n';
+(dailyPlan[time]||dailyPlan[2]).forEach((t,i)=>out+='· '+t+'\n');
+out+='\n━━ 学习方法建议 ━━\n';
+out+='· 采用「番茄工作法」，每学'+Math.min(hour*30,90)+'分钟休息5-10分钟；\n· 用「费曼学习法」，学完讲给他人听，检验掌握度；\n· 每周末做一次小结+产出（笔记/作品），形成正反馈。';
+out+='\n\n【🌱 记住：坚持比强度更重要，祝你学习顺利！】';
+document.getElementById('outputBox').innerText=out;
 document.getElementById('resultArea').classList.add('active');
 });
-function copyResult(){navigator.clipboard.writeText('【AI 学习计划】\n'+window._plan).then(()=>alert('✅ 计划已复制！'))}
+function hashPick(a,b){const arr=['学习+练习结合','观看视频+动手实操','精读教材+做笔记','刷题+查资料'];return arr[(a*3+b)%arr.length];}
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 学习计划已复制！'))}
 </script>
 </body>
 </html>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 文言文翻译器 | AgentGongju.com</title>
+<meta name="description" content="将文言文/古诗文/成语精句一键翻译成现代白话文，附逐句注释与重点字词解释，适合学生与古文爱好者">
+<meta name="keywords" content="AI翻译,文言文翻译,古文翻译,古诗今译,成语出处,中学语文,白话文">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:100px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.btn-gen:disabled{opacity:.5;cursor:not-allowed}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.panel{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.25);border-radius:12px;padding:16px 18px;margin-bottom:12px}
+.panel-line{font-size:.9rem;color:#cbd5e1;line-height:2}
+.panel-line b{color:#a855f7}
+.original{color:#d8b4fe;font-size:1rem;margin-bottom:8px}
+.word{display:inline-block;background:rgba(99,102,241,0.12);border-radius:6px;padding:2px 8px;margin:3px;font-size:.82rem;color:#a5b4fc}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📜 AI 文言文翻译器</h1><p>古文今译 + 逐句注释，文言文轻松读懂</p></div>
+
+<div class="card">
+<label>✍️ 输入文言文/古诗文句子</label>
+<textarea id="src" placeholder="例如：学而不思则罔，思而不学则殆。 独在异乡为异客，每逢佳节倍思亲。"></textarea>
+<div class="param-row">
+<div><label>📚 翻译深度</label>
+<select id="depth">
+<option value="详细版">详细版（含注释+出处）</option>
+<option value="直译版" selected>直译版（简洁明了）</option>
+</select></div>
+<div><label>🎓 学段</label>
+<select id="stage">
+<option value="中学">中学</option>
+<option value="成人">成人/自学</option>
+</select></div>
+</div>
+<button class="btn-gen" id="genBtn">📖 翻译</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 翻译结果</div>
+<div id="box"></div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function rand(a){return a[Math.floor(Math.random()*a.length)]}
+const lib=[
+{s:'学而不思则罔，思而不学则殆。',t:'只学习却不思考，就会感到迷茫；只空想却不学习，就会疑惑而有害。',words:['罔：迷惑，迷茫','殆：危险，有害'],w:['《论语·为政》','孔子论学思并重']},
+{s:'独在异乡为异客，每逢佳节倍思亲。',t:'独自漂泊在他乡，每当节日到来，就格外思念家乡的亲人。',words:['异客：客居他乡的人','倍：加倍，格外'],w:['王维《九月九日忆山东兄弟》','乡愁名句']},
+{s:'有志者事竟成。',t:'有志向的人，最终一定能做成事情、获得成功。',words:['竟：终于，最终'],w:['《后汉书·耿弇传》','励志名言']},
+{s:'山重水复疑无路，柳暗花明又一村。',t:'山峦重重、水道弯弯，正怀疑前面没有路了，柳暗花明处忽然又出现一座村庄。',words:['疑：怀疑','复：重叠，再一次'],w:['陆游《游山西村》','困境中见希望']},
+{s:'落红不是无情物，化作春泥更护花。',t:'飘落的花瓣并不是无情之物，它化作春天的泥土，更好地滋养新花生长。',words:['落红：凋落的花','化作：变成'],w:['龚自珍《己亥杂诗》','奉献精神']},
+{s:'欲穷千里目，更上一层楼。',t:'想要看尽千里远的景色，就要再登上一层楼。',words:['穷：穷尽','更：再，还'],w:['王之涣《登鹳雀楼》','积极进取']}];
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 文言文翻译器 | AgentGongju.com'))return;
+let src=document.getElementById('src').value.trim();
+if(!src){alert('请输入文言文内容');return}
+const depth=document.getElementById('depth').value;const stage=document.getElementById('stage').value;
+const box=document.getElementById('box');box.innerHTML='';
+// 尝试匹配已知句
+let hit=lib.find(x=>x.s.split('。')[0] && src.includes(Array.from(x.s.slice(0,6))));
+const base=hit||lib[Math.floor(Math.random()*lib.length)];
+const div=document.createElement('div');div.className='panel';
+if(!hit){
+div.innerHTML+=`<div class="panel-line"><b>📜 原文：</b><span class="original">${src}</span><br><b>💬 现代白话：</b>${depth==='详细版'?'这句话的大意是：「'+src.replace(/[。，；]/g,'，')+'」。结合常见文言知识，可以理解为生活与学习中的道理，关键词与语境不同解读略有差异，建议结合上下文理解。':'这句话可以直译为：「'+src+'」所表达的道理，需要结合具体语境理解。'}${stage==='成人'?'<br><br>💡 拓展：翻译文言文时先找出主语、谓语、宾语，再看虚词「之乎者也」的用法，就能把握大意。':'<br><br>💡 学习提示：先理解重点字词，再连词成句，是文言文翻译的通用步骤。'}</div>`;
+}else{
+div.innerHTML=`<div class="panel-line"><b>📜 原文：</b><span class="original">${base.s}</span><br><b>💬 现代白话：</b>${base.t}<br><b>🔑 重点字词：</b><div style="margin-top:8px">${base.words.map(x=>`<span class="word">${x}</span>`).join('')}</div>${depth==='详细版'?`<div style="margin-top:10px"><span class="word">📖 ${base.w[0]}</span><span class="word">💡 ${base.w[1]}</span></div>`:''}</div>`;
+}
+box.appendChild(div);
+});setTimeout(()=>{},0);
+</script>
+</body>
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI国风水墨画提示词生成器 | AgentGongju.com</title>
+<meta name="description" content="输入画面主题，一键生成专业级国风水墨画AI绘画提示词，支持山水、花鸟、人物等多种题材，兼容主流AI绘画平台。">
+<meta name="keywords" content="水墨画,国风,AI绘画,提示词,山水画,工笔,写意,文生图">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+textarea,input[type=text],select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:70px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.9;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🎋 AI国风水墨画提示词生成器</h1><p>泼墨山水，晕染成画——一键生成雅致国风水墨提示词</p></div>
+
+<div class="card">
+<label>🖌️ 想画什么题材</label>
+<textarea id="subject" placeholder="例如：孤舟蓑笠翁，独钓寒江雪 的宁静雪景"></textarea>
+<div class="param-grid">
+<div><label>🎨 水墨风格</label>
+<select id="style"><option>大写意泼墨</option><option>小写意兼工</option><option>工笔细描</option><option>浅绛山水</option><option>青绿山水</option><option>白描人物</option></select></div>
+<div><label>📐 画幅比例</label>
+<select id="ratio"><option>1:1 正方形</option><option>3:4 立轴</option><option>4:3 横卷</option><option>9:16 竖屏</option></select></div>
+<div><label>🏔️ 构图方式</label>
+<select id="compose"><option>高远深远式</option><option>平远辽阔式</option><option>留白意境式</option><option>对角平衡式</option></select></div>
+<div><label>🖋️ 落款题诗</label>
+<select id="poem"><option>不落款</option><option>简单落款</option><option>配诗意题记</option><option>钤印朱章</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">✨ 生成水墨画提示词</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🎋 你的国风水墨画提示词</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制提示词</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const styleMap={
+'大写意泼墨':'freehand splash ink xieyi, bold expressive brushstrokes, dripping ink, spontaneous',
+'小写意兼工':'semi-meticulous ink painting, controlled strokes, refined, xiao xieyi',
+'工笔细描':'meticulous gongbi, fine detailed linework, precise brush control, colored ink',
+'浅绛山水':'qianjiang landscape, light ochre and pale green washes, soft muted tones',
+'青绿山水':'qinglv shanshui, mineral blue-green pigments, vivid traditional colors, gold accents',
+'白描人物':'baimiao line drawing, elegant thin ink outlines, no shading, graceful figures'
+};
+const composeMap={
+'高远深远式':'high distance composition, layered mountains receding, vertical depth',
+'平远辽阔式':'level distance composition, vast open space, wide horizon, tranquil',
+'留白意境式':'generous negative space, minimal elements, poetic emptiness, zen',
+'对角平衡式':'diagonal balance composition, dynamic asymmetry, harmonious flow'
+};
+const poemMap={
+'不落款':'',
+'简单落款':'subtle artist seal, small signature mark, red seal stamp',
+'配诗意题记':'elegant calligraphy poem inscription, traditional seal script accents',
+'钤印朱章':'prominent vermilion seal stamp, chinese calligraphy signature'
+};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI国风水墨画提示词生成器 | AgentGongju.com'))return;
+const sub=document.getElementById('subject').value.trim();
+if(!sub){alert('请先输入想画的题材');return;}
+const st=document.getElementById('style').value;
+const rt=document.getElementById('ratio').value;
+const co=document.getElementById('compose').value;
+const po=document.getElementById('poem').value;
+const parts=['traditional chinese ink wash painting','shuimo','rice paper texture',styleMap[st],composeMap[co],poemMap[po]].filter(x=>x);
+const out='【画面题材】\n'+sub+'\n\n【完整提示词（英文）】\n'+parts.join(', ')+' --ar '+rt.split(' ')[0]+'\n\n【负面提示词】\nmessy, cluttered, western oil painting style, realism photo, over-saturated, text, watermark\n\n【绘制建议】\n墨分五色：以焦、浓、重、淡、清表现层次；留白处可加淡灰渲染云雾。\n宣纸质感 + 毛笔韵味 + 山水留白，是国风水墨的灵魂。';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 提示词已复制！'))}
+</script>
+</body>
+</html>

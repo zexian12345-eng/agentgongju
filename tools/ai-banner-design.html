@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 横幅海报文案生成器 | AgentGongju.com</title>
+<meta name="description" content="根据促销/活动主题自动生成横幅与海报宣传文案，含主标题、副标题、卖点、行动呼吁，适合电商与线下活动">
+<meta name="keywords" content="AI文案,横幅文案,海报文案,促销文案,广告语,电商文案">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:100px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.btn-gen:disabled{opacity:.5;cursor:not-allowed}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.panel{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.25);border-radius:12px;padding:16px 18px;margin-bottom:12px}
+.panel-head{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.panel-num{background:linear-gradient(135deg,#6366f1,#a855f7);color:white;width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem}
+.panel-title{font-weight:600;color:#a5b4fc}
+.panel-line{font-size:.88rem;color:#cbd5e1;line-height:1.7}
+.panel-line b{color:#a855f7}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🪧 AI 横幅海报文案生成器</h1><p>输入主题，一键生成促销横幅与海报宣传文案</p></div>
+
+<div class="card">
+<label>🎯 活动/产品主题（一句话描述）</label>
+<textarea id="topic" placeholder="例如：双十一全店服饰5折大促，前100名下单送限量礼盒"></textarea>
+<div class="param-row">
+<div><label>🏷 文案风格</label>
+<select id="style">
+<option value="促销优惠">促销优惠</option>
+<option value="新品上市">新品上市</option>
+<option value="高端大气">高端大气</option>
+<option value="年轻潮流">年轻潮流</option>
+<option value="情感走心">情感走心</option>
+<option value="节日庆典">节日庆典</option>
+</select></div>
+<div><label>📐 输出条数（3-8条）</label>
+<input type="number" id="count" min="3" max="8" value="5"></div>
+</div>
+<button class="btn-gen" id="genBtn">✨ 生成文案</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 横幅海报文案</div>
+<div id="box"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制全部</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function rand(a){return a[Math.floor(Math.random()*a.length)]}
+const heads={
+'促销优惠':['狂欢价到，买到就是赚到','限时特惠，手慢无！','全场直降，错过等一年','薅羊毛时刻，开抢！'],
+'新品上市':['全新登场，惊艳你的想象力','新物种降临，刷新体验','这一次，重新定义','千呼万唤，新品首发'],
+'高端大气':['匠心之作，致敬不凡','品质臻选，定义格调','以极致，致从容','经典传承，至臻之选'],
+'年轻潮流':['燃起来，就现在','不潮不花钱','Z世代嗨购现场','够IN才敢秀'],
+'情感走心':['把爱，装进生活里','为在乎的人，选最好的','每一次选择，都是热爱','平凡日子里的温柔犒赏'],
+'节日庆典':['欢庆时刻，礼遇相迎','节日好礼，心意满分','欢乐加倍，好礼不断','这一刻，值得纪念']};
+const sells=['全场低至X折','满减叠加优惠','前N名赠礼','下单立省','会员专享价','限时秒杀','买一送一','包邮到家'];
+const ctas=['立即抢购','马上行动','点击下单','即刻拥有','把握机会','前来围观'];
+const tags=['#全民狂欢','#限时活动','#宝藏好物','#实力宠粉','#好物推荐','#钜惠来袭'];
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 横幅海报文案生成器 | AgentGongju.com'))return;
+let topic=document.getElementById('topic').value.trim();
+if(!topic){alert('请输入活动主题');return}
+let n=parseInt(document.getElementById('count').value||5);n=Math.max(3,Math.min(8,n));
+const style=document.getElementById('style').value;
+const box=document.getElementById('box');box.innerHTML='';
+let text='《'+style+' · 横幅海报文案》\n主题：'+topic+'\n\n';
+const used={};
+for(let i=1;i<=n;i++){
+let h=rand(heads[style]);
+while(used[h]&&Object.keys(used).length<6)h=rand(heads[style]);
+used[h]=1;
+const sub='『'+topic+'』'+rand(['，','·',' / '])+rand(sells);
+const cta=rand(ctas);
+const div=document.createElement('div');div.className='panel';
+div.innerHTML=`<div class="panel-head"><span class="panel-num">${i}</span><span class="panel-title">横幅方案 ${i}</span></div><div class="panel-line"><b>主标题：</b>${h}<br><b>副标题：</b>${sub}<br><b>行动呼吁：</b>${cta} <span style="color:#64748b">· ${rand(tags)}</span></div>`;
+box.appendChild(div);
+text+=`【方案${i}】\n主标题：${h}\n副标题：${sub}\n行动呼吁：${cta}\n\n`;
+}
+});setTimeout(()=>{},0);
+function copyResult(){let out=document.getElementById('box').innerText.replace(/\n{3,}/g,'\n\n');navigator.clipboard.writeText(out).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

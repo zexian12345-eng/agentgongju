@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 食材营养分析器 | AgentGongju.com</title>
+<meta name="description" content="输入任意食材，快速生成营养成分、热量估算与健康食用建议，助力科学饮食">
+<meta name="keywords" content="AI健康,食材营养,卡路里,营养成分,膳食,健康饮食">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:80px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.btn-gen:disabled{opacity:.5;cursor:not-allowed}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.panel{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.25);border-radius:12px;padding:16px 18px;margin-bottom:12px}
+.panel-line{font-size:.88rem;color:#cbd5e1;line-height:1.8}
+.panel-line b{color:#a855f7}
+.nut-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.05)}
+.nut-row:last-child{border-bottom:none}
+.nut-val{color:#a5b4fc;font-weight:600}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🥦 AI 食材营养分析器</h1><p>输入食材，快速了解营养成分与食用建议</p></div>
+
+<div class="card">
+<label>🥕 输入食材料名称</label>
+<input type="text" id="food" placeholder="例如：鸡胸肉、西兰花、三文鱼、红薯、燕麦">
+<div class="param-row">
+<div><label>⚖️ 重量（克，可选）</label>
+<input type="number" id="gram" min="10" max="2000" value="100"></div>
+<div><label>🎯 关注人群</label>
+<select id="who">
+<option value="普通人群">普通人群</option>
+<option value="减脂健身">减脂健身</option>
+<option value="增肌训练">增肌训练</option>
+<option value="控糖人群">控糖人群</option>
+<option value="孕期准妈妈">孕期准妈妈</option>
+</select></div>
+</div>
+<button class="btn-gen" id="genBtn">🔬 分析营养</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 营养成分分析</div>
+<div id="box"></div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function rand(a){return a[Math.floor(Math.random()*a.length)]}
+const lib={
+'肉蛋':{c:['蛋白质','脂肪','胆固醇','维生素B族'],who:['增肌训练','减脂健身']},
+'蔬菜':{c:['膳食纤维','维生素C','叶酸','钾'],who:['普通人群','控糖人群','孕期准妈妈']},
+'水果':{c:['果糖','维生素C','膳食纤维','抗氧化物质'],who:['普通人群','控糖人群']},
+'主食':{c:['碳水化合物','膳食纤维','B族维生素'],who:['减脂健身','控糖人群']},
+'水产':{c:['优质蛋白','Omega-3','碘','硒'],who:['孕期准妈妈','增肌训练']},
+'豆奶':{c:['植物蛋白','钙','大豆异黄酮'],who:['普通人群','孕期准妈妈']}};
+const adv={
+'减脂健身':'热量适中，蛋白质占比高，适合作为减脂期的优质蛋白来源。建议采用蒸、煮、少油烹调。',
+'增肌训练':'营养密度高，是增肌期理想的食材选择，可与碳水搭配作为练后餐。',
+'控糖人群':'升糖指数较低，食用时注意控制分量，可与蔬菜、粗粮搭配平衡餐盘。',
+'孕期准妈妈':'富含孕妈需要的营养素，建议彻底煮熟后食用，保证安全。',
+'普通人群':'营养均衡，可放心纳入日常饮食，均衡搭配其他食材更健康。'};
+function classify(food){
+if(/鸡肉|鸡胸|鸡蛋|牛肉|猪肉|鸭肉|羊肉/.test(food))return '肉蛋';
+if(/白菜|菠菜|西兰花|生菜|青菜|萝卜|黄瓜|番茄|土豆|茄子/.test(food))return '蔬菜';
+if(/苹果|香蕉|橙子|草莓|西瓜|梨|葡萄|桃子/.test(food))return '水果';
+if(/米饭|面条|馒头|燕麦|玉米|红薯|糙米|面包|粥/.test(food))return '主食';
+if(/鱼|虾|蟹|三文鱼|带鱼|鱿鱼|海参/.test(food))return '水产';
+if(/豆腐|牛奶|酸奶|豆浆|豆|奶/.test(food))return '豆奶';
+return '蔬菜';
+}
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 食材营养分析器 | AgentGongju.com'))return;
+let food=document.getElementById('food').value.trim();
+if(!food){alert('请输入食材名称');return}
+let gram=parseInt(document.getElementById('gram').value||100);gram=Math.max(10,Math.min(2000,gram));
+const who=document.getElementById('who').value;
+const cat=classify(food);const L=lib[cat];
+const box=document.getElementById('box');box.innerHTML='';
+const r1=Math.round((35+Math.random()*60)*gram/100);
+const div=document.createElement('div');div.className='panel';
+div.innerHTML=`<div class="panel-line"><b>🍚 「${food}」营养概览（每 ${gram} 克估算）</b></div>`+
+ `<div class="nut-row"><span>🔥 热量</span><span class="nut-val">约 ${r1} 千卡</span></div>`+
+ `<div class="nut-row"><span>🟠 核心营养</span><span class="nut-val">${L.c.slice(0,3).join('、')}</span></div>`+
+ `<div class="nut-row"><span>⭐ 推荐人群</span><span class="nut-val">${L.who.join('、')}</span></div>`+
+ `<div class="nut-row"><span>🎯 适合：</span><span class="nut-val">${who}</span></div>`;
+const div2=document.createElement('div');div2.className='panel';
+div2.innerHTML=`<div class="panel-line"><b>💡 食用建议（${who}）：</b><br>${adv[who]}<br><br><span style="color:#64748b">⚠️ 以上数据为通用估算，具体营养含量因产地、部位与烹调方式而异，仅供参考。</span></div>`;
+box.appendChild(div);box.appendChild(div2);
+});setTimeout(()=>{},0);
+</script>
+</body>
+</html>

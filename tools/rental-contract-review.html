@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI租房合同审查 | AgentGongju.com</title>
+<meta name="description" content="把你要签/要看的租房合同关键条款粘贴进来，AI帮你逐个检查押金、租金、维修、违约等条款，指出风险点并给出修改建议，租客房东都适用。">
+<meta name="keywords" content="租房合同,合同审查,押金,房租,租房避坑,合同条款,租客维权">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+textarea,input[type=text],select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:150px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tag-btn{display:inline-block;padding:5px 12px;background:rgba(99,102,241,0.12);border:1px solid rgba(99,102,241,0.25);border-radius:20px;color:#a5b4fc;cursor:pointer;font-size:.8rem;margin:3px;transition:all .2s}
+.tag-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📋 AI租房合同审查</h1><p>条款逐条帮你把关，避开租房合同的坑</p></div>
+
+<div class="card">
+<label>😊 你的身份</label>
+<div>
+<span class="tag-btn" onclick="setRole('租客')">🔑 租客</span>
+<span class="tag-btn" onclick="setRole('房东')">🏠 房东</span>
+</div>
+<label>💰 押金 / 租金填写（元/月）</label>
+<div style="display:flex;gap:12px">
+<input type="text" id="deposit" placeholder="押金（如 2000）">
+<input type="text" id="rent" placeholder="月租金（如 2500）">
+</div>
+<label>📄 粘贴合同关键条款（可只贴押金、维修、违约、转租等部分）</label>
+<textarea id="clause" placeholder="例如：乙方提前退租需支付2个月租金作为违约金；房屋自然损耗由乙方承担维修费用；押金在退租后30天才可退还……"></textarea>
+<label>📝 其他想提醒的情况（可选）</label>
+<input type="text" id="other" placeholder="例如：房子有漏水问题、承诺含物业费、家电以旧换新等">
+<button class="btn-gen" id="genBtn">🔍 审查合同风险</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🔍 合同风险审查结果</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制审查结果</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function check(text){
+  const risks=[];
+  const tips=[];
+  if(/违约金|赔偿/.test(text)){
+    if(/2个月|三个月|翻倍|两倍/.test(text)){risks.push('⚠️ 违约金过高（超过1个月房租通常偏重）','建议约定合理违约金，如1个月房租，或按实际损失计算。');}
+  }
+  if(/押金/.test(text)){
+    if(/30天|一个月|不退/.test(text)){risks.push('⚠️ 押金退还周期偏长或有"不退"表述','建议约定退租交接后7天内无息退还押金，并附损坏清单依据。');}
+  }
+  if(/自然损耗|自然折旧|老化由.*承担/.test(text)){risks.push('⚠️ 将"自然损耗"维修责任推给租客','自然磨损应由房东承担，建议明确自然老化和人为损坏的区分标准。');}
+  if(/维修/.test(text)){tips.push('💡 明确维修责任：房屋主体、水电燃气等由房东负责，人为损坏由租客负责更合理。');}
+  if(/转租|合租/.test(text)){tips.push('💡 转租条款应明确是否允许、是否需要书面同意，避免模糊表述。');}
+  if(/中介费|服务费/.test(text)){tips.push('💡 确认中介费/服务费由谁承担，写清楚金额和服务内容。');}
+  if(/提前退租/.test(text)){tips.push('💡 提前退租须约定提前通知天数与合理损失，避免"直接没收全部押金"。');}
+  if(/续租|涨价/.test(text)){tips.push('💡 续租和涨价机制最好也一并约定，防止到期坐地起价。');}
+  if(risks.length===0&&tips.length===0){tips.push('💡 你贴的条款暂未命中常见风险点，若涉及押金/维修/违约金建议再逐条核对。');}
+  return {r:risks,t:tips};
+}
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('AI租房合同审查 | AgentGongju.com'))return;
+const role=document.getElementById('role')?document.getElementById('role').value:'租客';
+const deposit=document.getElementById('deposit').value.trim();
+const rent=document.getElementById('rent').value.trim();
+const clause=document.getElementById('clause').value.trim();
+const other=document.getElementById('other').value.trim();
+if(!clause){alert('请粘贴合同条款');return;}
+const res=check(clause);
+let out='【租房合同审查 · '+role+'视角】\n\n';
+out+='📄 你粘贴的条款重点核查如下：\n\n';
+if(res.r.length){out+='🚨 需警惕/修改的地方：\n';res.r.forEach(function(x){out+='· '+x+'\n';});out+='\n';}
+if(res.t.length){out+='💡 建议补充/明确的条款：\n';res.t.forEach(function(x){out+='· '+x+'\n';});out+='\n';}
+if(deposit||rent){out+='💰 你的押金'+deposit+'元 / 月租'+rent+'元，建议：押金不超1-2个月租金，收据/转账备注写清用途。\n\n';}
+if(other){out+='📝 特别提醒「'+other+'」：务必在合同补充条款或备注里白纸黑字写清楚，以免日后扯皮。\n\n';}
+out+='—— 本结果仅供参考，金额较大建议咨询专业法律意见 🤝';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function setRole(v){var el=document.getElementById('role');if(el){el.value=v;}else{var s=document.createElement('select');s.id='role';s.innerHTML='<option>'+v+'</option>';document.body.appendChild(s);}}
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 审查结果已复制！'))}
+</script>
+</body>
+</html>

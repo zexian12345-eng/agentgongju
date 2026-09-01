@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI菜谱推荐 | AgentGongju.com</title>
+<meta name="description" content="输入冰箱里现有的食材，AI为你推荐适合的菜谱，含做法步骤、食材搭配与营养小贴士，做菜不再发愁。">
+<meta name="keywords" content="AI菜谱,推荐菜谱,家常菜,食谱,做饭,今日吃什么,下厨房">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:70px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{color:#94a3b8;font-size:.85rem;margin-bottom:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🍳 AI 菜谱推荐</h1><p>报上食材，AI帮你变出一桌好菜</p></div>
+
+<div class="card">
+<label>🥦 冰箱里有什么食材？</label>
+<textarea id="ing" placeholder="用逗号隔开，例如：鸡蛋、西红柿、土豆、牛肉、青菜、豆腐"></textarea>
+<div class="param-row">
+<div><label>⏱️ 可做饭时间</label>
+<select id="time"><option value="15分钟">15分钟</option><option value="30分钟" selected>30分钟</option><option value="1小时">1小时</option><option value="不限制">不限制</option></select></div>
+<div><label>🍚 口味偏好</label>
+<select id="taste"><option value="清淡">清淡</option><option value="家常" selected>家常</option><option value="香辣">香辣</option><option value="酸甜">酸甜</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">🍲 为我推荐菜谱</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 适合你的菜谱</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制菜谱</button>
+<div class="tip" style="margin-top:12px">💡 搭配小贴士：主菜+一荤一素+汤，营养更均衡。香辣/重口可少油少盐更健康。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const RECIPES=[
+{name:'番茄炒蛋',need:['鸡蛋','西红柿','番茄'],mat:true,steps:['鸡蛋打散加少许盐，西红柿切块','热锅倒油，先炒蛋至凝固盛出','再下西红柿翻炒出汁','倒入鸡蛋，加糖盐调味翻炒均匀即可']},
+{name:'土豆炖牛肉',need:['土豆','牛肉'],mat:false,steps:['牛肉切块焯水去浮沫','土豆切块备用','热油爆香葱姜，下牛肉煸炒','加开水生抽老抽，小火炖40分钟','下土豆再炖15分钟至软烂入味']},
+{name:'麻婆豆腐',need:['豆腐','肉末','肉'],mat:false,steps:['豆腐切块焯水去豆腥','热油炒香豆瓣酱与肉末','加水烧开，下豆腐煮5分钟','调入淀粉水勾芡，撒花椒粉葱花出锅']},
+{name:'青菜炒香菇',need:['青菜','香菇','小白菜','蘑菇'],mat:false,steps:['香菇切片，青菜洗净','热油下蒜末爆香','下香菇炒出香味，再下青菜','加盐调味翻炒断生即可']},
+{name:'紫菜蛋花汤',need:['鸡蛋','紫菜','海带'],mat:false,steps:['紫菜撕小块放入碗中','水烧开淋入打散的蛋液成蛋花','倒入紫菜碗，加盐香油虾皮调味']},
+{name:'青椒肉丝',need:['青椒','肉','牛肉','里脊'],mat:false,steps:['肉切丝加料酒生抽腌10分钟','青椒切丝','热油下肉丝滑炒变色盛出','再下青椒炒至断生，倒回肉丝加盐翻炒']}
+];
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI菜谱推荐 | AgentGongju.com'))return;
+const ing=document.getElementById('ing').value.trim();
+const time=document.getElementById('time').value;
+const taste=document.getElementById('taste').value;
+if(!ing){alert('请先填写食材');return;}
+const items=ing.split(/[,，、\s]+/);
+let out='根据「'+ing+'」，为你推荐：\n\n';
+let count=0;
+for(const r of RECIPES){
+if(r.need.some(n=>items.some(i=>i.includes(n)))){
+count++;
+out+='━━ '+(count)+'. '+r.name+' ━━\n【食材】'+r.need.join('、')+'（可搭配 '+r.need.slice(1).concat(['葱姜蒜','调味料']).join('、')+'）\n【做法】\n'+r.steps.map((s,i)=>(i+1)+'. '+s).join('\n')+'\n';
+if(count>=2)break;
+}
+}
+if(count===0){
+out+='（没找到完全匹配的菜谱，试试家常做法，相近食材可互相替换）\n\n';
+out+='━━ 万能家常烩菜 ━━\n将所有食材切块，热油爆香葱姜，下难熟的食材先炒，再加适量水、生抽、盐小火焖熟，最后大火收汁，简单又下饭！';
+}
+out+='\n【口味解馋搭配 · '+taste+'】\n';
+out+=(taste==='香辣'?'可加干辣椒/花椒提味，辣度随喜。':taste==='酸甜'?'可加糖醋汁调成糖醋口味。':taste==='清淡'?'少油少盐，突出食材本味就很好。':'家常口味，咸淡适中，全家都爱吃。');
+out+='\n\n⌚ 用时预估：'+time+'，祝你做出一桌好菜！【AgentGongju 🍚】';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 菜谱已复制！'))}
+</script>
+</body>
+</html>

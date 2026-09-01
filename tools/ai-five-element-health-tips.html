@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI五行养生建议 | AgentGongju.com</title>
+<meta name="description" content="根据你的出生季节与生活习惯，测算五行偏性，输出对应的日常养生小贴士：饮食、作息、情志一站式参考。">
+<meta name="keywords" content="五行养生,中医养生,金木水火土,体质养生,调养身体,养生建议,作息饮食">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:60px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{color:#94a3b8;font-size:.85rem;margin-bottom:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🌗 AI 五行养生建议</h1><p>用金木水火土的老智慧，给你一套照进日常的调养小贴士</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>🎂 出生季节</label>
+<select id="season"><option value="春" selected>🌸 春(木)</option><option value="夏">☀️ 夏(火)</option><option value="秋">🍂 秋(金)</option><option value="冬">❄️ 冬(水)</option><option value="四季">🌈 四季之交(土)</option></select></div>
+<div><label>💤 作息状态</label>
+<select id="sleep"><option value="规律" selected>😴 作息规律</option><option value="熬夜">🌙 常熬夜</option><option value="疲惫">🥱 易疲劳</option></select></div>
+</div>
+<label>📝 想重点调理的方向（可选）</label>
+<textarea id="focus" placeholder="例如：冬天手脚冰凉，希望气血更好，睡眠稳定……"></textarea>
+<button class="btn-gen" id="genBtn">🌿 生成养生建议</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 你的五行养生参考</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制建议</button>
+<div class="tip" style="margin-top:12px">💡 本内容为传统养生文化的娱乐性参考，实际健康问题请咨询专业医生。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const FIVE={
+'春':{el:'木',color:'青',food:'多吃绿叶菜、荠菜、春笋，宜清淡养肝',mood:'舒展情志，少生气，多踏青郊游',note:'春季对应肝脏，宜早睡早起，舒展运动开肩纾郁。'},
+'夏':{el:'火',color:'赤',food:'多食绿豆、西瓜、莲子，清热祛湿',mood:'心平气和，避免急躁暴怒',note:'夏季对应心脏，午间小憩、补水防暑，忌贪凉伤胃。'},
+'秋':{el:'金',color:'白',food:'宜百合、梨、银耳润肺，多酸少辛',mood:'收敛心神，平静减少内耗',note:'秋季对应肺，早晚温差大，注意润燥与保暖。'},
+'冬':{el:'水',color:'黑',food:'宜黑豆、芝麻、羊肉温补，护肾养藏',mood:'早睡养气，情绪内藏少折腾',note:'冬季对应肾，早卧晚起，晒背驱寒，藏精蓄锐。'},
+'四季':{el:'土',color:'黄',food:'宜小米、南瓜、山药健脾养胃',mood:'思虑适度，宽和待人',note:'四季交替对应脾胃，规律三餐，忌暴饮暴食。'}
+};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI五行养生建议 | AgentGongju.com'))return;
+const season=document.getElementById('season').value;
+const sleep=document.getElementById('sleep').value;
+const focus=document.getElementById('focus').value.trim();
+const f=FIVE[season];
+const sleepTip=sleep==='规律'?'作息规律是最好保养，继续早睡早起':sleep==='熬夜'?'建议23点前入睡，熬夜最耗气血，试着提前半小时放下手机':'易疲劳说明气血需要补给，午休20分钟+均衡饮食很关键';
+let out=`🌗 五行养生参考 · 主「${f.el}」\n\n`;
+out+=`━━ 属性速记 ━━\n· 五行属「${f.el}」，应季色为${f.color}色，与「${f.el}」相应脏腑值得多关照。\n\n`;
+out+='━━ 饮食 ━━\n· '+f.food+'\n\n';
+out+='━━ 情志 ━━\n· '+f.mood+'\n\n';
+out+='━━ 作息 ━━\n· '+sleepTip+'。\n· '+f.note+'\n';
+if(focus)out+='\n━━ 你的需求 ━━\n· 「'+focus+'」建议：结合上述'+f.el+'调理，把"规律作息+对症饮食"坚持21天，通常会有明显改观。';
+out+='\n\n【愿你身心调和，元气满满 🌿】';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 建议已复制！'))}
+</script>
+</body>
+</html>

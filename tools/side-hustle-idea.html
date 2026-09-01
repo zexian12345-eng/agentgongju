@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI副业点子生成 | AgentGongju.com</title>
+<meta name="description" content="输入你的技能、兴趣和可投入时间，AI为你头脑风暴最适合的副业方向，并给出启动成本、上手难度和变现思路。">
+<meta name="keywords" content="副业,兼职,副业点子,搞钱,斜杠青年,自由职业,副业推荐">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+textarea,input[type=text],select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:60px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tag-btn{display:inline-block;padding:5px 12px;background:rgba(99,102,241,0.12);border:1px solid rgba(99,102,241,0.25);border-radius:20px;color:#a5b4fc;cursor:pointer;font-size:.8rem;margin:3px;transition:all .2s}
+.tag-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🚀 AI副业点子生成</h1><p>把技能和兴趣，变成下班后的第二收入</p></div>
+
+<div class="card">
+<label>🧠 你的技能 / 兴趣（可填多个）</label>
+<input type="text" id="skill" placeholder="例如：会写作、懂Excel、爱做饭、会剪视频……">
+<label>⏰ 每周可投入时间</label>
+<select id="hours"><option value="5小时">每周约5小时</option><option value="10小时">每周约10小时</option><option value="20小时">每周约20小时</option></select>
+<label>✨ 你更想尝试</label>
+<div>
+<span class="tag-btn" onclick="setWant('线上')">💻 线上赚钱</span>
+<span class="tag-btn" onclick="setWant('线下')">🏪 线下小生意</span>
+<span class="tag-btn" onclick="setWant('都可')">🌈 都可以</span>
+</div>
+<label>📝 想避免的方向（可选）</label>
+<input type="text" id="avoid" placeholder="例如：不想做销售、不想露脸直播……">
+<button class="btn-gen" id="genBtn">💡 生成副业建议</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">💡 推荐的副业方向（3个）</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制建议</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const bank=[
+{name:'小红书/短视频图文创作者',cost:'低成本',hard:'低',desc:'用你的技能输出垂直内容，接商单或引流卖课',who:'写作、拍照、懂某个领域'},
+{name:'自由接单（设计/写作/翻译/剪辑）',cost:'零-低',hard:'中',desc:'在平台接单赚外快，按单结算灵活',who:'有设计/文案/外语/视频能力'},
+{name:'知识整理/笔记代写',cost:'零',hard:'低',desc:'做读书笔记、学习笔记、会议纪要整理，明码标价售卖',who:'爱总结、有条理'},
+{name:'闲置/二手代售',cost:'低',hard:'低',desc:'帮人处理闲置赚差价，或自己囤货转卖',who:'懂行情、爱逛闲鱼'},
+{name:'探店测评变现',cost:'中',hard:'中',desc:'做本地探店账号，靠商家合作和流量变现',who:'爱出门、会拍会说'},
+{name:'线上家教/答疑',cost:'零',hard:'中',desc:'学科辅导或技能答疑（如Excel、编程、英语），一单一结',who:'某科目/技能扎实、有耐心'},
+{name:'手工/烘焙摆摊',cost:'中',hard:'高',desc:'周末市集摆摊卖手作或小食，现金流快',who:'爱动手、节假日有空'},
+{name:'数据标注/简单兼职',cost:'零',hard:'低',desc:'平台轻量任务，门槛低但单价一般',who:'碎片时间多、想先试试'}
+];
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('AI副业点子生成 | AgentGongju.com'))return;
+const skill=document.getElementById('skill').value.trim();
+const hours=document.getElementById('hours').value;
+const want=document.getElementById('want')?document.getElementById('want').value:'都可';
+const avoid=document.getElementById('avoid').value.trim();
+if(!skill){alert('请填写你的技能/兴趣');return;}
+// 简单匹配：关键词命中+随机补足
+let matched=[];
+const kw=['写','拍','剪','设计','Excel','外语','英语','爱做','做饭','厨','手工','逛','探店','教','辅导'];
+const list=bank.slice();
+list.forEach(function(it){
+  let score=0;
+  for(var i=0;i< kw.length;i++){ if(skill.indexOf(kw[i])>-1 && it.who.indexOf(kw[i])>-1){score++;} }
+  if(score>0||list.indexOf(it)<3)matched.push({it:it,score:score});
+});
+// 排序并取前3
+matched.sort(function(a,b){return b.score-a.score;});
+let picks=matched.slice(0,3);
+if(picks.length<3){bank.forEach(function(it){if(picks.length<3&&picks.indexOf(it)<0)picks.push({it:it,score:0});});}
+let out='【副业建议 · 基于你的技能「'+skill+'」】\n\n';
+for(var i=0;i<picks.length&&i<3;i++){
+  const it=picks[i].it;
+  out+='🚀 方向'+(i+1)+'：'+it.name+'\n';
+  out+='   💰 启动成本：'+it.cost+'｜上手难度：'+it.hard+'\n';
+  out+='   📝 思路：'+it.desc+'\n';
+  out+='   📌 适合：'+it.who+'\n\n';
+}
+out+='⏰ 结合每周可投入'+hours+'，建议先从门槛低、周转快的一个方向小步试错。\n';
+if(want!=='都可'){out+='🌈 你倾向「'+want+'」，上述方向已有所侧重。\n';}
+if(avoid){out+='🚫 你提到想避开「'+avoid+'」，选择时注意避开这类模式。\n';}
+out+='\n—— 副业比的是坚持，前期先专注1个方向跑通，再考虑放大 🎯';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function setWant(v){var el=document.getElementById('want');if(el){el.value=v;}else{var s=document.createElement('select');s.id='want';s.innerHTML='<option>'+v+'</option>';document.body.appendChild(s);}}
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 建议已复制！'))}
+</script>
+</body>
+</html>

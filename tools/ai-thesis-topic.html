@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI毕业论文选题 | AgentGongju.com</title>
+<meta name="description" content="输入你的专业、研究方向和兴趣点，AI帮你头脑风暴出一批新颖、可行、好写的毕业论文选题，附带研究思路与建议，助你开题不迷茫。">
+<meta name="keywords" content="毕业论文,论文选题,开题报告,论题,选题方向,论文题目">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+textarea,input[type=text],select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:90px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:600px){.param-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🎓 AI毕业论文选题</h1><p>从专业出发，头脑风暴出好写又新颖的题目</p></div>
+
+<div class="card">
+<div class="param-grid">
+<div><label>🎓 你的专业</label><input type="text" id="major" placeholder="例如：计算机科学、市场营销、汉语言文学"></div>
+<div><label>📚 学位层次</label><select id="degree"><option value="bachelor">本科</option><option value="master">硕士</option><option value="doctor">博士</option></select></div>
+</div>
+<label>🎯 研究兴趣 / 方向（越多越好）</label>
+<textarea id="interest" placeholder="例如：新媒体内容营销、用户生成内容、数据分析在营销中的应用、比较感兴趣短视频这个方向。"></textarea>
+<label>🧠 选题偏好（可选）</label>
+<input type="text" id="pref" placeholder="例如：偏好实证研究、需要数据可获取、想结合案例">
+<button class="btn-gen" id="genBtn">💡 生成选题</button>
+<label style="margin-top:12px;color:#64748b;font-size:.8rem">* 生成结果为参考建议，请以学校与导师要求为准</label>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🎓 推荐论文选题</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制选题</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const templates=[
+'基于{interest}的{major}研究——以{scope}为例',
+'{interest}对{field}的影响机制与路径分析——以{scope}为对象',
+'数字化背景下{field}优化研究：{interest}视角',
+'{interest}中的{field}问题及其对策——基于{scope}的调研',
+'{research}：{interest}与{field}关系的实证检验',
+'{field}视域下{interest}的困境与突围——{scope}的启示',
+'从{interest}看{field}：{research}',
+'{interest}驱动下{field}转型升级研究——以{scope}为例',
+'{field}情境下的{interest}研究：现状、问题与优化',
+'新形势下的{field}与{interest}融合发展研究——{scope}的实践'
+];
+const scopes=['互联网企业','中小企业','高校','本地生活平台','跨境电商','社交媒体用户','制造业企业','服务业门店','一线城市','县域市场'];
+const fields=['营销','管理','传播','消费行为','组织绩效','品牌建设','用户体验','商业模式'];
+const research=['一项实证研究','一个案例分析','一项定性研究','一项比较研究'];
+const adverbs=['数字化','智能化','社交媒体化','场景化','本地化','年轻化'];
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('AI毕业论文选题 | AgentGongju.com'))return;
+const major=document.getElementById('major').value.trim()||'[专业]';
+const interest=document.getElementById('interest').value.trim();
+const pref=document.getElementById('pref').value.trim();
+if(!interest){alert('请填写你的研究兴趣');return;}
+const degree=document.getElementById('degree').value;
+const top=interest.split(/[,，、\n]/).filter(Boolean);
+const kw=top.length?top[0]:'相关';
+const kw2=top[1]||(adverbs[(Math.random()*adverbs.length)|0]+'转型');
+const used=[];
+let out='【为你生成的 '+degreeLabels(degree)+' 论文选题】\n专业：'+major+'\n\n';
+for(let i=0;i<6;i++){
+  let scope=scopes[(Math.random()*scopes.length)|0];
+  while(used.includes(scope))scope=scopes[(Math.random()*scopes.length)|0];
+  used.push(scope);
+  const field=fields[(Math.random()*fields.length)|0];
+  const r=research[(Math.random()*research.length)|0];
+  let t=templates[i%templates.length];
+  t=t.replace('{interest}',kw).replace('{major}',major).replace('{scope}',scope).replace('{field}',field).replace('{research}',r);
+  out+='\n『选题'+(i+1)+'』'+t+'\n';
+  out+='   思路：以'+scope+'为切入点，结合'+kw+'与'+field+'，重点考察'+kw2+'；可采用问卷+访谈'+((Math.random()*2|0)?'、数据分析':'')+'方法，数据较易获取。\n';
+}
+out+='\n【选择建议】\n· 优先选与你兴趣和资源最匹配的题目。\n· "以……为例"类题目最好有稳定数据/调研渠道。\n· 硕士及以上建议适当聚焦，缩小切口。\n· 最终请与导师充分沟通后再确定。🌟';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function degreeLabels(d){return{bachelor:'本科',master:'硕士',doctor:'博士'}[d]||d;}
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 选题已复制！'))}
+</script>
+</body>
+</html>

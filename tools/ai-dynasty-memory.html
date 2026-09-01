@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 朝代记忆卡生成器 | AgentGongju.com</title>
+<meta name="description" content="用顺口溜、年代轴与口诀记忆中国历史朝代顺序，适合中学生与历史爱好者快速入门">
+<meta name="keywords" content="AI学习,历史朝代,朝代歌,记忆口诀,年代轴,中国历史,背书">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:70px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.btn-gen:disabled{opacity:.5;cursor:not-allowed}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.panel{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.25);border-radius:12px;padding:16px 18px;margin-bottom:12px}
+.panel-line{font-size:.9rem;color:#cbd5e1;line-height:1.9}
+.panel-line b{color:#a855f7}
+.panel-title{font-weight:600;color:#a5b4fc;margin-bottom:8px;display:inline-block}
+.dynasty{display:inline-block;background:rgba(168,85,247,0.15);border:1px solid rgba(168,85,247,0.3);color:#d8b4fe;padding:4px 12px;border-radius:8px;margin:4px;font-size:.85rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🏯 AI 朝代记忆卡生成器</h1><p>顺口溜 + 年代轴，快速背下中国历史朝代</p></div>
+
+<div class="card">
+<label>🎨 记忆方式</label>
+<select id="mode">
+<option value="朝代表">完整朝代歌</option>
+<option value="重点朝代">重点王朝精讲</option>
+<option value="小测练习">随堂小测</option>
+</select>
+<label>📌 目标学段</label>
+<select id="stage">
+<option value="初中">初中</option>
+<option value="高中">高中</option>
+<option value="成人">成人/自学</option>
+</select>
+<button class="btn-gen" id="genBtn">📖 生成记忆卡</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 朝代记忆卡</div>
+<div id="box"></div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const song='夏商与西周，东周分两段；春秋和战国，一统秦两汉；三分魏蜀吴，二晋前后沿；南北朝并立，隋唐五代传；宋元明清后，皇朝至此完。';
+const majors=[['秦','公元前221年','统一六国，建立中央集权，书同文车同轨'],['汉','公元前202年','丝绸之路开通，独尊儒术，国力强盛'],['唐','公元618年','贞观之治，开元盛世，中外交流空前'],['宋','公元960年','经济文化繁荣，活字印刷术发明'],['元','公元1271年','疆域辽阔，设行省制度'],['明','公元1368年','郑和下西洋，修建长城'],['清','公元1636年','康乾盛世，封建王朝最后的辉煌']];
+const q=['夏朝的开国君主是______答案:禹','中国古代第一个统一王朝是______答案:秦朝','唐朝鼎盛时期被称为______答案:开元盛世','丝绸之路是哪个朝代开辟的______答案:汉朝','明朝初期的大航海壮举是______答案:郑和下西洋'];
+function rand(a){return a[Math.floor(Math.random()*a.length)]}
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 朝代记忆卡生成器 | AgentGongju.com'))return;
+const mode=document.getElementById('mode').value;const stage=document.getElementById('stage').value;
+const box=document.getElementById('box');box.innerHTML='';
+if(mode==='朝代表'){
+const div=document.createElement('div');div.className='panel';
+div.innerHTML=`<span class="panel-title">🏮 朝代歌（${stage}）</span><div class="panel-line" style="margin-top:8px;font-size:1.05rem;color:#e2e8f0">${song}<br><br><b>💡 记忆联想法：</b>把朝代名编成小故事——「夏商周一起去看《春秋》大电影，秦汉两兄弟联手统一，三国乱世群雄逐鹿，魏晋南北朝唱起了大合唱，隋唐五代携手上场，宋元明清压轴收官！」</div>`;
+box.appendChild(div);
+}else if(mode==='重点朝代'){
+const div=document.createElement('div');div.className='panel';
+div.innerHTML=`<span class="panel-title">⭐ 中国重点王朝速记</span><div class="panel-line" style="margin-top:10px">${majors.map(m=>`<span class="dynasty">${m[0]} · ${m[1]}</span><br><span style="color:#64748b;font-size:.8rem">${m[2]}</span><br>`).join('')}</div>`;
+box.appendChild(div);
+}else{
+const qs=[...q].sort(()=>Math.random()-0.5).slice(0,4);
+const div=document.createElement('div');div.className='panel';
+div.innerHTML=`<span class="panel-title">🧠 随堂小测（${stage}）</span><div class="panel-line" style="margin-top:8px">${qs.map((x,i)=>`<b>Q${i+1}.</b> ${x.split('答案')[0]}<br><span style="color:#22c55e">✓ ${x.split('答案')[1]||''}</span><br><br>`).join('')}</div>`;
+box.appendChild(div);
+}
+});setTimeout(()=>{},0);
+</script>
+</body>
+</html>

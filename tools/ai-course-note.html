@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI课程学习笔记模板 | AgentGongju.com</title>
+<meta name="description" content="根据课程名称和知识点，AI帮你生成结构化的听课笔记模板，含重点、难点、例题与自测问题，方便高效整理知识。">
+<meta name="keywords" content="学习笔记,课程笔记,笔记模板,听课笔记,知识整理,学习模板">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+textarea,input[type=text],select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:60px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📓 AI课程学习笔记模板</h1><p>把零散的知识点，整理成清晰的笔记</p></div>
+
+<div class="card">
+<label>📚 课程名称</label>
+<input type="text" id="course" placeholder="例如：高等数学 / 高中英语 / 大学物理">
+<label>📖 本课知识点（用顿号或逗号分隔）</label>
+<textarea id="points" placeholder="例如：函数极限、导数定义、求导法则、高阶导数"></textarea>
+<label>🎯 学习目标（可选）</label>
+<input type="text" id="goal" placeholder="例如：掌握基本求导并能做课后习题">
+<button class="btn-gen" id="genBtn">📝 生成笔记模板</button>
+<label style="margin-top:12px;color:#64748b;font-size:.8rem">* 模板为知识整理框架，帮助更高效听课与复习</label>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">📓 你的结构化笔记模板</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制笔记</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const intros=['理解并掌握核心概念','结合例题灵活运用','建立知识之间的关联'];
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('AI课程学习笔记模板 | AgentGongju.com'))return;
+const course=document.getElementById('course').value.trim()||'本课程';
+const points=document.getElementById('points').value.trim();
+const goal=document.getElementById('goal').value.trim();
+if(!points){alert('请填写本课知识点');return;}
+const plist=points.split(/[，,、;；\n]+/).map(s=>s.trim()).filter(s=>s.length>0);
+let out='【'+course+' · 课堂笔记】\n';
+out+='日期：________　章节：________\n\n';
+out+='一、学习目标\n';
+out+='· '+(goal||('掌握「'+plist.slice(0,3).join('、')+'」等内容，做到'+intros[Math.floor(Math.random()*3)]+'。'))+'\n\n';
+out+='二、核心知识点\n';
+out+='1. '+plist[0]+'\n';
+out+='● 定义/概念：________________________\n';
+out+='● 关键公式/要点：____________________\n';
+out+='● 示例/备注：________________________\n\n';
+if(plist.length>1){
+  plist.slice(1).forEach((p,i)=>{
+    out+=(i+2)+'. '+p+'\n';
+    out+='● 要点：________________________\n';
+    out+='● 关联：________________________\n\n';
+  });
+}
+out+='三、重点与难点\n';
+out+='● 重点：「'+plist[0]+'」需熟练掌握。\n';
+out+='● 难点：________________________（标记课后重点攻克）\n\n';
+out+='四、例题 / 易错点\n';
+out+='● 例题记录：________________________\n';
+out+='● 易错提醒：________________________\n\n';
+out+='五、课后自测\n';
+out+='□ 我能用自己的话复述「'+plist.slice(0,2).join('、')+'」。\n';
+out+='□ 我能独立完成对应习题。\n';
+out+='□ 我分清了易混淆的概念。\n\n';
+out+='六、疑问汇总\n';
+out+='● 待解决问题：________________________\n';
+out+='● 计划请教/查证时间：________________\n\n';
+out+='—— 坚持整理与复习，知识才能扎根 📓';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 笔记已复制！'))}
+</script>
+</body>
+</html>

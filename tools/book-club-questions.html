@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>读书会讨论问题生成 | AgentGongju.com</title>
+<meta name="description" content="输入书名和主要内容主题，AI生成适合读书会交流讨论的开放性问题，涵盖理解、分析、联系生活与延伸思考。">
+<meta name="keywords" content="读书会,讨论问题,读书交流,书友会,话题讨论,阅读分享">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+textarea,input[type=text],select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:70px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📖 读书会讨论问题生成</h1><p>让每一本书都聊得深入又有料</p></div>
+
+<div class="card">
+<label>📚 书名</label>
+<input type="text" id="book" placeholder="例如：《活着》《人类简史》《原则》">
+<label>📝 书的主题/主要内容（简要描述）</label>
+<textarea id="theme" placeholder="例如：讲述普通人在时代变迁中的命运与坚韧；探讨人类社会发展的大历史……"></textarea>
+<label>🎙️ 讨论数量</label>
+<select id="count"><option value="6">6个问题（适中）</option><option value="10" selected>10个问题（丰富）</option><option value="15">15个问题（深度）</option></select>
+<button class="btn-gen" id="genBtn">💬 生成讨论问题</button>
+<label style="margin-top:12px;color:#64748b;font-size:.8rem">* 问题为开放性的引导话题，适合书友互动交流</label>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">📖 读书会讨论问题</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制问题</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('读书会讨论问题生成 | AgentGongju.com'))return;
+const book=document.getElementById('book').value.trim()||'这本书';
+const theme=document.getElementById('theme').value.trim();
+const count=parseInt(document.getElementById('count').value);
+if(!theme){alert('请简要描述书的主题内容');return;}
+const t=theme;
+let topics=[];
+// 理解类
+topics.push('读完《'+book+'》，你印象最深的片段或人物是哪个？为什么？');
+topics.push('请用一句话向没读过的人介绍《'+book+'》的核心内容。');
+topics.push('书中哪个人物（或观点）最打动你？他身上有什么特质？');
+// 分析类
+topics.push('贯穿《'+book+'》始终的主线或核心思想是什么？你如何理解？');
+topics.push('你觉得作者通过这个故事/论述想表达什么？哪些细节支撑了这一点？');
+topics.push('如果让你给《'+book+'》换一个结局或观点，你会怎么改？');
+// 联系生活
+topics.push('《'+book+'》里提到的'+(t.slice(0,12)+'……')+'，在你自己的生活中有没有类似的体验或印证？');
+topics.push('读完后，你受到的最大启发或想立刻做出的改变是什么？');
+topics.push('如果把'+(theme.slice(0,10))+'的道理用在自己身上，你觉得最难做到的是什么？');
+// 延伸
+topics.push('你认为《'+book+'》在当下这个时代还有哪些现实意义？');
+topics.push('有没有哪一段你很认同/很不认同？理由是什么？想和大家辩论一下吗？');
+topics.push('如果能和'+(book)+'的作者/主角对话，你最想问TA一个什么问题？');
+topics.push('这本书适合谁读？适合什么心境下读？你会在什么时机推荐给朋友？');
+topics.push('如果把《'+book+'》改编成影视/舞台作品，你会保留哪些、舍弃哪些？');
+topics.push('围绕「'+t.slice(0,10)+'」这个主题，你还读过或知道其他相关的书吗？可以一起对比聊聊。');
+topics=topics.slice(0,count);
+let out='【《'+book+'》读书会 · 讨论问题】\n\n';
+topics.forEach((q,i)=>{out+='Q'+(i+1)+'. '+q+'\n\n';});
+out+='—— 祝大家聊得尽兴，收获满满 📖';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 问题已复制！'))}
+</script>
+</body>
+</html>

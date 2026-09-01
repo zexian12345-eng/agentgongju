@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI面试反问助手 | AgentGongju.com</title>
+<meta name="description" content="输入你面试的岗位、公司类型和面试环节，AI帮你生成得体又有亮点的反问问题，让你在面试尾声给面试官留下好印象。">
+<meta name="keywords" content="面试反问,面试提问,求职面试,反问问题,面试技巧,hr面试">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+textarea,input[type=text],select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:90px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tag-btn{display:inline-block;padding:5px 12px;background:rgba(99,102,241,0.12);border:1px solid rgba(99,102,241,0.25);border-radius:20px;color:#a5b4fc;cursor:pointer;font-size:.8rem;margin:3px;transition:all .2s}
+.tag-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🤝 AI面试反问助手</h1><p>面试尾声别只说"没有问题了"，帮你问出加分项</p></div>
+
+<div class="card">
+<select id="stage" style="display:none"><option value="初面">初面</option></select>
+<label>✨ 面试环节</label>
+<div>
+<span class="tag-btn" onclick="setStage('初面')">📞 初面/hr面</span>
+<span class="tag-btn" onclick="setStage('技术面')">💻 技术/专业面</span>
+<span class="tag-btn" onclick="setStage('终面')">🎯 终面/老板面</span>
+</div>
+<label>💼 应聘岗位</label>
+<input type="text" id="position" placeholder="例如：前端开发工程师、市场运营专员……">
+<label>🏢 公司类型</label>
+<select id="company"><option value="大厂">大厂/上市公司</option><option value="创业公司">创业公司</option><option value="外企">外企</option><option value="国企">国企/事业单位</option></select>
+<label>📝 补充背景（可选，如：转行、应届、裸辞备考等）</label>
+<input type="text" id="context" placeholder="例如：从传统行业转行过来，想了解团队…">
+<button class="btn-gen" id="genBtn">🎓 生成反问问题</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🎯 建议反问问题</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制问题</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const pools={
+'初面':[
+['关于这个岗位，您希望什么样的人能在半年内做得出色？','适合展示上进心和目标感'],
+['请问团队目前协作的节奏大概是怎样的？','了解工作氛围，显得关注融入'],
+['如果我有幸入职，前三个月公司对我最大的期待是什么？','显示务实与靠谱']
+],
+'技术面':[
+['咱们团队目前在技术上最大的挑战或痛点是什么？','展现专业兴趣'],
+['团队目前的技术栈和迭代流程是怎样的？','体现对工作的认真'],
+['对于这个岗位，您认为最重要的能力是什么样的？','呼应专业要求']
+],
+'终面':[
+['您认为团队短期内的主要目标是什么？','了解方向，显示格局'],
+['公司未来一年在您这个层面的规划是怎样的？','体现长期视野'],
+['您对我今天的表现有什么建议吗？','诚恳求指导，体现成长心态']
+]
+};
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('AI面试反问助手 | AgentGongju.com'))return;
+const stage=document.getElementById('stage')?document.getElementById('stage').value:'初面';
+const position=document.getElementById('position').value.trim()||'这个岗位';
+const company=document.getElementById('company').value;
+const context=document.getElementById('context').value.trim();
+const pool=pools[stage]||pools['初面'];
+const others={
+'大厂':['请问贵司对这个岗位的成长路径是如何规划的？'],
+'创业公司':['请问目前团队规模和小伙伴们的背景大概是怎样的？'],
+'外企':['请问团队的国际化协作和英语使用场景多吗？'],
+'国企':['请问贵单位对新人的培养和晋升机制是怎样的？']
+};
+let out='【'+stage+' · 反问问题建议】\n\n针对你的情况（'+position+'｜'+company+'），建议从下面几个反问，既显诚意又不踩雷：\n\n';
+let idx=1;
+function spin(v){return (v&&v!=='创业公司')?true:false;}
+(function pick(){
+  pool.forEach((q,i)=>{if(i<3){out+=idx+'. '+q[0]+'\n   💡'+q[1]+'\n\n';idx++;}});
+  if(spin(company)){out+='⭐ 加问一条（结合公司类型）：'+others[company][0]+'\n\n';idx++;}
+})();
+if(context){out+='📌 结合你的背景「'+context+'」，可以自然接一句：\n“我其实是'+context+'，所以特别想了解这样一个岗位对新人最实际的成长建议。”\n\n';}
+out+='—— 反问的态度比内容更重要：真诚、好奇、上进。第一次面试尽量别主动问薪资休假等敏感话题哦 😉';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function setStage(v){var el=document.getElementById('stage');if(el){el.value=v;}else{var s=document.createElement('select');s.id='stage';s.innerHTML='<option>'+v+'</option>';document.body.appendChild(s);}}
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 问题已复制！'))}
+</script>
+</body>
+</html>

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI儿童睡前绘本故事 | AgentGongju.com</title>
+<meta name="description" content="输入主角、主题和宝宝年龄，AI一键生成温馨有教育意义的儿童睡前绘本小故事，适合培养阅读习惯与想象力。">
+<meta name="keywords" content="儿童故事,睡前故事,绘本故事,亲子阅读,宝宝故事,幼儿故事">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+textarea,input[type=text],select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:80px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tag-btn{display:inline-block;padding:5px 12px;background:rgba(99,102,241,0.12);border:1px solid rgba(99,102,241,0.25);border-radius:20px;color:#a5b4fc;cursor:pointer;font-size:.8rem;margin:3px;transition:all .2s}
+.tag-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🧸 AI儿童睡前绘本故事</h1><p>为宝宝定制温馨有爱的睡前小故事</p></div>
+
+<div class="card">
+<label>✨ 选择故事主题</label>
+<div>
+<span class="tag-btn" onclick="setTheme('勇气')">🦁 勇气</span>
+<span class="tag-btn" onclick="setTheme('友谊')">🎈 友谊</span>
+<span class="tag-btn" onclick="setTheme('分享')">🍪 分享</span>
+<span class="tag-btn" onclick="setTheme('诚实')">🌟 诚实</span>
+<span class="tag-btn" onclick="setTheme('爱护动物')">🐶 爱护动物</span>
+<span class="tag-btn" onclick="setTheme('环保')">🌍 环保</span>
+<span class="tag-btn" onclick="setTheme('感恩')">🌸 感恩</span>
+<span class="tag-btn" onclick="setTheme('好好睡觉')">🌙 好好睡觉</span>
+</div>
+<label>🧒 主角（小动物或小朋友的名字）</label>
+<input type="text" id="hero" placeholder="例如：小熊豆豆、小兔子雪球、妹妹乐乐">
+<label>👶 宝宝年龄</label>
+<select id="age"><option value="2-5">2-5岁（简单短句）</option><option value="6-8" selected>6-8岁（丰富情节）</option><option value="9-12">9-12岁（带启发性）</option></select>
+<label>📝 故事主题（可自定义）</label>
+<input type="text" id="theme" placeholder="例如：学会分享、勇敢面对黑暗、爱护小动物">
+<button class="btn-gen" id="genBtn">📖 生成睡前故事</button>
+<label style="margin-top:12px;color:#64748b;font-size:.8rem">* 生成内容为AI创作，可结合宝宝兴趣多次调整</label>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🧸 你的专属睡前故事</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制故事</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const themeTags={勇气:'🌱 从"害怕"到"勇敢"的小小成长',友谊:'🤝 认识新朋友的温暖故事',分享:'🍬 学会分享的快乐魔法',诚实:'🎯 诚实是最勇敢的事',爱护动物:'🐾 和小动物做朋友',环保:'🌏 守护我们共同的家园',感恩:'💖 心怀感激的小日子',好好睡觉:'😴 和星星说晚安'};
+const plots=['主角遇到一个小小的挑战','主角帮朋友解决了一个难题','主角发现了一个神奇的小秘密','主角学会了新本领','主角经历了一次奇妙的冒险','主角交到了一个新朋友'];
+const sounds=['轻轻的风声','晚风里的虫鸣','妈妈温柔的声音','床边的夜灯','软软的云朵','香甜的梦'];
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('AI儿童睡前绘本故事 | AgentGongju.com'))return;
+const hero=document.getElementById('hero').value.trim()||'小熊豆豆';
+const age=document.getElementById('age').value;
+const theme=document.getElementById('theme').value.trim()||'学会勇敢';
+const plot=plots[Math.floor(Math.random()*plots.length)];
+const sound=sounds[Math.floor(Math.random()*sounds.length)];
+const shortAge=(age==='2-5');
+let out='《'+hero+'的'+theme+'小故事》\n';
+out+='—— 献给最亲爱的宝宝 🌙\n\n';
+out+='夜晚来临，天空中挂着一弯月亮，'+(shortAge?'远处的星星一闪一闪。':'星星们像碎钻一样铺满了夜空。')+'\n\n';
+out+='有一只'+hero+'，正躺在软软的'+(shortAge?'小床上':'云朵般的小床上')+'。今天，'+hero+'要'+(shortAge?'开始一段小冒险':'和大家分享一个关于「'+theme+'」的故事')+'。\n';
+if(!shortAge){
+  out+='\n这一回，'+hero+ (plot)+'。起初，'+hero+'有些犹豫，但想起了妈妈说过的话——「再勇敢一点点，就会看见不一样的风景」。\n\n';
+  out+='于是'+hero+'鼓起勇气迈出第一步。走着走着，遇到了'+(sound)+'，还有一闪一闪的萤火虫在前面带路。'+(hero)+'发现：原来「'+theme+'」的意思，并不是要很厉害，而是愿意试试看，愿意帮助别人，愿意说出心里的话。\n\n';
+  out+='当'+hero+'回到小窝时，天边已经泛起了'+(shortAge?'粉红色':'温柔的霞光')+'。今天的冒险让'+hero+'明白了一个小小的道理——「'+theme+',让小小的我们也变得大大的」。\n';
+} else {
+  out+='\n小风轻轻吹，'+(hero)+'打了个小哈欠。'+(hero)+'想：'+(age==='2-5'?'"等我再长大一点，也要像月亮一样闪亮！"':'"明天我也要像今晚一样棒！"')+'\n\n';
+  out+='宝宝，'+(hero)+'现在闭上眼睛，听——'+sound+'，还有一首轻轻的摇篮曲在耳边响起。';
+}
+out+='\n\n好啦，故事讲完啦。现在宝宝也要像'+hero+'一样，盖好小被子，闭上眼睛。\n晚安，好梦。明天又是一个闪闪发光的好日子。🌙✨';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function setTheme(v){document.getElementById('theme').value=v;}
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 故事已复制！'))}
+</script>
+</body>
+</html>

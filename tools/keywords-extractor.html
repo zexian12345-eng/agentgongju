@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI文章关键词提取器 | AgentGongju.com</title>
+<meta name="description" content="粘贴一段文字，智能提取核心关键词与主题标签，自动生成SEO关键词、分类建议，助力文案与内容运营。">
+<meta name="keywords" content="关键词,提取,SEO,标签,内容运营,文案,主题,自动">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+textarea,input[type=text],select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:130px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.9;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.tag{padding:8px 20px;background:rgba(255,255,255,0.03);border:1px solid rgba(168,85,247,0.3);border-radius:8px;color:#d8b4fe;cursor:pointer;font-size:.85rem;margin-right:8px;margin-top:8px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🔍 AI文章关键词提取器</h1><p>一眼抓住文章灵魂，轻松搞定SEO与标签</p></div>
+
+<div class="card">
+<label>📄 粘贴你的文章/文字内容</label>
+<textarea id="text" placeholder="例如：随着气温骤降，全国多地的呼吸道疾病就诊人数明显上升。专家提醒，秋冬季节要注意防寒保暖、勤洗手、多通风，老人和儿童尤其需要加强防护，接种流感疫苗能有效降低感染风险……"></textarea>
+<div class="param-grid">
+<div><label>🎯 提取数量</label>
+<select id="qty"><option>5个</option><option>8个</option><option>10个</option></select></div>
+<div><label>📂 内容领域</label>
+<select id="field"><option>通用</option><option>健康养生</option><option>科技数码</option><option>财经职场</option><option>美食生活</option><option>教育学习</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">✨ 提取关键词</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🔍 关键词与标签</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制结果</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+// 通用中文停用词
+const stop=new Set(['的','了','和','在','是','我','你','他','与','及','或','而','把','被','会','能','要','到','对','但','这','那','也','都','还','就','并','及','从','向','以','为','等','让','给','有','个','等','上','中','下','它','们','其','之','所','于','一','二','三','不','没','很','更','最','只','被','应','该','过','着','呢','吗','啊','吧','哦','哦','时候','因为','所以','而且','但是','如果','虽然','这些','那些','一些','各种','进行','通过','对于']);
+function analyze(text,qty){
+// 按标点切词，统计两字以上词频
+const cleaned=text.replace(/[0-9A-Za-z]/g,'').replace(/[^\u4e00-\u9fa5]/g,' ');
+const stripped=text;
+// 用简单的窗口统计：取高频2-4字片段
+const freq={};
+const n=stripped.length;
+for(let i=0;i<n-1;i++){
+for(let len=2;len<=4 && i+len<=n;len++){
+const w=stripped.substr(i,len);
+if(stop.has(w))continue;
+if(/[^\u4e00-\u9fa5]/.test(w))continue;
+freq[w]=(freq[w]||0)+1;
+}
+}
+let arr=Object.entries(freq).filter(([w,c])=>c>=2).sort((a,b)=>b[1]-a[1]);
+// 去重：若长词被短词包含且频率接近，保留更有意义的
+const picked=[];
+for(const [w,c] of arr){
+if(picked.some(p=>w.includes(p)||p.includes(w)))continue;
+picked.push(w);
+if(picked.length>=Number(qty))break;
+}
+// 如果不够，补低频词
+if(picked.length<Number(qty)){
+arr.forEach(([w,c])=>{
+if(!picked.includes(w)&&picked.length<Number(qty))picked.push(w);
+});
+}
+return picked;
+}
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI文章关键词提取器 | AgentGongju.com'))return;
+const text=document.getElementById('text').value.trim();
+if(!text){alert('请先粘贴文章内容');return;}
+const qty=document.getElementById('qty').value.replace('个','');
+const field=document.getElementById('field').value;
+const words=analyze(text,qty);
+const tags=words.map(w=>w).join(' ');
+let fieldMsg={};
+fieldMsg={
+'健康养生':'「养生/健康/疫苗/防护/饮食」等高话题度字眼','科技数码':'「数码/手机/智能/AI/测评」','财经职场':'「职场/理财/效率/成长」','美食生活':'「美食/家常/好物/生活」','教育学习':'「学习/考试/方法/成长」','通用':'相关主题词'
+}[field];
+const out='【核心关键词】\n'+words.join('、')+'\n\n【话题标签】\n'+tags+'\n\n【SEO建议】\n· 标题首段植入前3个关键词，提升搜索命中。\n· 该领域可拓展'+fieldMsg+'相关内容，形成话题矩阵。\n【摘要建议】\n'+text.slice(0,60)+'…';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 结果已复制！'))}
+</script>
+</body>
+</html>

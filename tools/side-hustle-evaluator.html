@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI副业点子测评 | AgentGongju.com</title>
+<meta name="description" content="把你的副业想法填进来，AI从投入成本、启动难度、竞争度、变现潜力、时间占用五维打分，给出可落地的行动建议，帮你避开坑、找到适合自己的副业方向。">
+<meta name="keywords" content="副业,副业评测,副业点子,赚钱,兼职,副业方向,副业测评,轻创业">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+textarea,input[type=text],select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:100px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+.score-row{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:16px}
+.score{background:rgba(255,255,255,0.04);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:14px;text-align:center}
+.score .num{font-size:1.5rem;font-weight:700;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.score .lb{color:#94a3b8;font-size:.75rem;margin-top:4px}
+.verdict{background:rgba(168,85,247,0.08);border:1px solid rgba(168,85,247,0.3);border-radius:12px;padding:16px;color:#e9d5ff;line-height:2;font-size:.95rem;margin-bottom:14px}
+@media(max-width:600px){.param-grid,.score-row{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🚀 AI副业点子测评</h1><p>五维打分你的副业想法，值不值得做一目了然</p></div>
+
+<div class="card">
+<label>💡 你的副业想法</label>
+<textarea id="idea" placeholder="例如：我想做小红书美食探店号，或者开个网店卖手工饰品…"></textarea>
+<div class="param-grid">
+<div><label>⏰ 能投入的时间</label><select id="time"><option value="少">每天1小时内</option><option value="中">每天2-3小时</option><option value="多">每天4小时以上</option></select></div>
+<div><label>💰 可投入的本金</label><select id="money"><option value="低">500元内</option><option value="中">2000元内</option><option value="高">5000元以上</option></select></div>
+<div><label>🎨 你的技能</label><select id="skill"><option value="内容">写作/内容</option><option value="设计">设计/美术</option><option value="技术">技术/开发</option><option value="销售">销售/运营</option><option value="手作">手作/手艺</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">📊 测评我的副业</button>
+<label style="margin-top:12px;color:#64748b;font-size:.8rem">* 测评结果仅供参考，投资有风险，决策需谨慎</label>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">📊 副业测评报告</div>
+<div class="score-row" id="scoreRow"></div>
+<div class="verdict" id="verdictBox"></div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制报告</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function rnd(n){return Math.floor(Math.random()*n)}
+function pick(arr){return arr[rnd(arr.length)]}
+const actionTips=[{
+kw:'带货|卖|电商|网店|开店',
+tips:['从一件代发或二手货源起步，先跑通最小单再囤货','用 AI 生成商品详情页和主图，省下设计费','先在小红书/抖音起号测品，有流量再放大']},
+{kw:'内容|写|视频|小红书|抖音|公众号|探店|博主',
+tips:['选定细分垂直领域，别贪大而全','前 20 篇/条只为找数据感觉，不发自己的判断','用 AI 批量起标题和选题，测试爆款方向']},
+{kw:'设计|作图|插画|摄影|接单',
+tips:['在闲鱼/淘宝/设计平台挂服务单积累案例','把作品做成可交付模板，提升客单价','定位要清晰，比如只做“电商主图”做精做透']},
+{kw:'咨询|陪跑|教学|课程|知识',
+tips:['先免费服务 5-10 个用户攒口碑和案例','把经验结构化成交付物，而不是卖时间','用 AI 帮你做课程大纲和话术脚本']},
+{kw:'手作|手工|甜品|烘焙|饰品',
+tips:['用 AI 和社群做预售，先收款再备料降低库存','把制作过程拍成短视频，一人两职双变现','节日节点提前 2 周备货，蹭热点卖更好']}];
+const riskTips=['建议先用最小成本跑 1 个月验证真实需求，别急着All in','第一笔收入可能很小，坚持 3 个月再评估是否加码','警惕那些“先交钱”的平台或加盟模式，多数是坑'];
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('AI副业点子测评 | AgentGongju.com'))return;
+const idea=document.getElementById('idea').value.trim();
+if(!idea){alert('请先填写你的副业想法');return;}
+const t=document.getElementById('time').value,money=document.getElementById('money').value,skill=document.getElementById('skill').value;
+const text=idea;
+// 五维评分
+const cost=(t==='少'?62:t==='中'?70:78)+rnd(10)-(money==='高'?12:0); // 越省本钱分越高
+const diff=(t==='少'?55:t==='中'?66:75)+rnd(10)-(money==='低'?8:0);
+let comp=55+rnd(12);if(/小红书|抖音|网店|电商/.test(text))comp-=8;if(/细分|小众|冷门|垂直/.test(text))comp+=8;
+let earn=(money==='高'?64:money==='中'?72:78)+rnd(10);
+let work=(t==='多'?80:t==='中'?70:55)+rnd(10);
+const s={投入成本:clamp(cost),启动难度:clamp(diff),竞争程度:clamp(comp),变现潜力:clamp(earn),时间友好:clamp(work)};
+const avg=Math.round((s.投入成本+s.启动难度+s.竞争程度+s.变现潜力+s.时间友好)/5);
+const scoreRow=document.getElementById('scoreRow');scoreRow.innerHTML='';
+[['投入成本',s.投入成本,'低=更省'],['启动难度',s.启动难度,'低=易启动'],['竞争程度',s.竞争程度,'高=竞争大'],['变现潜力',s.变现潜力,'高=更赚钱'],['时间友好',s.时间友好,'高=更轻松']].forEach(([k,v,note])=>{
+scoreRow.innerHTML+=`<div class="score"><div class="num">${v}</div><div class="lb">${k}<br>${note}</div></div>`;
+});
+let verdict;
+if(/带货|卖|电商|网店|开|加盟|刷单|点赞|挂机/.test(text))verdict='⚠️ 你的点子带有一定“买量/囤货/加盟”属性，务必警惕先交钱的套路。建议从轻资产、可试错的小切口开始，别让本金吃太大风险。';
+else if(avg>=78)verdict='🟢 综合来看非常不错！五维中“变现潜力”和“启动难度”都很友好，适合尽快小成本跑起来，抓住窗口期。';
+else if(avg>=62)verdict='🟡 想法整体可行，但存在一些需要补的短板（如竞争较大或初期启动慢）。建议先做最小可行验证，跑通一个真实订单再放大。';
+else verdict='🟠 目前这个点子从你填写的条件下看性价比一般，别急着投入。可以再结合你的技能（'+skillLabels(skill)+'）调整方向，换个切口试试。';
+document.getElementById('verdictBox').innerHTML=verdict+'<br><strong>综合推荐指数：'+avg+'/100</strong>';
+let out='【副业行动建议】\n';
+out+='· 你现在的情况：可投入时间'+timeLabels(t)+'，本金'+moneyLabels(money)+'，擅长'+skillLabels(skill)+'。\n\n';
+let matched=false;
+actionTips.forEach(g=>{if(text.includes(g.kw)){matched=true;g.tips.forEach((t2,i)=>out+=''+(i+1)+'. '+t2+'\n');}});
+if(!matched){out+='根据你的描述，结合'+skillLabels(skill)+'方向：\n1. 先把核心技能打磨到能“交付”的程度\n2. 挑一个平台挂上服务或内容，7 天内发布第一版\n3. 用反馈迭代，别在完美中空耗\n';}
+out+='\n【避坑提醒】\n'+(riskTips.slice(0,2).map(x=>'· '+x).join('\n'))+'\n\n【第一步行动】\n· 今天就写下你的“最小行动”：比如发布 1 条内容、挂 1 个服务、问 3 个潜在客户。\n· 24 小时内完成它，副业就正式开始了。🔥';
+document.getElementById('outputBox').innerText=out.trim();
+document.getElementById('resultArea').classList.add('active');
+});
+function clamp(v){return Math.max(20,Math.min(98,v))}
+function timeLabels(t){return{少:'每天1小时内',中:'每天2-3小时',多:'每天4小时以上'}[t]}
+function moneyLabels(m){return{低:'500元内',中:'2000元内',高:'5000元以上'}[m]}
+function skillLabels(s){return{内容:'写作/内容',设计:'设计/美术',技术:'技术/开发',销售:'销售/运营',手作:'手作/手艺'}[s]}
+function copyResult(){const el=document.getElementById('outputBox');navigator.clipboard.writeText(verdictTxt()+'\n\n'+el.innerText).then(()=>alert('✅ 报告已复制！'))}
+function verdictTxt(){return document.getElementById('verdictBox').innerText.replace('\n综合推荐指数','，综合推荐指数')}
+</script>
+</body>
+</html>

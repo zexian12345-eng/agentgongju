@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI趣味谜语生成 | AgentGongju.com</title>
+<meta name="description" content="输入主题或谜底，AI为你在线编造趣味谜语，一家大小、朋友聚会都能玩，还能一键出答案。">
+<meta name="keywords" content="谜语,猜谜,脑筋急转弯,灯谜,趣味游戏,聚会游戏,儿童谜语">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:60px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{color:#94a3b8;font-size:.85rem;margin-bottom:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🕵️ AI 趣味谜语生成</h1><p>想好一个谜底，AI帮你绕个弯儿把话藏进去，聚会猜谜乐无穷</p></div>
+
+<div class="card">
+<label>🎁 谜底是什么？（物件/动物/词语）</label>
+<input type="text" id="answer" placeholder="例如：月亮、橘子、手机、熊猫……">
+<div class="param-row">
+<div><label>🎯 难度</label>
+<select id="diff"><option value="易" selected>🌱 简单</option><option value="中">🍀 中等</option><option value="难">🔥 烧脑</option></select></div>
+<div><label>🔢 数量</label>
+<select id="count"><option value="3" selected>3 则</option><option value="5">5 则</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">🎲 编几条谜语</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 谜面来了，猜不到可别偷看答案</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制谜语</button>
+<div class="tip" style="margin-top:12px">💡 谜语讲究"隐语借喻"，把特征藏在比喻里。聚会时先念谜面让大家猜，再亮谜底最有趣。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const TEMPLATES=[
+(m)=>({f:`一个${m.feat}，挂在${m.where}，白天躲起来，夜里把亮放。`,h:m.hint}),
+(m)=>({f:`${m.shape}脑袋${m.material}身，${m.action}本领人人夸，要问它叫啥，${m.name}呀。`,h:m.hint}),
+(m)=>({f:`不是${m.notA}不是${m.notB}，${m.quality}又乖巧，每天${m.daily}，谁用谁知道。`,h:m.hint}),
+(m)=>({f:`有${m.bodyPart}会${m.action}，有${m.eyes}会说话，${m.owner}的心头好，天天离不开它。`,h:'它就在你身边，天天都要用到'}),
+(m)=>({f:`小小${m.shape}不简单，${m.use}全靠它，${m.timeWord}陪着你，${m.name}就是它。`,h:m.hint})
+];
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI趣味谜语生成 | AgentGongju.com'))return;
+const answer=document.getElementById('answer').value.trim();
+const diff=document.getElementById('diff').value;
+const n=parseInt(document.getElementById('count').value,10);
+if(!answer){alert('请先输入一个谜底');return;}
+const META={'月亮':{feat:'圆盘',where:'天上',shape:'圆圆',material:'银',action:'明亮',name:'月亮',notA:'太阳',notB:'星星',quality:'温温柔柔',daily:'挂天上',bodyPart:'光',eyes:'亮',owner:'夜行人',use:'白天歇夜晚出',timeWord:'夜夜'},'橘子':{feat:'圆皮球',where:'果摊',shape:'橙色',material:'皮',action:'剥',name:'橘子',notA:'苹果',notB:'香蕉',quality:'酸甜可口',daily:'剥开来',bodyPart:'皮',eyes:'瓣',owner:'吃货',use:'解渴提神',timeWord:'天天'},'手机':{feat:'小方块',where:'口袋',shape:'方方',material:'玻璃',action:'触屏',name:'手机',notA:'电视',notB:'电脑',quality:'随身携带',daily:'刷一刷',bodyPart:'屏幕',eyes:'镜头',owner:'你我',use:'聊天看视频',timeWord:'分分秒秒'},'熊猫':{feat:'黑白胖',where:'竹林',shape:'圆圆',material:'毛茸茸',action:'吃竹子',name:'熊猫',notA:'老虎',notB:'大象',quality:'憨态可掬',daily:'啃竹子',bodyPart:'巴掌',eyes:'黑眼圈',owner:'国宝粉',use:'卖萌',timeWord:'整天'}};
+const m=META[answer]||{feat:'标致',where:'眼前',shape:'精妙',material:'特别',action:'有用',name:answer,notA:'寻常物',notB:'稀罕物',quality:'好用',daily:'陪伴你',bodyPart:'妙处',eyes:'门道',owner:'有心人',use:'派上大用场',timeWord:'经常'};
+let out=`🎲 谜底：${answer} · ${diff}难度 · ${n}则\n\n`;
+out+='（下面每则都可以让别人先猜一猜）\n\n';
+for(let i=0;i<n;i++){
+const r=TEMPLATES[i%TEMPLATES.length](m);
+out+=`第 ${i+1} 则\n谜面：${r.f}\n`;
+out+=(diff!=='难'?`（提示：${r.h}）\n`:'')+`谜底：${answer}\n\n`;
+}
+out+='━━ 玩法 ━━\n· 聚会时只念谜面让大家抢答，答对加分更有气氛；\n· "烧脑"难度请先收起提示，让子弹飞一会儿。';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 谜语已复制！'))}
+</script>
+</body>
+</html>

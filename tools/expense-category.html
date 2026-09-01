@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI家庭开支自动分类记账 | AgentGongju.com</title>
+<meta name="description" content="把零散的消费随手记丢进来，AI帮你自动归类到餐饮、交通、购物、医疗等类别，并给出月度复盘建议。">
+<meta name="keywords" content="记账,开支分类,家庭记账,消费复盘,理财,预算">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+textarea,input[type=text],select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:60px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:600px){.param-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🧾 AI家庭开支自动分类记账</h1><p>随手记录，自动归类，月月复盘不糊涂</p></div>
+
+<div class="card">
+<label>💳 本月总预算（元，可选）</label>
+<input type="text" id="budget" placeholder="例如 5000，留空则不对比预算">
+<label>📝 粘贴你的流水（每行一笔：如"早餐12 打车15 买菜80"）</label>
+<textarea id="items" placeholder="例：早饭12 / 地铁6 / 买菜88 / 药店买感冒药45 / 网购衣服299 / 交电费120"></textarea>
+<label>🎯 使用场景</label>
+<select id="scene"><option value="home">家庭日常</option><option value="single">个人消费</option><option value="trip">出行/旅行记账</option></select>
+<button class="btn-gen" id="genBtn">🧮 自动分类并复盘</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🧾 分类与复盘结果</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制结果</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const rules=[
+{cat:'餐饮',kw:['饭','餐','早餐','午饭','晚饭','外卖','奶茶','咖啡','买菜','菜','火锅','烧烤','面','小吃','零食'],emoji:'🍜'},
+{cat:'交通',kw:['地铁','公交','公交','出租','滴滴','打车','高铁','火车','机票','加油','停车','共享单车'],emoji:'🚗'},
+{cat:'购物',kw:['衣','鞋','淘宝','京东','网购','拼多多','超市','日用品','护肤品','化妆品'],emoji:'🛍️'},
+{cat:'医疗健康',kw:['药','医院','挂号','体检','牙','诊所','保健品'],emoji:'💊'},
+{cat:'居住',kw:['房租','房租','水电','电费','水费','燃气','物业','宽带','话费','充值'],emoji:'🏠'},
+{cat:'娱乐',kw:['电影','游戏','KTV','演出','门票','视频会员','音乐'],emoji:'🎬'},
+{cat:'学习',kw:['书','课程','学费','培训','文具'],emoji:'📚'},
+{cat:'其他',kw:[],emoji:'📦'}
+];
+function classify(t){
+for(const r of rules){if(r.kw.some(k=>t.includes(k)))return r;}
+return null;
+}
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('AI家庭开支自动分类记账 | AgentGongju.com'))return;
+const raw=document.getElementById('items').value.trim();
+const budget=parseFloat(document.getElementById('budget').value);
+if(!raw){alert('请先输入几笔消费记录哦～');return;}
+const lines=raw.split(/\n|；|;/);
+const cats={};let total=0;const detail=[];
+lines.forEach(l=>{if(!l.trim())return;const m=l.match(/(\d+(?:\.\d+)?)/);if(!m)return;const amt=parseFloat(m[0]);const desc=l.replace(m[0],'').trim();total+=amt;const r=classify(desc);const c=r?r.cat:'其他';cats[c]=(cats[c]||0)+amt;detail.push((r?r.emoji:'📦')+' '+desc+'：'+amt+'元 → '+c);});
+let out='【开支分类记账报表】共 '+Object.keys(detail).length+' 笔，合计 '+total.toFixed(2)+' 元\n\n━━📁 分类统计━━\n';
+Object.entries(cats).sort((a,b)=>b[1]-a[1]).forEach(([c,v])=>{
+const pct=(v/total*100).toFixed(0);out+= c+'：'+v.toFixed(2)+'元（占比'+pct+'%）\n';
+});
+if(budget)out+='\n💡 预算对比：总支出 '+(total>budget?'已超预算 '+(total-budget).toFixed(2)+'元，注意控制':'仍在预算'+budget+'元内，'+((budget-total)/budget*100).toFixed(0)+'%可用')
++'\n';
+out+='\n━━📝 明细列表━━\n'+detail.join('\n');
+const max=Object.entries(cats).sort((a,b)=>b[1]-a[1])[0];
+out+='\n\n【AI复盘建议】\n· 本月第一大开销是「'+max[0]+'」，共'+max[1].toFixed(2)+'元，占总支出约'+(max[1]/total*100).toFixed(0)+'%。\n· 建议为「'+max[0]+'」单独做份预算上限，减少花呗/信用卡冲动消费。\n· 每月留出30%作为紧急储蓄基金，让记账真正落到钱袋子里。🧾';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 报表已复制！'))}
+</script>
+</body>
+</html>

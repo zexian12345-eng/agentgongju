@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 演讲逐字稿生成器 | AgentGongju.com</title>
+<meta name="description" content="根据演讲主题、时长与场合自动生成带停顿提示的演讲逐字稿，适合汇报、致辞、路演">
+<meta name="keywords" content="AI文案,演讲逐字稿,发言稿,PPT旁白,路演,致辞">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:100px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.btn-gen:disabled{opacity:.5;cursor:not-allowed}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.panel{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.25);border-radius:12px;padding:16px 18px;margin-bottom:12px;white-space:pre-wrap;line-height:1.9}
+.panel b{color:#a855f7}
+.pause{color:#22c55e;font-weight:600}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🎤 AI 演讲逐字稿生成器</h1><p>输入主题与时长，生成带停顿节奏的完整发言稿</p></div>
+
+<div class="card">
+<label>📢 演讲主题</label>
+<textarea id="topic" placeholder="例如：我们团队如何用AI把客服成本降低40%"></textarea>
+<div class="param-row">
+<div><label>⏱ 时长（分钟）</label>
+<select id="dur">
+<option value="3">3分钟 · 约800字</option>
+<option value="5" selected>5分钟 · 约1300字</option>
+<option value="8">8分钟 · 约2000字</option>
+<option value="10">10分钟 · 约2500字</option>
+</select></div>
+<div><label>🎯 场合</label>
+<select id="occ">
+<option value="工作汇报">工作汇报</option>
+<option value="产品路演">产品路演</option>
+<option value="获奖致辞">获奖致辞</option>
+<option value="年会发言">年会发言</option>
+<option value="行业分享">行业分享</option>
+</select></div>
+</div>
+<button class="btn-gen" id="genBtn">📝 生成逐字稿</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 演讲逐字稿（含【停顿】提示）</div>
+<div id="box"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制全部</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function rand(a){return a[Math.floor(Math.random()*a.length)]}
+const opens=['各位朋友，大家好。','各位来宾，各位伙伴，大家好。','大家好，很高兴能在这里和大家聊聊。'];
+const closes=['谢谢大家。','以上就是我的分享，感谢聆听。','让我们继续加油，谢谢大家！'];
+const trans=['【停顿】','那为什么我们要关注这件事？','讲到这里，我想大家可能会有疑问，我来解释一下。'];
+const occLib={
+'工作汇报':['在过去的一个季度，我们的核心指标出现了明显的提升。','这里我想重点讲一讲数据背后的原因。','这要得益于团队每一位同事的共同努力。'],
+'产品路演':['我们打磨这款产品已经超过一年。','用户是检验产品的唯一标准，我们用数字说话。','今天，我很想把这个故事讲给大家听。'],
+'获奖致辞':['这份荣誉属于我们整个团队。','回想一路走来的艰辛，此刻内心十分感慨。','感谢每一位支持我们的朋友和用户。'],
+'年会发言':['回顾这一年，我们有欢笑也有挑战。','最让我欣慰的，是大家始终并肩向前。','新的一年，让我们继续保持热爱。'],
+'行业分享':['关于这个行业，我有一些粗浅的观察想分享。','过去几年这个领域发生了翻天覆地的变化。','希望大家有所启发。']};
+const seg=['第一，我们的方法很简单，就是把复杂的事情拆成小步骤。你要知道，任何宏大的目标，都始于一个清晰的行动。','第二，我们非常重视反馈。每次上线一个功能，都会认真聆听用户的声音，然后快速迭代。','第三，也是最重要的一点，我们建立了一套高效协作的机制。大家目标一致，冲劲十足。','当然，过程中也有很多波折。有段时间数据不理想，团队一度很焦虑。但我们没有放弃，而是静下心来复盘、调整方向。','最后我想说，真正的竞争力不在于一次爆发，而在于持续进化。这就是我们始终坚持的信念。'];
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 演讲逐字稿生成器 | AgentGongju.com'))return;
+let topic=document.getElementById('topic').value.trim();
+if(!topic){alert('请输入演讲主题');return}
+const dur=document.getElementById('dur').value;const occ=document.getElementById('occ').value;
+const lines=parseInt(dur)>=8?4:parseInt(dur)>=5?3:2;
+const box=document.getElementById('box');box.innerHTML='';
+let t=`《${topic}》\n`;
+t+=`${rand(opens)}\n【停顿】\n今天主要想和大家聊一聊「${topic}」。\n`;
+let body=occLib[occ][0]+'\n';
+let used=new Set();
+for(let i=0;i<lines;i++){
+let s=seg[Math.floor(Math.random()*seg.length)];
+body+=s+'\n'+rand(trans)+'\n';
+}
+t+=body;
+if(occ==='获奖致辞'){t+='我要特别感谢我的家人，是他们给了我坚持下去的勇气。\n'}
+if(occ==='产品路演'){t+='如果大家感兴趣，欢迎会后找我们深入交流。\n'}
+t+='【停顿】\n'+rand(closes);
+const div=document.createElement('div');div.className='panel';div.textContent=t;
+box.appendChild(div);
+});setTimeout(()=>{},0);
+function copyResult(){let out=document.getElementById('box').innerText;navigator.clipboard.writeText(out).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

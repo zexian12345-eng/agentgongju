@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI抖音脚本 | AgentGongju.com</title>
+<meta name="description" content="输入主题与时长，AI为你生成抖音短视频脚本，含开场钩子、文案台词、镜头画面与BGM建议，助你出爆款。">
+<meta name="keywords" content="抖音脚本,短视频脚本,抖音文案,视频文案,爆款脚本,带货脚本">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:70px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{color:#94a3b8;font-size:.85rem;margin-bottom:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🎬 AI 抖音脚本</h1><p>三秒抓住眼球，AI帮你写出吸粉留人的短视频脚本</p></div>
+
+<div class="card">
+<label>🎥 视频主题</label>
+<textarea id="topic" placeholder="例如：教你3分钟做一顿快手晚餐、职场新人必知的5个潜规则、开箱测评一款降噪耳机……"></textarea>
+<div class="param-row">
+<div><label>⏱️ 视频时长</label>
+<select id="dur"><option value="15秒">15秒</option><option value="30秒" selected>30秒</option><option value="60秒">60秒</option><option value="90秒">90秒</option></select></div>
+<div><label>🎯 内容类型</label>
+<select id="type"><option value="知识科普">知识科普</option><option value="好物推荐" selected>好物推荐</option><option value="生活vlog">生活vlog</option><option value="情感共鸣">情感共鸣</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">🚀 生成爆款脚本</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 你的短视频脚本</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制脚本</button>
+<div class="tip" style="margin-top:12px">💡 爆款公式：前3秒抛钩子，中间给价值，结尾引导互动（点赞收藏关注）。拍前多看同品类对标账号。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const HOOKS=['做梦都没想到，这件事原来这么简单！','拍视频之前，我劝你先看完这个！','90%的人都不知道的这个冷知识……','别再瞎忙了，今天教你一套高效方法！','花3分钟看完，能帮你省下三个月的时间！'];
+const OPENERS=['问题来了——','话不多说，直接上干货。','先跟大家讲个真实小故事。','我先卖个关子，看到最后你就懂了。'];
+const ENDINGS=['觉得有用就点个赞，让更多需要的朋友看到！','关注我，每天分享一个实用小技巧！','评论区聊聊你们的看法，下期见！','别忘了收藏，不然下次就找不到了！'];
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI抖音脚本 | AgentGongju.com'))return;
+const topic=document.getElementById('topic').value.trim();
+const dur=document.getElementById('dur').value;
+const type=document.getElementById('type').value;
+if(!topic){alert('请先填写视频主题');return;}
+const secs=parseInt(dur);
+const n=Math.max(3,Math.round(secs/10));
+const h=HOOKS[topic.length%HOOKS.length];
+const o=OPENERS[(topic.length*3)%OPENERS.length];
+const e=ENDINGS[(dur.length+type.length)%ENDINGS.length];
+let out='【抖音'+dur+' · '+type+'脚本 · '+topic+'】\n\n';
+out+='━━ 0-3秒 钩子开场 ━━\n🎯 出镜/画面特写，旁白：「'+h+'」\n\n';
+out+='━━ 核心内容（拆分'+n+'个要点）━━\n';
+const tips=type==='好物推荐'?['真实使用痛点','外观质感细节','实际使用效果','价格与对比','购买建议']:type==='知识科普'?['概念大白话','常见误区','实操步骤','避坑提醒','进阶技巧']:type==='生活vlog'?['日常场景引入','过程中小插曲','暖心情节','生活方式态度','一句总结']:['共鸣场景切入','情绪递进','转折点','真情实感表达','给观众的鼓励'];
+for(let i=0;i<n;i++){
+out+='\n【镜头'+(i+1)+'｜画面+台词】\n'+o+' 第'+(i+1)+'个重点：围绕「'+topic+'」展开'+tips[i%tips.length]+'的讲解，节奏明快，多给特写镜头。\n';
+}
+out+='\n━━ 结尾引导（最后5秒）━━\n🎬 亮出结论/干货，正中屏幕字幕：「'+e+'」\n';
+out+='\n━━ BGM与字幕建议 ━━\n🎵 BGM：'+['轻松欢快','节奏感强','温暖治愈','燃向BGM'][type.length%4]+'风格；字幕加粗放大关键词，重点数字用彩色高亮。\n\n【祝爆款连连 🔥】';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 脚本已复制！'))}
+</script>
+</body>
+</html>

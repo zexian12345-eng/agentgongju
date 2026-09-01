@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI数独生成器 | AgentGongju.com</title>
+<meta name="description" content="一键生成可打印的数独谜题，可选简单/中等/困难难度，带解题提示与答案，随时随地来一局烧脑训练。">
+<meta name="keywords" content="数独,数独生成,数独游戏,九宫格,数独在线,数独答案,逻辑训练">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.sudoku-wrap{display:flex;gap:24px;flex-wrap:wrap;align-items:flex-start}
+.sudoku{border:2px solid #6366f1;border-radius:6px;display:inline-block}
+.s-row{display:flex}
+.s-cell{width:44px;height:44px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;font-weight:600;color:#e2e8f0;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.03)}
+.s-cell.filled{color:#a5b4fc}
+.s-cell.given{color:#34d399}
+.s-cell.br{border-right:2px solid #6366f1}
+.s-cell.bb{border-bottom:2px solid #6366f1}
+.toolbar{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
+.btn-sm{padding:8px 18px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.btn-sm:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.s-cell{width:36px;height:36px;font-size:1rem}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🧩 AI数独生成器</h1><p>一键生成烧脑谜题，随时来一局</p></div>
+
+<div class="card">
+<label>🎚 难度</label>
+<select id="level"><option value="easy">😊 简单（新手入门）</option><option value="medium" selected>🙂 中等（日常练习）</option><option value="hard">😤 困难（高玩挑战）</option></select>
+<button class="btn-gen" id="genBtn">✨ 生成新一局</button>
+<label style="margin-top:12px;color:#64748b;font-size:.8rem">* 点击空白格子即可填入 1-9</label>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🧩 数独谜题</div>
+<div class="sudoku-wrap">
+<div id="boardBox"></div>
+<div id="rightBox" style="display:none">
+<div style="color:#a5b4fc;font-weight:600;margin-bottom:8px">📖 答案</div>
+<div id="solveBox"></div>
+</div>
+</div>
+<div class="toolbar">
+<button class="btn-sm" onclick="resetBoard()">🔄 清空重填</button>
+<button class="btn-sm" onclick="toggleSolve()">💡 显示/隐藏答案</button>
+<button class="btn-sm" onclick="checkBoard()">✔ 检查</button>
+</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function rnd(n){return Math.floor(Math.random()*n)}
+let puzzle=[],solution=[],given=[],userIn=[];
+function shuffle(a){for(let i=a.length-1;i>0;i--){const k=rnd(i+1);[a[i],a[k]]=[a[k],a[i]];}return a;}
+function fillGrid(grid){
+const nums=shuffle([1,2,3,4,5,6,7,8,9]);
+for(let i=0;i<81;i++){
+  if(grid[i]!==0)continue;
+  const r=Math.floor(i/9),c=i%9;
+  const opts=shuffle([...nums]);
+  for(const n of opts){
+    if(valid(grid,r,c,n)){grid[i]=n;if(fillGrid(grid))return true;grid[i]=0;}
+  }
+  return false;
+}
+return true;
+}
+function valid(g,r,c,n){
+for(let i=0;i<9;i++){if(g[r*9+i]===n&&i!==c)return false;if(g[i*9+c]===n&&i!==r)return false;}
+const br=Math.floor(r/3)*3,bc=Math.floor(c/3)*3;
+for(let i=0;i<3;i++)for(let j=0;j<3;j++)if(g[(br+i)*9+bc+j]===n&&(br+i!==r||bc+j!==c))return false;
+return true;
+}
+function solveCount(copy,limit){
+let cnt=0;
+function bt(){
+  if(cnt>limit)return;
+  let best=-1,bn=10;
+  for(let i=0;i<81;i++){
+    if(copy[i]!==0)continue;
+    let c=0;for(let n=1;n<=9;n++)if(valid(copy,Math.floor(i/9),i%9,n))c++;
+    if(c<bn){bn=c;best=i;if(c===1)break;}
+  }
+  if(best<0){cnt++;return;}
+  const r=Math.floor(best/9),c=best%9;
+  for(let n=1;n<=9;n++){if(valid(copy,r,c,n)){copy[best]=n;bt();if(cnt>limit)return;copy[best]=0;}}
+}
+bt();return cnt;
+}
+function gen(level){
+solution=[];fillGrid(solution);
+puzzle=[...solution];
+let empty=(level==='easy')?38:(level==='medium')?48:56;
+let order=[...Array(81).keys()];shuffle(order);
+while(empty>0&&order.length){
+  const idx=order.pop();
+  const backup=puzzle[idx];
+  puzzle[idx]=0;
+  if(solveCount([...puzzle],1)!==1){puzzle[idx]=backup;}
+  else empty--;
+}
+given=puzzle.map(v=>v!==0);
+userIn=puzzle.map(v=>v);
+}
+function render(table,data,markGiven){
+let html=table?'<div class="sudoku">':'<div class="sudoku">';
+for(let r=0;r<9;r++){
+  html+='<div class="s-row">';
+  for(let c=0;c<9;c++){
+    const v=data[r*9+c];
+    const cls=(c%3===2&&c!==8?'s-cell br ':'s-cell ')+(r%3===2&&r!==8?'bb':'');
+    if(table&&markGiven&&given[r*9+c])html+='<div class="'+cls.trim()+' given" >'+(v||'')+'</div>';
+    else if(table)html+='<div class="'+cls.trim()+'" onclick="cellClick('+r+','+c+',this)">'+(userIn[r*9+c]||'')+'</div>';
+    else html+='<div class="s-cell">'+(v||'')+'</div>';
+  }
+  html+='</div>';
+}
+return html+'</div>';
+}
+function cellClick(r,c,el){
+if(given[r*9+c]){return;}
+let n=prompt('填入 1-9（输入0或取消清空）：');
+if(n===null)return;
+const v=parseInt(n);
+if(isNaN(v)||v<0||v>9){alert('请输入 1-9');return;}
+userIn[r*9+c]=v||0;
+el.innerText=v||'';
+}
+function drawBoard(){document.getElementById('boardBox').innerHTML=render(true,puzzle);}
+function drawSolve(){document.getElementById('solveBox').innerHTML=render(false,solution);}
+function resetBoard(){userIn=puzzle.map(v=>v);drawBoard();}
+let solveVisible=false;
+function toggleSolve(){solveVisible=!solveVisible;document.getElementById('rightBox').style.display=solveVisible?'block':'none';if(solveVisible)drawSolve();}
+function checkBoard(){
+let wrong=0;
+for(let i=0;i<81;i++){if(!given[i]&&userIn[i]!==0&&userIn[i]!==solution[i])wrong++;}
+let filled=userIn.filter(v=>v!==0).length;
+if(wrong>0)alert('还有 '+wrong+' 格填错了，再想想！');
+else if(filled===81)alert('🎉 全部正确！太棒了！');
+else alert('目前没有错误，继续加油，还差 '+(81-filled)+' 格。');
+}
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('AI数独生成器 | AgentGongju.com'))return;
+gen(document.getElementById('level').value);
+solveVisible=false;
+document.getElementById('rightBox').style.display='none';
+drawBoard();
+document.getElementById('resultArea').classList.add('active');
+});
+</script>
+</body>
+</html>

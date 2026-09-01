@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI工作邮件回复 | AgentGongju.com</title>
+<meta name="description" content="粘贴收到的邮件或说明你想回复的内容，AI帮你会话得体、专业有礼地写好回复，支持中文与英文。">
+<meta name="keywords" content="邮件回复,商务邮件,办公,写信,Email reply,邮件模板">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:100px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{color:#94a3b8;font-size:.85rem;margin-bottom:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📧 AI 工作邮件回复</h1><p>会说话、办事稳，专业得体的邮件一招搞定</p></div>
+
+<div class="card">
+<label>📨 粘贴收到的邮件 / 说明想回复的内容</label>
+<textarea id="content" placeholder="例如：对方发邮件来催项目进度，还说周五前必须给出明确时间表，语气有点急…… 我想回复尽快给出，但是要留有余地。"></textarea>
+<div class="param-row">
+<div><label>🎯 回复目的</label>
+<select id="purpose"><option value="答应">🤝 答应/同意</option><option value="拒绝">🚫 委婉拒绝</option><option value="推后">⏳ 说明延期</option><option value="催进度">📢 催进度</option><option value="致谢">🙏 致谢</option></select></div>
+<div><label>🌐 语言</label>
+<select id="lang"><option value="中文" selected>🇨🇳 中文</option><option value="英文">🇬🇧 英文</option></select></div>
+</div>
+<label>👤 称呼对方（选填）</label>
+<input type="text" id="to" placeholder="例如：王经理、Alice、李老师…">
+<button class="btn-gen" id="genBtn">✨ 生成回复</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 邮件回复草稿</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制回复</button>
+<div class="tip" style="margin-top:12px">💡 小贴士：重要邮件发送前建议通读一遍，把「大概」「差不多」换成具体时间，客户更放心。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const purposeZh={答应:['感谢您的来信与信任。','我们非常重视您的需求。','经团队确认，这个问题可以妥善处理。','我们会在约定时间内完成相关安排。','如有进一步需要，随时欢迎联系。'],拒绝:['非常感谢您的邀请与认可，这是对我们很大的鼓励。','不过受制于目前的工作安排与排期，这次恐怕难以承接。','非常遗憾无法成行/参与，还请您谅解。','期待未来有合适的时机，我们再深入合作。'],推后:['感谢您的耐心等待与理解。','关于您提到的进度，目前正按计划推进，但整体时间需稍作调整。','预计将比原计划延后X个工作日完成，届时会第一时间同步。','感谢您的包容，我们一定以质量为先。'],催进度:['您好，冒昧打扰。','就此前沟通的工作进展，想与您同步确认一下。','是否可以烦请抽出几分钟，告知目前的最新情况？','期待您的回复，感谢配合！'],致谢:['非常感谢您一直以来的支持与帮助。','您的信任是我们前进的最大动力。','借此机会，向您表达诚挚的谢意。','今后也请多多关照！']};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI工作邮件回复 | AgentGongju.com'))return;
+const content=document.getElementById('content').value.trim();
+const purpose=document.getElementById('purpose').value;
+const lang=document.getElementById('lang').value;
+const to=document.getElementById('to').value.trim();
+if(!content){alert('请先粘贴邮件内容或说明');return;}
+const greet=to?to:' 先生/女士';
+const p=purposeZh[purpose];
+if(lang==='中文'){
+let out='『主题：回复：'+content.slice(0,18)+'」\n\n';
+out+=greet+'：您好！\n\n';
+out+=p[0]+'\n'+p[1]+'\n'+p[2]+'\n'+p[3]+'\n';
+out+='\n关于您邮件中提到的内容，我方已了解：「'+content.slice(0,40)+(content.length>40?'…':'')+'」\n';
+out+='\n【我方回复】\n';
+out+=(purpose==='答应'?'· 同意您的提议，我们将积极配合落实；\n· 具体节点与安排，会以书面形式另行同步。':purpose==='拒绝'?'· 非常抱歉，经评估后此次难以满足，望您海涵；\n· 后续如有其他需求，我们仍十分乐意支持。':purpose==='推后'?'· 相关安排需适当延期，我们正加快推进，将尽快回禀确切日期；\n· 造成不便，深表歉意。':purpose==='催进度'?'· 烦请您于本周内回复最新进展；\n· 若需我方协助沟通，请随时告知。':'· 您的心意我们已收到，向您表示衷心感谢！\n· 也期待与您的下次合作。');
+out+='\n\n此致\n敬礼！\n\n'+greet+'· 敬上\n（AgentGongju AI 代拟）';
+document.getElementById('outputBox').innerText=out;
+}else{
+let out='Subject: Re: '+content.slice(0,18)+'\n\nDear '+greet.replace(/先生/,'Sir').replace(/女士/,'Madam')+',\n\n';
+out+='Thank you for your email. We truly appreciate your message and the trust you have placed in us.\n\n';
+out+='Regarding your request, we have noted: "'+content.slice(0,40)+'".\n\n';
+out+=(purpose==='答应'?'We are glad to confirm that we can proceed as discussed. We will follow up with the detailed schedule shortly.':purpose==='拒绝'?'Unfortunately, after careful consideration, we are unable to accommodate this request at this time. We hope for your kind understanding and look forward to future opportunities.':purpose==='推后'?'Please kindly note that the timeline needs to be slightly adjusted. We are working diligently to finalize the new schedule and will keep you updated.':purpose==='催进度'?'Would you mind providing an update on the latest progress by the end of this week? Your prompt reply would be greatly appreciated.':'We sincerely appreciate your continued support and look forward to working with you again.');
+out+='\n\nShould you have any questions, please feel free to reach out.\n\nBest regards,\n'+greet+'\n(AgentGongju AI)';
+document.getElementById('outputBox').innerText=out;
+}
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 邮件已复制！'))}
+</script>
+</body>
+</html>

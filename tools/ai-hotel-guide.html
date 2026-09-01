@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI酒店入住攻略 | AgentGongju.com</title>
+<meta name="description" content="根据你的出行目的、入住城市和预算，AI帮你制定一份住宿选择与入住攻略：该关注什么、怎么选房型、入住和退房要注意哪些细节，住得更省心。">
+<meta name="keywords" content="酒店,住宿,攻略,订房,入住,退房,出差,旅行住宿">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+textarea,input[type=text],select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:70px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:600px){.param-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🏨 AI酒店入住攻略</h1><p>住得省心又舒服，出行更从容</p></div>
+
+<div class="card">
+<div class="param-grid">
+<div><label>🧳 出行目的</label><select id="purpose"><option value="travel">旅游休闲</option><option value="business">出差办公</option><option value="family">家庭出游</option><option value="couple">情侣度假</option></select></div>
+<div><label>💰 预算档位</label><select id="budget"><option value="budget">经济型</option><option value="mid">舒适型</option><option value="luxury">高端型</option></select></div>
+</div>
+<label>📍 出行城市/区域</label>
+<input type="text" id="city" placeholder="例如：上海、成都、杭州西湖附近">
+<label>📝 其他需求（可选）</label>
+<input type="text" id="need" placeholder="例如：需要停车、带娃、靠近地铁、宠物友好">
+<button class="btn-gen" id="genBtn">🏨 生成入住攻略</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🏨 酒店入住攻略</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制攻略</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const purposeTip={
+travel:'① 优先交通便利、靠近核心景区的地段；② 看近半年真实住客评价，避开差评集中区；③ 若行程灵活可关注连住优惠。',
+business:'① 靠近会议/出差地点或地铁口；② 关注退房时间与发票开具；③ 优先选择含早餐、有办公桌的商务楼层。',
+family:'① 确认是否可加床/是否有家庭房；② 关注儿童早餐政策与隔音；③ 选择临近亲子设施的酒店更方便。',
+couple:'① 可优先考虑有景观、浴缸或特色房型的酒店；② 关注入住政策与私密性评价；③ 提前备注纪念日等惊喜需求。'
+};
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('AI酒店入住攻略 | AgentGongju.com'))return;
+const purpose=document.getElementById('purpose').value;
+const budget=document.getElementById('budget').value;
+const city=document.getElementById('city').value.trim()||'目的地';
+const need=document.getElementById('need').value.trim();
+let out='【酒店入住攻略】城市：'+city+'｜类型：'+purposeName(purpose)+'｜预算：'+budgetName(budget)+'\n\n';
+out+='1️⃣ 选店建议\n'+purposeTip[purpose]+'\n';
+if(need)out+='· 额外需求：'+need+'（订房前务必先与前台确认）\n';
+out+='\n2️⃣ 订房细节\n· 看清"不含早/含早"及取消政策，避免无法退改。\n· 下单前对比两个平台价格与优惠券，常有差价。\n· '+budgetTip[budget]+'\n';
+out+='\n3️⃣ 入住 & 退房\n· 争取免费升级：入住高峰前台忙时试着礼貌问一句。\n· 入住先检查房间设施与毛巾床品，有问题当场反馈。\n· 退房留意押金退还与小冰箱消费账单。\n';
+out+='\n4️⃣ 实用tip\n· 提前下载酒店App或加官方号，部分有会员价。\n· 自带洗漱用品更环保卫生。\n· 如需发票，退房前提前告知前台开好。🏨';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+const budgetTip={budget:'经济型关注"免费取消"和真实卫生评价，别只看低价。',mid:'舒适型可多关注交通便利度与免费早餐，性价比更稳。',luxury:'高端型可关注行政酒廊、健身房、管家服务等附加体验。'};
+function purposeName(p){return{travel:'旅游休闲',business:'出差办公',family:'家庭出游',couple:'情侣度假'}[p];}
+function budgetName(b){return{budget:'经济型',mid:'舒适型',luxury:'高端型'}[b];}
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 攻略已复制！'))}
+</script>
+</body>
+</html>

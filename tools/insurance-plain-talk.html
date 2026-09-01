@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI保险条款白话解读 | AgentGongju.com</title>
+<meta name="description" content="把晦涩的保险条款翻译成大白话，帮你快速看懂保障范围、免责条款和理赔逻辑，买保险不踩坑。">
+<meta name="keywords" content="保险,条款解读,保险科普,重疾险,医疗险,免责条款,保单">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+textarea,input[type=text],select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:60px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:600px){.param-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🛡️ AI保险条款白话解读</h1><p>把晦涩条款翻译成大白话，买保险不踩坑</p></div>
+
+<div class="card">
+<label>📋 保险类型</label>
+<select id="insType"><option value="critical">重疾险</option><option value="medical">医疗险</option><option value="life">寿险</option><option value="accident">意外险</option><option value="property">财产/车险</option><option value="custom">其他/自己粘贴</option></select>
+<label>⚠️ 想在条款里重点看懂什么？</label>
+<div class="param-grid">
+<div><label>✔️ 保障范围</label><input type="checkbox" id="cCover" checked></div>
+<div><label>✖️ 免责条款</label><input type="checkbox" id="cExcl" checked></div>
+</div>
+<label style="margin-top:10px">📝 条款原文（可选，选"其他"时必填）</label>
+<textarea id="clauseText" placeholder="粘贴你看不懂的保险条款原文，或用大白话描述你的疑问…"></textarea>
+<label>💬 你的其他疑问（可选）</label>
+<input type="text" id="question" placeholder="例如：是不是确诊就能赔？能保多久？">
+<button class="btn-gen" id="genBtn">🔍 生成白话解读</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🛡️ 白话解读结果</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制解读</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const data={
+critical:{name:'重疾险',cover:'确诊约定的重疾（如癌症、心梗、脑中风等）并按条款要求达到理赔状态，保险公司一次性赔付保额，钱自由支配。',excl:'在等待期90天/180天内确诊、先天性疾病、投保前已有且未如实告知的疾病、酗酒吸毒致病的，通常不赔。注意"轻症/中症"是否单独有保障。'},
+medical:{name:'医疗险',cover:'报销住院、门诊手术等合理医疗费用，通常先经医保报销，剩余部分扣除免赔额后按比例报销。',excl:'既往症、非合理且必要的治疗、整形美容、镶牙、生育相关（多数普通医疗险）、投保前未如实告知的疾病通常不赔。'},
+life:{name:'寿险',cover:'被保险人身故或全残时，保险公司赔付保额给受益人，用于赡养家庭、偿还房贷等。',excl:'投保后2年内自杀（部分产品特定约定除外）、故意犯罪导致身故、投保人故意杀害被保险人的，通常不赔。'},
+accident:{name:'意外险',cover:'因突发的、外来的、非本意的、非疾病的意外事件导致身故/伤残时赔付；部分含意外医疗报销。',excl:'中暑、猝死（若无特别约定）、自残自杀、醉酒打架、高危运动未告知、疾病引发的事故通常不赔。'},
+property:{name:'财产/车险',cover:'车损险赔自己车辆损失，三者险赔撞伤他人或损坏他人财物，交强险为法定强制，部分家财险保房屋财产。',excl:'酒驾无证驾驶、故意制造事故、车辆自然磨损、未投保的险种范围通常不赔；家财险对古文玩、金银首饰往往设限额。'},
+custom:{name:'自定义条款',cover:'基于你粘贴的原文，我会重点解析"保障范围"相关表述。',excl:'基于你粘贴的原文，我会重点解析"免责/不保"相关表述。'}
+};
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('AI保险条款白话解读 | AgentGongju.com'))return;
+const t=document.getElementById('insType').value;
+const d=data[t];
+const q=document.getElementById('question').value.trim();
+let out='【保险条款白话解读】类型：'+d.name+'\n\n';
+out+='一、保障范围（大白话）\n· '+d.cover+'\n';
+if(document.getElementById('cExcl').checked)out+='\n二、免责/不保（最容易踩坑）\n· '+d.excl+'\n';
+out+='\n三、给你的3条提醒\n· 投保前如实告知健康状况，隐瞒会拒赔。\n· 看清等待期和免赔额，别只看宣传话术。\n· 犹豫期内可无条件退保，别冲动下单。\n';
+if(q)out+='\n四、你的疑问\n【'+q+'】建议：联系专业经纪人逐条核对条款原文，尤其是"释义"和"特别约定"部分。\n';
+if(t==='custom'&&document.getElementById('clauseText').value.trim())out+='\n五、原文要点速览\n· 你粘贴的条款中，建议重点关注：保险期间、保费缴纳、宽限期、等待期、免赔额、责任免除、如实告知义务、理赔所需材料这几类关键词。\n';
+out+='\n【免责提示】以上为通用科普解读，具体以你保单合同原文及保险公司解释为准。🛡️';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 解读已复制！'))}
+</script>
+</body>
+</html>

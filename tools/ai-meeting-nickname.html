@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 会议花名生成器 | AgentGongju.com</title>
+<meta name="description" content="为公司会议/团队生成中英文花名与代号，方便复盘讨论，含风格、性别、寓意选择">
+<meta name="keywords" content="AI起名,会议花名,团队代号,英文名,昵称,花名生成">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:90px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.param-row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.btn-gen:disabled{opacity:.5;cursor:not-allowed}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.panel{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.25);border-radius:12px;padding:16px 18px;margin-bottom:12px}
+.panel-head{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.panel-num{background:linear-gradient(135deg,#6366f1,#a855f7);color:white;width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem}
+.panel-title{font-weight:600;color:#a5b4fc}
+.panel-line{font-size:.88rem;color:#cbd5e1;line-height:1.7}
+.panel-line b{color:#a855f7}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:700px){.param-row,.param-row3{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🎭 AI 会议花名生成器</h1><p>输入团队特点，一键生成中英文花名与微信昵称</p></div>
+
+<div class="card">
+<label>📝 团队/会议特点（可选填空）</label>
+<textarea id="desc" placeholder="例如：产品研发小组，一群爱熬夜的年轻人，喜欢星球大战"></textarea>
+<div class="param-row3">
+<div><label>🎨 风格</label>
+<select id="style">
+<option value="酷炫">酷炫</option>
+<option value="可爱">可爱</option>
+<option value="文艺">文艺</option>
+<option value="搞笑">搞笑</option>
+<option value="英伦">英伦</option>
+</select></div>
+<div><label>⚧️ 性别</label>
+<select id="gender">
+<option value="中性">中性</option>
+<option value="男性">男性</option>
+<option value="女性">女性</option>
+</select></div>
+<div><label>🔢 数量（3-10个）</label>
+<input type="number" id="count" min="3" max="10" value="5"></div>
+</div>
+<button class="btn-gen" id="genBtn">🎉 生成花名</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 推荐花名</div>
+<div id="box"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制全部</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function rand(a){return a[Math.floor(Math.random()*a.length)]}
+const cool=['猎鹰','雷影','铁骑','夜鸦','孤狼','疾风','星尘','青龙','玄武','霹雳'];
+const cute=['团子','布丁','奶糖','小铃','桃子','棉花糖','糯米','奶茶精','小鱼干','布拿拿'];
+const wen=['清欢','拾光','远山','暮雪','渡鸦','砚秋','听风','落霞','初霁','南枝'];
+const funny=['双冒号','摸鱼大师','需求已读','Bug制造机','咖啡续命','秃头程序猿','会呼吸的Deadline','会议室钉子户'];
+const evil=['Aurora','Falcon','Vincent','Serena','Maverick','Nova','Sterling','Caspian','Evelyn','Dorian'];
+const means=['迅捷敏锐','沉稳有力','智慧灵动','温暖可靠','坚韧果敢','优雅从容','自由不羁','创造新生'];
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 会议花名生成器 | AgentGongju.com'))return;
+let desc=document.getElementById('desc').value.trim();
+let n=parseInt(document.getElementById('count').value||5);n=Math.max(3,Math.min(10,n));
+const style=document.getElementById('style').value;const gender=document.getElementById('gender').value;
+const pool=style==='酷炫'?cool:style==='可爱'?cute:style==='文艺'?wen:style==='搞笑'?funny:evil;
+const box=document.getElementById('box');box.innerHTML='';
+let text='《'+style+' · 会议花名》\n'+(desc?'团队特点：'+desc+'\n':'')+'\n';
+for(let i=1;i<=n;i++){
+let name=rand(pool);
+if(gender==='男性'&&style==='英文')name=rand(['Vincent','Maverick','Sterling','Caspian','Dorian']);
+if(gender==='女性'&&style==='英文')name=rand(['Aurora','Serena','Nova','Evelyn','Celeste']);
+const finalName=style==='英伦'?name:(name+'');
+const div=document.createElement('div');div.className='panel';
+div.innerHTML=`<div class="panel-head"><span class="panel-num">${i}</span><span class="panel-title">${finalName}</span></div><div class="panel-line"><b>寓意：</b>${rand(means)}${desc?' · 契合「'+desc.slice(0,12)+'」的氛围':''}</div>`;
+box.appendChild(div);
+text+=`${i}. ${finalName} —— ${rand(means)}\n`;
+}
+});setTimeout(()=>{},0);
+function copyResult(){let out=document.getElementById('box').innerText.replace(/\n{3,}/g,'\n\n');navigator.clipboard.writeText(out).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

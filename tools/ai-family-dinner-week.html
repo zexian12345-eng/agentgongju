@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 一周家庭菜谱生成器 | AgentGongju.com</title>
+<meta name="description" content="根据家庭人数、口味与预算，自动生成一周七天三餐菜谱与采购清单，营养均衡又省心">
+<meta name="keywords" content="AI生活,一周菜谱,家庭菜单,营养搭配,采购清单,做菜,家常菜">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:860px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:70px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.btn-gen:disabled{opacity:.5;cursor:not-allowed}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.day{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.22);border-radius:12px;padding:16px;margin-bottom:14px}
+.day-head{display:flex;align-items:center;gap:10px;margin-bottom:10px;font-weight:600;color:#a5b4fc}
+.day-num{background:linear-gradient(135deg,#6366f1,#a855f7);color:white;width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem}
+.meal{font-size:.88rem;color:#cbd5e1;line-height:1.9}
+.meal b{color:#a855f7}
+.shopping{background:rgba(168,85,247,0.08);border:1px solid rgba(168,85,247,0.25);border-radius:12px;padding:16px;margin-top:16px;color:#e9d5ff;font-size:.88rem;line-height:1.9}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:700px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🍳 AI 一周家庭菜谱生成器</h1><p>满汉全席不用愁，一周三餐吃啥都安排明白</p></div>
+
+<div class="card">
+<label>🍽 家庭备注（口味、忌口等，可选）</label>
+<textarea id="note" placeholder="例如：家里有老人牙口不太好，孩子不爱吃辣，一周预算约500元"></textarea>
+<div class="param-row">
+<div><label>👨‍👩‍👧 人数</label>
+<select id="people">
+<option value="2">2人</option>
+<option value="3" selected>3人</option>
+<option value="4">4人</option>
+<option value="5">5人+</option>
+</select></div>
+<div><label>💡 口味偏向</label>
+<select id="taste">
+<option value="家常清淡">家常清淡</option>
+<option value="鲜香下饭">鲜香下饭</option>
+<option value="荤素均衡">荤素均衡</option>
+<option value="简单快手">简单快手</option>
+</select></div>
+<div><label>💰 预算</label>
+<select id="budget">
+<option value="精打细算">精打细算</option>
+<option value="中等水平" selected>中等水平</option>
+<option value="丰盛体面">丰盛体面</option>
+</select></div>
+</div>
+<button class="btn-gen" id="genBtn">📆 生成一周菜谱</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 本周家庭菜谱</div>
+<div id="box"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制全部</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function rand(a){return a[Math.floor(Math.random()*a.length)]}
+const days=['星期一','星期二','星期三','星期四','星期五','星期六','星期日'];
+const staple={
+'家常清淡':{br:[['小米粥','清炒时蔬','水煮蛋'],['牛奶','全麦面包','凉拌黄瓜'],['豆浆','杂粮馒头','水煮蛋']],lu:[['清蒸鲈鱼','蒜蓉西兰花','冬瓜汤'],['番茄炒蛋','白灼虾','紫菜汤'],['香菇滑鸡','清炒芦笋','玉米排骨汤']],di:[['芹菜炒香干','小米粥'],['白菜炖豆腐','杂粮饭'],['清蒸南瓜','瘦肉粥']]},
+'鲜香下饭':{br:[['豆浆','油条','茶叶蛋'],['皮蛋瘦肉粥','小笼包'],['牛奶燕麦','煎蛋']],lu:[['宫保鸡丁','鱼香茄子','米饭'],['回锅肉','麻婆豆腐','米饭'],['红烧排骨','干煸豆角','米饭']],di:[['酸辣土豆丝','米饭'],['青椒肉丝','面条'],['红烧带鱼','米饭']]},
+'荤素均衡':{br:[['全麦三明治','牛奶'],['小米南瓜粥','鸡蛋','拌菠菜'],['燕麦酸奶','坚果','水果']],lu:[['清蒸鸡腿','炒时蔬','杂粮饭'],['糖醋里脊','蚝油生菜','米饭'],['番茄牛腩','白灼西兰花','米饭']],di:[['虾仁炒蛋','米饭'],['肉末蒸蛋','青菜汤'],['清炖排骨','白菜']]},
+'简单快手':{br:[['牛奶','面包'],['鸡蛋灌饼','豆浆'],['煮蛋','麦片粥']],lu:[['西红柿鸡蛋面'],['扬州炒饭','例汤'],['饺子'],['麻辣香锅(微辣)']],di:[['三明治'],['炒饭'],['云吞面']]}};
+const shop=['鸡蛋','牛奶','绿叶蔬菜','西红柿','土豆','鸡腿肉','猪里脊','鸡蛋','葱姜蒜','杂粮米','面条','时令水果','豆腐','瘦猪肉'];
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 一周家庭菜谱生成器 | AgentGongju.com'))return;
+let note=document.getElementById('note').value.trim();
+const people=document.getElementById('people').value;const taste=document.getElementById('taste').value;const budget=document.getElementById('budget').value;
+const box=document.getElementById('box');box.innerHTML='';
+const S=staple[taste];
+let text=`《一周家庭菜谱 · ${taste} · ${budget} · ${people}人》\n`;
+for(let d=0;d<7;d++){
+const br=rand(S.br);const lu=rand(S.lu);const di=rand(S.di);
+const dayDiv=document.createElement('div');dayDiv.className='day';
+const meals=[['🍚 早餐',br],['🥘 午餐',lu],['🌙 晚餐',di]];
+dayDiv.innerHTML=`<div class="day-head"><span class="day-num">${d+1}</span>${days[d]}</div><div class="meal">${meals.map(m=>`<b>${m[0]}：</b>${m[1].join('、')}<br>`).join('')}</div>`;
+box.appendChild(dayDiv);
+text+=`${days[d]}：早餐${br.join('、')}；午餐${lu.join('、')}；晚餐${di.join('、')}\n`;
+}
+const shopDiv=document.createElement('div');shopDiv.className='shopping';
+shopDiv.innerHTML=`🛒 <b>本周重点采购清单：</b>${[...new Set(shop)].join('、')}…${note?`<br><br>📝 家庭备注：${note}`:''}`;
+box.appendChild(shopDiv);
+text+=`\n采购清单：${[...new Set(shop)].join('、')}…`;
+});setTimeout(()=>{},0);
+function copyResult(){let out=document.getElementById('box').innerText.replace(/\n{3,}/g,'\n\n');navigator.clipboard.writeText(out).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

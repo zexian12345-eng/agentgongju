@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI快递运费估算助手 | AgentGongju.com</title>
+<meta name="description" content="根据寄件城市、重量和承运商，快速估算顺丰、中通、圆通、韵达等快递运费，帮你在寄件前心里有个数。">
+<meta name="keywords" content="快递,运费,估算,寄件,顺丰,中通,圆通,韵达,物流">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+input[type=text],select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:600px){.param-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📦 AI快递运费估算助手</h1><p>寄件前先算一算，心里有个数不被坑</p></div>
+
+<div class="card">
+<label>📮 承运商</label>
+<select id="carrier"><option value="sf">顺丰</option><option value="zt">中通</option><option value="yt">圆通</option><option value="yd">韵达</option><option value="jd">京东</option><option value="ems">邮政EMS</option></select>
+<div class="param-grid">
+<div><label>🏙️ 寄件城市</label><input type="text" id="fromCity" placeholder="例：上海"></div>
+<div><label>🏙️ 收件城市</label><input type="text" id="toCity" placeholder="例：北京"></div>
+</div>
+<div class="param-grid">
+<div><label>⚖️ 重量（公斤）</label><input type="text" id="weight" placeholder="例：1 或 3.5"></div>
+<div><label>📍 寄送范围</label><select id="range"><option value="province">省内</option><option value="inter">跨省</option></select></div>
+</div>
+<label>🛍️ 类型</label>
+<select id="type"><option value="normal">普通件</option><option value="fresh">生鲜/冷链件</option><option value="big">大件/重货</option></select>
+<button class="btn-gen" id="genBtn">🧮 估算运费</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">📦 运费估算结果</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制结果</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const base={sf:13,zt:8,yt:8,yd:8,jd:10,ems:11};
+const perKg={sf:2,zt:1.5,yt:1.5,yd:1.3,jd:1.8,ems:1.5};
+const overKg={sf:5,zt:3,yt:3,yd:2.8,jd:3.5,ems:3};
+const name={sf:'顺丰',zt:'中通',yt:'圆通',yd:'韵达',jd:'京东',ems:'邮政EMS'};
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('AI快递运费估算助手 | AgentGongju.com'))return;
+const carrier=document.getElementById('carrier').value;
+const w=parseFloat(document.getElementById('weight').value);
+const fromCity=document.getElementById('fromCity').value.trim()||'出发地';
+const toCity=document.getElementById('toCity').value.trim()||'收件地';
+const range=document.getElementById('range').value;
+const type=document.getElementById('type').value;
+if(!w||w<=0){alert('请正确填写重量（公斤）');return;}
+const isFresh=type==='fresh',isBig=type==='big';
+let est=base[carrier];
+let detail;
+if(range==='province'){est=base[carrier]-3;detail='省内件首重费略低（约省3元）';}
+if(w>1){const extra=Math.ceil(w-1);est+=extra*(isBig?overKg[carrier]:perKg[carrier]);}
+if(isFresh)est+=15*(w>0?Math.ceil(w):1);
+if(isBig&&w>10)est+=20;
+let out='【快递运费估算】承运商：'+name[carrier]+'\n寄送：'+fromCity+' → '+toCity+'（'+(range==='province'?'省内':'跨省')+'）\n重量：'+w+'kg｜类型：'+(type==='normal'?'普通件':type==='fresh'?'生鲜/冷链':'大件重货')+'\n\n';
+out+='🟰 预估运费：约 '+Math.max(est,6).toFixed(0)+' 元\n';
+out+='\n【费用构成说明】\n· 首重按1kg计。'+(w>1?'超出部分每kg另计（重货单价更高）：'+overKg[carrier]+'元/kg':'本次未超重。')+'\n· '+detail+'\n'+(isFresh?'· 生鲜件需冷藏/保温，会加收包装与时效费。\n':'')+(isBig&&w>10?'· 超重大件常按体积重（长×宽×高/6000）计费。\n':'');
+out+='\n【省钱小贴士】\n· 1kg内小件多用顺丰/京东"次日达"会员保价更划算。\n· 不急用可选中通/圆通，常用电商平台下单通常有内购价。\n· 大件问清是按重量还是体积重计费，可自己量长宽高比对。\n';
+out+='\n📌 注意：线上估算仅供参考，实际以快递员报价为准，偏远地区（新疆西藏等）会额外加价。';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 结果已复制！'))}
+</script>
+</body>
+</html>

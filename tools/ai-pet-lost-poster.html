@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI寻宠启事生成 | AgentGongju.com</title>
+<meta name="description" content="宠物走丢了？填写关键信息，AI一键生成催人心弦、便于转发的寻宠启事文案，并附发布与找猫找狗实用建议。">
+<meta name="keywords" content="寻宠启事,找猫,找狗,寻猫启事,寻狗启事,走丢宠物,宠物丢失">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:60px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{color:#94a3b8;font-size:.85rem;margin-bottom:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🐾 AI 寻宠启事生成</h1><p>毛孩子走丢了别慌，快速生成一份能打动人心、方便转发的寻宠启事</p></div>
+
+<div class="card">
+<label>🏷 宠物昵称</label>
+<input type="text" id="name" placeholder="例如：豆豆">
+<div class="param-row">
+<div><label>🐶 宠物种类</label>
+<select id="type"><option value="狗狗" selected>🐶 狗狗</option><option value="猫咪">🐱 猫咪</option><option value="其他">🐹 其他</option></select></div>
+<div><label>🎨 明显特征</label>
+<select id="feature"><option value="花色" selected>🌈 花色/毛色</option><option value="项圈">🔔 项圈/铃铛</option><option value="体态">🐾 体型/叫声</option></select></div>
+</div>
+<label>📍 走失地点</label>
+<input type="text" id="place" placeholder="例如：朝阳区幸福小区东门附近">
+<label>✏️ 特征补充（毛色、年龄、性格等）</label>
+<textarea id="detail" placeholder="例如：白色混色，3岁，胆小但会亲近熟悉的人，右耳有缺角……"></textarea>
+<button class="btn-gen" id="genBtn">📋 生成寻宠启事</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#ef4444;font-weight:600;margin-bottom:12px">🆘 寻宠启事文案</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制启事</button>
+<div class="tip" style="margin-top:12px">💡 建议配高清正面照发布到业主群、宠物群与朋友圈，并联系附近宠物医院与救助站。别灰心，很多毛孩子都在等你。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI寻宠启事生成 | AgentGongju.com'))return;
+const name=document.getElementById('name').value.trim();
+const type=document.getElementById('type').value;
+const feature=document.getElementById('feature').value;
+const place=document.getElementById('place').value.trim();
+const detail=document.getElementById('detail').value.trim();
+if(!name||!place){alert('请至少填写宠物昵称和走失地点');return;}
+let out=`🆘 【紧急寻${type}启示】\n\n`;
+out+=`大家好，我家${type}「${name}」不慎走失了，我真的很着急，拜托大家帮忙留意一下！\n\n`;
+out+='━━ 基本信息 ━━\n';
+out+=`· 种类：${type}\n· 走失地点：${place}\n`;
+out+='· 显著标识：'+feature+'（'+(feature==='花色'?'全身毛色较有辨识度':feature==='项圈'?'佩戴有项圈/铃铛':'体型与叫声有辨识度')+'）\n';
+if(detail)out+=`· 其他特征：${detail}\n`;
+out+='\n━━ 性格特点 ━━\n'+(type==='猫咪'?'有点胆小，但叫名字「'+name+'」会有反应，不乱攻击人。':'性格温和亲人，叫名字「'+name+'」会有反应，不会伤人。')+'\n\n';
+out+='如果哪位好心人看到或收留了它，请务必联系我！定有重谢 🙏\n';
+out+='联系方式：[填写你的手机号]  微信同号\n\n';
+out+='愿好人一生平安，也替「'+name+'」谢谢每一位帮忙转发的朋友 ❤️\n\n';
+out+='━━ 行动建议 ━━\n· 立即在走失地点2-3公里内高频张贴并扩群转发；\n· 夜里安静时段带上它喜欢的食物和玩具，轻呼它的名字搜索；\n· 同步附近宠物医院、救助站和投喂点，很多毛孩子会躲在熟悉角落。';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 启事已复制！'))}
+</script>
+</body>
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 物理启蒙问答器 | AgentGongju.com</title>
+<meta name="description" content="用生活化语言解释孩子提出的物理现象，帮家长轻松做科学启蒙，含小实验引导">
+<meta name="keywords" content="AI学习,物理启蒙,科学启蒙,亲子教育,物理问答,少儿科学">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:100px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.btn-gen:disabled{opacity:.5;cursor:not-allowed}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.panel{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.25);border-radius:12px;padding:16px 18px;margin-bottom:12px}
+.panel-line{font-size:.9rem;color:#cbd5e1;line-height:1.9}
+.panel-line b{color:#a855f7}
+.experiment{background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.25);border-radius:10px;padding:12px;margin-top:10px;color:#d1fae5;font-size:.85rem;line-height:1.8}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🔭 AI 物理启蒙问答器</h1><p>把孩子的十万个为什么，讲得简单又有趣</p></div>
+
+<div class="card">
+<label>🧒 输入孩子的问题</label>
+<textarea id="q" placeholder="例如：为什么天空是蓝色的？为什么冰箱会结冰？为什么船不会沉？"></textarea>
+<div class="param-row">
+<div><label>👶 孩子年龄</label>
+<select id="age">
+<option value="低龄(5-8)">低龄(5-8岁)</option>
+<option value="小学(9-12)">小学(9-12岁)</option>
+<option value="初中(13+)">初中(13岁以上)</option>
+</select></div>
+<div><label>🔢 条数（1-3）</label>
+<select id="ver">
+<option value="1">1 条深入版</option>
+<option value="2" selected>2 条不同深度</option>
+</select></div>
+</div>
+<button class="btn-gen" id="genBtn">🔍 开始讲解</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 科学讲解</div>
+<div id="box"></div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function rand(a){return a[Math.floor(Math.random()*a.length)]}
+const lib={
+'天空':{exp:'太阳光经过大气层时，蓝色光波长短、最容易被空气分子散射开来，所以从地面看，天空就变成了蓝色啦。',demo:'用一杯清水滴几滴牛奶，用手电筒从侧面照，你会发现水看起来有点发蓝——这就是光的散射。'},
+'冰箱':{exp:'冰箱内部温度很低，空气中的水蒸气遇冷，就会凝结成小水珠甚至小冰晶，这就是结冰的原理。',demo:'拿出冰水杯子，放到室温下，过一会儿杯壁就会冒出水珠——水蒸气遇冷凝结啦。'},
+'船':{exp:'船虽然很重，但船体做成空心的，排开的"水的重量"比船本身还大，福彩一样的浮力就把船托起来了，这就是阿基米德原理。',demo:'把一块橡皮泥捏成球放水里会沉，但压成扁平的大盘子就能浮起来，试试看！'},
+'冰':{exp:'水在0℃以下会结冰，结冰时体积反而会膨胀，所以冰能浮在水面上，冬天水管结冰也容易被撑裂。',demo:'装一个密封小瓶说明装到九成满放冷冻室，过一夜会结冰，水结冰体积变大的一个直观例子。'},
+'影子':{exp:'光是沿直线传播的，遇到不透明的物体挡住了光，背后的地方没有光，就形成了影子。',demo:'晚上用手电筒照离墙远近不同的手，影子会变大变小，感受光沿直线传播。'},
+'彩虹':{exp:'阳光射进雨滴或水珠时会发生折射和反射，不同颜色的光弯折角度不同，就被分散成七色彩虹了。',demo:'天气晴朗时，朝太阳相反方向喷水雾，就可能看到迷你彩虹。'},
+'电池':{exp:'电池里面发生了化学反应，把化学能变成电能输送出来，电流就能让灯泡亮起来。',demo:'用两个柠檬各插铜片和锌片，用导线连到小灯泡上，水果电池就能发光！'}};
+function match(q){if(/天空|蓝/.test(q))return'天空';if(/冰箱|结冰|冰/.test(q))return'冰箱';if(/船|浮|沉/.test(q))return'船';if(/彩虹|七色/.test(q))return'彩虹';if(/影子/.test(q))return'影子';if(/电池|电/.test(q))return'电池';return null;}
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 物理启蒙问答器 | AgentGongju.com'))return;
+let q=document.getElementById('q').value.trim();
+if(!q){alert('请输入孩子的问题');return}
+const age=document.getElementById('age').value;const ver=parseInt(document.getElementById('ver').value||2);
+const key=match(q);
+const box=document.getElementById('box');box.innerHTML='';
+const div=document.createElement('div');div.className='panel';
+if(key){
+const L=lib[key];
+let intro=age.startsWith('低龄')?'用做游戏一样的方式告诉小朋友：':'这个问题我们可以这样来理解：';
+div.innerHTML=`<div class="panel-line"><b>🧒 「${q}」</b><br><br>${intro}<br>${L.exp}</div><div class="experiment">🧪 动手小实验：${L.demo}</div>`;
+box.appendChild(div);
+if(ver>1){const div2=document.createElement('div');div2.className='panel';div2.innerHTML=`<div class="panel-line"><b>📚 进阶小知识：</b><br>在物理学中，这个现象涉及光的散射/热传递/浮力等原理，等孩子再大一点，可以由此引出更多有趣的科学故事，保护他们的好奇心最重要。</div>`;box.appendChild(div2);}
+}else{
+div.innerHTML=`<div class="panel-line"><b>🧒 好问题！「${q}」</b><br><br>这个问题很有意思！我们可以先和孩子一起观察现象，猜猜可能的原因，再一起查资料寻找答案。科学启蒙的关键不是记住结论，而是保护孩子提问的热情、培养观察和思考的习惯。<br><br>建议：<br>1️⃣ 先让孩子说说自己的猜想<br>2️⃣ 一起动手做个小实验验证<br>3️⃣ 用图画把发现记录下来</div>`;
+box.appendChild(div);
+}
+});setTimeout(()=>{},0);
+</script>
+</body>
+</html>

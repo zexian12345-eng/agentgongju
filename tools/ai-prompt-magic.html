@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 绘画提示词咒语生成器 | AgentGongju.com</title>
+<meta name="description" content="输入想要画的内容，自动拼装成高质量中英文绘画提示词，适配Midjourney/SD/即梦等AI绘画工具">
+<meta name="keywords" content="AI绘画,提示词,prompt,Midjourney,Stable Diffusion,即梦,魔法咒语">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:80px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.btn-gen:disabled{opacity:.5;cursor:not-allowed}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.panel{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.25);border-radius:12px;padding:16px 18px;margin-bottom:12px}
+.panel-line{font-size:.9rem;color:#cbd5e1;line-height:1.9}
+.panel-line b{color:#a855f7}
+.prompt-en{font-family:Georgia,serif;color:#d8b4fe;line-height:1.9;margin:8px 0}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🧙 AI 绘画提示词咒语生成器</h1><p>三秒拼出高质量绘画「魔法咒语」</p></div>
+
+<div class="card">
+<label>🎨 想画什么（一句话）</label>
+<textarea id="subject" placeholder="例如：一只穿汉服的白猫站在樱花树下，画面很美"></textarea>
+<div class="param-row">
+<div><label>📐 画风</label>
+<select id="style">
+<option value="唯美插画">唯美插画</option>
+<option value="日系动漫">日系动漫</option>
+<option value="写实摄影">写实摄影</option>
+<option value="国风水墨">国风水墨</option>
+<option value="赛博朋克">赛博朋克</option>
+<option value="油画质感">油画质感</option>
+</select></div>
+<div><label>🔡 输出语言</label>
+<select id="lang">
+<option value="中英双版">中英双版</option>
+<option value="仅英文">仅英文</option>
+<option value="仅中文">仅中文</option>
+</select></div>
+</div>
+<button class="btn-gen" id="genBtn">🧪 生成咒语</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 绘画提示词</div>
+<div id="box"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制全部</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function rand(a){return a[Math.floor(Math.random()*a.length)]}
+const styles={
+'唯美插画':{zh:['唯美插画风，柔和光影','梦幻氛围，精致细节','柔和的粉彩色调'],en:['beautiful illustration, soft lighting, dreamy atmosphere, delicate details, pastel colors']},
+'日系动漫':{zh:['日系动漫风格，清新自然','大光圈背景虚化','高完成度动画原画'],en:['anime style, clean lineart, vibrant colors, high quality anime key visual']},
+'写实摄影':{zh:['专业摄影，超写实','浅景深，自然光','胶片质感'],en:['photorealistic, professional photography, shallow depth of field, natural lighting, 8k']},
+'国风水墨':{zh:['中国水墨画风，留白意境','淡雅配色，砚香感','宣纸质感'],en:['traditional chinese ink painting, elegant, minimalist composition, zen aesthetic']},
+'赛博朋克':{zh:['赛博朋克风，霓虹灯光','未来都市夜景','高对比度的蓝紫光效'],en:['cyberpunk, neon lights, futuristic city, high contrast blue purple glow']},
+'油画质感':{zh:['油画质感，细腻笔触','古典光影','色彩丰富厚重'],en:['oil painting texture, fine brushstrokes, classical lighting, rich colors']}};
+const shot=['全景构图','特写视角','仰拍角度','平视视角','黄金比例构图'];
+const light=['黄昏暖光','早晨柔光','月光洒落','逆光剪影','梦幻光斑'];
+const qual=['4k超清','极高质量','极致细节','masterpiece'];
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 绘画提示词咒语生成器 | AgentGongju.com'))return;
+let subject=document.getElementById('subject').value.trim();
+if(!subject){alert('请输入想画的内容');return}
+const style=document.getElementById('style').value;const lang=document.getElementById('lang').value;
+const S=styles[style];
+const box=document.getElementById('box');box.innerHTML='';
+const div=document.createElement('div');div.className='panel';
+if(lang==='仅中文'||lang==='中英双版'){
+const zh=`${subject}，${rand(S.zh)}，${rand(shot)}，${rand(light)}，${rand(qual)}`;
+div.innerHTML+=`<div class="panel-line"><b>🇨🇳 中文咒语：</b><br>${zh}</div>`;
+}
+if(lang==='仅英文'||lang==='中英双版'){
+const subjectEn=`${subject}, ${rand(S.en)}, ${rand(shot).split('·')[0]} ${['composition','shot'][Math.floor(Math.random()*2)]}, ${light.includes('光')?'':'natural '}lighting, ${rand(qual)}, ultra detailed`;
+div.innerHTML+=`<div class="prompt-en"><b>🇬🇧 English Prompt:</b><br>“${subjectEn}”</div>`;
+}
+div.innerHTML+=`<div style="color:#64748b;font-size:.78rem;margin-top:6px">💡 小贴士：可复制后粘贴到 Midjourney（/imagine）、SD或国产AI绘画工具中，画风不满意就替换加粗词。</div>`;
+box.appendChild(div);
+});setTimeout(()=>{},0);
+function copyResult(){let out=document.getElementById('box').innerText.replace(/\n{3,}/g,'\n\n');navigator.clipboard.writeText(out).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

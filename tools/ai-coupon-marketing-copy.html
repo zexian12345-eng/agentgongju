@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI促销优惠文案 | AgentGongju.com</title>
+<meta name="description" content="输入活动力度与商品卖点，AI帮你写出有紧迫感、不廉价、转化高的促销与优惠券文案，适合海报、短信、私域。">
+<meta name="keywords" content="促销文案,优惠券文案,营销文案,折扣文案,大促文案,电商文案,卖点文案">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:60px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{color:#94a3b8;font-size:.85rem;margin-bottom:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🏷 AI 促销优惠文案</h1><p>把优惠写进人心坎里，既叫座又不自降身价</p></div>
+
+<div class="card">
+<label>🎁 商品/服务 + 主要卖点</label>
+<textarea id="product" placeholder="例如：一款护眼台灯，卖点是光线柔和不伤眼、护眼认证、智能调光，活动是满300减80。"></textarea>
+<div class="param-row">
+<div><label>💥 活动力度</label>
+<input type="text" id="deal" placeholder="例如：满300减80 / 第二件半价 / 5折"></div>
+<div><label>📣 投放渠道</label>
+<select id="channel"><option value="海报">🖼 海报/详情页</option><option value="短信" selected>💬 短信/私域</option><option value="直播间">📺 直播间</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">✨ 生成促销文案</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 促销文案，请查收</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制文案</button>
+<div class="tip" style="margin-top:12px">💡 促销文案的核心是"理由+稀缺+一步行动"，让用户清楚"为什么要现在买、怎么买"。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI促销优惠文案 | AgentGongju.com'))return;
+const product=document.getElementById('product').value.trim();
+const deal=document.getElementById('deal').value.trim()||'超值优惠';
+const channel=document.getElementById('channel').value;
+if(!product){alert('请先填写商品和卖点');return;}
+const short=product.length>16?product.slice(0,16)+'…':product;
+let out=`🏷 促销文案 · ${channel}\n\n`;
+if(channel==='海报'){
+out+='── 主标题 ──\n【'+deal+'】'+short+'福利专场\n\n';
+out+='── 副标题/卖点 ──\n'+product+'\n';
+out+='\n── 底部CTA ──\n🔥 限时'+deal+'，错过再等一年\n👉 长按识别 / 点击立即抢购';
+}else if(channel==='短信'){
+out+='【品牌】'+short+'限时特惠：'+deal+'，数量有限先到先得！'+product.split('，')[0]+'，今日下单立减。回D退订。';
+}else{
+out+='── 开场 ──\n家人们，今天的福利真的顶不住！'+short+'，'+deal+'，手慢无！\n\n';
+out+='── 卖点 ──\n'+product+'\n';
+out+='\n── 逼单 ──\n现在下单，库存只剩最后几个，3、2、1，上链接！';
+}
+out+='\n\n━━ 优化建议 ━━\n· 标题放"最大让利幅度+核心卖点"，一眼抓重点；\n· 强调"限时/限量/倒计时"，制造合理紧迫感；\n· 结尾给足"一步行动"指令（点链接/扫码/回D）。';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 文案已复制！'))}
+</script>
+</body>
+</html>

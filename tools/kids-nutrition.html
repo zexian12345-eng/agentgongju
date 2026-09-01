@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI儿童营养餐搭配 | AgentGongju.com</title>
+<meta name="description" content="输入孩子的年龄和饮食偏好，AI帮你搭配一日三餐的营养餐单，兼顾挑食习惯、营养均衡与做起来不麻烦的家长需求。">
+<meta name="keywords" content="儿童营养,儿童餐,宝宝辅食,营养搭配,孩子食谱,挑食怎么办">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+textarea,input[type=text],select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:90px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tag-btn{display:inline-block;padding:5px 12px;background:rgba(99,102,241,0.12);border:1px solid rgba(99,102,241,0.25);border-radius:20px;color:#a5b4fc;cursor:pointer;font-size:.8rem;margin:3px;transition:all .2s}
+.tag-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🥦 AI儿童营养餐搭配</h1><p>孩子吃得香、长得好的三餐营养方案</p></div>
+
+<div class="card">
+<label>👶 孩子年龄段</label>
+<select id="age"><option value="1-3">1-3岁 幼儿</option><option value="4-6">4-6岁 学龄前</option><option value="7-12">7-12岁 小学生</option></select>
+<label>✨ 孩子特点</label>
+<div>
+<span class="tag-btn" onclick="setFeature('挑食')">😖 有点挑食</span>
+<span class="tag-btn" onclick="setFeature('偏瘦')">🍃 偏瘦不长肉</span>
+<span class="tag-btn" onclick="setFeature('偏胖')">🍔 偏胖要控制</span>
+<span class="tag-btn" onclick="setFeature('爱吃肉')">🥩 无肉不欢</span>
+</div>
+<label>🥕 不爱吃的食物（可选）</label>
+<input type="text" id="hate" placeholder="例如：胡萝卜、洋葱、青椒……">
+<label>📝 当季/家里常备食材（可选）</label>
+<input type="text" id="stock" placeholder="例如：鸡蛋、豆腐、番茄、排骨……">
+<button class="btn-gen" id="genBtn">🍲 生成三餐营养餐单</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🥦 一日三餐营养餐单</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制餐单</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const meals={
+'1-3':{desc:'少油少盐、软烂易咀嚼、营养密度高',plan:[['早餐','南瓜小米粥+水煮蛋蛋黄+香蕉小块'],['午餐','番茄肉末烩饭+清蒸鳕鱼+西兰花碎'],['下午加餐','酸奶+水果泥'],['晚餐','山药胡萝卜排骨汤+软面条+青菜泥']]},
+'4-6':{desc:'食物多样、粗细搭配、口味清淡不重盐',plan:[['早餐','牛奶燕麦粥+全麦小馒头+水煮蛋'],['午餐','香菇滑鸡饭+清炒时蔬+紫菜蛋花汤'],['下午加餐','坚果和水果拼盘'],['晚餐','豆腐虾仁烩菜+杂粮米饭+冬瓜汤']]},
+'7-12':{desc:'能量需求增加、注重蛋白质和钙铁锌',plan:[['早餐','豆浆+煎蛋三明治+现切水果'],['午餐','红烧牛肉+米饭+凉拌黄瓜+番茄蛋汤'],['下午加餐','酸奶+全麦饼干'],['晚餐','清蒸鲈鱼+西兰花炒木耳+小米饭']]}
+};
+const fix={},
+tips={
+'挑食':'不爱吃的菜切碎混入爱吃的菜里，或用有趣造型增加趣味，慢慢尝试建立好感。',
+'偏瘦':'适当增加优质蛋白和健康脂肪，如鸡蛋、鱼、牛油果，少量多餐。',
+'偏胖':'控制油炸和甜食，多用蒸煮炖，增加蔬菜和粗粮比重。',
+'爱吃肉':'保证肉量同时搭配足量蔬菜，用清蒸炖代替油炸，注意荤素平衡。'
+};
+const baseTips={
+'1-3':'幼儿阶段少盐少糖，每天奶量450-500ml，辅食循序渐进。',
+'4-6':'每天奶量300-400ml，鼓励孩子参与备餐增加食欲。',
+'7-12':'学龄儿童注意钙铁锌摄入，三餐规律别用零食替代正餐。'
+};
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('AI儿童营养餐搭配 | AgentGongju.com'))return;
+const age=document.getElementById('age').value;
+const feature=document.getElementById('feature')?document.getElementById('feature').value:'挑食';
+const hate=document.getElementById('hate').value.trim();
+const stock=document.getElementById('stock').value.trim();
+const m=meals[age];
+const f=tips[feature]||tips['挑食'];
+let out='【儿童营养餐单 · '+age+'岁】\n\n🎯 营养要点：'+m.desc+'\n\n';
+(function(){m.plan.forEach(function(row){out+='🍽️ '+row[0]+'：'+row[1]+'\n';});})();
+out+='\n⭐ 挑食应对：'+f+'\n';
+out+='💡 '+baseTips[age]+'\n';
+if(hate)out+='\n🥕 避开不爱吃的「'+hate+'」：可切碎做成肉丸/馅料悄悄加入，或换相近食材替代。\n';
+if(stock)out+='\n🛒 结合家里食材「'+stock+'」灵活替换同类配菜更省事。\n';
+out+='—— 每个孩子口味不同，餐单仅供参考，注意观察过敏情况哦 👶';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function setFeature(v){var el=document.getElementById('feature');if(el){el.value=v;}else{var s=document.createElement('select');s.id='feature';s.innerHTML='<option>'+v+'</option>';document.body.appendChild(s);}}
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 餐单已复制！'))}
+</script>
+</body>
+</html>

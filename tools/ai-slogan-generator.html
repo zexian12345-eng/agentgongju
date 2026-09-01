@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI品牌标语生成器 | AgentGongju.com</title>
+<meta name="description" content="输入品牌名称、行业与卖点，AI一键生成朗朗上口、直击人心的品牌Slogan标语。">
+<meta name="keywords" content="品牌标语,Slogan,广告语,宣传语,口号,品牌文案,营销">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:60px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{color:#94a3b8;font-size:.85rem;margin-bottom:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🏷️ AI 品牌标语生成器</h1><p>品牌名 + 行业 + 卖点，一句口号打动人心</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>🏷️ 品牌名称</label>
+<input type="text" id="brand" placeholder="例如：鲜果时光、轻氧咖啡…"></div>
+<div><label>🏭 所属行业</label>
+<select id="ind"><option value="餐饮" selected>🍜 餐饮美食</option><option value="美妆">💄 美妆护肤</option><option value="科技">💻 科技互联网</option><option value="教育">📚 教育培训</option><option value="服饰">👗 服饰时尚</option><option value="家居">🛋️ 家居生活</option><option value="其他">✨ 其他</option></select></div>
+</div>
+<label>💡 核心卖点 / 特色（选填）</label>
+<textarea id="point" placeholder="例如：主打现做0添加、性价比高、面向年轻上班族"></textarea>
+<div class="param-row">
+<div><label>🎨 风格调性</label>
+<select id="style"><option value="励志" selected>🔥 励志大气</option><option value="温馨">💛 温馨治愈</option><option value="潮流">🆒 潮流个性</option><option value="文艺">🌿 文艺清新</option></select></div>
+<div><label>📏 生成数量</label>
+<select id="num"><option value="5" selected>5 条</option><option value="8">8 条</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">✨ 生成标语</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 精选品牌标语</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制标语</button>
+<div class="tip" style="margin-top:12px">💡 小贴士：好标语要「短、准、有画面」，选之前大声念三遍，顺口最重要。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const pools={
+餐饮:['好味道，从这里开始','一口满足，暖心到胃','新鲜看得见，美味尝得出','每一口都在说「用心」','烟火气里的好味道'],
+美妆:['美，从此刻开始','绽放你的自然光彩','肌肤的好朋友','每一种美，都值得认可','看得见的年轻好气色'],
+科技:['让科技更懂你','智造未来，触手可及','创新，从不将就','连接你的每一个可能','简单，快人一步'],
+教育:['点亮每一颗热爱的心','成长，从好方法开始','让学习更有趣','陪你一起变优秀','知识改变未来'],
+服饰:['穿出你的态度','风格由你定义','每一天都自信出街','有型，更有品','把潮流穿在身上'],
+家居:['把日子过得温暖','家，是最舒服的地方','为生活加一点美好','住得舒服，活得自在','让回家成为享受'],
+其他:['用心做好每一件事','品质成就信赖','你的选择，我们的承诺','为美好而生','体验不一样的生活']};
+const tail={励志:['','成就更好','致敬热爱','不负每一份认真'],温馨:['','温暖你我','治愈每一天','把美好留在身边'],潮流:['','不设限','敢不同','自有主张'],文艺:['','关于美好','生活如诗','给懂生活的人']};
+const head={餐饮:['美味','鲜','暖胃'],美妆:['元气','水润','焕亮'],科技:['智能','高效','极速'],教育:['成长','进步','蜕变'],服饰:['个性','灵感','风格'],家居:['舒适','温馨','自在'],其他:['品质','匠心','热爱']};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI品牌标语生成器 | AgentGongju.com'))return;
+const brand=document.getElementById('brand').value.trim();
+const ind=document.getElementById('ind').value;
+const point=document.getElementById('point').value.trim();
+const style=document.getElementById('style').value;
+const num=parseInt(document.getElementById('num').value);
+if(!brand){alert('请先输入品牌名称');return;}
+const base=pools[ind]||pools['其他'];
+const tails=tail[style];
+const heads=head[ind]||head['其他'];
+let out='【'+brand+' · '+ind+' · '+style+'调性】\n';
+const cands=shuffle(base).slice(0,num);
+out+='\n━━ 精选标语 ━━\n';
+cands.forEach((c,i)=>{
+let line=c+tail[TailIdx];
+if(i%3===0){line=heads[i%heads.length]+' '+c;}
+out+='\n【'+(i+1)+'】「'+line+'」\n';
+out+='· 解读：'+point?('呼应「'+point.slice(0,15)+'…」卖点'):'突出品牌'+ind+'调性与品质感'+'，'+(['朗朗上口易传播','直击用户痛点','营造美好联想','朗朗上口记忆点强'][i%4])+'。\n';
+});
+function TailIdx(){return i%2===0?1:0;}
+out+='\n【使用建议】\n· 首选第1、2条做户外/详情页主标语；\n· 第3、4条适合做社交媒体话题标签。';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function shuffle(arr){for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}return arr;}
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 标语已复制！'))}
+</script>
+</body>
+</html>

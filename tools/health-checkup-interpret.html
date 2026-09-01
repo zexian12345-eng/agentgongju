@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI体检指标解读 | AgentGongju.com</title>
+<meta name="description" content="把体检报告上的异常指标和数值填进来，AI帮你用通俗语言说明含义、可能的健康提醒与随访建议，帮你读懂体检单、知道该不该担心。">
+<meta name="keywords" content="体检报告,体检指标,血脂,血糖,尿酸,肝功能,异常指标,健康解读,体检结果">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+textarea,input[type=text],select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:110px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.alert{background:rgba(244,63,94,.1);border:1px solid rgba(244,63,94,.3);border-radius:12px;padding:14px;color:#fecdd3;font-size:.88rem;line-height:1.8;margin-bottom:14px}
+@media(max-width:600px){.param-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🩺 AI体检指标解读</h1><p>读懂体检单，知道自己该不该担心</p></div>
+
+<div class="card">
+<label>📋 粘贴体检异常项（格式：指标名 数值 单位，一行一个）</label>
+<textarea id="items" placeholder="例如：&#10;低密度脂蛋白 3.8 mmol/L&#10;谷丙转氨酶 58 U/L&#10;尿酸 480 μmol/L"></textarea>
+<div class="param-grid">
+<div><label>🧑 你的情况</label><select id="profile"><option value="adult">成年</option><option value="elder">中老年</option><option value="pregnant">备孕/孕期</option><option value="sport">有运动习惯</option></select></div>
+<div><label>🍺 生活方式</label><select id="life"><option value="sedentary">久坐少动</option><option value="normal">基本正常</option><option value="drinker">常饮酒聚餐</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">🔍 解读我的指标</button>
+<label style="margin-top:12px;color:#64748b;font-size:.8rem">* 解读仅供参考，不构成医疗诊断，请以医生意见为准</label>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🩺 指标解读报告</div>
+<div class="alert" id="alertBox"></div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制报告</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function rnd(n){return Math.floor(Math.random()*n)}
+const db=[
+['甘油三酯|triglyceride',[['超过1.7',"甘油三酯偏高常与饮食油腻、饮酒、少动有关。建议减少油炸和甜食，晚餐清淡，复查前6小时空腹。"]],'升高多与饮食和代谢相关，是心血管风险信号之一'],
+['胆固醇|cholesterol|hdl|ldl',[['超过',"血脂异常提示需关注饮食结构与运动。少吃动物内脏、肥肉，多吃蔬菜全谷，规律有氧运动。"]],'血脂异常是心脑血管疾病重要危险因素'],
+['转氨酶|alt|ast|谷丙|谷草',[['超过',"转氨酶偏高提示肝细胞可能受到一定影响，常见于劳累、熬夜、饮酒、脂肪肝等。建议复查并咨询消化科。"]],'转氨酶升高需进一步排查肝脏问题'],
+['尿酸|uric',[['超过',"尿酸偏高可能与海鲜、啤酒、内脏等高嘌呤饮食及肥胖有关。建议多喝水、控制高嘌呤食物、适度减重。"]],'高尿酸血症可诱发痛风和肾结石'],
+['血糖|glucose',[['超过',"血糖偏高需注意控制饮食中的精制糖和主食量，定期监测，必要时做糖耐量检测。"]],'空腹血糖异常是糖尿病前期的信号'],
+['血压|blood pressure',[['超过',"血压偏高与盐摄入、肥胖、压力有关。建议低盐饮食、规律作息、监测血压。"]],'高血压是心脑血管疾病的主要危险因素'],
+['肌酐|creatinine',[['超过',"肌酐偏高与肾功能相关，建议结合尿常规和医生评估，避免乱用药物伤肾。"]],'肌酐异常需关注肾脏健康'],
+['甲状腺|tsh|t3|t4',[['超过',"甲状腺指标异常建议咨询内分泌科，结合症状（乏力、怕冷等）综合评估。"]],'甲状腺功能异常需专科评估']
+];
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('AI体检指标解读 | AgentGongju.com'))return;
+const raw=document.getElementById('items').value.trim();
+if(!raw){alert('请粘贴体检指标');return;}
+const profile=document.getElementById('profile').value,life=document.getElementById('life').value;
+let parsed=[];raw.split('\n').forEach(ln=>{ln=ln.trim();if(!ln)return;const firstNum=ln.match(/[\d.]+/);const name=ln.replace(/[\d.]+.*/,'').trim()||'未知指标';parsed.push({name,val:firstNum?firstNum[0]:null,line:ln});});
+let out='【体检指标解读】\n';
+let warnCount=0;
+parsed.forEach(it=>{
+let found=false;
+for(const [kw,infos] of db){if(it.name.includes(kw.split('|')[0])||kw.split('|').slice(1).some(k=>it.name.toLowerCase().includes(k))){found=true;const info=infos[0][1];out+='· '+it.line+'\n　　解读：'+info+'\n';warnCount++;break;}}
+if(!found){out+='· '+it.line+'\n　　该指标未被内置知识库精准覆盖，建议对照参考区间并咨询医生。\n';}
+});
+out+='\n【生活方式提醒】\n';
+if(life==='sedentary')out+='· 久坐人群建议每45分钟起身活动，每周150分钟中等强度运动。\n';
+if(life==='drinker')out+='· 常饮酒人群建议减少饮酒频次，给肝脏代谢留出时间。\n';
+out+=profile==='pregnant'?'· 备孕/孕期指标波动较大，请务必以产检医生意见为准。\n':'· 结合体检建议定期随访，3-6个月复查异常项。\n';
+out+='\n【重要声明】\n· 本解读基于常见医学常识，仅作科普参考，不能替代专业诊断。\n· 若指标明显异常或伴不适症状，请尽早到医院相关科室就诊。';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('alertBox').innerHTML='⚠️ 提醒：本工具仅提供科普性解读，<strong>不构成医疗建议</strong>。如有不适或指标明显异常，请及时就医。';
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 报告已复制！'))}
+</script>
+</body>
+</html>

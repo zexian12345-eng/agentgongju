@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 情侣朋友圈文案生成器 | AgentGongju.com</title>
+<meta name="description" content="根据场景生成高甜情侣文案，适配520、纪念日、日常秀恩爱等，附话题标签与emoji">
+<meta name="keywords" content="AI文案,情侣文案,朋友圈,520文案,纪念日,秀恩爱,土味情话">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:80px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.btn-gen:disabled{opacity:.5;cursor:not-allowed}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.panel{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.25);border-radius:12px;padding:16px 18px;margin-bottom:12px}
+.panel-line{font-size:.95rem;color:#e2e8f0;line-height:1.9}
+.panel-line b{color:#a855f7}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.tag{background:rgba(236,72,153,0.15);color:#f9a8d4;font-size:.72rem;padding:3px 9px;border-radius:20px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>💑 AI 情侣朋友圈文案生成器</h1><p>高甜文案一键生成，秀恩爱不重样</p></div>
+
+<div class="card">
+<label>📍 场景（可选补充你们的点滴）</label>
+<textarea id="detail" placeholder="例如：今天是我们在一起1000天，一起去吃了火锅看了电影"></textarea>
+<div class="param-row">
+<div><label>🎉 文案场景</label>
+<select id="scene">
+<option value="纪念日">纪念日</option>
+<option value="日常秀恩爱">日常秀恩爱</option>
+<option value="土味情话">土味情话</option>
+<option value="异地恋">异地恋</option>
+<option value="道歉哄人">道歉哄人</option>
+</select></div>
+<div><label>🔢 条数（3-6）</label>
+<input type="number" id="count" min="3" max="6" value="4"></div>
+</div>
+<button class="btn-gen" id="genBtn">💘 生成文案</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 情侣文案</div>
+<div id="box"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制全部</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function rand(a){return a[Math.floor(Math.random()*a.length)]}
+const lib={
+'纪念日':['每一帧回忆都值得收藏，第N个纪念日，爱你依旧','时间在走，而你一直在我身边，这就是最好的久处不厌','从心动到古稀，我们都在一起'],
+'日常秀恩爱':['今天也要和你一起浪费好时光','我的快乐清单里，每一件都有你','平凡日子，因为有你而闪闪发光'],
+'土味情话':['你知道我为什么喜欢你吗？因为你笑起来的样子，就是我眼里的光','我上辈子可能是碳酸饮料，一见到你就冒泡','你有地图吗？我在你心里迷路了'],
+'异地恋':['距离再远，也挡不住想念你的每个瞬间','把想念攒起来，见面时统统还给你','手机屏幕里的你，是我一天的好心情'],
+'道歉哄人':['我错了，请你千万不要生气，让我用一百个亲亲补偿你','你一生气，我的世界就下雨了。快原谅我吧','以后你的小脾气我都接住，让我抱抱好不好']};
+const tags=['#甜甜的恋爱','#情侣日常','#秀恩爱','#纪念日快乐','#Love','#异地恋','#今日份甜'];
+const emoji=['💞','💘','🌹','🍬','✨','🧡'];
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 情侣朋友圈文案生成器 | AgentGongju.com'))return;
+let detail=document.getElementById('detail').value.trim();
+let n=parseInt(document.getElementById('count').value||4);n=Math.max(3,Math.min(6,n));
+const scene=document.getElementById('scene').value;
+const box=document.getElementById('box');box.innerHTML='';
+let text='';
+for(let i=1;i<=n;i++){
+let main=rand(lib[scene]);
+if(detail){main=main.replace('第N个','第'+rand(['600','999','1000','1314','520'])+'个');}
+const tagArr=[...tags].sort(()=>Math.random()-0.5).slice(0,3);
+const e=rand(emoji);
+const div=document.createElement('div');div.className='panel';
+div.innerHTML=`<div class="panel-head"><b>${scene} · 方案${i}</b></div><div class="panel-line">${main} ${e}${detail?`<br><span style="color:#64748b;font-size:.8rem">配文提示：${detail}</span>`:''}</div><div class="tags">${tagArr.map(t=>`<span class="tag">${t}</span>`).join('')}</div>`;
+box.appendChild(div);
+text+=`【方案${i}】${main} ${e}\n${tagArr.join(' ')}\n\n`;
+}
+});setTimeout(()=>{},0);
+function copyResult(){let out=document.getElementById('box').innerText.replace(/\n{3,}/g,'\n\n');navigator.clipboard.writeText(out).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

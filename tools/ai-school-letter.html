@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI家校留言条 | AgentGongju.com</title>
+<meta name="description" content="快速生成给孩子老师、班主任或家长群里使用得体、礼貌的沟通留言，涵盖请假、沟通孩子情况、家长会安排、致谢感谢等场景。">
+<meta name="keywords" content="家长群,家校沟通,留言条,给老师留言,班主任,家长会,家校">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+textarea,input[type=text],select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:70px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tag-btn{display:inline-block;padding:5px 12px;background:rgba(99,102,241,0.12);border:1px solid rgba(99,102,241,0.25);border-radius:20px;color:#a5b4fc;cursor:pointer;font-size:.8rem;margin:3px;transition:all .2s}
+.tag-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📮 AI家校留言条</h1><p>和老师沟通得体又省心</p></div>
+
+<div class="card">
+<label>✨ 留言场景</label>
+<div>
+<span class="tag-btn" onclick="setScene('leave')">🤧 请假</span>
+<span class="tag-btn" onclick="setScene('inquire')">📞 咨询学习情况</span>
+<span class="tag-btn" onclick="setScene('thank')">🙏 感谢老师</span>
+<span class="tag-btn" onclick="setScene('meeting')">📅 家长会/约谈</span>
+<span class="tag-btn" onclick="setScene('cooperate')">🤝 配合老师工作</span>
+</div>
+<div class="param-grid">
+<div><label>👦 孩子姓名</label><input type="text" id="kid" placeholder="例如：小明"></div>
+<div><label>👩🏫 老师称呼</label><input type="text" id="teacher" placeholder="例如：王老师"></div>
+</div>
+<label>📝 具体内容（可选补充）</label>
+<select id="scene" style="display:none"><option value="leave">leave</option></select>
+<textarea id="detail" placeholder="例如：孩子周五下午发烧了需要请假；想了解一下孩子最近课堂表现……"></textarea>
+<button class="btn-gen" id="genBtn">✍️ 生成留言</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">📮 家校留言</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制留言</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const scenes={
+leave:{head:'请假',body:'孩子身体不适，需请假一天在家休息，相关作业会及时补齐，麻烦您留意一下，谢谢您！'},
+inquire:{head:'咨询学习情况',body:'想了解一下孩子最近在课堂上的表现，若有需要改进的地方，麻烦您提醒一下，我们家长一定配合，谢谢您的用心！'},
+thank:{head:'感谢老师',body:'非常感谢您一直以来对孩子的悉心教导与照顾，孩子进步很大，我们家长看在眼里十分欣慰，辛苦您了！'},
+meeting:{head:'家长会/约谈',body:'收到家长会通知，我们一定按时参加。若还有其他需要配合的事项，请随时告知，谢谢您！'},
+cooperate:{head:'配合老师工作',body:'关于您昨日反馈的情况，我们已了解并在家积极引导孩子。后续若有需要配合之处，请尽管吩咐，谢谢您的辛苦付出！'}
+};
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('AI家校留言条 | AgentGongju.com'))return;
+const kid=document.getElementById('kid').value.trim()||'孩子';
+const teacher=document.getElementById('teacher').value.trim()||'X老师';
+const detail=document.getElementById('detail').value.trim();
+const scene=document.getElementById('scene').value;
+const s=scenes[scene]||scenes.inquire;
+let out='尊敬的'+teacher+'：\n\n您好！\n\n';
+if(detail)out+=detail+' ';
+out+=s.body+'\n\n';
+out+=(scene==='leave'?'麻烦您抽空核实一下，给您添麻烦了。':'')
++'再次感谢您的付出，祝您工作顺利！\n\n'+kid+'家长：'+'[您的称呼]\n[日期]';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function setScene(v){document.getElementById('scene').value=v;}
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 留言已复制！'))}
+</script>
+</body>
+</html>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI同学聚会策划 | AgentGongju.com</title>
+<meta name="description" content="毕业多年要把老同学聚齐？输入人数、场合和预算，AI帮你搞定聚会流程、破冰环节、地点与分工，让重逢不冷场。">
+<meta name="keywords" content="同学聚会,老同学聚会,聚会策划,同学会方案,重逢聚会,班级聚会,聚会流程">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:60px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{color:#94a3b8;font-size:.85rem;margin-bottom:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🎓 AI 同学聚会策划</h1><p>多年未见的老同学，要聚就聚得热热闹闹、不留遗憾</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>👥 预计人数</label>
+<input type="number" id="num" value="20" min="2"></div>
+<div><label>💰 人均预算</label>
+<input type="number" id="budget" value="150" min="0"></div>
+</div>
+<div class="param-row">
+<div><label>🎯 聚会主题</label>
+<select id="theme"><option value="美食" selected>🍜 叙旧饭局</option><option value="游玩">🏖 户外游玩</option><option value="K歌">🎤 K歌娱乐</option><option value="茶话">☕ 茶话会</option></select></div>
+<div><label>🌈 距离上次毕业</label>
+<select id="years"><option value="5">五年</option><option value="10" selected>十年</option><option value="20+">二十年以上</option></select></div>
+</div>
+<label>📋 特别想法（可选）</label>
+<textarea id="idea" placeholder="例如：想看老照片回忆杀，想请老师来，要不要准备抽奖……"></textarea>
+<button class="btn-gen" id="genBtn">🎉 策划聚会</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 你的同学聚会方案</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制方案</button>
+<div class="tip" style="margin-top:12px">💡 提前一两周建群接龙确认到场，把"回忆老照片"环节交给专人准备，聚会体验瞬间拉满。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const THEME={
+'美食':{t:'叙旧饭局',main:'选一家能容纳全员的餐厅包间，点菜照顾老人与忌口',flow:'开席先"举杯重逢"，逐桌打招呼，再穿插老同学点唱与合影'},
+'游玩':{t:'户外游玩',main:'选市郊有氧路线或景区，备好野餐垫与补给',flow:'先集合拍大合照，再自由结伴游玩，约定集合时间一起野餐'},
+'K歌':{t:'K歌娱乐',main:'订包间配自助小吃，选热门怀旧歌单',flow:'开场点应景老歌暖场，接龙点唱，最后大合唱压轴'},
+'茶话':{t:'茶话会',main:'选安静茶馆或民宿客厅，备些点心茶水',flow:'围坐叙旧，轮流分享近况与趣事，穿插翻看老照片'}
+};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI同学聚会策划 | AgentGongju.com'))return;
+const num=document.getElementById('num').value||20;
+const budget=document.getElementById('budget').value||150;
+const theme=document.getElementById('theme').value;
+const years=document.getElementById('years').value;
+const idea=document.getElementById('idea').value.trim();
+const t=THEME[theme];
+const total=(num*budget).toLocaleString();
+let out=`🎓 同学聚会方案 · ${t.t} · ~${num}人\n\n`;
+out+=`💰 人均 ¥${budget}，总预算约 ¥${total}（含场地与餐食）\n\n`;
+out+='━━ 主题定位 ━━\n「'+t.t+'」—— 时隔'+years+'年的重逢，主打"轻松叙旧+回忆杀"，拒绝尴尬与刻意。\n\n';
+out+='━━ 环节安排 ━━\n· 签到：进群扫码报到，领一张当年的同款"同桌卡"；\n· 开场：主持人用"当年谁干过什么"开场白拉近气氛（10分钟）；\n· 主环节：'+t.main+'；\n· 回忆杀：轮流播放老照片/点名互动，'+t.flow+'；\n· 收尾：拍全体大合照，约定下次再聚。\n';
+if(idea)out+='\n━━ 你的特别想法 ━━\n· '+idea+'（建议安排专人负责落实，提前沟通场地与物料）\n';
+out+='\n━━ 执行分工 ━━\n· 1名发起人（统筹+定时间）、1名财务（AA收款）、1名场地（订位餐饮）、1名主持（流程+活跃气氛）、1名记录（拍照存档）。';
+out+='\n\n【愿老友重逢，仍如少年 🎉】';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 方案已复制！'))}
+</script>
+</body>
+</html>

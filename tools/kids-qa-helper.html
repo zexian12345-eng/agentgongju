@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI亲子问答助手 | AgentGongju.com</title>
+<meta name="description" content="孩子总爱问十万个为什么？把问题填进来，AI给出适合孩子年龄的通俗解释、小实验/生活小例子和互动追问，让每个为什么都变成好玩的科学种子。">
+<meta name="keywords" content="亲子问答,十万个为什么,孩子提问,科学启蒙,育儿问答,儿童科普,亲子互动">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+textarea,input[type=text],select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:90px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.95rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.tag{display:inline-block;padding:2px 10px;border-radius:20px;font-size:.75rem;margin-right:6px}
+.tag-cat{background:rgba(99,102,241,.15);color:#a5b4fc;border:1px solid rgba(99,102,241,.3)}
+@media(max-width:600px){.param-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🧸 AI亲子问答助手</h1><p>把孩子的“为什么”变成好玩的科学种子</p></div>
+
+<div class="card">
+<label>❓ 孩子问的问题</label>
+<textarea id="question" placeholder="例如：为什么天空是蓝色的？为什么我们看不到空气？为什么月亮会跟着我们走？"></textarea>
+<div class="param-grid">
+<div><label>👧 孩子年龄</label><select id="age"><option value="3">3-4岁</option><option value="5">5-7岁</option><option value="8" selected>8-12岁</option></select></div>
+<div><label>🎙 回答方式</label><select id="style"><option value="lang">趣味活泼</option><option value="story">讲个小故事</option><option value="simple" selected>通俗易懂</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">🌟 让 AI 来回答</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🧪 AI 的奇妙回答</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制回答</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function rnd(n){return Math.floor(Math.random()*n)}
+const topics=[
+['天|星星|太阳|月亮|彩虹',['太阳其实是一颗“会发光的煤气灶”，离我们非常非常远，但它实在太大太大，所以照亮了整个天空。','月亮不是跟着我们走，它其实动得可慢了，是你走路让周围的房子“往后退”，看起来就像月亮在陪你散步。','彩虹是太阳光钻进了无数个小水珠里，像钻进了晶莹的玻璃弹珠，再跳出来就被“掰弯”成七彩啦。']],
+['水|河流|海|雨|云',['水会玩“变身游戏”：太阳一晒变成看不见的水蒸气飞上天，在天上挤成一团就是云，冷了又变成雨滴落下来，这才叫“水循环”。','海水是咸的，因为地上的盐被雨水冲啊冲，一路冲进了大海，晒不走就一直在海里啦。','云就是空中的“棉花糖”，不过它们不是糖做的，而是数不清的小水滴聚在一起。']],
+['人|身体|睡觉|吃饭|眼睛',['我们睡觉的时候，大脑其实在“收纳整理”白天学的东西，把有用的存进记忆仓库，所以睡个好觉记性才会好。','眼睛会有“自动变焦”本领，看近看远都能临时调整，就像照相机的镜头一样灵巧。','吃饭是为了给身体“加油”，就像汽车要加油才能跑，你吃进的能量让你能跑能跳能思考。']],
+['动物|猫|狗|鸟|鱼',['猫能在夜里看清东西，是因为猫的眼睛里有一面“反光小镜子”，能把微弱的光放大，所以夜里它们也看得清。','鸟能飞，是因为它们的骨头又轻又空，身上还有羽毛扇子和流线型的翅膀，轻轻一拍就飞起来了。','鱼在水里游泳靠的是身体两侧的“鱼鳍船舵”，尾巴一摆就能前进，还能用鳃在水里“呼吸”氧气。']],
+['声音|为什么|什么|怎么|可以',['这个问题特别棒！很多“为什么”都可以用一个小实验来找到答案：先大胆猜一个答案，再动手试一试、找资料验证，这就是科学家的做法哦。','大人有时候也不知道所有答案，没关系，我们可以一起查书、上网、做实验，把“不知道”变成“我们又学到了”！','记住：科学家们小时候也是爱问“为什么”的小孩，而你现在正在做和他们一样的事。']]];
+const followUps=['如果……会怎么样？','你能想一个自己的答案吗？','我们从身边找一个例子试试看？','猜猜看，还有什么东西也是这样？'];
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('AI亲子问答助手 | AgentGongju.com'))return;
+const q=document.getElementById('question').value.trim();
+if(!q){alert('先告诉我孩子问的问题吧');return;}
+const age=document.getElementById('age').value,style=document.getElementById('style').value;
+const text=q;
+let matched=false,ans='';
+for(const [kw,tips] of topics){if(text.includes(kw)){matched=true;ans=tips[rnd(tips.length)];break;}}
+if(!matched)ans='这个问题太有意思了！我们可以把它变成一个“家庭科学小项目”：先和孩子一起猜个答案，再查资料、做个小实验，最后看真正的答案和我们的猜想有多像。这就是科学家发现世界的方式哦。';
+let cat='百科知识';
+if(/天|星|太阳|月亮|彩虹/.test(text))cat='宇宙天空';
+else if(/水|海|雨|云/.test(text))cat='自然水循环';
+else if(/人|身体|睡觉|眼睛/.test(text))cat='人体健康';
+else if(/动物|猫|狗|鱼/.test(text))cat='动物世界';
+let out='';
+out+='<span class="tag tag-cat">'+cat+'</span><br><br>';
+out+=ans+'\n\n';
+// 小实验/生活例子
+out+='🔬 <strong>可以一起试的小玩法</strong>\n';
+const demos=['拿个手电筒透过三棱镜/玻璃杯里的水，看看会不会出现彩虹小光圈','去水龙头接一杯水，观察倒进不同形状杯子时水面是不是都平','晚上关灯后拿手电照自己的手影，比划各种动物形状','出门散步时观察天空、云和树影的方向，找找变化规律'];
+out+='· '+demos[rnd(demos.length)]+'\n';
+out+='· '+demos[(rnd(demos.length)+1)%demos.length]+'\n\n';
+out+='❓ <strong>再追问一句</strong>\n· '+followUps[rnd(followUps.length)]+'\n\n';
+out+='👨👩👧 <strong>给爸妈的话</strong>\n别急着给标准答案，先肯定孩子的好奇心，再一起动手找答案，那份“我们一起探索”的过程比任何知识点都珍贵。';
+document.getElementById('outputBox').innerHTML=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 回答已复制！'))}
+</script>
+</body>
+</html>

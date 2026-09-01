@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI假期朋友圈文案 | AgentGongju.com</title>
+<meta name="description" content="输入你的假期目的地、出行方式与想表达的心情，AI帮你写出吸睛又有格调的假期朋友圈文案，适合海岛、登山、Citywalk等多种场景。">
+<meta name="keywords" content="假期文案,朋友圈文案,旅游文案,出行发圈,旅行记录,度假语录">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+textarea,input[type=text],select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:90px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tag-btn{display:inline-block;padding:5px 12px;background:rgba(99,102,241,0.12);border:1px solid rgba(99,102,241,0.25);border-radius:20px;color:#a5b4fc;cursor:pointer;font-size:.8rem;margin:3px;transition:all .2s}
+.tag-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🏝️ AI假期朋友圈文案</h1><p>发圈不词穷，一套假期文案帮你刷爆评论区</p></div>
+
+<div class="card">
+<select id="type" style="display:none"><option value="海岛">海岛</option></select>
+<label>✨ 假期类型</label>
+<div>
+<span class="tag-btn" onclick="setType('海岛')">🌊 海岛度假</span>
+<span class="tag-btn" onclick="setType('爬山')">⛰️ 登山徒步</span>
+<span class="tag-btn" onclick="setType('citywalk')">🚶 Citywalk</span>
+<span class="tag-btn" onclick="setType('宅家')">🛋️ 宅家躺平</span>
+</div>
+<label>📍 目的地</label>
+<input type="text" id="dest" placeholder="例如：三亚、大理、杭州、重庆……">
+<label>😊 想表达的心情</label>
+<select id="mood"><option value="放松">放松治愈</option><option value="兴奋">兴奋快乐</option><option value="治愈">文艺治愈</option><option value="搞怪">幽默搞怪</option></select>
+<label>📝 其他想提到的事（可选）</label>
+<input type="text" id="extra" placeholder="例如：和闺蜜一起、第一次看海、天气超好……">
+<button class="btn-gen" id="genBtn">✨ 生成假期文案</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🏝️ 你的假期文案（3套可选）</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制文案</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const scenes={
+'海岛':{tags:['#海岛度假 #海风 #放空','#比基尼 #椰林 #free','#说走就走 #蓝色治愈'],lines:['把烦恼暂时还给城市，把此刻留给这一片蓝。','风是咸的，心是空的，时间在这里慢了半拍。','不是在度假，是在给灵魂充一次电。']},
+'爬山':{tags:['#登山 #挑战自我 #云端','#最高处 #日出 #坚持','#户外 #山顶见'],lines:['爬到山顶的那一刻，喘不过气却笑得最开心。','海拔越高，烦恼越稀薄。','汗水没白流，风景全都有。']},
+'citywalk':{tags:['#citywalk #城市漫游 #咖啡','#慢生活 #街头 #光影','#随便走走 #城市碎片'],lines:['漫无目的地走走，才是这座城最好的打开方式。','用脚步认识一座城市，比打卡滤镜有趣多了。','今天的城市，刚刚好，慢得刚刚好。']},
+'宅家':{tags:['#宅家快乐 #躺平 #追剧','#在家旅行 #身心放松','#低电量慢充'],lines:['宅家不是懒惰，是给社畜的短暂假期。','我的旅行攻略：从沙发到卧室再到厨房。','谁说假期一定要出门，我的快乐在阳台。']}
+};
+const moodLines={
+'放松':['此刻只属于自己。','慢下来，就是最好的旅行。','身心都被温柔包围。'],
+'兴奋':['快乐到起飞！','简直太爽了！','这一趟值了！'],
+'治愈':['山海为伴，心之所向。','美好不过如此。','被治愈的每一刻都值得记录。'],
+'搞怪':['人到了，心也到了，就是钱包有点瘦。','当代废柴的假期，快乐不加班。']
+};
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('AI假期朋友圈文案 | AgentGongju.com'))return;
+const type=document.getElementById('type')?document.getElementById('type').value:'海岛';
+const dest=document.getElementById('dest').value.trim();
+const mood=document.getElementById('mood').value;
+const extra=document.getElementById('extra').value.trim();
+const sc=scenes[type]||scenes['海岛'];
+const ml=moodLines[mood];
+const target=dest?dest:type;
+let out='【'+target+' · 假期文案】\n\n';
+for(let i=0;i<3;i++){
+  out+='✨ 第'+(i+1)+'套：\n'+sc.lines[i%sc.lines.length]+'\n';
+  if(dest)out+='在'+dest+'，';
+  out+=ml[i%ml.length]+'\n';
+  if(extra)out+='— '+extra+'。\n';
+  out+=sc.tags[i%sc.tags.length]+'\n\n';
+}
+out+='—— 搭配3-9张精选照片，效果加倍 👌';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function setType(v){var el=document.getElementById('type');if(el){el.value=v;}else{var s=document.createElement('select');s.id='type';s.innerHTML='<option>'+v+'</option>';document.body.appendChild(s);}}
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 文案已复制！'))}
+</script>
+</body>
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI每日热量计算 | AgentGongju.com</title>
+<meta name="description" content="输入性别、年龄、身高体重和活动量，AI帮你算出每日基础代谢与维持体重所需热量，并根据增肌/减脂目标给出建议摄入量。">
+<meta name="keywords" content="热量计算,卡路里,基础代谢,BMR,减脂,增肌,每日摄入">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+textarea,input[type=text],select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tag-btn{display:inline-block;padding:5px 12px;background:rgba(99,102,241,0.12);border:1px solid rgba(99,102,241,0.25);border-radius:20px;color:#a5b4fc;cursor:pointer;font-size:.8rem;margin:3px;transition:all .2s}
+.tag-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-grid{grid-template-columns:1fr;display:flex;gap:12px}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🔥 AI每日热量计算</h1><p>科学算热量，减脂增肌都有数</p></div>
+
+<div class="card">
+<label>👤 性别</label>
+<select id="gender"><option value="male">男</option><option value="female">女</option></select>
+<div style="display:flex;gap:12px">
+<div style="flex:1"><label>年龄（岁）</label><input type="text" id="age" placeholder="如 28"></div>
+<div style="flex:1"><label>身高（cm）</label><input type="text" id="height" placeholder="如 170"></div>
+<div style="flex:1"><label>体重（kg）</label><input type="text" id="weight" placeholder="如 65"></div>
+</div>
+<label>🏃 每周活动量</label>
+<select id="activity"><option value="1.2">久坐少动</option><option value="1.375">轻度活动（每周1-3次运动）</option><option value="1.55">中度活动（每周3-5次）</option><option value="1.725">高强度（每周6-7次）</option></select>
+<label>🎯 目标</label>
+<div>
+<span class="tag-btn" onclick="setGoal('减脂')">🍃 减脂</span>
+<span class="tag-btn" onclick="setGoal('维持')">⚖️ 维持</span>
+<span class="tag-btn" onclick="setGoal('增肌')">💪 增肌</span>
+</div>
+<button class="btn-gen" id="genBtn">📊 计算热量</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">📊 你的热量数据</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制结果</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('AI每日热量计算 | AgentGongju.com'))return;
+const gender=document.getElementById('gender').value;
+const age=parseFloat(document.getElementById('age').value);
+const height=parseFloat(document.getElementById('height').value);
+const weight=parseFloat(document.getElementById('weight').value);
+const activity=parseFloat(document.getElementById('activity').value);
+const goal=document.getElementById('goal')?document.getElementById('goal').value:'维持';
+if(!age||!height||!weight||isNaN(age)||isNaN(height)||isNaN(weight)){alert('请填写完整的年龄、身高、体重');return;}
+// Mifflin-St Jeor BMR
+let bmr;
+if(gender==='male'){bmr=10*weight+6.25*height-5*age+5;}
+else{bmr=10*weight+6.25*height-5*age-161;}
+const tdee=bmr*activity;
+let target,note;
+if(goal==='减脂'){target=tdee-400;note='减脂建议每日缺口约300-500大卡，配合运动效果更稳。';}
+else if(goal==='增肌'){target=tdee+250;note='增肌建议每日盈余约200-300大卡，并保证足量蛋白质。';}
+else{target=tdee;note='维持期保持当前摄入，配合规律运动即可。';}
+let out='【每日热量计算】\n\n';
+out+='🔥 基础代谢(BMR)：约 '+Math.round(bmr)+' 大卡\n';
+out+='⚡ 每日维持热量(TDEE)：约 '+Math.round(tdee)+' 大卡\n';
+out+='🎯 你的目标「'+goal+'」建议摄入：约 '+Math.round(target)+' 大卡/天\n\n';
+out+='💡 参考三营养分配（目标 '+Math.round(target)+' 大卡）：\n';
+out+='· 蛋白质：'+Math.round(target*0.25/4)+'g | 碳水：'+Math.round(target*0.5/4)+'g | 脂肪：'+Math.round(target*0.25/9)+'g\n\n';
+out+='📝 '+note+'\n';
+out+='—— 数据为估算值，个体差异大，建议结合身体反应和营养师建议调整 💪';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function setGoal(v){var el=document.getElementById('goal');if(el){el.value=v;}else{var s=document.createElement('select');s.id='goal';s.innerHTML='<option>'+v+'</option>';document.body.appendChild(s);}}
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 结果已复制！'))}
+</script>
+</body>
+</html>

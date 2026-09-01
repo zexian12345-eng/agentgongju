@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI历史名人聊天模拟器 | AgentGongju.com</title>
+<meta name="description" content="和李白、诸葛亮、孔子、爱因斯坦等中外历史名人对话，模拟TA们的口吻风格与智慧，趣味学习两不误。">
+<meta name="keywords" content="历史,名人,聊天,模拟,对话,李白,孔子,诸葛亮,爱因斯坦,趣味">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+textarea,input[type=text],select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:80px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.9;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.copy-clear{margin-left:10px;padding:8px 20px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.15);border-radius:8px;color:#94a3b8;cursor:pointer;font-size:.85rem}
+@media(max-width:600px){.param-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🏛️ AI历史名人聊天模拟器</h1><p>穿越千年，和你最敬佩的历史名人聊聊天</p></div>
+
+<div class="card">
+<label>👤 选择一位名人</label>
+<select id="figure">
+<option>李白（诗仙·洒脱豪放）</option>
+<option>诸葛亮（足智多谋·鞠躬尽瘁）</option>
+<option>孔子（儒家思想·温良恭俭）</option>
+<option>苏轼（豁达乐观·词坛大家）</option>
+<option>王阳明（心学大师·知行合一）</option>
+<option>爱因斯坦（物理巨匠·天马行空）</option>
+<option>苏格拉底（哲学思辨·追问不休）</option>
+</select>
+<label>💬 你想问TA什么？</label>
+<textarea id="question" placeholder="例如：我最近很焦虑，不知道该怎么面对未来的不确定性，您有什么建议？"></textarea>
+<button class="btn-gen" id="genBtn">🗨️ 和TA聊聊</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🏛️ 对话记录</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制对话</button>
+<button class="copy-clear" onclick="clearResult()">🗑 清空</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const replies={
+'李白（诗仙·洒脱豪放）':{
+'焦虑':'哈哈哈，人生得意须尽欢，莫使金樽空对月！焦虑？不过是凡人借酒也浇不灭的愁绪。且看我，长风破浪会有时，直挂云帆济沧海！',
+'未来':'未来？那便仰天大笑出门去，我辈岂是蓬蒿人！收起忧思，与天地痛饮，明日自有明月相伴。',
+'学习':'读书破万卷，下笔如有神。不过罢了，学海虽无涯，人生当快意。你且行乐，学问自会随阅历而来。'
+},
+'诸葛亮（足智多谋·鞠躬尽瘁）':{
+'焦虑':'夫君子之行，静以修身，俭以养德。非淡泊无以明志，非宁静无以致远。临事而惧，必先谋定而后动。',
+'未来':'谋事在人，成事在天。宜审时度势，未雨绸缪。持重而图，则事无不成。',
+'学习':'学问须躬行，绝知此事要躬行。观我临表涕零，唯愿博学笃志，切问而近思。'
+},
+'孔子（儒家思想·温良恭俭）':{
+'焦虑':'人无远虑，必有近忧。然君子坦荡荡，小人长戚戚。修己以安人，心正则无惧矣。',
+'未来':'不患无位，患所以立。但行仁礼，天自佑之。'
+},
+'苏轼（豁达乐观·词坛大家）':{
+'焦虑':'竹杖芒鞋轻胜马，谁怕？一蓑烟雨任平生。过往不念，未来不迎，当下安之若素。',
+'未来':'休对故人思故国，且将新火试新茶。诗酒趁年华！'
+},
+'王阳明（心学大师·知行合一）':{
+'焦虑':'心外无物，心即理。你所谓的焦虑，不过是心被外物所扰。致良知，知行合一，则自得其乐。',
+'未来':'破山中贼易，破心中贼难。你只需格物致知，正心诚意，未来自会澄明。'
+},
+'爱因斯坦（物理巨匠·天马行空）':{
+'焦虑':'别担心你的困难，我只能确定——想象比知识更重要。焦虑是创造力的起点，把它当作思考的火花吧。',
+'未来':'未来属于那些坚信美好梦想的人。相对论告诉我：时间和焦虑都是相对的，放轻松些。'
+},
+'苏格拉底（哲学思辨·追问不休）':{
+'焦虑':'认识你自己！在追问之前，先问：你的焦虑究竟缘何而生？我唯一知道的，就是我一无所知。',
+'未来':'未经审视的人生不值得过。与其担忧未来，不如先考察你现在真正想要什么。'
+}
+};
+function pickReply(figure,question){
+const c=replies[figure]||{};
+if(question.includes('焦虑')||question.includes('烦恼')||question.includes('压力'))return c['焦虑']||'高见而已。';
+if(question.includes('未来')||question.includes('明天')||question.includes('前途'))return c['未来']||'请君细思之。';
+if(question.includes('学习')||question.includes('读书')||question.includes('如何'))return c['学习']||c['焦虑']||'此问甚妙。';
+// 默认
+const arr=Object.values(c);
+return arr[Math.floor(Math.random()*arr.length)]||'善哉此问。';
+}
+let history='';
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI历史名人聊天模拟器 | AgentGongju.com'))return;
+const fig=document.getElementById('figure').value;
+const q=document.getElementById('question').value.trim();
+if(!q){alert('请先输入你想问的问题');return;}
+const userText=fig;
+const ans=pickReply(fig,q);
+const entry='【你】：'+q+'\n【'+fig+'】：'+ans+'\n——';
+history=entry+'\n'+history;
+document.getElementById('outputBox').innerText=history.trim();
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 对话已复制！'))}
+function clearResult(){history='';document.getElementById('outputBox').innerText='';alert('已清空对话');}
+</script>
+</body>
+</html>

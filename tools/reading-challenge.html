@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI读书挑战计划 | AgentGongju.com</title>
+<meta name="description" content="设定一年要读的书数和读书目标，AI帮你拆解成每周书单、每月阅读进度、奖励机制与习惯打卡计划，让坚持读书不再靠意志力。">
+<meta name="keywords" content="读书计划,读书挑战,阅读计划,读书打卡,书单,每年读书,阅读习惯">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+textarea,input[type=text],select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:80px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+.milestone{background:rgba(168,85,247,0.08);border:1px solid rgba(168,85,247,0.3);border-radius:12px;padding:16px;color:#e9d5ff;line-height:2;font-size:.92rem;margin-bottom:14px}
+@media(max-width:600px){.param-grid{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📚 AI读书挑战计划</h1><p>把目标拆成每周节奏，让坚持读书变成习惯</p></div>
+
+<div class="card">
+<div class="param-grid">
+<div><label>🎯 一年想读几本？</label><input type="number" id="target" value="24" min="1" max="300"></div>
+<div><label>⏱ 每天可读多久</label><select id="daily"><option value="15">15分钟</option><option value="30" selected>30分钟</option><option value="60">60分钟</option><option value="90">90分钟以上</option></select></div>
+<div><label>🔥 今年想突破的方向</label><select id="focus"><option value="职业">职业成长</option><option value="理财">理财认知</option><option value="心理">心理情绪</option><option value="文学">文学经典</option><option value="历史">历史文化</option><option value="杂学">杂学趣味</option></select></div>
+</div>
+<label>📖 近期想读的几本书（可填书名，用顿号或逗号隔开）</label>
+<input type="text" id="books" placeholder="例如：原则, 被讨厌的勇气, 小狗钱钱">
+<button class="btn-gen" id="genBtn">🧗 生成我的读书挑战</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">📚 我的年度读书挑战</div>
+<div class="milestone" id="msBox"></div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制计划</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function rnd(n){return Math.floor(Math.random()*n)}
+const focusPool={
+职业:['高效能人士的七个习惯','原则','刻意练习','深度工作','掌控习惯'],
+理财:['小狗钱钱','穷爸爸富爸爸','纳瓦尔宝典','富有的习惯','指数基金投资指南'],
+心理:['被讨厌的勇气','蛤蟆先生去看心理医生','也许你该找个人聊聊','非暴力沟通','少有人走的路'],
+文学:['活着','三体','百年孤独','平凡的世界','围城'],
+历史:['人类简史','明朝那些事儿','万历十五年','显微镜下的大明','全球通史'],
+杂学:['置身事内','乡土中国','思考，快与慢','枪炮病菌与钢铁','娱乐至死']};
+const monthNames=['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('AI读书挑战计划 | AgentGongju.com'))return;
+const target=Math.min(300,Math.max(1,parseInt(document.getElementById('target').value)||24));
+const daily=parseInt(document.getElementById('daily').value);
+const focus=document.getElementById('focus').value;
+const booksInput=document.getElementById('books').value;
+const pool=focusPool[focus];
+const userBooks=booksInput.split(/[,，、]/).map(s=>s.trim()).filter(Boolean).slice(0,5);
+const poolBooks=shuffle(pool).slice(0,5);
+const bookList=[...userBooks,...poolBooks].slice(0,12);
+// 每周一本书速度估算(约300页, read 5h/wk)
+const pagesPerMin=daily>=90?1.4:daily>=60?1.2:daily>=30?0.9:0.6;
+const pagesPerWeek=pagesPerMin*7*daily;
+const booksPerMonth=pagesPerWeek*4.3/260;
+const neededPerMonth=Math.ceil(target/12);
+const gap=Math.max(0,neededPerMonth-Math.floor(booksPerMonth));
+const msBox=document.getElementById('msBox');
+msBox.innerHTML='<strong>🎯 年度目标 '+target+' 本</strong><br>按每天'+daily+'分钟，以你目前的阅读速度约每月能读 <strong>'+Math.max(1,Math.round(booksPerMonth))+' 本</strong>，达成目标需要每月 <strong>'+neededPerMonth+' 本</strong>'+(gap>0?'，还差'+gap+'本，建议每周多抽'+Math.ceil(gap*60/4)+'分钟或适量精减书页':'，节奏完全来得及 ✓')+'。';
+let out='【我的年度读书挑战书单】\n('+'每月'+neededPerMonth+'本 × 12个月 → 共'+target+'本)\n\n';
+bookList.forEach((b,i)=>{out+=''+(i+1)+'.《'+b+'》 — 建议'+(i%2?'精读':'泛读')+'\n';});
+out+='\n【每季度里程碑 + 奖励】\n';
+const rewards={1:'一杯最爱的奶茶/咖啡',2:'一场想看的电影',3:'一件心仪的小物件',4:'一次短途旅行/大餐'};
+out+='· 读完'+Math.round(target*0.25)+'本（第一季度）：奖励 '+rewards[1]+'\n';
+out+='· 读完'+Math.round(target*0.5)+'本（半年）：'+'奖励 '+rewards[2]+'\n';
+out+='· 读完'+Math.round(target*0.75)+'本（第三季度）：'+'奖励 '+rewards[3]+'\n';
+out+='· 全部完成（年底）：'+'奖励 '+rewards[4]+'\n\n';
+out+='【习惯养成法】\n· 固定“读书锚点”：如睡前30分钟或通勤地铁上。\n· 每天读够 '+daily+' 分钟就算胜利，别追求页数。\n· 读完一本就在手机里打勾，形成可视化进度。\n· 一句行动金句：每天翻几页，一年就是几十本。🔥';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function shuffle(a){for(let i=a.length-1;i>0;i--){const k=rnd(i+1);[a[i],a[k]]=[a[k],a[i]];}return a;}
+function copyResult(){const el=document.getElementById('outputBox');navigator.clipboard.writeText(document.getElementById('msBox').innerText.replace(/<[^>]+>/g,'')+'\n\n'+el.innerText).then(()=>alert('✅ 计划已复制！'))}
+</script>
+</body>
+</html>

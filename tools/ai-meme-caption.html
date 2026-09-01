@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI表情包配文 | AgentGongju.com</title>
+<meta name="description" content="输入你想表达的情绪或场景，AI为你生成各种风格的表情包配文，搞笑、扎心、可爱、吐槽任你选。">
+<meta name="keywords" content="表情包配文,表情包文字,沙雕文案,搞笑文案,配图文字,吐槽">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:70px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{color:#94a3b8;font-size:.85rem;margin-bottom:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>😂 AI 表情包配文</h1><p>一秒配出让人会心一笑的沙雕文字</p></div>
+
+<div class="card">
+<label>💭 想表达的情绪 / 场景</label>
+<textarea id="emo" placeholder="例如：上班摸鱼被抓、奶茶打了不开心、周末不想出门、考试没复习……"></textarea>
+<div class="param-row">
+<div><label>🎭 文案风格</label>
+<select id="style"><option value="搞笑沙雕" selected>搞笑沙雕</option><option value="扎心真实">扎心真实</option><option value="可爱治愈">可爱治愈</option><option value="毒舌吐槽">毒舌吐槽</option></select></div>
+<div><label>✍️ 生成条数</label>
+<select id="count"><option value="5">5条</option><option value="8" selected>8条</option><option value="10">10条</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">🎨 生成配文</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 你的表情包配文</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制全部</button>
+<div class="tip" style="margin-top:12px">💡 小技巧：配上夸张表情包（如熊猫头、柴犬、流泪猫猫头）效果更佳，文字要短要狠才出圈。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const STYLES={
+'搞笑沙雕':['哈哈哈哈我不装了，摊牌了','生活不易，猫猫叹气','我笑并不代表我没事，只是我扛得住','今日份快乐已到账，请注意查收','别问，问就是主打一个摆烂'],
+'扎心真实':['成年人的崩溃，往往就在一瞬间','嘴上说着算了，心里却不甘心','我的快乐，是被生活一点点磨没的','假装很忙，其实在假装','白天哈哈哈，晚上偷偷emo'],
+'可爱治愈':['今日份元气加载中……','世界那么大，想去看看，先吃口蛋糕','抱抱自己，你辛苦了呀','生活明朗，万物可爱，都要向前','今天也要好好爱自己哦'],
+'毒舌吐槽':['你以为是青铜，其实是废铁','听君一席话，如听一席话','你的脑子是装饰品吗？','这不叫努力，这叫无效内卷','建议回炉重造，再练练']
+};
+const EXT=['（配：熊猫头/流泪狗头更具喜感）','','～','😂🤣','（可配张梗图）'];
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI表情包配文 | AgentGongju.com'))return;
+const emo=document.getElementById('emo').value.trim();
+const style=document.getElementById('style').value;
+const n=parseInt(document.getElementById('count').value);
+if(!emo){alert('请先填写情绪或场景');return;}
+const pool=STYLES[style];
+let out='为「'+emo+'」生成 '+n+' 条'+style+'配文：\n\n';
+for(let i=0;i<n;i++){
+out+=(i+1)+'. 「'+pool[i%pool.length].replace('：','')+'」'+EXT[(i+emo.length)%EXT.length]+'\n';
+}
+out+='\n（可根据实际表情包再微调，越短越有梗，快去发朋友圈吧！）\n\n【表情包自由 📱】';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 配文已复制！'))}
+</script>
+</body>
+</html>

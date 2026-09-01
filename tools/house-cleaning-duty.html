@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI家庭大扫除分工安排 | AgentGongju.com</title>
+<meta name="description" content="根据家庭成员、时间和大扫除范围，AI帮你合理分配任务清单，让全家一起高效搞定大扫除。">
+<meta name="keywords" content="大扫除,家务,分工,家庭清洁,打扫,年末扫除,任务清单">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+input[type=text],select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:600px){.param-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🧹 AI家庭大扫除分工安排</h1><p>全家总动员，每人都明明白白</p></div>
+
+<div class="card">
+<label>👨‍👩‍👧 参与人数</label>
+<select id="num"><option value="1">1人</option><option value="2">2人</option><option value="3">3人</option><option value="4">4人及以上</option></select>
+<label>📛 简单写一下成员（逗号隔开，如：爸爸,妈妈,孩子）</label>
+<input type="text" id="members" placeholder="例：爸爸、妈妈、大宝">
+<label>🏠 大扫除范围</label>
+<select id="scope"><option value="full">全屋</option><option value="kitchen">重点厨房</option><option value="bath">重点卫浴</option><option value="quick">快速清洁</option></select>
+<label>⏱️ 可用时间</label>
+<select id="time"><option value="short">半天</option><option value="day">一整天</option><option value="weekend">周末两天</option></select>
+<button class="btn-gen" id="genBtn">🧹 生成分工清单</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🧹 大扫除分工结果</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制清单</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const scopeTasks={
+full:{seq:'1. 清空与断舍离 → 2. 从上到下干/湿两遍擦 → 3. 地面吸拖 → 4. 收尾归位',tasks:['整理玄关与门口鞋柜','擦拭厨房墙面油烟、台面、灶台','清洗灶台配件与油烟机滤网','清空冰箱头层并擦拭、扔掉过期食品','擦拭卫浴镜面、洗手台与五金','清洗马桶、地面和地漏','擦卧室床头柜、衣柜门和踢脚线','换洗床单被罩','客厅沙发缝隙吸尘、茶几清空','擦窗户玻璃与窗框','拖全屋地面并消毒','倒垃圾、归位工具']},
+kitchen:{seq:'1. 清空台面 → 2. 去油 → 3. 深度清洁 → 4. 归位收纳',tasks:['台面清空并断舍离','油烟机及滤网去油清洗','灶台与灶具烧焦渍清洁','墙面瓷砖去油','水槽与下水口除垢','冰箱内部清洁与过期清理','橱柜内胆擦拭','地面拖净去油','垃圾清理与归位']},
+bath:{seq:'1. 干区 → 2. 湿区 → 3. 除垢消毒 → 4. 收尾',tasks:['洗手台与镜面清洁','收纳柜内整理','马桶内外彻底清洁','玻璃隔断去水垢','淋浴间地漏清理','瓷砖墙面去霉','地面刷洗消毒','换洗毛巾浴巾','补充日化与归位']},
+quick:{seq:'1. 先收后扫 → 2. 重点区域 → 3. 快速拖地',tasks:['把所有物品归位/入筐','快速擦拭最显眼的台面','扫一遍地面','重点区域（门口/厨房过道）拖干净','倒垃圾并开窗通风']}
+};
+const personTasks=[['负责高处（擦顶柜、灯光、窗帘杆）','搬动并擦拭大型家具','清理床底/沙发底死角'],['负责地面吸尘拖地','擦拭家具表面','倒垃圾'],['负责卫浴/厨房湿区','擦洗低处墙面与柜门','整理收纳抽屉'],['负责桌面小物清理','擦镜面与玻璃','辅助归位摆放']];
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('AI家庭大扫除分工安排 | AgentGongju.com'))return;
+const num=document.getElementById('num').value;
+const scope=document.getElementById('scope').value;
+const time=document.getElementById('time').value;
+let members=document.getElementById('members').value.split(/[,，、\s]+/).filter(x=>x);
+const n=num==='1'?1:num==='2'?2:num==='3'?3:4;
+while(members.length<n)members.push('成员'+(members.length+1));
+const s=scopeTasks[scope];
+const timeTip={short:'\n· 半天节奏紧，建议按"先收→擦→拖"顺序，两人一组打配合。',day:'\n· 一整天可分上半场打扫、下半场收纳，中途休息。',weekend:'\n· 两天可分：Day1 深度清洁、Day2 收纳归位与复查。'}[time]||'';
+let out='【大扫除分工清单】范围：'+({full:'全屋',kitchen:'重点厨房',bath:'重点卫浴',quick:'快速清洁'}[scope])+'｜人数：'+n+'人\n\n';
+out+='🔁 整体流程\n'+s.seq+timeTip+'\n\n';
+s.tasks.forEach((task,i)=>{
+const p=personTasks[i%n];
+out+='🧑 '+(members[i%n])+'：'+task+'（'+p[i%p.length]+'）\n';
+});
+out+='\n【分工小贴士】\n· 每完成一项打勾，别重复劳动。\n· 湿区先干区后，避免二次污染。\n· 结束统一归位，谁用谁收。祝顺利搞定！🧹';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 清单已复制！'))}
+</script>
+</body>
+</html>

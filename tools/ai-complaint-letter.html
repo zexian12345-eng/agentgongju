@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI投诉建议信撰写 | AgentGongju.com</title>
+<meta name="description" content="输入投诉对象、事情经过和期望解决方案，AI帮你有理有据地写一封正式的投诉或建议信，语气得体、条理清晰。">
+<meta name="keywords" content="投诉信,建议信,投诉模板,消费维权,反馈信,问题反映">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+textarea,input[type=text],select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:70px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📨 AI投诉建议信撰写</h1><p>有理有据、心平气和地表达诉求</p></div>
+
+<div class="card">
+<label>🏢 投诉/建议对象</label>
+<input type="text" id="target" placeholder="例如：某某网购平台客服 / 小区物业 / 某品牌售后">
+<label>📝 事情经过（发生时间、地点、具体情况）</label>
+<textarea id="event" placeholder="例如：8月20日收到的快递外包装完好，但商品内有破损，联系客服后对方一直拖延不予处理。"></textarea>
+<label>🎯 我的诉求（期望如何处理）</label>
+<textarea id="demand" placeholder="例如：希望对方尽快更换有质量问题的商品，或全额退款，并在3个工作日内给我明确答复。"></textarea>
+<label>📌 类型</label>
+<select id="type"><option value="complaint" selected>投诉（反映问题）</option><option value="suggest">建议（改进反馈）</option></select>
+<button class="btn-gen" id="genBtn">✍️ 生成信件</button>
+<label style="margin-top:12px;color:#64748b;font-size:.8rem">* 信件为参考模板，请按实际证据与诉求填写后再发送</label>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">📨 你的投诉/建议信</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制信件</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('AI投诉建议信撰写 | AgentGongju.com'))return;
+const target=document.getElementById('target').value.trim()||'贵方';
+const event=document.getElementById('event').value.trim();
+const demand=document.getElementById('demand').value.trim();
+const type=document.getElementById('type').value;
+if(!event){alert('请填写事情经过');return;}
+let out='';
+if(type==='complaint'){
+  out+='【投诉反馈信】\n\n';
+  out+='尊敬的'+target+'相关负责人：\n\n';
+  out+='您好！我于近期向贵方反映如下问题，现正式提出投诉与诉求，恳请重视并及时处理。\n\n';
+  out+='【事情经过】\n'+event+'\n\n';
+  out+='【我的诉求】\n';
+  out+='1. '+demand+'\n';
+  out+='2. 盼贵方在收到本信后尽快核实情况，并给予明确答复与处理方案。\n\n';
+  out+='本人保留相关凭证（订单、聊天记录、照片等），必要时将进一步向有关部门反映。恳请贵方秉持诚信经营、客户至上的原则，妥善解决，谢谢！\n\n';
+  out+='此致\n敬礼\n\n';
+  out+='反馈人：____　联系电话：____　日期：____';
+}else{
+  out+='【建议/反馈信】\n\n';
+  out+='尊敬的'+target+'相关负责人：\n\n';
+  out+='您好！作为一名关注贵方发展的用户，冒昧提出如下建议，仅供参考，盼能略尽绵力。\n\n';
+  out+='【背景与现状】\n'+event+'\n\n';
+  out+='【我的建议】\n';
+  out+='1. '+demand+'\n';
+  out+='2. 建议贵方建立更顺畅的反馈与响应机制，及时收集并改进用户体验。\n\n';
+  out+='相信在贵方的持续努力下，定能赢得更多用户的认可与信赖。期盼采纳，谢谢！\n\n';
+  out+='建议人：____　联系方式：____　日期：____';
+}
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 信件已复制！'))}
+</script>
+</body>
+</html>

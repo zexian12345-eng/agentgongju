@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI办事排队时间攻略 | AgentGongju.com</title>
+<meta name="description" content="去医院挂号、银行办事、政务大厅……不同机构哪个时段人最少？AI帮你规划排队时间，少等一小时。">
+<meta name="keywords" content="排队,排队攻略,医院挂号,政务大厅,银行,办事,错峰">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+input[type=text],select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:600px){.param-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>⏱️ AI办事排队时间攻略</h1><p>选中时段再出门，少等一小时</p></div>
+
+<div class="card">
+<label>🏢 办事机构</label>
+<select id="place"><option value="hospital">医院门诊/挂号</option><option value="bank">银行柜台</option><option value="gov">政务审批大厅</option><option value="post">邮政/快递网点</option><option value="school">学校报名/缴费</option></select>
+<label>🗓️ 你计划去的日子</label>
+<div class="param-grid">
+<div><label>星期几</label><select id="weekday"><option value="mon">周一</option><option value="mid">周二-周四</option><option value="fri">周五</option><option value="weekend">周末</option></select></div>
+<div><label>时间偏好</label><select id="timeband"><option value="morning">上午</option><option value="noon">中午</option><option value="afternoon">下午</option></select></div>
+</div>
+<label>📝 办什么事（可选）</label>
+<input type="text" id="thing" placeholder="例如：查个报告、取现金、交材料">
+<button class="btn-gen" id="genBtn">⏱️ 生成错峰攻略</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">⏱️ 错峰时间建议</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制攻略</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const data={
+hospital:{name:'医院门诊',peak:'早高峰7:30-9:30集中排队挂号取号',best:'错峰建议：网上先预约取号，避开8-9点高峰；下午14点后排队明显减少',tips:'· 尽量提前网上/APP挂号，到点直接到诊。\n· 空腹抽血项目集中在早高峰，若只配药/开单可下午去。'},
+bank:{name:'银行柜台',peak:'周一上午、发薪日前后（每月中旬）、月末最挤',best:'错峰建议：避开周一和月末月初，选周二-周四上午10点或下午15点后人流量小',tips:'· 取现/转账等简单业务优先自助机办理。\n· 对公业务下午办理更顺，个人理财可网上预约客户经理。'},
+gov:{name:'政务审批大厅',peak:'周一上午、月初申报期、年末缴税期集中',best:'错峰建议：避开月初1-5日和月底，工作日下午15:30后来人更少',tips:'· 多数事项支持"网上办/掌上办"，先线上提交材料。\n· 无法网办的可提前电话预约取号，减少现场等待。'},
+post:{name:'邮政/快递网点',peak:'双11/大促后、周一和节假日前后网点集中',best:'错峰建议：遇到大促错后几天寄件；工作日下午14-16点人较少',tips:'· 普通包裹可预约上门取件，比到网点省时。\n· 寄件前先在线填写付好运费，到柜刷码即走。'},
+school:{name:'学校报名/缴费',peak:'开学季（9月初）报名、每学期缴费头两天、节假日前后',best:'错峰建议：报名尽量避开第一天，缴费选工作日下午；多数支持线上缴费',tips:'· 先关注学校公众号/APP，能线上办的别现场排。\n· 必须到场的，错开周一上午和开学首日。'}
+};
+const wday={mon:'周一（通常一周最忙，能避开就避开）',mid:'周二-周四（相对平缓）',fri:'周五（接近周末，下午人渐少）',weekend:'周末（部分机构不上班，医院/银行网点可能只开半天）'};
+const bandTip={morning:'· 建议选开门后半小时内的"开闸良机"或10点后。',noon:'· 中午11:30-13:00部分网点暂停部分窗口，若营业建议错峰。',afternoon:'· 下午比上午通常人少，建议15:00后。'};
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('AI办事排队时间攻略 | AgentGongju.com'))return;
+const place=document.getElementById('place').value;
+const weekday=document.getElementById('weekday').value;
+const band=document.getElementById('timeband').value;
+const thing=document.getElementById('thing').value.trim();
+const d=data[place];
+let out='【'+d.name+'错峰攻略】\n\n';
+out+='📅 你说的那天是'+wday[weekday]+'\n';
+out+='⚠️ 一般什么时候人最多\n· '+d.peak+'\n';
+out+='\n✅ 最佳错峰建议\n· '+d.best+'\n'+(bandTip[band]||'');
+out+='\n\n💡 实操小贴士\n'+d.tips;
+if(thing)out+='\n· 你要办的是「'+thing+'」：建议先电话/线上确认所需材料，一次带齐避免再跑一趟。';
+out+='\n\n【通用提醒】能线上办就线上办，必须到现场的就带齐材料+错峰出行，省时省力。⏱️';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 攻略已复制！'))}
+</script>
+</body>
+</html>

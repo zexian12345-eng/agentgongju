@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI淘宝标题 | AgentGongju.com</title>
+<meta name="description" content="输入商品信息，AI为你生成高点击率淘宝/天猫商品标题，含关键词组合与卖点提炼，助你提升搜索流量与转化。">
+<meta name="keywords" content="淘宝标题,天猫标题,商品标题,电商标题,标题优化,关键词">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:70px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{color:#94a3b8;font-size:.85rem;margin-bottom:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🏷️ AI 淘宝标题</h1><p>输入商品信息，一键生成高转化率的电商标题</p></div>
+
+<div class="card">
+<label>📦 商品名称 / 品类</label>
+<textarea id="product" placeholder="例如：无线蓝牙降噪耳机、纯棉四件套床上用品、男士休闲运动跑鞋……"></textarea>
+<div class="param-row">
+<div><label>🎯 主打卖点</label>
+<select id="selling"><option value="性价比" selected>高性价比</option><option value="颜值">高颜值设计</option><option value="功能">功能强大</option><option value="送礼">适合送礼</option></select></div>
+<div><label>👥 适用人群</label>
+<select id="people"><option value="通用">通用</option><option value="学生党">学生党</option><option value="上班族">上班族</option><option value="宝妈">宝妈</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">✨ 生成优质标题</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 推荐标题（15-30字）</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制标题</button>
+<div class="tip" style="margin-top:12px">💡 标题优化建议：核心词前置、控制字数≤30、突出差异化卖点、善用热搜词与场景词，避免堆砌无关词。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const SELL={
+'性价比':['特惠','限时特价','超值',null],
+'颜值':['ins风','高颜值','简约高级','颜值天花板'],
+'功能':['专业','多功能','升级款','新款发布'],
+'送礼':['送礼必备','节日礼盒','精美包装','生日礼物']
+};
+const PEOPLE={
+'通用':['热卖爆款','当季流行','全网热销'],
+'学生党':['学生党','宿舍好物','校园必备','平价好物'],
+'上班族':['通勤','办公必备','打工人','职场好物'],
+'宝妈':['宝妈','母婴','带娃神器','家庭必备']
+};
+const BASE=['正品保证','免费包邮','顺丰包邮','七天无理由'];
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI淘宝标题 | AgentGongju.com'))return;
+const product=document.getElementById('product').value.trim();
+const selling=document.getElementById('selling').value;
+const people=document.getElementById('people').value;
+if(!product){alert('请先填写商品信息');return;}
+const s=SELL[selling],p=PEOPLE[people];
+const titles=[];
+for(let i=0;i<3;i++){
+const used=new Set();
+const pick=(arr)=>{let x=arr[i%arr.length];if(!x)x=arr[(i+1)%arr.length];return x;};
+let t='2026新品 '+(p[i%p.length]||p[0])+' '+product+' '+(s[i%s.length]||s[0])+' '+BASE[i%BASE.length];
+if(t.length<30){t+=' 高人气 '+people;}
+if(t.length>30){const parts=t.split(' ');t=parts.slice(0,parts.length).join(' ').slice(0,30);}
+titles.push(t.trim());
+}
+let out='为「'+product+'」生成的3个优选标题：\n\n';
+titles.forEach((t,i)=>{out+='━━ 方案'+(i+1)+' ━━\n'+t+'\n（字数：'+t.length+'）\n\n';});
+out+='━━ 关键词组合建议 ━━\n· 核心词：'+product+'；\n· 属性词：'+SELL[selling].filter(Boolean).join('、')+'；\n· 人群词：'+PEOPLE[people].join('、')+'；\n· 通用词：天猫/淘宝官方扶持、官方旗舰店。\n\n【祝大卖 💰】';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 标题已复制！'))}
+</script>
+</body>
+</html>

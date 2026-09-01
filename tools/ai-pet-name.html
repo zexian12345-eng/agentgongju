@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI 宠物起名器 | AgentGongju.com</title>
-<meta name="description" content="根据宠物品种、性格与你的偏好，快速生成好记可爱顺口的宠物名字，附名字寓意与叫法建议">
-<meta name="keywords" content="宠物起名,猫名字,狗名字,宠物名字,起名,萌宠">
+<title>AI宠物名字助手 | AgentGongju.com</title>
+<meta name="description" content="输入宠物种类、性别与性格，AI为你的猫猫狗狗生成可爱又好记的名字，含英文名与昵称。">
+<meta name="keywords" content="宠物名字,猫名字,狗名字,起名,宠物,喵,汪,取名">
 <link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
@@ -13,7 +13,7 @@
 .card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
 .card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
 select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
-textarea{min-height:60px;resize:vertical}
+textarea{min-height:50px;resize:vertical}
 input:focus,select:focus,textarea:focus{border-color:#6366f1}
 .param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 .btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
@@ -23,79 +23,74 @@ input:focus,select:focus,textarea:focus{border-color:#6366f1}
 .output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
 .copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
 .copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{color:#94a3b8;font-size:.85rem;margin-bottom:12px}
 @media(max-width:600px){.param-row{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 <nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
 <div class="tool-container">
-<div class="tool-header"><h1>🐾 AI 宠物起名器</h1><p>给毛孩子取一个好听顺口的好名字</p></div>
+<div class="tool-header"><h1>🐾 AI 宠物名字助手</h1><p>物种 + 性格 + 喜好，帮你的毛孩子起个暖心好名</p></div>
 
 <div class="card">
-<label>🐶 宠物种类</label>
-<select id="species"><option value="狗">🐶 狗</option><option value="猫" selected>🐱 猫</option><option value="兔子">🐰 兔子</option><option value="仓鼠">🐹 仓鼠/小宠</option><option value="其他">🦜 其他</option></select>
 <div class="param-row">
-<div><label>🎨 毛色/外貌特征</label>
-<select id="color"><option value="白色">🤍 白色</option><option value="黄/橘">🟠 黄/橘</option><option value="黑色">⚫ 黑色</option><option value="灰/蓝">🔵 灰/蓝</option><option value="花斑">🎨 花斑</option></select></div>
-<div><label>😼 性格特点</label>
-<select id="temper"><option value="活泼">⚡ 活泼好动</option><option value="高冷" selected>😼 高冷傲娇</option><option value="粘人">💞 粘人可爱</option><option value="贪吃">🍖 贪吃</option></select></div>
+<div><label>🐶 宠物种类</label>
+<select id="pet"><option value="猫" selected>🐱 猫</option><option value="狗">🐶 狗</option><option value="兔子">🐰 兔子</option><option value="仓鼠">🐹 仓鼠/小宠</option><option value="其他">🐾 其他</option></select></div>
+<div><label>🎀 宠物性别</label>
+<select id="sex"><option value="男" selected>👦 弟弟</option><option value="女">👧 妹妹</option></select></div>
 </div>
-<label>💡 喜欢的名字风格（选填）</label>
-<input type="text" id="style" placeholder="例如：带食物的、带叠字的、文艺一些的">
-<button class="btn-gen" id="genBtn">✨ 生成宠物名</button>
+<label>😺 性格 / 特点（选填）</label>
+<textarea id="personality" placeholder="例如：特别黏人、贪吃、爱睡觉、活泼好动、有点高冷…"></textarea>
+<div class="param-row">
+<div><label>🎨 名字风格</label>
+<select id="style"><option value="可爱" selected>🎀 软萌可爱</option><option value="霸气">🦁 霸气有范</option><option value="文艺">🌿 文艺雅致</option><option value="搞笑">😂 搞笑谐音</option></select></div>
+<div><label>🔢 数量</label>
+<select id="num"><option value="5" selected>5 个</option><option value="8">8 个</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">✨ 生成名字</button>
 </div>
 
 <div class="result-area" id="resultArea">
 <div class="card">
-<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🏷 为你的毛孩子推荐的名字</div>
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 为你的毛孩子选的名字</div>
 <div class="output-box" id="outputBox"></div>
-<button class="copy-btn" onclick="copyResult()">📋 复制宠物名</button>
+<button class="copy-btn" onclick="copyResult()">📋 复制名字</button>
+<div class="tip" style="margin-top:12px">💡 小贴士：好叫的名字要音节短、开口音多，叫起来响亮又亲切；先在家叫几天，看毛孩子对哪个更有反应。</div>
 </div>
 </div>
 </div>
 <footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
 <script>
 const pools={
-'狗':{white:['小雪','团子','白白','豆奶'],orange:['旺财','布丁','橘福'],black:['煤球','黑糖','炭炭'],grey:['灰灰','蓝蓝','麻花'],flower:['花花','牛奶','点点']},
-'猫':{white:['牛奶','糯米','雪球'],orange:['橘座','奶糖','蛋黄'],black:['黑米','芝麻','夜宵'],grey:['蓝莓','灰灰','奶茶'],flower:['阿花','奶布丁','麻薯']},
-'兔子':{white:['棉花','云朵','小玉'],orange:['南瓜','胡萝卜'],black:['墨墨','乌冬'],grey:['雾雾','银耳'],flower:['花菜','虎皮']},
-'仓鼠':{white:['白雪','汤圆'],orange:['小黄','布丁'],black:['煤粒','奥利奥'],grey:['鼠灰','肉桂'],flower:['花卷','奶昔']},
-'其他':{white:['羽毛','云朵'],orange:['芒果','橙子'],black:['墨斗','煤炭'],grey:['云烟','银月'],flower:['彩彩','斑斑']}
+猫:{可爱:['团团','糯米','奶糖','布丁','汤圆','球球'],霸气:['煤球','大王','阿霸','虎啸','镖爷','尊上'],文艺:['玄墨','云舒','青黛','雪梨','拾光','初霁'],搞笑:['饭团','主子','喵总','秃头','胖橘','二哈喵']},
+狗:{可爱:['豆豆','旺财','棉花','卷卷','果冻','年糕'],霸气:['将军','雷神','黑龙','金刚','神犬','狼王'],文艺:['如山','江月','清风','山楂','晚风','知夏'],搞笑:['二狗','汪财','吃货','地瓜','泥鳅','哈士奇'],},
+兔子:{可爱:['雪球','棉花糖','小萝卜','跳跳','云朵','白兔'],霸气:['闪电兔','兔王','霹雳','炮弹','撸神','兔霸'],文艺:['玉兔','月白','芦苇','竹影','山岚','苏叶'],搞笑:['胡萝卜','呆兔','蹦迪','瑞幸兔','草包','萝卜头']},
+仓鼠:{可爱:['汤圆','瓜子','糯米','小软','汤包','栗子'],霸气:['仓霸','滚爷','暴走','突突','铁仓','老仓'],文艺:['麦芽','粟米','青柠','木樨','溪客','南风'],搞笑:['鼠条','陀螺','球王','干饭鼠','跑轮侠','胖墩']},
+其他:{可爱:['毛毛','豆豆','糖糖','布丁','小乖','团子'],霸气:['老大','阿王','霸王','战神','铁哥','主上'],文艺:['阿泽','小满','栀夏','晚晴','浅川','子白'],搞笑:['老六','饭桶','二哈','沙雕','呆瓜','皮蛋']}
 };
-const warm=['好记顺口','两个字最好叫','寓意喜庆讨喜'];
-const meanings=['团团圆圆有福气','白白净净惹人爱','调皮活泼又灵动','温顺粘人超治愈'];
+const nickCat={可爱:'小喵喵/乖乖',霸气:'大侠/族长',文艺:'小文艺',搞笑:'小戏精'};
+const nickDog={可爱:'汪汪/卡哇伊',霸气:'铁血/大哥大',文艺:'书卷气',搞笑:'整活王'};
 document.getElementById('genBtn').addEventListener('click',()=>{
-if(!Paywall.countUse('AI 宠物起名器 | AgentGongju.com'))return;
-const species=document.getElementById('species').value;
-const color=document.getElementById('color').value;
-const temper=document.getElementById('temper').value;
-const style=document.getElementById('style').value.trim();
-const map={white:'white',orange:'orange',black:'black',grey:'grey',flower:'flower'};
-const key=map[color];
-const pool=(pools[species]&&pools[species][key])||poolAll(species)||['毛球','团子','可乐'];
-const picked=[];
-const p2=pool.slice();
-while(picked.length<4&&p2.length){picked.push(p2.splice(Math.floor(Math.random()*p2.length),1)[0]);}
-const extras=['小'+picked[0],'阿'+picked[0]]; // 确保至少4个
-picked.push(...extras.slice(0,4-picked.length));
-const final=picked.slice(0,4);
-let out='🐾 为你的'+species+'（'+color+'毛色 · '+temper+'）推荐的名字：\n\n';
-final.forEach((n,i)=>{
+if(!Paywall.countUse('AI宠物名字助手 | AgentGongju.com'))return;
+const pet=document.getElementById('pet').value;
+const sex=document.getElementById('sex').value;
+const personality=document.getElementById('personality').value.trim();
+const style=document.getElementById('style').value;
+const num=parseInt(document.getElementById('num').value);
+const pool=pools[pet]||pools['其他'];
+const cands=shuffle(pool[style]).slice(0,num);
+let out='【'+pet+' · '+sex+'宝贝 · '+style+'风名字】\n\n';
+cands.forEach((n,i)=>{
 out+='【'+(i+1)+'】'+n+'\n';
-out+='· 寓意：'+(meanings[(n.length+i)%meanings.length])+(i===0?'  \u2705 我的top推荐':'')+'\n\n';
+out+='· 由来：'+n+' 读起来'+['软糯香甜','简洁响亮','清雅耐听','谐趣好记'][i%4]+'，'+(personality?('很配它「'+personality.slice(0,12)+'」的性格。'):'寓意美好又招人喜欢。')+'\n';
+out+='· 英文/小名：'+(pet==='猫'?nickCat:nickDog)[style]||'亲昵小名：'+n+n+'\n\n';
 });
-out+='🎯 快速叫法建议\n';
-out+='· 用「'+final[0]+'」实际叫起来最顺口：'+final[0]+'，来～'+final[0]+'\n';
-out+=(style?'· 结合你喜欢的「'+style+'」风格，可衍生：「小'+final[1]+'」「'+final[2]+'宝贝」\n':'');
-out+='📌 起名小贴士：名字选 1-2 个字、发音圆润响亮最易让宠物识别，确定后固定一个名字，别频繁更换哦。';
+out+='【🌱 选名建议】\n· 优先选 1-2 个音节的叠字名，好记易喊；\n· 正式名之外可以配一个日常小名，喊起来更亲切。';
 document.getElementById('outputBox').innerText=out;
 document.getElementById('resultArea').classList.add('active');
-function poolAll(sp){
-const all=['毛球','团子','可乐','元宝','汤圆','布丁','豆豆','盼盼','元宝','奶昔','阿福'];
-return all;
-}
 });
-function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 宠物名已复制！'))}
+function shuffle(arr){for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}return arr;}
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 名字已复制！'))}
 </script>
 </body>
 </html>

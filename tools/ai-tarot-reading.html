@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI塔罗牌占卜 | AgentGongju.com</title>
+<meta name="description" content="默想你的问题，AI为你随机抽三张塔罗牌并进行解读，从过去、现在、未来三个维度给出发人深省的启示。">
+<meta name="keywords" content="塔罗牌,占卜,塔罗,运势,抽牌,运势解读,心理">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:70px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{color:#94a3b8;font-size:.85rem;margin-bottom:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🔮 AI 塔罗牌占卜</h1><p>默想问题，AI为你抽三张牌，看过去、现在与未来</p></div>
+
+<div class="card">
+<label>🧘 心里默想 / 输入你的问题（选填）</label>
+<textarea id="question" placeholder="例如：我该不该接受这份新工作？这段感情能长久吗？最近财运如何？（可留空，随机占卜）"></textarea>
+<div class="param-row">
+<div><label>🌟 占卜主题</label>
+<select id="theme"><option value="综合" selected>✨ 综合运势</option><option value="事业">💼 事业</option><option value="感情">💘 感情</option><option value="财运">💰 财运</option></select></div>
+<div><label>🃏 牌阵</label>
+<select id="spread"><option value="三牌" selected>🃏 三牌阵·过去/现在/未来</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">🔮 开始占卜</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 你的塔罗启示</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制结果</button>
+<div class="tip" style="margin-top:12px">💡 温馨提示：塔罗是自我探索的一面镜子，结果仅供参考，愿你以平和心面对选择的每一步。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const cards=[
+{name:'🃏 太阳',sign:true,pos:'充满活力的光明牌'},
+{name:'🌙 月亮',sign:false,pos:'直觉与朦胧的暗夜牌'},
+{name:'🌟 星星',sign:true,pos:'希望与疗愈的晨星牌'},
+{name:'🏰 命运之轮',sign:true,pos:'转机与机遇的时刻牌'},
+{name:'⚖️ 正义',sign:true,pos:'权衡与公正的天秤牌'},
+{name:'🦁 力量',sign:true,pos:'勇气与温柔的驯兽牌'},
+{name:'🌹 恋人',sign:true,pos:'结合与选择的联结牌'},
+{name:'🕯️ 节制',sign:true,pos:'平衡与调和的熔炉牌'},
+{name:'🗼 塔',sign:false,pos:'突变的警示与重建牌'},
+{name:'🌑 死神',sign:false,pos:'结束与新生的蜕变牌'},
+{name:'🏵️ 战车',sign:true,pos:'前进与掌控的征车牌'},
+{name:'🎭 隐士',sign:false,pos:'内省与孤独的提灯牌'}
+];
+const readMap={
+太阳:{过去:'过往你付出较多，状态积极向上',现在:'当前能量充沛，目标明朗，正被看见与认可',未来:'将迎来明朗的收获与成就感'},
+月亮:{过去:'过去曾被不确定性或情绪困扰',现在:'有些事尚未完全明晰，宜多倾听直觉',未来:'迷雾渐散，需耐心等待答案浮现'},
+星星:{过去:'曾经怀抱希望与单纯美好的愿景',现在:'正处在疗愈与被治愈的周期',未来:'愿望有实现的空间，保持信心'},
+命运之轮:{过去:'过往经历了不小的转变与起伏',现在:'重要的转机正在靠近你',未来:'抓住时机，命运之轮转到有利方向'},
+正义:{过去:'过去的决定基本经得起推敲',现在:'适合理性权衡，公正看待局面',未来:'权衡之后会有清楚的结果显现'},
+力量:{过去:'你曾以温柔化解过不小的难题',现在:'拥有驾驭情绪的底气',未来:'柔和而坚定，能征服挑战'},
+恋人:{过去:'过往的联结对你影响深远',现在:'正处于选择与契合的关键阶段',未来:'真诚相待，关系有望更紧密'},
+节制:{过去:'过去你忙于调和各方',现在:'正在学习平衡生活与目标',未来:'掌握分寸之后将达到新的顺遂'},
+塔:{过去:'曾有突如其来的冲击震动了你的根基',现在:'旧的框架正在松动',未来:'重建之后更为稳固，是成长之机'},
+死神:{过去:'某个旧阶段曾告一段落',现在:'放下旧执念正当其时',未来:'将迎来焕然一新的开始'},
+战车:{过去:'你曾奋力向前赢得阵地',现在:'方向明确，适合主动推进',未来:'意志坚定者将收获掌控'},
+隐士:{过去:'过去你在独处中沉淀了智慧',现在:'宜向内求索，寻觅答案',未来:'内省之后豁然开朗'}
+};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI塔罗牌占卜 | AgentGongju.com'))return;
+const q=document.getElementById('question').value.trim();
+const theme=document.getElementById('theme').value;
+const pool=shuffle([...cards]).slice(0,3);
+const dim=['过去','现在','未来'];
+const positive=pool.filter(c=>c.sign).length;
+let out='🔮 塔罗占卜 · '+theme+'牌阵\n\n';
+if(q){out+='问题：「'+q+'」\n\n';}
+pool.forEach((c,i)=>{
+out+='━━ '+dim[i]+' · '+c.name+'（'+c.pos+'）━━\n';
+out+='· '+readMap[c.name][dim[i==0?'过去':i==1?'现在':'未来']]+'\n';
+if((i===1&&theme==='事业')||(i===0&&theme==='感情')){out+='· 结合'+theme+'议题：'+(c.sign?'整体倾向积极，可稳步向前':'宜多观察、缓决策，时机稍后再定')+'\n';}
+out+='\n';
+});
+let advice=positive>=2?'牌面以正面能量为主，整体局面偏向利好，适合积极行动。':'牌中有潜藏的变数，提醒你放慢节奏、多倾听内心后再做决定。';
+out+='━━ 综合建议 ━━\n'+advice+'\n';
+if(theme==='事业'){out+='· 事业上宜厘清主次、稳扎稳打，机会往往藏在坚持里。\n';}
+if(theme==='感情'){out+='· 感情贵在真诚沟通，把心里的想法好好说出口。\n';}
+if(theme==='财运'){out+='· 财运方面宜开源节流、避免冲动消费，稳健为上。\n';}
+out+='\n【愿你以从容之心，拥抱每一次选择 🌸】';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function shuffle(arr){for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}return arr;}
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 占卜结果已复制！'))}
+</script>
+</body>
+</html>

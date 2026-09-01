@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI家族称呼计算器 | AgentGongju.com</title>
+<meta name="description" content="过年走亲访友不会叫？告诉你爸爸的哥哥叫什么、妈妈的妹妹的丈夫怎么称呼……AI帮你理清亲戚称呼。">
+<meta name="keywords" content="亲戚称呼,称呼,辈分,称谓,家族关系,表哥表姐,怎么称呼">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+input[type=text],select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:600px){.param-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>👨‍👩‍👧‍👦 AI家族称呼计算器</h1><p>一句"这该怎么叫？"，辈分称呼轻松搞定</p></div>
+
+<div class="card">
+<label>🤔 从你的角度看，要称呼的是？</label>
+<select id="relation"><option value="fb">爸爸的哥哥/弟弟</option><option value="fs">爸爸的姐姐/妹妹</option><option value="mb">妈妈的兄弟</option><option value="ms">妈妈的姐妹</option><option value="fbf">爸爸的爸爸（爷爷辈）</option><option value="fbw">爸爸兄弟的妻子</option><option value="msh">妈妈姐妹的丈夫</option><option value="cousin">堂/表兄弟姐妹</option></select>
+<label>📏 对方是男是女/长幼（选择最接近的）</label>
+<select id="gender"><option value="m">男性亲戚</option><option value="f">女性亲戚</option><option value="old">男性且比我爸大</option><option value="young">男性且比我爸小</option></select>
+<label>🏡 地区习惯（可选）</label>
+<select id="region"><option value="north">北方叫法</option><option value="south">南方叫法</option><option value="default">通用说法</option></select>
+<button class="btn-gen" id="genBtn">🧮 算出称呼</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">👨‍👩‍👧‍👦 称呼结果</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制结果</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const data={
+fb:{title:'爸爸的兄弟',names:{m:'伯伯（比爸大）/ 叔叔（比爸小）',f:'伯伯/叔叔（配偶称婶婶/伯母）',old:'伯父（比爸爸年长的哥哥）',young:'叔父（比爸爸小的弟弟）'},extra:'爸爸的哥哥叫"伯伯/伯父"，弟弟叫"叔叔"，其妻分别称"伯母/婶婶"。'},
+fs:{title:'爸爸的姐妹',names:{m:'（姑姑，随男性示例改用）',f:'姑姑（比爸大）/小姑（比爸小）',old:'大姑姑',young:'小姑姑'},extra:'爸爸的姐妹通称"姑姑"，其丈夫叫"姑父"。'},
+mb:{title:'妈妈的兄弟',names:{m:'舅舅',f:'舅妈（舅舅的妻子）',old:'大舅',young:'小舅'},extra:'妈妈的哥哥弟弟都叫"舅舅"，舅舅的妻子叫"舅妈"。'},
+ms:{title:'妈妈的姐妹',names:{m:'（姨，随女性示例）',f:'姨妈/小姨',old:'大姨（比妈大）',young:'小姨（比妈小）'},extra:'妈妈的姐妹通称"姨妈/小姨"，其丈夫叫"姨父/姨夫"。'},
+fbf:{title:'爸爸的爸爸（爷爷辈）',names:{m:'爷爷（父亲的父亲）/祖父',f:'奶奶（父亲的母亲）/祖母',old:'爷爷（北方）',young:'阿公/爷爷（南方）'},extra:'爸爸的爸爸称"爷爷/祖父"，妈妈称呼为"外公/姥爷"（看地区）。'},
+fbw:{title:'爸爸兄弟的妻子',names:{m:'（随丈夫称谓）',f:'伯母（哥哥的妻子）/婶婶（弟弟的妻子）',old:'伯母',young:'婶婶'},extra:'爸爸哥哥的妻子叫"伯母"，爸爸弟弟的妻子叫"婶婶"。'},
+msh:{title:'妈妈姐妹的丈夫',names:{m:'姨父/姨夫',f:'（随妻子称谓）',old:'大姨父',young:'小姨夫'},extra:'妈妈的姐妹的丈夫叫"姨父/姨夫"。'},
+cousin:{title:'堂/表兄弟姐妹',names:{m:'堂哥/堂弟（爸爸兄弟的孩子）；表哥/表弟（姑姑或妈妈姐妹的孩子）',f:'堂姐/堂妹；表姐/表妹',old:'堂哥/表哥（比你大）',young:'堂弟/表弟（比你小）'},extra:'爸爸兄弟的孩子叫"堂"系，姑姑或妈妈这边姐妹的孩子叫"表"系；姑舅姨的孩子都属"表"。'}
+};
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('AI家族称呼计算器 | AgentGongju.com'))return;
+const rel=document.getElementById('relation').value;
+const g=document.getElementById('gender').value;
+const region=document.getElementById('region').value;
+const d=data[rel];
+const name=d.names[g];
+let out='【称呼计算】\n你问的关系：'+d.title+'\n\n';
+out+='🎯 应该称呼：'+name+'\n';
+if(g==='m'&&(rel==='fs'||rel==='ms'))out+='（对方是"姐妹"一般用女性称呼，男性示例仅供参考）\n';
+if(g==='old'||g==='young')out+='（已按长幼帮你排了①优先说法）\n';
+out+='\n📖 称呼原理\n'+d.extra+'\n';
+out+=(region==='north'?'\n【北方叫法】多用"伯、叔、姑、舅、姨"+长幼，重礼数。':region==='south'?'\n【南方叫法】部分地方称父亲"阿爸/阿公"，族内排行称呼较多。':'\n【通用做法】当面不确定时，笑着喊句"叔叔/阿姨好，我是您家XX家的孩子"最稳妥不尴尬。');
+out+='\n\n【加分小技巧】\n· 实在拿不准，先叫"长辈好"再随大家口吻，基本不会错。\n· 各地方言差异大，入乡随俗最保险。👨‍👩‍👧‍👦';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 结果已复制！'))}
+</script>
+</body>
+</html>

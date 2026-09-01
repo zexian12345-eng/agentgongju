@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI小红书爆款标题 | AgentGongju.com</title>
+<meta name="description" content="输入笔记主题与内容，AI一键生成小红书爆款标题，含情绪词、数字党、悬念党等多种套路。">
+<meta name="keywords" content="小红书,标题,爆款,笔记,种草,文案,自媒体">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:70px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{color:#94a3b8;font-size:.85rem;margin-bottom:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📕 AI 小红书爆款标题</h1><p>一个主题 → 多个套路，让笔记自带流量密码</p></div>
+
+<div class="card">
+<label>📝 笔记主题 / 简单内容介绍</label>
+<textarea id="topic" placeholder="例如：分享我的低成本居家健身技巧，两周瘦了5斤，器材100块搞定…"></textarea>
+<div class="param-row">
+<div><label>📂 内容领域</label>
+<select id="field"><option value="美妆" selected>💄 美妆护肤</option><option value="美食">🍜 美食探店</option><option value="健身">💪 健身运动</option><option value="穿搭">👗 穿搭好物</option><option value="旅行">✈️ 旅行攻略</option><option value="母婴">🍼 母婴育儿</option><option value="职场">💼 职场成长</option><option value="其他">✨ 其他</option></select></div>
+<div><label>🎯 目标人群</label>
+<select id="aud"><option value="女生" selected>👧 女生群体</option><option value="男生">👦 男生群体</option><option value="学生">🎒 学生党</option><option value="宝妈">🤱 宝妈/家长</option><option value="打工人">💻 打工人</option></select></div>
+</div>
+<label>🔢 生成数量</label>
+<select id="num"><option value="5" selected>5 个</option><option value="8">8 个</option></select>
+<button class="btn-gen" id="genBtn">✨ 生成标题</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 你的爆款标题库</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制标题</button>
+<div class="tip" style="margin-top:12px">💡 小贴士：标题里带「亲测」「避雷」「从0到1」等词更易触发收藏；搭配吸睛首图能大幅提升点击率。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const hotWords={美妆:['亲测','空瓶','无限回购','油皮亲妈','平价之光','黄黑皮'],美食:['必打卡','隐藏菜单','本地人','排队都要吃','一口惊艳','人均35'],健身:['减脂餐','居家健身','体脂','新手友好','0基础','瘦下来'],穿搭:['通勤穿搭','显高显瘦','百搭','法式','平价','衣橱必备'],旅行:['小众','冷门','三天两夜','攻略','避坑','人均800'],母婴:['育儿经验','带娃神器','亲测有效','宝妈亲测','辅食','睡整觉'],职场:['升职加薪','效率工具','汇报','面试','简历','0经验'],其他:['亲身经历','干货满满','别再踩坑','试过了','收藏','从0到1']};
+const emojiByField={美妆:'💄',美食:'🍜',健身:'💪',穿搭:'👗',旅行:'✈️',母婴:'🍼',职场:'💼',其他:'✨'};
+const templates=[
+(t)=>'『'+t.slice(0,12)+'』被问爆了！这波经验我直接掏心窝',
+(t)=>'实测30天'+t.slice(0,6)+'，结果我沉默了…',
+(t)=>'后悔没早知道的'+t.slice(0,8)+'神操作，快码住！',
+(t)=>'第一次'+t.slice(0,8)+'就成功的秘诀，全在这里',
+(t)=>'瞒不住了！'+t.slice(0,8)+'终于有人讲明白了',
+(t)=>'白嫖党狂喜⚠️'+t.slice(0,8)+'竟能这样',
+(t)=>'关于'+t.slice(0,8)+'，这几点90%的人都搞错了',
+(t)=>'亲测✅'+t.slice(0,8)+'从踩坑到真香，全程记录'
+];
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI小红书爆款标题 | AgentGongju.com'))return;
+const topic=document.getElementById('topic').value.trim();
+const field=document.getElementById('field').value;
+const aud=document.getElementById('aud').value;
+const num=parseInt(document.getElementById('num').value);
+if(!topic){alert('请输入笔记主题');return;}
+const words=hotWords[field]||hotWords['其他'];
+const emo=emojiByField[field]||'✨';
+const idx=shuffle([0,1,2,3,4,5,6,7]).slice(0,num);
+let out='【'+field+'领域 · '+aud+'向 · 爆款标题库】\n\n';
+idx.forEach((ti,i)=>{
+let t=topic;
+let line=templates[ti](t);
+if(i%2===0){line=emo+' '+line;}
+if(i%3===0){line=wordWrap(line,words[i%words.length]);}
+if(i===idx.length-1&&aud==='学生党'){line='学生党进！'+line;}
+out+='\n【标题'+(i+1)+'】'+line+'\n';
+out+='· 套路：'+[[{x:'情绪共鸣'},{x:'悬念钩子'},{x:'数字党'},{x:'痛点直击'},{x:'干货收藏'},{x:'反差种草'},{x:'纠正常识'},{x:'亲测见证'}][ti].x]+'\n';
+});
+function wordWrap(l,w){return l.replace(/神操作|秘诀|全在这里|踩坑|搞错/,'')+w+' — '+l.slice(0,8);}
+out+='\n【💡 使用技巧】\n· 首图放对比图或产品图，点击率更高；\n· 发布后1-2小时回复首条评论，能推高初始流量。';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function shuffle(arr){for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}return arr;}
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 标题已复制！'))}
+</script>
+</body>
+</html>

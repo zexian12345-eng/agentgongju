@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI的SEO标题生成 | AgentGongju.com</title>
+<meta name="description" content="输入你的主题与关键词，AI生成带点击吸引力的SEO网页标题与描述，写法科学、自带搜索词，助力收录与点击。">
+<meta name="keywords" content="seo标题,seo描述,meta描述,网页标题,关键词排名,搜索优化,内容营销">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:60px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{color:#94a3b8;font-size:.85rem;margin-bottom:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🔍 AI SEO标题生成</h1><p>为你的网页/文章写一组既讨好搜索引擎、又勾住点击的标题与描述</p></div>
+
+<div class="card">
+<label>📄 页面主题 / 文章内容概要</label>
+<textarea id="topic" placeholder="例如：我会写一篇关于"新手怎样在一个月内入门python编程"的教程文章"></textarea>
+<div class="param-row">
+<div><label>🎯 核心关键词</label>
+<input type="text" id="kw" placeholder="例如：python入门、编程学习"></div>
+<div><label>🎨 语气</label>
+<select id="tone"><option value="专业" selected>🧪 专业权威</option><option value="亲和">😊 亲和易懂</option><option value="种草">💡 种草安利</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">✨ 生成SEO标题</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 推荐的SEO标题与描述</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制结果</button>
+<div class="tip" style="margin-top:12px">💡 标题建议控制在30字内、把核心关键词前置；描述控制在70-80字，把价值点说满。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const TONES={
+'专业':{h:['「{k}」最全实战指南：{t}','{t}：{k}从零到有完整教程','一文讲透{k}：{t}（附步骤）']},
+'亲和':{h:['{k}其实没那么难：{t}（小白也看得懂）','手把手教你{k}，{t}','零基础学{k}：{t}，一篇就够']},
+'种草':{h:['建议收藏！{k}提升效率的几件事','{k}的快乐，{t}的人早懂了','别人不说但你该知道的{k}窍门：{t}']}
+};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI的SEO标题生成 | AgentGongju.com'))return;
+const topic=document.getElementById('topic').value.trim();
+const kw=document.getElementById('kw').value.trim()||'核心主题';
+const tone=document.getElementById('tone').value;
+if(!topic){alert('请先输入页面主题');return;}
+const short=topic.length>14?topic.slice(0,14)+'…':topic;
+const heads=TONES[tone].h;
+let out=`🔍 SEO标题方案（${tone}向）\n\n━━ 网页标题（建议≤30字） ━━\n`;
+heads.forEach((hd,i)=>out+=`${i+1}. ${hd.replace('{k}',kw).replace('{t}',short)}\n`);
+out+='\n━━ Meta 描述（建议70-80字） ━━\n';
+out+=`· ${kw}看似门槛高，其实有章可循。本页用最直白的方式讲清「${short}」：从核心概念、实操步骤到避坑要点，循序带你上手，收藏这一篇就够了，少走弯路。\n`;
+out+='\n━━ 优化小贴士 ━━\n· 标题把 {核心关键词} 前置，搜索意图要一眼可懂；\n· 描述里出现一次"如何/教程/指南/攻略"类词，更能命中长尾需求；\n· 避免堆砌关键词，读起来自然比什么都重要。';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 结果已复制！'))}
+</script>
+</body>
+</html>

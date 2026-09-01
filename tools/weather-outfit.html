@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI天气穿搭助手 | AgentGongju.com</title>
+<meta name="description" content="输入今天的气温、天气状况和你要去的场合，AI帮你推荐一身合适又不失风格的穿搭，兼顾冷暖与场合得体。">
+<meta name="keywords" content="穿搭,天气穿搭,今日穿搭,气温搭配,上班穿搭,约会穿搭,穿衣指南">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+textarea,input[type=text],select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tag-btn{display:inline-block;padding:5px 12px;background:rgba(99,102,241,0.12);border:1px solid rgba(99,102,241,0.25);border-radius:20px;color:#a5b4fc;cursor:pointer;font-size:.8rem;margin:3px;transition:all .2s}
+.tag-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>👔 AI天气穿搭助手</h1><p>今天穿什么？让天气和工作场合一起告诉你</p></div>
+
+<div class="card">
+<label>🌡️ 今天气温（℃，如 24-30 或直接填 26）</label>
+<input type="text" id="temp" placeholder="例如：20-28">
+<label>☁️ 天气状况</label>
+<div>
+<span class="tag-btn" onclick="setWeather('晴')">☀️ 晴天</span>
+<span class="tag-btn" onclick="setWeather('雨')">🌧️ 下雨</span>
+<span class="tag-btn" onclick="setWeather('风')">💨 大风</span>
+<span class="tag-btn" onclick="setWeather('雪')">❄️ 下雪</span>
+</div>
+<label>👔 要去什么场合</label>
+<select id="scene"><option value="办公">上班/通勤</option><option value="约会">约会/见朋友</option><option value="户外">户外运动</option><option value="居家">居家休闲</option></select>
+<label>📝 穿衣偏好（可选）</label>
+<input type="text" id="style" placeholder="例如：喜欢宽松、偏中性风、怕冷一定穿厚……">
+<button class="btn-gen" id="genBtn">👗 生成穿搭建议</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">👔 今日穿搭建议</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制建议</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('AI天气穿搭助手 | AgentGongju.com'))return;
+const tempStr=document.getElementById('temp').value.trim();
+const weather=document.getElementById('weather')?document.getElementById('weather').value:'晴';
+const scene=document.getElementById('scene').value;
+const style=document.getElementById('style').value.trim();
+if(!tempStr){alert('请填写气温');return;}
+let avg=0;
+const parts=tempStr.split(/[-~—至，]/);
+avg=parts.reduce(function(s,x){var n=parseFloat(x);return s+(isNaN(n)?0:n);},0)/(parts.length||1);
+let layer='';
+if(avg>=26){layer='短袖T恤+轻薄休闲裤/裙，怕热备瓶水和防晒';}
+else if(avg>=20){layer='长袖T恤或薄衬衫+薄外套/针织，早晚可加件开衫';}
+else if(avg>=14){layer='春秋外套/卫衣/风衣+长袖内搭+牛仔裤，注意早晚温差';}
+else if(avg>=8){layer='厚外套/大衣+毛衣+长裤，怕冷加围巾';}
+else if(avg>=0){layer='羽绒服/厚大衣+厚毛衣+加绒裤+围巾手套，做好保暖';}
+else{layer='羽绒服+内胆+保暖内衣+加绒裤雪地靴，全副武装别冻着';}
+const sceneNote={
+'办公':'办公室建议偏正式或利落一点，兼顾温度与专业感。',
+'约会':'可以叠加上衣展示层次感，颜色清爽干净更出片。',
+'户外':'选择透气排汗面料，穿好走路的鞋，带件轻薄外套。',
+'居家':'以舒适为主，棉质家居服+一双暖拖鞋。'
+}[scene];
+const wetNote={
+'晴':'外出记得防晒，可戴帽子或太阳镜。',
+'雨':'记得带伞，选防滑防水的鞋，外套选防泼水面料。',
+'风':'防风很重要，双层夹克或戴好帽子围巾防灌风。',
+'雪':'防滑保暖优先，鞋底要防滑，戴好手套和耳罩。'
+}[weather];
+let out='【今日穿搭 · 温度约 '+avg+'℃ · '+weather+'】\n\n';
+out+='✨ 基础搭配：'+layer+'\n\n';
+out+='👔 场合建议（'+scene+'）：'+sceneNote+'\n\n';
+out+='☀️ 天气提醒：'+wetNote+'\n\n';
+if(style){out+='🎨 结合你的偏好「'+style+'」：在此基础搭配上优先满足你的舒适和风格需求。\n\n';}
+out+='—— 穿搭服务于你的舒适，天气数据记得以当天实时预报为准 😊';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function setWeather(v){var el=document.getElementById('weather');if(el){el.value=v;}else{var s=document.createElement('select');s.id='weather';s.innerHTML='<option>'+v+'</option>';document.body.appendChild(s);}}
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 建议已复制！'))}
+</script>
+</body>
+</html>

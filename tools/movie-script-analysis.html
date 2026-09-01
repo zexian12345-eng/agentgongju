@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI影视剧本结构分析器 | AgentGongju.com</title>
+<meta name="description" content="输入影视剧故事梗概，智能解析三幕结构、人物弧光、冲突设计与钩子，输出专业的剧本结构分析报告，助力编剧创作。">
+<meta name="keywords" content="剧本,编剧,影视,结构分析,三幕,人物弧光,冲突,创作">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+textarea,input[type=text],select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:100px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.9;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🎬 AI影视剧本结构分析器</h1><p>拆解好故事的骨架，读懂打动人心的底层逻辑</p></div>
+
+<div class="card">
+<label>📖 输入故事梗概（剧情简介）</label>
+<textarea id="plot" placeholder="例如：一个社恐的程序员意外掉进游戏世界，为了回家必须在虚拟竞技场赢得冠军，途中结识了各路伙伴，也从怯懦成长为担当起团队的领袖。"></textarea>
+<div class="param-grid">
+<div><label>🎭 故事类型</label>
+<select id="genre"><option>励志成长</option><option>爱情</option><option>悬疑犯罪</option><option>喜剧温馨</option><option>奇幻冒险</option><option>现实主义</option></select></div>
+<div><label>🎯 分析维度的侧重点</label>
+<select id="focus"><option>三幕结构</option><option>人物弧光</option><option>冲突设计</option><option>商业卖点</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">🔍 开始分析</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🎬 剧本结构分析报告</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制报告</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function firstSentence(t){return (t.split(/[。！？!?]/)[0]||t).slice(0,40);}
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI影视剧本结构分析器 | AgentGongju.com'))return;
+const plot=document.getElementById('plot').value.trim();
+if(!plot){alert('请先输入故事梗概');return;}
+const genre=document.getElementById('genre').value;
+const fc=document.getElementById('focus').value;
+const t8=plot.slice(0,80);
+let structure='';
+if(fc==='三幕结构'){
+structure='【第一幕·建置】\n用「'+firstSentence(plot)+'…」迅速抛出主角的现状与核心痛点，建立'+(genre==='爱情'?'情感':'行动')+'目标，并在第10%~15%处设置激励事件，打破主角的日常。\n\n【第二幕·对抗】\n中段集中呈现障碍升级与内心挣扎，安排一次中点转折提升风险，让「'+t8.slice(0,30)+'…」逐渐推向情绪高点。\n\n【第三幕·结局】\n收束主线，主角产生根本性转变，与目标和解或达成，留下余味。';
+}else if(fc==='人物弧光'){
+structure='【主角弧光】\n从「当下的缺陷/渴望」出发，设计一条从被动到主动、从怯懦到担当的变化线，让观众在「改变发生的那一刻」获得情感满足。\n\n【配角弧光】\n每段重要关系都应推动主角转变一角，反对者与助力者缺一不可，冲突越真实，弧光越动人。';
+}else if(fc==='冲突设计'){
+structure='【外部冲突】\n主角与「对手/环境/规则」之间的对抗是推动剧情的引擎，建议设计3~4个越级加码的关卡。\n\n【内心冲突】\n更高级的戏，在「想做的」与「该做的」之间拉扯，让'+(genre==='悬疑犯罪'?'真相与信任':'欲望与原则')+'反复博弈，观众才能共情。';
+}else{
+structure='【核心卖点】\n一句话高概念：'+firstSentence(plot)+'…。把差异化元素（题材+情绪价值）打包成可传播的记忆点。\n\n【传播钩子】\n在预告片里放大「最高潮一幕」与「主角最反差的一刻」，用情感冲突勾起好奇心，给观众一个非看不可的理由。';
+}
+const out='【故事梗概】\n'+plot+'\n\n【类型定位】'+genre+'｜分析侧重：'+fc+'\n\n'+structure+'\n\n【一句话点评】\n这个故事的核心张力在于「'+t8.slice(0,40)+'…」，若能放大其中的情绪反转，将极具观众代入感。选题方向扎实，具备较好的开发潜力。';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 分析报告已复制！'))}
+</script>
+</body>
+</html>

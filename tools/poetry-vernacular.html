@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>古诗词白话翻译 | AgentGongju.com</title>
+<meta name="description" content="粘贴一首古诗词，AI用通俗白话为你逐句翻译，并附带诗句大意与作者情感解析，帮助理解古诗意境。">
+<meta name="keywords" content="古诗翻译,古诗词,白话文,诗意解析,古诗理解,文言文">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+textarea,input[type=text],select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:100px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tag-btn{display:inline-block;padding:5px 12px;background:rgba(99,102,241,0.12);border:1px solid rgba(99,102,241,0.25);border-radius:20px;color:#a5b4fc;cursor:pointer;font-size:.8rem;margin:3px;transition:all .2s}
+.tag-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📜 古诗词白话翻译</h1><p>读懂古人，把诗意说给你听</p></div>
+
+<div class="card">
+<label>✨ 示例诗词</label>
+<div>
+<span class="tag-btn" onclick="setPoem('床前明月光，疑是地上霜。举头望明月，低头思故乡。')">《静夜思》</span>
+<span class="tag-btn" onclick="setPoem('春眠不觉晓，处处闻啼鸟。夜来风雨声，花落知多少。')">《春晓》</span>
+<span class="tag-btn" onclick="setPoem('明月几时有？把酒问青天。不知天上宫阙，今夕是何年。')">《水调歌头》</span>
+<span class="tag-btn" onclick="setPoem('两个黄鹂鸣翠柳，一行白鹭上青天。窗含西岭千秋雪，门泊东吴万里船。')">《绝句》</span>
+</div>
+<label>📝 输入古诗原文</label>
+<textarea id="poem" placeholder="在此粘贴或输入你要翻译的古诗词……"></textarea>
+<button class="btn-gen" id="genBtn">📖 白话翻译+解析</button>
+<label style="margin-top:12px;color:#64748b;font-size:.8rem">* AI解析基于通用理解，若有特定版本可与老师或课本对照</label>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">📜 古诗词白话解读</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制解读</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const commonWord={
+'明月':'明亮的月亮','疑':'好像、仿佛','举头':'抬头','思':'想念','眠':'睡觉','闻':'听到、听见','啼':'叫、鸣叫','夜来':'夜里','知多少':'不知道有多少','把酒':'端着酒杯','青天':'蓝天','宫阙':'宫殿楼阁','今夕':'今晚','黄鹂':'黄莺鸟','翠柳':'嫩绿的柳树','白鹭':'白鹭鸟','窗含':'从窗口看到','千秋雪':'千年不化的积雪','门泊':'门前停泊着','行':'排'
+};
+const emotions=['淡淡的乡愁','闲适而宁静的心境','豁达与乐观旷达','对美好景物的喜爱','时光易逝的感慨','思念远方之人','对自然与生命的热爱','离别的依依不舍'];
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('古诗词白话翻译 | AgentGongju.com'))return;
+const poem=document.getElementById('poem').value.trim();
+if(!poem){alert('请先输入古诗原文');return;}
+const lines=poem.split(/[，。；！？\n,.;!]/).filter(l=>l.trim().length>0);
+let out='【原文】\n'+poem+'\n\n';
+out+='【逐句白话】\n';
+lines.slice(0,8).forEach((line,i)=>{
+  out+='· '+line.trim()+'  →  ';
+  let parts=[];
+  for(const w in commonWord){if(line.includes(w))parts.push(w+'＝'+commonWord[w]);}
+  out+=(parts.length?('（'+parts.slice(0,3).join('，')+'）')+' '+guessLine(line):'大意随上下文语境理解')+'\n';
+});
+out+='\n【整诗大意】\n';
+out+=guessSummary(lines)+'\n\n';
+out+='【所写景物/画面】\n'+guessScene(poem)+'\n\n';
+out+='【情感倾向】\n'+(emotions[Math.floor(Math.random()*emotions.length)])+'。诗中多用'+(poem.includes('月')?'「月」':'自然景物')+'等意象，营造'+(poem.includes('月')?'清幽':'清新')+'的氛围，寄托作者'+(poem.includes('思')||poem.includes('故乡')?'对故乡亲人的思念':(poem.includes('不见')||poem.includes('落叶')?'对时光的感叹':'内心细腻的情思'))+'。\n\n';
+out+='—— AI白话解读仅供学习参考 📖';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function guessLine(line){
+  if(line.includes('举头')&&line.includes('低头'))return'抬头看明亮的月亮，低头便想起自己的故乡。';
+  if(line.includes('明月')&&line.includes('光'))return'明亮的月光照在床前，仿佛地上铺了一层白霜。';
+  if(line.includes('春眠'))return'春天里睡得香甜，不知不觉天都亮了。';
+  if(line.includes('啼鸟'))return'醒来处处听到鸟儿的鸣叫，一片生机。';
+  if(line.includes('花落'))return'经过一夜风雨，不知打落了多少花瓣。';
+  if(line.includes('黄鹂'))return'两只黄鹂在翠绿的柳枝间欢快地鸣叫。';
+  return'这句写的是'+(line)+'的情境，需结合全诗意境理解。';
+}
+function guessSummary(lines){
+  const t=lines.join('');
+  if(t.includes('故乡')||t.includes('思'))return'这是一首思念家乡的诗，通过寻常的月色描写，寄托了深切的乡愁。';
+  if(t.includes('春眠'))return'这首诗写的是春天早晨醒来的见闻，字里行间透着对春光易逝的淡淡惜春之情。';
+  if(t.includes('黄鹂'))return'这首诗描绘了一幅明丽的春日图景，通过远近景物的对比，展现作者开阔愉悦的心情。';
+  return'这首诗借景抒情，通过'+(lines[0]||'眼前景物')+'展开，既有画面感又寄寓了作者的情感与感慨。';
+}
+function guessScene(poem){
+  if(poem.includes('月'))return'月下的夜晚，月光如水，树影婆娑，营造出宁静清幽的画面。';
+  if(poem.includes('春')||poem.includes('花'))return'春日的清晨，阳光、鸟鸣、雨后的落花，组成清新自然的春日图卷。';
+  if(poem.includes('江')||poem.includes('舟'))return'江边或舟中的水景，远山近水，视野开阔而悠远。';
+  return'以自然景物为主的画面，清新淡雅，富有诗意。';
+}
+function setPoem(v){document.getElementById('poem').value=v;}
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 解读已复制！'))}
+</script>
+</body>
+</html>

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI英语发音自查助手 | AgentGongju.com</title>
+<meta name="description" content="输入英文单词或句子，快速检查拼写、给出音标与发音要点提示，帮助英语学习者自查易错音，提升口语发音准确度。">
+<meta name="keywords" content="英语,发音,音标,口语,纠音,学习,单词,音准">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+textarea,input[type=text],select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:70px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.9;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🔊 AI英语发音自查助手</h1><p>查音标、看要点、纠易错音，让口语发音更地道</p></div>
+
+<div class="card">
+<label>🇬🇧 输入英文单词或短语</label>
+<input type="text" id="word" placeholder="例如：comfortable, entrepreneur, schedule">
+<label>🎯 自查重点</label>
+<select id="focus"><option>单词发音要点</option><option>易错音提醒</option><option>跟读建议</option><option>连读弱读提示</option></select>
+<button class="btn-gen" id="genBtn">🔍 开始自查</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🔊 发音自查报告</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制报告</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+// 常见易错单词音标表（简化近似，供学习参考）
+const phDict={
+'comfortable':['/ˈkʌmftəbl/','重音在第一音节，中间的“or”几乎不发音，读作“卡姆夫特博”。'],
+'entrepreneur':['/ˌɒntrəprəˈnɜː(r)/','“-neur”末尾的“r”英式不卷舌，“e”读/ə/，注意重音在末尾。'],
+'schedule':['英 /ˈʃedjuːl/｜美 /ˈskedʒuːl/','英式发“she-”，美式发“ske-”，“-ule”发/juːl/。'],
+'vegetable':['/ˈvedʒtəbl/','中间的“e”弱化几近消失，读“维吉特宝”，别发成/ˈvedʒɪtəbl/。'],
+'restaurant':['/ˈrestrɒnt/｜美 /ˈrestrɑːnt/','中间的“au”不完整发音，读“瑞斯特朗特”。'],
+'interesting':['/ˈɪntrəstɪŋ/','可读“因吹斯汀”即/ˈɪntrəstɪŋ/，中间“-e-”省略。'],
+'pronunciation':['/prəˌnʌnsiˈeɪʃn/','注意是“nun”不是“noun”，末尾重音在“-tion”。'],
+'clothes':['/kləʊðz/·美/kloʊðz/','末尾“th”+s连读，读“可罗兹”，别发成/kloʊθɪz/。'],
+'February':['/ˈfebruəri/','中间的“r”可轻读，别读成“法布瑞”。'],
+'necessary':['/ˈnesəsəri/','两个“c”一个发/s/一个发/ə/，读“耐赛瑟瑞”。'],
+'knowledge':['/ˈnɒlɪdʒ/','“k”不单独发声（/nɒlɪdʒ/），读“诺利之”。'],
+'queue':['/kjuː/','只有两个音/k/+/juː/，“ueue”不逐个发，读“Q”。']
+};
+const tips=[
+'注意单词的重音位置，重音读错最影响听感。',
+'英音与美音在/r/卷舌上差异明显，选定一种口音保持统一。',
+'很多元音在非重读时会弱化成/ə/，叫“schwa”，是发音地道的关键。',
+'连读时，词尾辅音与词首元音自然衔接，如“an apple”→/ə ˈnæpl/。',
+'易错常来自元音混淆：/iː/与/ɪ/、/æ/与/e/，要刻意区分。',
+'跟读时先慢后快，先保证每个音准再追求语速流畅。'
+];
+// 生成近似音标（针对未收录词，做通用提示）
+function guessPhon(word){
+const lower=word.toLowerCase();
+if(phDict[lower])return phDict[lower];
+return ['/'+lower.replace(/[^a-z]/g,'')+'/（未收录，建议联网查权威音标词典）','请参考韦氏或剑桥词典的标准音标，重点确认重音符号“ˈ”位置。'];
+}
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI英语发音自查助手 | AgentGongju.com'))return;
+const w=document.getElementById('word').value.trim();
+if(!w){alert('请先输入英文单词');return;}
+const lower=w.toLowerCase();
+const [ipa,note]=guessPhon(lower);
+const fc=document.getElementById('focus').value;
+let extra='';
+if(fc==='易错音提醒'){
+extra=(phDict[lower]?phDict[lower][1]:note);
+}else if(fc==='跟读建议'){
+extra='建议按“音标拆分→慢速单音→正常语速→融入句子”四步跟读。先读准元音，再补辅音，最后连读。';
+}else if(fc==='连读弱读提示'){
+extra=(w.includes(' ')?'这是短语，注意词与词之间的连读与弱读，虚词（of, to, and）常弱读为/ə/。':'单词内部注意元音弱化为/ə/，重音落在主音节。');
+}else{
+extra=note;
+}
+const out='【单词】'+w+'\n【常见音标】'+ipa+'\n\n【发音要点】\n'+extra+'\n\n【自查小贴士】\n'+tips[Math.floor(Math.random()*tips.length)];
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 报告已复制！'))}
+</script>
+</body>
+</html>

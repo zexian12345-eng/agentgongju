@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI极简生活规划 | AgentGongju.com</title>
+<meta name="description" content="输入你现在的生活状态，AI帮你做一次"断舍离"体检，规划极简生活的物品清单、收纳思路与习惯养成。">
+<meta name="keywords" content="极简生活,断舍离,整理收纳,极简主义,断舍离清单,收纳整理,生活方式">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:60px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{color:#94a3b8;font-size:.85rem;margin-bottom:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🍃 AI 极简生活规划</h1><p>给生活做一次减法，从一堆物品里找回清爽和从容</p></div>
+
+<div class="card">
+<label>🏠 描述你的生活/房间状态</label>
+<textarea id="state" placeholder="例如：出租屋东西很多，衣服塞满衣柜，杂物堆在角落，总觉得自己被"物"压着，想过得简单点。"></textarea>
+<div class="param-row">
+<div><label>🎯 精简目标</label>
+<select id="goal"><option value="物品" selected>🧺 物品精简</option><option value="收纳">🗃 空间收纳</option><option value="习惯">🌱 习惯养成</option><option value="消费">🛍 消费减法</option></select></div>
+<div><label>⏱ 时间精力</label>
+<select id="pace"><option value="周末">🗓 周末一口气</option><option value="每天" selected>📅 每天抽空</option><option value="慢慢来">☕ 慢慢来</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">📦 生成极简方案</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 你的极简生活方案</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制方案</button>
+<div class="tip" style="margin-top:12px">💡 不用一次做完"完美极简"，先清出15%的空间，身心都会轻松一截。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const GOAL={
+'物品':{t:'🧺 物品精简清单',checks:['衣服：超过一年没穿/不合身/吊牌未拆的，打包捐赠或转卖；','电子杂物：数据线、旧配件分类，只留"一个月内会用到"的；','纪念品/杂物：用"30天法则"，没想起用的就处理掉。']},
+'收纳':{t:'🗃 空间收纳思路',checks:['按"使用频率"划分，常用放触手可及处，不常用的收进高处；','同类物品集中一个"收纳单元"，贴上标签杜绝乱找；','进一出一：每添一件新物，出掉一件旧物。']},
+'习惯':{t:'🌱 轻量习惯养成',checks:['每天睡前10分钟"顺手归位"，积少成多；','每周抽一次"清理日"，处理当周新增的杂物；','用清单打卡替代意志力，连续7天就有正反馈。']},
+'消费':{t:'🛍 消费减法法则',checks:['购买前执行"24小时冷静期"，冲动单大幅减少；','用"需求清单"代替"购物欲清单"，只买缺的；','复盘上月账单，圈出3类可省的支出。']}
+};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI极简生活规划 | AgentGongju.com'))return;
+const state=document.getElementById('state').value.trim();
+const goal=document.getElementById('goal').value;
+const pace=document.getElementById('pace').value;
+if(!state){alert('请先描述你的生活状态');return;}
+const g=GOAL[goal];
+const paceTip=pace==='周末'?'建议挑一个完整周末，把核心空间过一遍。':pace==='每天'?'建议每天抽出20-30分钟推进一个区域。':'不必赶进度，找到"多而不乱"的自己的节奏更重要。';
+let out=`🍃 极简生活规划 · ${goal}向\n\n`;
+out+=`📝 你的现状：「${state}」\n\n`;
+out+=`━━ ${g.t} ━━\n`;
+g.checks.forEach(c=>out+=`· ${c}\n`);
+out+='\n━━ 执行节奏 ━━\n· '+paceTip+'\n';
+out+='· 处理顺序：先"断"（停止新增）→再"舍"（清理存量）→后"离"（建立边界）。\n';
+out+='\n━━ 心态提醒 ━━\n· 极简不是"空无一物"，而是"留下的都是你真正用的"；\n· 一件物品被送走不是浪费，它还可能在别处被需要；\n· 关键是长期轻松，多给自己一点时间。\n\n【愿你越"简"越自在 🍃】';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 方案已复制！'))}
+</script>
+</body>
+</html>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI日报生成器 | AgentGongju.com</title>
+<meta name="description" content="输入今日完成的重点工作，一键生成结构清晰的工作日报，支持本周进展、明日计划、收获反思，适配各种职场汇报。">
+<meta name="keywords" content="日报,工作日报,日报生成,汇报,工作总结,周报,办公效率">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+textarea,input[type=text],select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:90px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.9;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📋 AI工作日报生成器</h1><p>把零散的忙碌，整理成一份亮眼的工作日报</p></div>
+
+<div class="card">
+<label>✍️ 今日重点工作（用逗号或换行分隔）</label>
+<textarea id="tasks" placeholder="例如：完成财务报表初稿，和客户开了需求评审会，修复了登录页三个bug"></textarea>
+<div class="param-grid">
+<div><label>🏷️ 汇报风格</label>
+<select id="style"><option>精炼干练</option><option>详尽细致</option><option>结果导向</option><option>谦虚务实</option></select></div>
+<div><label>💼 汇报类型</label>
+<select id="rtype"><option>日常日报</option><option>季度总结</option><option>项目进展</option><option>学习成长</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">✨ 生成日报</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">📋 你的工作日报</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制日报</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function fmtDate(){
+const d=new Date();
+const w=['日','一','二','三','四','五','六'][d.getDay()];
+return (d.getMonth()+1)+'月'+d.getDate()+'日（周'+w+'）';
+}
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI工作日报生成器 | AgentGongju.com'))return;
+const raw=document.getElementById('tasks').value.trim();
+if(!raw){alert('请先填写今日重点工作');return;}
+const tasks=raw.split(/[,，\n;；]+/).map(x=>x.trim()).filter(Boolean);
+const st=document.getElementById('style').value;
+const rt=document.getElementById('rtype').value;
+let progress='';
+tasks.forEach((t,i)=>{
+if(st==='精炼干练')progress+=(i+1)+'. '+t+'\n';
+else if(st==='详尽细致')progress+=(i+1)+'. '+t+'：已完成核心工作，待复核细节并同步相关方；\n';
+else if(st==='结果导向')progress+=(i+1)+'. '+t+'（已交付/达成）；\n';
+else progress+=(i+1)+'. '+t+'（按计划推进中）\n';
+});
+let plan='';
+if(rt==='季度总结'){
+plan='◻ 复盘本季度KPI达成情况，输出下季度目标拆解\n◻ 与团队对齐下一阶段重点排期\n◻ 补充完善季度复盘报告';
+}else if(rt==='项目进展'){
+plan='◻ 推进项目下一里程碑，确认关键依赖方排期\n◻ 整理阶段交付物并组织评审\n◻ 跟踪风险项并制定应对预案';
+}else if(rt==='学习成长'){
+plan='◻ 复盘今日所学，输出3条要点笔记\n◻ 完成1个练习/实践场景\n◻ 规划明日学习主题';
+}else{
+plan='◻ 推进'+tasks[0].replace(/^.{0,8}/g,x=>x)+'相关后续事项\n◻ 协调明日待办，同步团队进展\n◻ 处理临时交办事项';
+}
+const out='【今日工作日报｜'+fmtDate()+'】\n\n一、今日完成事项\n'+progress+'\n二、明日计划\n'+plan+'\n三、今日收获与思考\n· 通过今天的实践，对'+(tasks[0]||'工作')+'的处理更加熟练，积累了可复用的方法。\n· 需加强'+(tasks.length>1?tasks[1]:'跨部门')+'的沟通协作，提升整体推进效率。\n\n—— 持续复盘，每天进步一点点 💪';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 日报已复制！'))}
+</script>
+</body>
+</html>

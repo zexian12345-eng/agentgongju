@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI模拟面试 | AgentGongju.com</title>
+<meta name="description" content="输入岗位与个人经历，AI为你生成仿真面试问答，含自我介绍模板、高频问题与应答话术，助你从容应对面试。">
+<meta name="keywords" content="AI面试,模拟面试,面试问题,面试准备,自我介绍,求职">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:70px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{color:#94a3b8;font-size:.85rem;margin-bottom:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🎯 AI 模拟面试</h1><p>提前演练高频问题，面试时胸有成竹</p></div>
+
+<div class="card">
+<label>💼 目标岗位</label>
+<textarea id="job" placeholder="例如：互联网产品经理、前端开发工程师、新媒体运营、银行柜员……"></textarea>
+<div class="param-row">
+<div><label>📈 经验年限</label>
+<select id="exp"><option value="应届">应届生</option><option value="1-3年">1-3年</option><option value="3-5年" selected>3-5年</option><option value="5年以上">5年以上</option></select></div>
+<div><label>🧭 面试轮次</label>
+<select id="round"><option value="HR面试">HR初面</option><option value="技术/专业面" selected>技术/专业面</option><option value="终面">终面/高层</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">🗣️ 生成面试问答</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 模拟面试问答</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制内容</button>
+<div class="tip" style="margin-top:12px">💡 STAR法则作答：讲清情境(S)-任务(T)-行动(A)-结果(R)，用数据说话，结尾回扣岗位价值。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const QBASE={
+'HR面试':['请做一下自我介绍。','你为什么选择我们公司？','你最大的优点和缺点是什么？','你期望的薪资是多少？','你如何规划自己的职业生涯？'],
+'技术/专业面':['请分享一个你最有代表性的项目经历。','遇到的最大困难是什么，如何解决的？','如何与团队配合完成跨部门协作？','谈谈你对行业未来趋势的看法。','你如何评估自己的工作成果？'],
+'终面/高层':['如果入职后前三个月你和团队成员意见不合，怎么办？','给我们一个录用你的理由。','在未来三到五年你有怎样的职业目标？','你如何看待工作中的压力与挑战？','你人生中最自豪的一件事是什么？']
+};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI模拟面试 | AgentGongju.com'))return;
+const job=document.getElementById('job').value.trim();
+const exp=document.getElementById('exp').value;
+const round=document.getElementById('round').value;
+if(!job){alert('请先填写目标岗位');return;}
+const qs=QBASE[round];
+let out='【'+job+' · '+round+' · '+exp+' 模拟问答】\n\n━━ 1 分钟自我介绍模板 ━━\n「面试官您好，我是应聘'+job+'岗位的候选人，拥有'+exp+'相关经验。我的核心优势是'+['较强的学习与执行能力','严谨的逻辑与问题解决能力','出色的沟通与统筹能力','深厚领域经验与全局视野'][parseInt(exp[0])%4]+'。过往工作/项目中，我通过'+['数据复盘与流程优化','跨团队协作与高效推动','主动学习与快速落地','经验总结与标准沉淀'][job.length%4]+'，为团队带来了实实在在的结果。非常期待有机会加入贵司，与优秀伙伴共事，也期待在'+job+'领域创造更大价值。」\n\n';
+out+='━━ 高频面试问答 ━━\n';
+qs.forEach((q,i)=>{
+out+='\nQ'+(i+1)+'｜'+q+'\n';
+out+='A｜'+['结合具体事例，用数据说明成果，突出与岗位的匹配度。','先肯定对方问题，再分点阐述自己的思路与经验支撑。','坦诚作答，强调成长型心态与团队意识。','保持谦逊但自信，把话题引回能为公司创造的价值。'][i%4]+'\n';
+out+='   （针对「'+job+'」岗位，建议结合实际业务场景、量化指标与真实案例来充实细节。）\n';
+});
+out+='\n━━ 结尾反问好问题（加分项）━━\n· 这个岗位最重要的KPI是什么？\n· 团队目前最期望新成员带来什么？\n· 贵司对新人的培养路径是怎样的？\n\n【面试顺利，Offer 拿到手 🤝】';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 面试问答已复制！'))}
+</script>
+</body>
+</html>

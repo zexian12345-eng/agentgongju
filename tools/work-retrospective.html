@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>工作复盘报告生成 | AgentGongju.com</title>
+<meta name="description" content="输入本周/本月的工作内容、成果与不足，AI帮你结构化成一份专业的工作复盘报告，含亮点、问题与下一步计划。">
+<meta name="keywords" content="工作复盘,复盘报告,工作总结,周报,月度复盘,工作总结模板">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+textarea,input[type=text],select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:80px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📋 工作复盘报告生成</h1><p>把忙碌的日常，梳理成清晰的专业复盘</p></div>
+
+<div class="card">
+<label>🏷️ 复盘周期</label>
+<select id="period"><option value="本周">本周复盘</option><option value="本月">本月复盘</option><option value="本季度">季度复盘</option><option value="项目">项目复盘</option></select>
+<label>💼 岗位 / 角色</label>
+<input type="text" id="role" placeholder="例如：市场运营、产品经理、开发工程师">
+<label>✅ 主要完成的工作（用短句描述，可写多条）</label>
+<textarea id="done" placeholder="例如：\n1. 完成新品上线宣传方案\n2. 带队优化了客服响应流程\n3. 撰写并发布3篇行业推文"></textarea>
+<label>📉 遇到的主要问题/不足（可选）</label>
+<textarea id="problem" placeholder="例如：上线时间比预期晚了一周；跨部门沟通效率待提升"></textarea>
+<button class="btn-gen" id="genBtn">📝 生成复盘报告</button>
+<label style="margin-top:12px;color:#64748b;font-size:.8rem">* 报告基于你提供的信息生成，建议核对后再提交</label>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">📋 你的工作复盘报告</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制报告</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const toneWords={本周:'本周',本月:'本月',本季度:'本季度',项目:'本次项目'};
+const actions=['聚焦核心目标，稳步推进','注重过程把控与细节落地','主动协作，积极推动跨团队配合','保持高效执行力，按时交付'];
+const insights=['执行过程中对节奏的把握较为关键','提前预判风险能有效减少返工','及时对齐目标能避免方向偏差','数据反馈是决策的重要依据'];
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('工作复盘报告生成 | AgentGongju.com'))return;
+const period=document.getElementById('period').value;
+const role=document.getElementById('role').value.trim()||'在职岗位';
+const done=document.getElementById('done').value.trim();
+const problem=document.getElementById('problem').value.trim();
+if(!done){alert('请填写主要完成的工作');return;}
+const doneList=done.split(/\n+/).filter(s=>s.trim()).map(s=>s.replace(/^\d+[.、]\s*/,'').trim());
+let out='【'+period+' · 工作复盘报告】\n';
+out+='岗位：'+role+'　周期：'+period+'\n\n';
+out+='一、工作完成情况\n';
+doneList.forEach((d,i)=>{out+=(i+1)+'. '+d+'\n';});
+out+='\n二、主要亮点\n';
+out+='· '+(toneWords[period])+'围绕「'+(doneList[0]||'核心任务')+'」等重点事项推进，整体完成度良好。\n';
+out+='· 在'+(doneList[1]||'关键任务')+'等方面投入较多精力，取得了预期进展。\n';
+out+='· 保持'+(actions[Math.floor(Math.random()*actions.length)])+'，为后续工作积累了经验。\n';
+out+='\n三、问题与不足\n';
+if(problem){
+  const plist=problem.split(/\n+/).filter(s=>s.trim());
+  plist.forEach(p=>{out+='· '+p.replace(/^\d+[.、]\s*/,'').trim()+'\n';});
+}else{
+  out+='· 部分环节仍有优化空间，需进一步提升时间把控与跨部门协同效率。\n';
+}
+out+='\n四、经验总结\n';
+out+='· '+(insights[Math.floor(Math.random()*insights.length)])+'。\n';
+out+='· '+(insights[(Math.floor(Math.random()*insights.length)+1)%4])+'。\n';
+out+='\n五、下一步计划\n';
+out+='· 针对'+(problem?'上述问题':'待改进事项')+'制定专项优化方案，明确责任人及时限。\n';
+out+='· 保持'+(doneList[0]||'当前重点项目')+'的推进节奏，并适当沉淀可复用的方法与模板。\n';
+out+='· 加强与相关团队的信息同步，确保目标一致、步调统一。\n\n';
+out+='—— 以上报告由 AI 根据输入内容生成，请结合实际情况核对完善。📋';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 报告已复制！'))}
+</script>
+</body>
+</html>

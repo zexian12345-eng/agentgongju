@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI读书摘抄 | AgentGongju.com</title>
+<meta name="description" content="输入你读到的句子或书里的段落，AI为你整理成金句摘抄，附上启发解读与使用场景，让你的读后感更有料。">
+<meta name="keywords" content="读书摘抄,好句金句,读书笔记,经典语录,文摘,读后感">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:70px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{color:#94a3b8;font-size:.85rem;margin-bottom:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📖 AI 读书摘抄</h1><p>把好句子整理成金句，配启发解读更好用</p></div>
+
+<div class="card">
+<label>📝 书里打动你的句子 / 段落</label>
+<textarea id="quote" placeholder="粘贴你想摘抄的内容，例如：人生就像一盒巧克力，你永远不知道下一颗是什么味道。"></textarea>
+<div class="param-row">
+<div><label>📕 书名（选填）</label>
+<input type="text" id="book" placeholder="例如：阿甘正传"></div>
+<div><label>🎯 摘抄用途</label>
+<select id="use"><option value="个人感悟">个人感悟</option><option value="写作引用">写作引用</option><option value="朋友圈">朋友圈文案</option><option value="激励自己">激励自己</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">✨ 整理金句</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 你的金句卡片</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制内容</button>
+<div class="tip" style="margin-top:12px">💡 摘抄建议：把触动你的句子分类记录，配上自己的理解与联想，读过的书才能真正内化成养分。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const KEYS=[['时间','人生','命运','坚持','成长','选择','爱','希望'],['努力','生活','梦想','勇气','理性','幸福','改变','目标']];
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI读书摘抄 | AgentGongju.com'))return;
+const quote=document.getElementById('quote').value.trim();
+const book=document.getElementById('book').value.trim();
+const use=document.getElementById('use').value;
+if(!quote){alert('请先粘贴想摘抄的内容');return;}
+let out='━━ 金句 ━━\n「'+quote+'」\n'+(book?'—— 摘自《'+book+'》\n':'—— 阅读摘抄\n')+'\n';
+out+='━━ 启发解读 ━━\n这句话传递的核心是'+(KEYS[0].some(k=>quote.includes(k))?quote.length%3===0?'一种对生活/成长的深刻洞察':'关于坚持与选择的体悟':'一种温柔而有力的生活态度')+'。它提醒我们：'+['真正重要的往往不是结果，而是沿途的经历与感受','在纷扰中守住自己的节奏，比盲目追逐更可贵','把眼光放长远，当下的付出终会以某种方式回报我们'][quote.length%3]+'。\n\n';
+out+='━━ 使用场景（'+use+'）━━\n· '+['适合放在读书笔记开篇点题','写作时可作为有力的论据引用','发朋友圈时配上随拍更有氛围','适合写在便签上贴到床头或工位，给自己打气'][use==='个人感悟'?0:use==='写作引用'?1:use==='朋友圈'?2:3]+'；\n· 可以延伸联想到你自己的经历，让摘抄更有温度。\n\n━━ 一句话总结 ━━\n好句子像一面镜子，照见他人，也照见自己。愿你常读常新，越读越通透。\n\n【在文字里，遇见更好的世界 📚】';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 内容已复制！'))}
+</script>
+</body>
+</html>

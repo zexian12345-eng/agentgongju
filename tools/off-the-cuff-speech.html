@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI即兴演讲训练 | AgentGongju.com</title>
+<meta name="description" content="随机给你一个演讲/职场沟通话题，30秒准备时间限时表达，AI帮你拆分即兴演讲的黄金框架（PREP）、提供开场金句和优秀范例，练出临场发言不慌的能力。">
+<meta name="keywords" content="即兴演讲,演讲训练,临场发言,口才,职场发言,表达训练,present,prep框架">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,input[type=text],textarea{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:90px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.btn-rand{width:100%;padding:12px;background:rgba(168,85,247,0.15);border:1px solid rgba(168,85,247,0.35);border-radius:12px;color:#e9d5ff;font-size:.95rem;font-weight:600;cursor:pointer;transition:all .3s;margin-bottom:12px}
+.btn-rand:hover{background:rgba(168,85,247,0.25)}
+.topic-box{background:rgba(99,102,241,0.12);border:1px dashed rgba(99,102,241,0.4);border-radius:12px;padding:16px 20px;color:#e0e7ff;font-size:1.1rem;font-weight:600;text-align:center;margin-bottom:16px}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:600px){.param-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🎤 AI即兴演讲训练</h1><p>30秒准备、随机话题，练出临场不慌的表达力</p></div>
+
+<div class="card">
+<label>🎯 场景类型</label>
+<select id="scene"><option value="work">职场发言（年会/汇报/主持会议）</option><option value="meeting">个人观点（即席谈观点）</option><option value="life" selected>生活话题（朋友间/即兴社交）</option></select>
+<button class="btn-rand" onclick="rollTopic()">🎲 随机抽一个话题</button>
+<div class="topic-box" id="topicBox">← 点上方按钮抽话题</div>
+<label>⏱ 若想指定话题，也可直接输入</label>
+<input type="text" id="custom" placeholder="例如：如何评价工作中的内卷？">
+<button class="btn-gen" id="genBtn">💬 生成结构范例</button>
+<label style="margin-top:12px;color:#64748b;font-size:.8rem">* 建议先点“抽话题”，在心里默讲 30 秒再看范例对比</label>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🎤 即兴演讲结构示范</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制范例</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function rnd(n){return Math.floor(Math.random()*n)}
+const workTopics=['如何看待加班文化','团队协作中最重要的是什么','你如何应对工作压力','怎么向领导汇报坏消息','要不要在职场做“老好人”','新人如何快速融入团队','你理想的领导是什么样的','如何看待“躺平”还是“奋斗”'];
+const meetingTopics=['你更相信努力还是选择','智能手机是拉近了还是疏远了人际关系','读书有没有用','你觉得孤独是好事还是坏事','如何看待“内卷”','钱重要还是健康重要','AI会不会取代人类工作','该不该追求完美主义'];
+const lifeTopics=['旅行的意义是什么','你身边最好的朋友教会了你什么','如何看待父母的唠叨','年轻人该不该存钱','一个人住是什么体验','仪式感重要吗','如何看待养宠物','你人生中最难忘的一次经历'];
+const leadIns=['我想先讲个真实的小故事…','关于这个话题，我想从三个角度来谈…','首先，我想先问在座各位一个问题…','这让我想起上个月遇到的一件事…','我简单说三点看法…'];
+const closers=['所以总结一句话，<话题>这件事，最重要的是“想清楚自己要什么”。','以上就是我的三点粗浅看法，谢谢大家。','最后，愿我们都能在<话题>这件事上，找到自己的答案。','一句话收尾：与其抱怨，不如行动。谢谢！'];
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('AI即兴演讲训练 | AgentGongju.com'))return;
+const scene=document.getElementById('scene').value;
+const custom=document.getElementById('custom').value.trim();
+const topic=custom||document.getElementById('topicBox').innerText.replace('← 点上方按钮抽话题','').trim();
+if(!topic){alert('请先抽一个话题或输入话题');return;}
+let out='【即兴演讲结构 · 黄金框架 PREP】\n话题：'+topic+'\n'+'═'.repeat(24)+'\n\n';
+out+='▍P - 观点(Position)　开门见山\n　「'+pick(leadIns)+'」\n　· 一句话亮明你的核心观点，别绕弯子。\n\n';
+out+='▍R - 理由(Reason)　讲清楚为什么\n　· 给出 1-2 个支撑理由，用「因为…所以…」串起来。\n\n';
+out+='▍E - 例子(Example)　用故事/数据佐证\n　· 讲一件亲身经历或身边的案例，最有感染力。\n　· 没有案例就说“举个常见的例子…”。\n\n';
+out+='▍P - 重申(Position)　回到观点收尾\n　「'+pick(closers).replace(/<话题>/g,topic)+'」\n\n';
+out+='【30秒准备参考思路】\n· 拿到话题先定 1 个立场（支持/反对/中立）。\n· 立刻憋一个真实的例子/故事。\n· 按“观点→理由→例子→结论”四步走完，稳如泰山。\n\n';
+out+='【加分小技巧】\n· 开场先“接话”：对上一个发言者表示认可，显得礼貌又自然。\n· 忘词时说“具体来说就是…”，用填充词帮自己接上。\n· 语速放慢，停顿比语速快更显沉稳有力。';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function rollTopic(){
+const scene=document.getElementById('scene').value;
+const pool=scene==='work'?workTopics:scene==='meeting'?meetingTopics:lifeTopics;
+const t=pool[rnd(pool.length)];
+document.getElementById('topicBox').innerText=t;
+document.getElementById('custom').value='';
+}
+function pick(a){return a[rnd(a.length)]}
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 范例已复制！'))}
+</script>
+</body>
+</html>

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI英语口语练习 | AgentGongju.com</title>
+<meta name="description" content="设定场景与水平，AI为你生成英语对话练习脚本，包含常用句型、关键词汇与中文对照，助你开口说英语。">
+<meta name="keywords" content="英语口语,英语对话,口语练习,场景对话,英语学习,AI练习">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:70px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{color:#94a3b8;font-size:.85rem;margin-bottom:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>💬 AI 英语口语练习</h1><p>设定场景与水平，生成地道英文对话脚本边看边练</p></div>
+
+<div class="card">
+<label>🎯 练习场景</label>
+<textarea id="scene" placeholder="例如：在咖啡馆点单、机场办理登机、和外国同事讨论项目、餐厅点餐……"></textarea>
+<div class="param-row">
+<div><label>📊 英语水平</label>
+<select id="level"><option value="初级" selected>🌱 初级</option><option value="中级">🌿 中级</option><option value="高级">🌳 高级</option></select></div>
+<div><label>💡 练习侧重</label>
+<select id="focus"><option value="日常对话" selected>日常对话</option><option value="商务交流">商务交流</option><option value="旅行用语">旅行用语</option><option value="面试用语">面试用语</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">🗣️ 生成对话脚本</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 你的英语对话练习</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制脚本</button>
+<div class="tip" style="margin-top:12px">💡 练习小贴士：先整篇顺读，再分角色扮演，最后遮住中文只看英文复述，开口自信就来了。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const SCENES=[
+{s:['咖啡','点单','coffee'], d:{
+'初级':["A: Hi, what would you like to drink?","B: I'd like a cup of coffee, please.","A: Hot or iced?","B: Hot, please.","A: Anything else?","B: No, that's all. Thank you!"],
+'中级':["A: Good morning! What can I get for you today?","B: Could I have a large latte with oat milk?","A: Sure. Would you like anything to eat?","B: Yes, a blueberry muffin, please.","A: Great, that'll be $8.50. Pay here please."],
+'高级':["A: Welcome! What are you in the mood for this morning?","B: I'll take a flat white, and would you recommend a pastry to go with it?","A: The almond croissant is incredibly popular. Shall I warm it up?","B: Perfect, and could I get that skim milk instead of whole?","A: Of course. That comes to $9.20. Please tap your card here."]}},
+{s:['机场','登机','flight'], d:{
+'初级':["A: Good morning. May I see your passport, please?","B: Here you are.","A: Thank you. Do you have any baggage to check?","B: Yes, one suitcase.","A: OK, here is your boarding pass. Enjoy your flight!"],
+'中级':["A: Your flight is at Gate 23, boarding in about 30 minutes.","B: Great, thanks. Is there a problem with my seat assignment?","A: Let me check... you're all set in 14A, a window seat.","B: Perfect. Which terminal do I go to for connecting flight?","A: You'll transfer at Terminal 2 from Gate 12."],
+'高级':["A: I'd like to confirm my departure is still on schedule today.","B: Yes, flight CA981 is on time and boarding begins at 10:30.","A: Would it be possible to get an aisle seat? I prefer more legroom.","B: Let me see what's available... I can move you to 16C.","A: That works. And could I have a meal preference noted?","B: Already done — vegetarian option confirmed. Enjoy the flight!"]}}
+];
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI英语口语练习 | AgentGongju.com'))return;
+const scene=document.getElementById('scene').value.trim();
+const level=document.getElementById('level').value;
+const focus=document.getElementById('focus').value;
+if(!scene){alert('请先填写练习场景');return;}
+let pool=SCENES[scene.length%SCENES.length];
+let lines=pool.d[level]||pool.d['初级'];
+let out='【英语口语练习 · '+scene+'】\n\n━━ 场景对话（'+level+' · '+focus+'）━━\n';
+lines.forEach((l,i)=>{out+=l+'\n';});
+out+='\n━━ 中文参考 ━━\n';
+const zh=[
+'你好，请问你想喝点什么？/我想要一杯咖啡。/热的还是冰的？/热的，谢谢。/还需要别的吗？/不用了，就这样，谢谢！',
+'早上好！今天想喝点什么？/请给我一杯燕麦奶大杯拿铁。/好的，需要配点吃的吗？/来一个蓝莓玛芬吧。/好的，一共8.5美元，请在这里付款。',
+'欢迎光临！今天想喝点什么？/我要一杯白咖啡，能推荐一款搭配的点心吗？/杏仁可颂特别受欢迎，要加热一下吗？/太好了，能把全脂奶换成脱脂奶吗？/当然可以，一共9.2美元，请刷卡。',
+'早上好，请出示您的护照。/给你。/谢谢。有需要托运的行李吗？/有，一件行李箱。/好的，这是您的登机牌，祝您飞行愉快！',
+'您的航班在23号登机口，大约30分钟后登机。/太好了，谢谢。我的座位有问题吗？/我看看……您在14A，靠窗位置。/太好了，转机要去哪个航站楼？/您将转到2号航站楼12号登机口。',
+'我想确认一下今天我的航班是否准点。/是的，国航CA981准点，10:30开始登机。/可以给我换靠过道的位置吗？我喜欢脚部空间大一些。/让我看看……我可以把您安排到16C。/可以。能登记我的餐食偏好吗？/已经帮您备注了 — 素食套餐。飞行愉快！'];
+out+=zh[(scene.length)%zh.length]+'\n\n━━ 核心句型 ━━\n· '+['Would you like...?','Could I have...?','May I see...?','What can I get for you?'][scene.length%4]+'\n· '+['Anything else?','Here you are.','That sounds great.',"No, that's all."][(level.length)%4]+'\n\n【每天开口十分钟，口语进阶看得见 💪】';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 脚本已复制！'))}
+</script>
+</body>
+</html>

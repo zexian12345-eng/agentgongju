@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI微信群名生成 | AgentGongju.com</title>
+<meta name="description" content="根据群成员关系、用途和风格，一键生成好听、有趣、有梗的微信群聊名称，覆盖家庭群、同事群、闺蜜群、好兄弟群、同学群等场景。">
+<meta name="keywords" content="群名,微信群,群名称,群昵称,群聊,起群名,搞笑群名">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+textarea,input[type=text],select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:70px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tag-btn{display:inline-block;padding:5px 12px;background:rgba(99,102,241,0.12);border:1px solid rgba(99,102,241,0.25);border-radius:20px;color:#a5b4fc;cursor:pointer;font-size:.8rem;margin:3px;transition:all .2s}
+.tag-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>💬 AI微信群名生成</h1><p>起了个满意的群名，聊天都更带劲</p></div>
+
+<div class="card">
+<label>✨ 群的类型</label>
+<div>
+<span class="tag-btn" onclick="setCat('family')">🏠 家庭群</span>
+<span class="tag-btn" onclick="setCat('work')">💼 同事/项目群</span>
+<span class="tag-btn" onclick="setCat('girl')">👭 闺蜜群</span>
+<span class="tag-btn" onclick="setCat('bro')">🧑‍🤝‍🧑 兄弟/朋友群</span>
+<span class="tag-btn" onclick="setCat('class')">🎓 同学群</span>
+<span class="tag-btn" onclick="setCat('interest')">🎮 兴趣/游戏群</span>
+</div>
+<label>🎨 命名风格</label>
+<select id="style"><option value="funny">😜 搞笑有梗</option><option value="cool">😎 酷炫潮流</option><option value="warm">💗 温馨走心</option><option value="simple">✨ 简洁大气</option></select>
+<label>📝 补充描述（可选，可提关键词）</label>
+<select id="cat" style="display:none"><option value="family">family</option></select>
+<input type="text" id="extra" placeholder="例如：全是我们大学室友、有只猫叫球球、建群为了组织聚餐">
+<button class="btn-gen" id="genBtn">💡 生成群名</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">💬 为你生成的群名</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制群名</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const pools={
+family:['相亲相爱一家人','幸福快乐的家','家和万事兴','我们一家子','家里的顶梁柱们','温馨小窝'],
+work:['奋斗小分队','项目攻坚组','打工人互助联盟','一起搞钱','效率至上','猛干下班群'],
+girl:['仙女下凡','干饭美少女','貌美如花','姐妹花话痨','奶茶续命组','今天也要美美的'],
+bro:['神仙打架','嘴硬联盟','五湖四海','蹭饭天团','开黑小队','讲义气兄弟连'],
+class:['同窗岁月','同桌的你','毕业不散','青春纪念册','老同学','重返十八岁'],
+interest:['开黑上分','峡谷见','游戏搭子','饭搭子集合','猫奴天团','球友俱乐部']
+};
+const funnyTail=['养生局','搞钱群','干饭帮','摸鱼小分队','话痨集中营','干饭王者','卷王'+(Math.random()*2|0)?'奋斗群':'快乐群','数人头','有求必应屋'];
+const coolPrefix=['S级','全能','顶配','高端局','大厂','银河','联盟','超燃'];
+const warmPrefix=['温暖','幸福','贴心','阳光','有爱','欢乐','平安','顺遂'];
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('AI微信群名生成 | AgentGongju.com'))return;
+const cat=document.getElementById('cat').value;
+const style=document.getElementById('style').value;
+const extra=document.getElementById('extra').value.trim();
+const base=pools[cat]||pools.family;
+const out=[];
+for(let i=0;i<8;i++){
+  let name='';
+  if(style==='funny')name=base[(Math.random()*base.length)|0]+'·'+funnyTail[(Math.random()*funnyTail.length)|0];
+  else if(style==='cool')name=coolPrefix[(Math.random()*coolPrefix.length)|0]+base[(Math.random()*base.length)|0];
+  else if(style==='warm')name=warmPrefix[(Math.random()*warmPrefix.length)|0]+base[(Math.random()*base.length)|0];
+  else name=base[(Math.random()*base.length)|0];
+  if(extra&&i===0)name=extra.slice(0,12)+'的群';
+  out.push(name);
+}
+let res='【为你生成的群名】\n\n'+out.map((n,i)=>(''+(i+1)+'. '+n)).join('\n');
+if(extra)res+='\n\n已将你的补充描述纳入：'+extra;
+res+='\n\n【小技巧】\n· 群名选好后可在群公告里再加一句有趣的群规。\n· 有梗但不低俗，更适合家庭或工作群。\n· 也可结合群内常用表情包起更有辨识度的名字。💬';
+document.getElementById('outputBox').innerText=res;
+document.getElementById('resultArea').classList.add('active');
+});
+function setCat(v){document.getElementById('cat').value=v;}
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 群名已复制！'))}
+</script>
+</body>
+</html>

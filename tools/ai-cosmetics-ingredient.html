@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI护肤品成分解读 | AgentGongju.com</title>
+<meta name="description" content="把护肤品/化妆品的成分表粘贴进来，AI帮你逐条解读功效、安全性与使用建议，识别酒精、防腐剂、致痘风险等，帮你科学选购。">
+<meta name="keywords" content="护肤品成分,化妆成分,成分表,成分解读,烟酰胺,玻尿酸,致痘,护肤">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+textarea,input[type=text],select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:120px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:600px){.param-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🔬 AI护肤品成分解读</h1><p>粘贴成分表，帮你读懂每一剂成分</p></div>
+
+<div class="card">
+<label>🧪 粘贴成分表（可直接复制产品背面成分，或用逗号分隔）</label>
+<textarea id="ingredients" placeholder="例如：Water, Glycerin, Niacinamide, Hyaluronic Acid, Butylene Glycol, 烟酰胺, 玻尿酸, 视黄醇……"></textarea>
+<div class="param-grid">
+<div><label>🫧 产品类型</label><select id="ptype"><option value="cleanser">洁面</option><option value="toner">爽肤水</option><option value="serum">精华</option><option value="cream">面霜/乳液</option><option value="sunscreen">防晒</option><option value="other">其他</option></select></div>
+<div><label>🧑 你的肤质</label><select id="skin"><option value="oily">油性</option><option value="dry">干性</option><option value="mixed">混合</option><option value="sensitive">敏感肌</option><option value="neutral">中性</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">🔍 解读成分</button>
+<label style="margin-top:12px;color:#64748b;font-size:.8rem">* 解读结果仅供参考，不作为医疗或专业美容建议</label>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🔬 成分解读报告</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制报告</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const known={
+'烟酰胺|niacinamide':['🌟 美白提亮、控油修复','温和，敏感肌需逐步建立耐受，建议从低浓度开始'],
+'玻尿酸|透明质酸|hyaluronic acid':['💧 强效保湿锁水','多数肤质适用，干皮尤其友好'],
+'视黄醇|维a|retinol|a醇':['✨ 抗老淡纹、改善粗糙','光敏性强，建议夜间使用并加强防晒，孕期慎用'],
+'vc|维生素c|ascorbic acid|抗坏血酸':['🍊 抗氧化提亮','白天使用需搭配防晒，开封后尽快用完'],
+'神经酰胺|ceramide':['🛡 修护屏障、舒缓','敏感肌友好，维稳必备'],
+'水杨酸|salicylic acid':['🧼 去角质、改善闭口','油痘肌友好，敏感肌谨慎，勿与高浓度酸叠加'],
+'乙醇|酒精|alcohol':['⚠️ 收敛促渗','挥发后有清凉感，干敏肌需谨慎，易刺激'],
+'己二醇|丁二醇|butylene glycol|peg|防腐':['ℹ️ 溶剂/防腐体系','正常浓度安全，敏感肌注意防腐剂如尼泊金酯类'],
+'香精|fragrance|parfum':['⚠️ 增加香气','敏感肌易过敏，成分表越靠后含量越低'],
+'凡士林|petrolatum|矿物油':['🛡 封闭保湿','适合干皮及夜间使用，油皮易闷痘'],
+'角鲨烷|squalane':['💧 亲肤保湿','温和不刺激，多数肤质适用'],
+'积雪草|centella|红没药醇|bisabolol':['🌿 舒缓抗炎','敏感肌友好，修红镇静'],
+'make sure water|水':['💅 基质成分','通常含量最高，为溶剂基础']
+};
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('AI护肤品成分解读 | AgentGongju.com'))return;
+const raw=document.getElementById('ingredients').value.trim();
+if(!raw){alert('请粘贴成分表');return;}
+const ptype=document.getElementById('ptype').value;
+const skin=document.getElementById('skin').value;
+const text=raw.toLowerCase();
+let out='【成分解读报告】\n产品类型：'+ptypeLabels(ptype)+'｜肤质：'+skinLabels(skin)+'\n\n';
+let found=0;
+for(const key in known){
+  const keys=key.split('|');
+  const hit=keys.find(k=>text.includes(k));
+  if(hit){found++;out+='· '+known[key][0]+'（'+keys[0]+')\n　　  '+known[key][1]+'\n';}
+}
+if(found===0){out+='未能明确识别常见成分，建议查看产品官方说明或咨询专业肤护顾问。\n';}
+const warn=favSkinCheck(text,skin);
+if(warn)out+='\n【针对你的肤质提醒】\n'+warn+'\n';
+out+='\n【使用建议】\n· 首次使用新成分前建议在耳后或手腕小面积试敏。\n· 成分表按含量从高到低排列，前几位多为基质。\n· 敏感肌优先选择成分简洁、无香精高浓度刺激的产品。\n· 以上解读基于常见成分知识，仅供参考。🌟';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function ptypeLabels(p){return{cleanser:'洁面',toner:'爽肤水',serum:'精华',cream:'面霜',sunscreen:'防晒',other:'其他'}[p]||p;}
+function skinLabels(s){return{oily:'油性',dry:'干性',mixed:'混合',sensitive:'敏感肌',neutral:'中性'}[s]||s;}
+function favSkinCheck(text,skin){
+if(skin==='sensitive'&&(text.includes('alcohol')||text.includes('乙醇')||text.includes('fragrance')||text.includes('香精')))
+  return '你为敏感肌，成分中含有酒精或香精，可能有刺激风险，建议谨慎或避开相关产品。';
+if(skin==='oily'&&(text.includes('petrolatum')||text.includes('凡士林')||text.includes('矿物油')))
+  return '你为油皮，产品含封闭性油脂，可能加重闷痘，建议优先选择清爽质地。';
+if(skin==='dry'&&(text.includes('alcohol')||text.includes('乙醇')))
+  return '你为干皮，产品含酒精，长期使用可能带走水分，建议搭配保湿产品使用。';
+return '';
+}
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 报告已复制！'))}
+</script>
+</body>
+</html>

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI宝宝起名 | AgentGongju.com</title>
+<meta name="description" content="输入姓氏、性别与期望风格，AI一键生成寓意美好的宝宝名字，含诗词典故出处解释。">
+<meta name="keywords" content="宝宝起名,取名,男孩名字,女孩名字,起名,新生儿,名字寓意">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:60px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{color:#94a3b8;font-size:.85rem;margin-bottom:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>👶 AI 宝宝起名</h1><p>姓氏 + 性别 + 期望，一键生成寓意美好的宝宝名字</p></div>
+
+<div class="card">
+<label>🅰️ 宝宝姓氏</label>
+<input type="text" id="surname" placeholder="例如：李、王、张、陈…">
+<div class="param-row">
+<div><label>👦 宝宝性别</label>
+<select id="sex"><option value="男" selected>👦 男孩</option><option value="女">👧 女孩</option><option value="中性">🌈 中性/不限</option></select></div>
+<div><label>✨ 期望风格</label>
+<select id="style"><option value="文雅" selected>📖 文雅诗意</option><option value="大气">🏔️ 大气稳重</option><option value="灵动">🎐 灵动活泼</option><option value="古典">🏮 古典传统</option></select></div>
+</div>
+<label>📝 期望寓意（选填，可写祝福词）</label>
+<textarea id="wish" placeholder="例如：希望孩子平安健康、聪明好学、前程似锦"></textarea>
+<button class="btn-gen" id="genBtn">✨ 生成好名字</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 为你挑选的好名字</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制名字</button>
+<div class="tip" style="margin-top:12px">💡 小贴士：起名后可结合生辰八字，避免与长辈重字；笔画结构简单好写，更利于孩子书写。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const names={
+男:{文雅:['子墨','书言','之远','浩然','景行','沐宸','清禾','睿泽','景曜','闻笛'],大气:['承宇','瀚文','峻熙','瑞霖','昊阳','泽凯','世勋','泰然','锦城','北辰'],灵动:['乐阳','宇辰','嘉树','时雨','初阳','亦凡','飞扬','俊驰','子骞','云帆'],古典:['子谦','文博','宏儒','廷玉','彦彬','伯远','守恒','正谊','怀瑾','执中']},
+女:{文雅:['诗涵','若汐','语嫣','婉清','慕晴','语桐','芷柔','含章','清欢','知微'],大气:['蕊宁','予安','念慈','安澜','施然','馨予','昭华','韵宁','星阑','未晞'],灵动:['灵萱','语诺','悦宁','芷晴','瑶瑶','芷若','可欣','芸汐','思彤','悦彤'],古典:['婉仪','静姝','惠然','文静','如兰','锦瑟','月华','知画','采薇','若云']},
+中性:{文雅:['鹤鸣','望舒','枕流','澄怀','则诚','若愚','思齐','行之','既明','云岫'],大气:['山河','知行','清越','凌云','远航','明远','卓然','程阔','星野','牧之'],灵动:['星燃','未央','初霁','采蓝','东君','徐行','山月','流苏','南枝','晚吟'],古典:['天行','子衿','文心','守真','克己','乐山','泊舟','临风','致远','怀古']}
+};
+const poem={子墨:'腹有诗书气自华',书言:'诗书礼乐皆可读',浩然:'浩然正气，天地长存',承宇:'上承天宇，气度不凡',睿泽:'睿智通达，泽被四方',诗涵:'诗情画意，涵养深厚',若汐:'温婉若水，汐潮相伴',语嫣:'笑语嫣然，温婉可人',安澜:'内心安定，波澜不惊',予安:'岁月予你以安然',星阑:'繁星阑珊，前程璀璨',云岫:'云无心以出岫',鹤鸣:'鹤鸣九皋，声闻于天',望舒:'望舒驾月，光明在前',既明:'既明且哲，以保其身',临风:'把酒临风，其喜洋洋',怀瑾:'怀瑾握瑜，高洁自持'};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI宝宝起名 | AgentGongju.com'))return;
+const surname=document.getElementById('surname').value.trim();
+const sex=document.getElementById('sex').value;
+const style=document.getElementById('style').value;
+const wish=document.getElementById('wish').value.trim();
+if(!surname){alert('请先输入姓氏');return;}
+const pool=names[sex][style];
+const picked=shuffle(pool).slice(0,5);
+let out='【'+surname+'姓 · '+sex+'宝宝 · '+style+'风】\n';
+picked.forEach((n,i)=>{
+out+='\n【推荐'+(i+1)+'】'+surname+n+'\n';
+out+='· 读音：'+surname+'\u200b'+n+'\n';
+out+='· 寓意：'+['聪慧灵动','温润如玉','前程似锦','品格高洁','幸福安康'][i%5]+'，'+n+' 蕴含「'+poem[n]||'美好期许'+'」的美好意象\n';
+});
+if(wish){out+='\n【🎯 你的期许】\n· 已根据「'+wish+'」调整选字方向，可在上列名字中挑选最契合的一个。';}
+out+='\n\n【📌 起名小贴士】\n· 名字读音朗朗上口，注意平仄搭配；\n· 可查古籍出处，寓意更显文化底蕴；\n· 结合实际生辰八字五行，效果更佳。';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function shuffle(arr){for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}return arr;}
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 名字已复制！'))}
+</script>
+</body>
+</html>

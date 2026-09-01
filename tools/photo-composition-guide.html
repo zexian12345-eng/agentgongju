@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI手机摄影构图 | AgentGongju.com</title>
+<meta name="description" content="把你要拍的场景和想表达的感觉填进来，AI给出针对性的构图法则、机位角度、曝光小技巧和后期调色建议，让你的手机照片瞬间专业起来。">
+<meta name="keywords" content="手机摄影,构图技巧,拍照技巧,构图法则,三分法,摄影指导,拍人像,旅拍">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+textarea,input[type=text],select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:90px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:600px){.param-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📷 AI手机摄影构图</h1><p>一句话告诉 AI 你要拍什么，立刻给构图方案</p></div>
+
+<div class="card">
+<div class="param-grid">
+<div><label>🎬 拍摄场景</label><select id="scene"><option value="portrait">人物/人像</option><option value="food">美食</option><option value="landscape" selected>风景/建筑</option><option value="street">街拍/人文</option><option value="pet">宠物</option><option value="product">商品/静物</option></select></div>
+<div><label>🎨 想要的感觉</label><select id="mood"><option value="clean">干净清新</option><option value="vintage">文艺复古</option><option value="movie">电影感</option><option value="vivid">活力鲜艳</option></select></div>
+</div>
+<label>📝 具体要拍什么（可选）</label>
+<textarea id="desc" placeholder="例如：在公园给女朋友拍写真，背景有湖和夕阳；或者：拍路边摊的炒饭特写…"></textarea>
+<button class="btn-gen" id="genBtn">🌟 生成构图方案</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">📷 摄影构图方案</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制方案</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function rnd(n){return Math.floor(Math.random()*n)}
+const sceneData={
+portrait:{comp:['三分法：让人物眼睛落在画面横向1/3交叉点','半身取景用腰部以上，避免膝盖以下被裁','留白给对方眼神方向，增加呼吸感'],cam:['机位与人物眼睛平齐，稍微放低抬脸显瘦','人景结合时把人物放在侧光面'],exp:['点按人物脸部测光，夕阳时逆光可开HDR','白天人像可轻微拉低曝光防止高光过曝'],re:'清新风适当提亮肤色、压暗背景'},
+food:{comp:['俯拍45°最稳妥，铺平画面有层次','让食物占据画面2/3，留出碗边光影','用盘子/筷子作引导线指向主角'],cam:['靠近一点，让热气/光斑更有氛围','侧逆光拍摄，突出食物色泽和质感'],exp:['点按食物亮部测光，略降曝光更显浓郁'],re:'略微加饱和、增强暖色，让人更有食欲'},
+landscape:{comp:['三分法把地平线放上1/3或下1/3，别居中','前景安排一株花/一块石增强纵深感','对称场景用居中构图最稳'],cam:['广角贴近前景，形成强烈空间透视','顺光整体通透明亮，逆光拍剪影更出片'],exp:['黄昏时刻云彩细节好，用HDR或长按锁曝光'],re:'适度提升对比和色彩，天空加噪点更有胶片感'},
+street:{comp:['抓拍人物处于画面边角的“失衡感”更有故事','利用门窗/柱子做天然画框','车轨人流用长曝加动感'],cam:['低机位贴近地面仰拍增强冲击力','等待人物走入光区再按下快门'],exp:['高ISO应对暗部，噪点可控保留氛围'],re:'黑白胶片风最显人文怀旧，对比拉满'},
+pet:{comp:['与宠物眼睛平齐机位更有代入感','眼睛高光要恰到好处，保留神态','抓拍瞬间比摆拍更生动'],cam:['开启连拍模式捕捉奔跑/萌态','小宠物可微距贴近，虚化背景'],exp:['室内光线不足时靠近窗边，避免开强闪'],re:'提亮皮毛细节，保留毛流感'},
+product:{comp:['单一主体放画面中央，背景干净','对角线摆放道具做点缀','用盘/布面做留白引导视线到主体'],cam:['三脚架+定时自拍避免手抖','45°俯拍既有立体感又简洁'],exp:['靠近窗户用自然光，柔和阴影高级','补光不足可开闪光灯+扩散柔光'],re:'去灰增透，主打商品本来的质感'}};
+const moodTips={
+clean:'· 后期：适度提亮、降饱和，色温偏冷偏白。',
+vintage:'· 后期：加暗角和噪点，色温偏暖，略降对比。',
+movie:'· 后期：拉电影感阴影，加轻微暗角，画面裁成2.35:1更有味。',
+vivid:'· 后期：提高饱和度与对比，绿植花草把绿色提鲜。'};
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('AI手机摄影构图 | AgentGongju.com'))return;
+const scene=document.getElementById('scene').value;
+const mood=document.getElementById('mood').value;
+const desc=document.getElementById('desc').value.trim();
+const d=sceneData[scene];
+const sceneLabel={portrait:'人物人像',food:'美食',landscape:'风景建筑',street:'街拍人文',pet:'宠物',product:'商品静物'}[scene];
+const moodLabel={clean:'干净清新',vintage:'文艺复古',movie:'电影感',vivid:'活力鲜艳'}[mood];
+let out='【手机摄影构图方案】\n场景：'+sceneLabel+'｜风格：'+moodLabel+'\n'+(desc?'想拍：'+desc+'\n':'')+'═'.repeat(24)+'\n\n';
+out+='【构图法则】\n'+(d.comp.map(x=>'· '+x).join('\n'))+'\n\n';
+out+='【机位与角度】\n'+(d.cam.map(x=>'· '+x).join('\n'))+'\n\n';
+out+='【曝光参数小技巧】\n'+(d.exp.map(x=>'· '+x).join('\n'))+'\n\n';
+out+='【后期调色】\n· '+d.re+'\n'+(moodTips[mood]||'');
+document.getElementById('outputBox').innerText=out.trim();
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 方案已复制！'))}
+</script>
+</body>
+</html>

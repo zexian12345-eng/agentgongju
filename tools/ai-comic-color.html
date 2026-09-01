@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI漫画上色分镜提示词生成器 | AgentGongju.com</title>
+<meta name="description" content="一键生成AI漫画上色与分镜绘制提示词，支持日漫、美漫、港漫等多种画风，让漫画创作更专业更高效。">
+<meta name="keywords" content="漫画,上色,分镜,提示词,AI漫画,画风,线稿,动漫">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+textarea,input[type=text],select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:70px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.9;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🎨 AI漫画上色与分镜提示词生成器</h1><p>线稿复活、画面成帧——让漫画灵感一键可视化</p></div>
+
+<div class="card">
+<label>✍️ 画面场景描述</label>
+<textarea id="scene" placeholder="例如：热血少年主角在雨中首次觉醒爆发出蓝色火焰能量"></textarea>
+<div class="param-grid">
+<div><label>🎭 漫画画风</label>
+<select id="style"><option>日漫热血</option><option>赛璐璐萌系</option><option>美漫油画</option><option>港漫写实</option><option>国漫古风</option><option>黑白网点</option></select></div>
+<div><label>🖌️ 上色方式</label>
+<select id="color"><option>赛璐璐平涂</option><option>厚涂渐变</option><option>水彩柔和</option><option>网点灰度</option></select></div>
+<div><label>🎥 分镜景别</label>
+<select id="shot"><option>特写镜头</option><option>中景对话</option><option>远景拉镜</option><option>俯冲动势</option></select></div>
+<div><label>📐 画面比例</label>
+<select id="ratio"><option>2:3 竖格</option><option>1:1 方格</option><option>16:9 横跨页</option><option>3:4 常规格</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">✨ 生成漫画提示词</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🎨 你的漫画绘制提示词</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制提示词</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const styleMap={
+'日漫热血':'shonen manga style, dynamic action lines, dramatic speed lines, bold ink',
+'赛璐璐萌系':'cel shading anime style, cute character design, clean lineart, vibrant flat colors',
+'美漫油画':'american comic style, painted finish, bold outlines, dramatic shading, superhero energy',
+'港漫写实':'hong kong martial arts comic, realistic detailed anatomy, muscular, gritty ink',
+'国漫古风':'chinese ancient-style manhua, wuxia, flowing robes, traditional elements, elegant',
+'黑白网点':'black and white manga, screen tone dot shading, grayscale, classic print'
+};
+const colorMap={
+'赛璐璐平涂':'flat cel shading, crisp color blocks, limited clean tones',
+'厚涂渐变':'smooth gradient airbrush, rich volumetric lighting, soft blending',
+'水彩柔和':'soft watercolor wash, translucent pastel, gentle blending',
+'网点灰度':'grayscale screentone, mechanical dot pattern, classic manga'
+};
+const shotMap={
+'特写镜头':'extreme close-up, emotional facial expression, dramatic impact',
+'中景对话':'medium shot, character interaction, natural dialogue framing',
+'远景拉镜':'long establishing shot, full body, sweeping background, wide view',
+'俯冲动势':'dynamic low/high angle, fast motion blur, kinetic energy'
+};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI漫画上色分镜提示词生成器 | AgentGongju.com'))return;
+const scene=document.getElementById('scene').value.trim();
+if(!scene){alert('请先输入画面场景描述');return;}
+const st=document.getElementById('style').value;
+const co=document.getElementById('color').value;
+const sh=document.getElementById('shot').value;
+const rt=document.getElementById('ratio').value;
+const parts=[styleMap[st],colorMap[co],shotMap[sh],scene,'manga panel','clean lines','highly detailed illustration'].filter(Boolean);
+const out='【画面场景】\n'+scene+'\n\n【完整提示词（英文）】\n'+parts.join(', ')+' --ar '+rt.split(' ')[0]+'\n\n【负面提示词】\nrealistic photograph, 3d render, extra limbs, bad anatomy, text bubble, watermark, lowres, deformed\n\n【分镜建议】\n'+shotMap[sh].split(',')[0] + ' 能强化叙事节奏，'+co.split(',')[0]+' 适合本画风，可配合速度线/网点营造张力。';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 提示词已复制！'))}
+</script>
+</body>
+</html>

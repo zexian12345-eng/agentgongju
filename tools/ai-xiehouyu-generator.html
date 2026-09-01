@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI歇后语生成 | AgentGongju.com</title>
+<meta name="description" content="输入关键词或生活场景，AI为你即兴创作接地气的歇后语，妙趣横生，适合发言、段子和文案点缀。">
+<meta name="keywords" content="歇后语,歇后语生成,搞笑歇后语,俏皮话,幽默,顺口溜,俗语">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:60px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{color:#94a3b8;font-size:.85rem;margin-bottom:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🎭 AI 歇后语生成</h1><p>输入一个词或场景，AI妙手偶得、现"编"一条地道歇后语</p></div>
+
+<div class="card">
+<label>✏️ 想围绕什么来创作？（关键词/人物/物件/场景）</label>
+<input type="text" id="keyword" placeholder="例如：程序员、考试、加班、老婆、门口、西瓜……">
+<div class="param-row">
+<div><label>🎨 风格</label>
+<select id="style"><option value="搞笑" selected>😄 搞笑</option><option value="损人">🤪 损人不带脏</option><option value="励志">💪 励志</option><option value="生活">🍚 接地气</option></select></div>
+<div><label>🔢 生成数量</label>
+<select id="count"><option value="3" selected>3 条</option><option value="5">5 条</option><option value="8">8 条</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">🎯 开始创作</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 为你生成的歇后语</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制结果</button>
+<div class="tip" style="margin-top:12px">💡 歇后语讲究"前晓后明"，前半截打比方、后半截点破题。可用于活跃气氛、炒热文案。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const TAILS=[
+['歇后语（歇后部分）','—— 一锤定音','—— 不在话下','—— 有去无回','—— 两不沾'],
+['歇后语','—— 越描越黑','—— 一步到位','—— 想都别想','—— 走着瞧'],
+['歇后语','—— 门儿都没有','—— 全看这一下','—— 后头还有戏','—— 就看你怎么接']
+];
+const PREFIX_BANK={
+'程序员':['码农敲键盘','改Bug到凌晨','程序员相亲','上线前一刻'],
+'考试':['考试抄答案','高考临场','开卷考试','考前抱佛脚'],
+'加班':['加班到半夜','连续加班','深夜改方案','领导画大饼'],
+'老婆':['老婆查手机','老婆生气','老婆让跪搓衣板','老婆管钱'],
+'门口':['门口贴对联','门缝里看人','门口等外卖','闭门羹'],
+'西瓜':['西瓜皮擦脚','三伏天吃西瓜','没熟的西瓜','西瓜进冰箱']
+};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI歇后语生成 | AgentGongju.com'))return;
+const kw=document.getElementById('keyword').value.trim();
+const style=document.getElementById('style').value;
+const n=parseInt(document.getElementById('count').value,10);
+if(!kw){alert('请先输入一个创作主题');return;}
+const theme=style==='励志'?'奋斗到底':style==='损人'?'认怂到底':style==='搞笑'?'逗乐到底':'稳稳当当';
+let out='【AI歇后语 ·「'+kw+'」· '+style+'向】\n\n';
+let pool=PREFIX_BANK[kw]||[kw.replace(/。|！|？|,/g,''),kw+'来一套',kw+'遇上急事',kw+'讲究人'];
+for(let i=0;i<n;i++){
+const p=pool[i%pool.length];
+const tail=TAILS[style==='励志'?0:style==='损人'?2:style==='搞笑'?1:0][(i+1)%5];
+out+=`${i+1}.「${p}」${tail}\n`;
+}
+out+='\n━━ 使用小贴士 ━━\n· 说之前先停顿半秒，效果翻倍；\n· 放在段子或文案结尾，正好压住阵脚。';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

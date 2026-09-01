@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 班级通知生成器 | AgentGongju.com</title>
+<meta name="description" content="为班主任/老师一键生成各类班级通知文案，涵盖活动、安全、缴费、家长沟通等场景">
+<meta name="keywords" content="AI文案,班级通知,老师通知,班主任,家长群,通知模板">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:90px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.btn-gen:disabled{opacity:.5;cursor:not-allowed}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.panel{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.25);border-radius:12px;padding:18px;margin-bottom:12px;white-space:pre-wrap;line-height:1.9;font-size:.9rem;color:#cbd5e1}
+.panel b{color:#a855f7}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🏫 AI 班级通知生成器</h1><p>老师的好帮手，一键生成规范亲切的班级通知</p></div>
+
+<div class="card">
+<label>📝 通知要点（时间/地点/事项）</label>
+<textarea id="detail" placeholder="例如：本周五下午3点举行秋季运动会，地点在操场，请家长为孩子准备运动服"></textarea>
+<div class="param-row">
+<div><label>📋 通知类型</label>
+<select id="type">
+<option value="活动通知">活动通知</option>
+<option value="安全提醒">安全提醒</option>
+<option value="缴费通知">缴费通知</option>
+<option value="家长会">家长会</option>
+<option value="调课通知">调课通知</option>
+<option value="假期提醒">假期提醒</option>
+</select></div>
+<div><label>🎨 语气</label>
+<select id="tone">
+<option value="正式规范">正式规范</option>
+<option value="亲切温和">亲切温和</option>
+<option value="简洁干练">简洁干练</option>
+</select></div>
+</div>
+<button class="btn-gen" id="genBtn">📩 生成通知</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 通知文案</div>
+<div id="box"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制全文</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function rand(a){return a[Math.floor(Math.random()*a.length)]}
+const opens={'正式规范':['尊敬的各位家长：','各位家长朋友们：'],'亲切温和':['亲爱的家长朋友们，你们好！','各位宝爸宝妈，大家好呀！'],'简洁干练':['各位家长，请注意：','家长朋友们：']};
+const closes={'正式规范':['感谢家长们的理解与配合。','感谢支持，谢谢配合！'],'亲切温和':['谢谢大家的支持与信任，有你们的陪伴，孩子们会越来越好！','感谢各位家长的配合，我们共同守护孩子成长！'],'简洁干练':['谢谢配合。','收到请回复，谢谢！']};
+const lib={
+'活动通知':['为确保活动顺利开展，现将有关事宜通知如下。','活动当天请同学们准时到指定地点集合。','如有特殊情况无法参加，请提前告知班主任。'],
+'安全提醒':['近期气温变化较大，请家长提醒孩子及时增减衣物。','请注意交通安全，接送孩子时规范停车。','教育孩子注意用电、用水安全，远离危险区域。'],
+'缴费通知':['本学期相关费用明细已发放，请家长查阅。','缴费方式支持线上支付，请在规定时间内完成。','如有疑问，可随时联系班主任进行咨询。'],
+'家长会':['本学期家长会定于近期召开，诚邀您莅临参加。','届时将交流孩子们本学期的学习与生活情况。','请家长安排好时间，准时出席。'],
+'调课通知':['因特殊情况，近期课程安排有所调整，特此通知。','调整后的课程时间已作详细说明。','由此带来的不便，敬请谅解。'],
+'假期提醒':['假期即将来临，预祝大家度过一个愉快充实的假期。','请家长做好假期安全监护，合理安排作息。','提醒孩子按时完成假期作业，作息规律。']};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 班级通知生成器 | AgentGongju.com'))return;
+let detail=document.getElementById('detail').value.trim();
+const type=document.getElementById('type').value;const tone=document.getElementById('tone').value;
+const box=document.getElementById('box');box.innerHTML='';
+let t=`${rand(opens[tone])}\n\n`;
+t+=`关于${type}的通知\n`;
+t+=`${rand(lib[type])}\n`;
+if(detail){t+=`现将具体事项通知如下：${detail}\n`;}
+if(type==='缴费通知'){t+='缴费截止时间为规定日期前，请及时办理。\n'}
+if(type==='家长会'){t+='本次家长会还安排了家长交流环节，欢迎积极参与。\n'}
+if(type==='安全提醒'){t+='孩子的安全是我们共同的牵挂，请大家务必重视。\n'}
+t+=`\n${rand(closes[tone])}\n`;
+const div=document.createElement('div');div.className='panel';div.textContent=t;
+box.appendChild(div);
+});setTimeout(()=>{},0);
+function copyResult(){let out=document.getElementById('box').innerText;navigator.clipboard.writeText(out).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

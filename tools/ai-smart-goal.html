@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI目标制定 | AgentGongju.com</title>
+<meta name="description" content="输入你的目标，AI用SMART原则帮你拆解成可执行计划，明确时限、量化标准与行动计划，让目标不再空谈。">
+<meta name="keywords" content="SMART目标,目标制定,目标拆解,行动计划,新年目标,自我提升">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:70px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{color:#94a3b8;font-size:.85rem;margin-bottom:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🎯 AI 目标制定</h1><p>用SMART原则，把愿望变成可以落地的计划</p></div>
+
+<div class="card">
+<label>🎯 你想实现的目标</label>
+<textarea id="goal" placeholder="例如：半年内减重10斤、三个月学会基础Python、今年存款5万、运动打卡每周3次……"></textarea>
+<div class="param-row">
+<div><label>⏱️ 目标周期</label>
+<select id="span"><option value="1个月">1个月</option><option value="3个月" selected>3个月</option><option value="6个月">6个月</option><option value="1年">1年</option></select></div>
+<div><label>🚀 目标领域</label>
+<select id="field"><option value="健康">健康</option><option value="学习" selected>学习</option><option value="工作">工作</option><option value="理财">理财</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">📋 制定我的目标</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 你的SMART目标计划</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制计划</button>
+<div class="tip" style="margin-top:12px">💡 SMART即：具体(S)、可衡量(M)、可达成(A)、相关(R)、有时限(T)。目标小而清，行动稳而勤，才更容易坚持。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const FTIPS={
+'健康':['每2周测一次体重并记录','搭配均衡饮食与充足睡眠','循序渐进，避免激进伤身'],
+'学习':['每周固定学习时间并复盘','搭配实践练习巩固','遇到瓶颈及时调整方法'],
+'工作':['建立周度进度复盘','明确关键交付节点','主动寻求反馈优化'],
+'理财':['每季度盘点收支','坚持记账与预算','选择与风险匹配的方式']
+};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI目标制定 | AgentGongju.com'))return;
+const goal=document.getElementById('goal').value.trim();
+const span=document.getElementById('span').value;
+const field=document.getElementById('field').value;
+if(!goal){alert('请先填写你的目标');return;}
+const tags=FTIPS[field];
+let out='【'+span+' · '+field+'领域目标：「'+goal+'」】\n\n';
+out+='━━ SMART 目标拆解 ━━\n';
+out+='· S 具体：目标「'+goal+'」，范围明确，聚焦单一方向；\n';
+out+='· M 可衡量：设定量化标准（次数/数值/进度），可定期对照检查；\n';
+out+='· A 可达成：拆分到每周小目标，确保在当前能力范围内可完成；\n';
+out+='· R 相关性：与你的生活/工作/长期规划直接相关，方向一致；\n';
+out+='· T 有时限：以'+span+'为总时限，匹配到每月的阶段性节点。\n\n';
+out+='━━ 分阶段行动路线 ━━\n· 第一阶段（1-2周）：热身启动，制定'+(field==='学习'?'学习内容与工具':'详细安排与资源')+'，建立每日固定动作；\n';
+out+='· 第二阶段（中期）：稳定执行，设置每周复盘，校验进度并及时纠偏；\n';
+out+='· 第三阶段（冲刺收尾）：查漏补缺，强化成果，把收获固化下来。\n\n';
+out+='━━ 每周执行建议 ━━\n· '+tags[0]+'；\n· '+tags[1]+'；\n· '+tags[2]+'。\n\n';
+out+='━━ 复盘模板 ━━\n本周完成：________　未完成：________　下周调整：________\n\n【目标明确，行动有力，你终将成为更好的自己 💪】';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 计划已复制！'))}
+</script>
+</body>
+</html>

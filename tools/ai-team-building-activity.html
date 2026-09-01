@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI团建活动策划 | AgentGongju.com</title>
+<meta name="description" content="输入团队规模、预算与目标，AI帮你策划一场不尴尬、有记忆点的团建活动，含环节设计、物料与分工建议。">
+<meta name="keywords" content="团建,团建策划,团队建设,活动策划,聚会方案,团建游戏,办公室生活,公司活动">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:60px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{color:#94a3b8;font-size:.85rem;margin-bottom:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🎪 AI 团建活动策划</h1><p>不尴尬、不失手，几项输入帮你搞定一场有记忆点的团建</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>👥 团队人数</label>
+<input type="number" id="num" value="12" min="1"></div>
+<div><label>💰 人均预算</label>
+<input type="number" id="budget" value="200" min="0"></div>
+</div>
+<div class="param-row">
+<div><label>🎯 团建目标</label>
+<select id="goal"><option value="融合" selected>🤝 新人融入</option><option value="放松">🌴 放松减压</option><option value="激励">🔥 冲刺激励</option></select></div>
+<div><label>🕐 时长</label>
+<select id="dur"><option value="半天" selected>☀️ 半天</option><option value="一天">🌞 一整天</option><option value="两天">🏕 两天一夜</option></select></div>
+</div>
+<label>📋 其他要求（可选）</label>
+<textarea id="other" placeholder="例如：希望包含美食环节，最好在室内，大家体力一般……"></textarea>
+<button class="btn-gen" id="genBtn">🎯 生成团建方案</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 你的团建活动方案</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制方案</button>
+<div class="tip" style="margin-top:12px">💡 提前预订场地和餐饮，把"踩坑清单"发给执行人，省心一大半。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const GOALS={
+'融合':{act:'破冰+协作游戏',g:'分组"盲盒队友"破冰——每人在纸上写3个关键词，随机交换，别人来猜你是谁；再来一场"断桥协作"，让新老同事分组配合解开任务。'},
+'放松':{act:'轻量+美食',g:'以轻松体验为主：桌游、烘焙课或温泉茶话会；穿插"匿名夸夸卡"，让每个人写下对同事的感谢，当天朗读交换。'},
+'激励':{act:'竞技+荣耀',g:'设置积分制团队挑战赛（密室/闯关/运动会），冠军组颁奖；结尾"巅峰时刻"环节回顾战绩，把士气带回办公室。'}
+};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI团建活动策划 | AgentGongju.com'))return;
+const num=document.getElementById('num').value||12;
+const budget=document.getElementById('budget').value||200;
+const goal=document.getElementById('goal').value;
+const dur=document.getElementById('dur').value;
+const other=document.getElementById('other').value.trim();
+const g=GOALS[goal];
+const total=(num*budget).toLocaleString();
+let out=`🎪 团建方案 · ${goal}向 · ${dur} · ${num}人\n\n`;
+out+=`💰 预算参考：人均 ¥${budget}，总预算约 ¥${total}\n\n`;
+out+='━━ 活动主题 ━━\n「'+g.act+'」—— 围绕「'+goal+'」的目标设计，避免纯吃吃喝喝的空转。\n\n';
+out+='━━ 环节安排 ━━\n· 开场破冰（15分钟）：'+goal==='融合'?'分组"三选一"自我介绍，快速打熟络气。':'轻松开场，主持人宣布规则与彩蛋（惊喜奖）。'+'\n';
+out+='· 主活动：'+g.g+'\n';
+out+=(dur==='两天'?'· 傍晚：团队晚餐+自由活动，为第二天留力；\n· 第二天：轻量复盘与合影，把"高光瞬间"做成回忆墙。\n':'· 中场休息：备好茶点，劳逸结合；\n· 收尾：集体合影+抽奖/简评，人人有参与感。\n');
+if(other)out+='\n━━ 补充要求落实 ━━\n· '+other+'\n';
+out+='\n━━ 物料 / 分工清单 ━━\n· 物料：横幅/队旗、姓名贴、奖品、急救包、饮用水；\n· 分工：1名统筹（订场+时间线）、1名主持（流程衔接）、1名后勤（物料餐饮）、1名记录（拍照存档）；\n· 预算提醒：场地+餐饮约占70%，留30%做机动和奖品。';
+out+='\n\n【祝大家玩得尽兴、关系升温 🎉】';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 方案已复制！'))}
+</script>
+</body>
+</html>

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 小说封面文案生成器 | AgentGongju.com</title>
+<meta name="description" content="根据小说题材生成封面主文案、副标题与吸睛标签，适配网文/出版/短剧封面">
+<meta name="keywords" content="AI文案,小说封面,书名推荐,网文,短剧,封面文案">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:90px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.btn-gen:disabled{opacity:.5;cursor:not-allowed}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.panel{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.25);border-radius:12px;padding:16px 18px;margin-bottom:12px}
+.panel-head{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.panel-num{background:linear-gradient(135deg,#6366f1,#a855f7);color:white;width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem}
+.panel-title{font-weight:600;color:#a5b4fc}
+.panel-line{font-size:.88rem;color:#cbd5e1;line-height:1.7}
+.panel-line b{color:#a855f7}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.tag{background:rgba(168,85,247,0.15);border:1px solid rgba(168,85,247,0.3);color:#d8b4fe;font-size:.75rem;padding:3px 10px;border-radius:20px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📚 AI 小说封面文案生成器</h1><p>输入题材，生成吸睛封面主文案与标签</p></div>
+
+<div class="card">
+<label>📖 小说题材/核心梗概</label>
+<textarea id="topic" placeholder="例如：现代都市总裁文，女主重生复仇走进豪门"></textarea>
+<div class="param-row">
+<div><label>🗂 题材类型</label>
+<select id="type">
+<option value="都市总裁">都市总裁</option>
+<option value="玄幻修仙">玄幻修仙</option>
+<option value="古风言情">古风言情</option>
+<option value="科幻末世">科幻末世</option>
+<option value="悬疑推理">悬疑推理</option>
+<option value="校园甜宠">校园甜宠</option>
+</select></div>
+<div><label>🔢 方案数（3-8）</label>
+<input type="number" id="count" min="3" max="8" value="5"></div>
+</div>
+<button class="btn-gen" id="genBtn">✨ 生成封面文案</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 封面文案方案</div>
+<div id="box"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制全部</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function rand(a){return a[Math.floor(Math.random()*a.length)]}
+const lib={
+'都市总裁':{t:['重生千金归来','隐婚总裁的独宠','合约婚后心动','战少的神秘娇妻'],s:['三年前被扫地出门，如今她携势归来','他以为只是一场交易，却输掉了整颗心'],tag:['重生','复仇','甜宠','豪门','强强对决']},
+'玄幻修仙':{t:['我靠签到证道长生','开局被夺舍，我反杀成帝','凡人飞升录','最强宗门养成系统'],s:['废柴逆袭，一剑破万法','凡体修行，终登仙途巅峰'],tag:['逆袭','系统','仙侠','热血','打脸']},
+'古风言情':{t:['凤栖东宫','锦鲤王妃掌天下','长公主重生记','红妆点将夜'],s:['山河为聘，共许白头','一纸婚约，赔上一生真心'],tag:['古言','权谋','虐恋','风华绝代','甜虐']},
+'科幻末世':{t:['全球变异：我掌控异能','末世之机械主宰','星海归途','最后一片净土'],s:['当城市沦为废土，强者为王','人类最后的火种，由我守护'],tag:['末世','异能','科幻','生存','热血']},
+'悬疑推理':{t:['第七个目击者','看不见的证词','死亡预告信','迷雾刑侦录'],s:['每一条线索，都指向亡灵之口','真相，藏在最深的谎言里'],tag:['悬疑','推理','烧脑','刑侦','反转']},
+'校园甜宠':{t:['学霸同桌是校草','同桌的满分心动','我的少年有点甜','转学后校草追着我跑'],s:['笨拙的喜欢，都写在草稿纸上','青春最好的样子，是你刚好心动'],tag:['校园','甜宠','青梅竹马','青春','纯爱']}};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 小说封面文案生成器 | AgentGongju.com'))return;
+let topic=document.getElementById('topic').value.trim();
+let n=parseInt(document.getElementById('count').value||5);n=Math.max(3,Math.min(8,n));
+const type=document.getElementById('type').value;
+const L=lib[type];
+const box=document.getElementById('box');box.innerHTML='';
+let text='《'+type+' · 封面文案》\n'+(topic?'梗概：'+topic+'\n':'')+'\n';
+for(let i=1;i<=n;i++){
+const title=rand(L.t);const sub=rand(L.s);
+const tags=[...L.tag].sort(()=>Math.random()-0.5).slice(0,4);
+const div=document.createElement('div');div.className='panel';
+div.innerHTML=`<div class="panel-head"><span class="panel-num">${i}</span><span class="panel-title">${title}</span></div><div class="panel-line"><b>主文案：</b>${title}<br><b>副标题：</b>${sub}<div class="tags">${tags.map(t=>`<span class="tag">#${t}</span>`).join('')}</div></div>`;
+box.appendChild(div);
+text+=`${i}. ${title}\n   副标题：${sub}\n   标签：${tags.join(' ')}\n`;
+}
+});setTimeout(()=>{},0);
+function copyResult(){let out=document.getElementById('box').innerText.replace(/\n{3,}/g,'\n\n');navigator.clipboard.writeText(out).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

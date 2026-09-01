@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI绿植病症诊断 | AgentGongju.com</title>
+<meta name="description" content="绿植蔫了、黄叶、烂根？描述症状，AI帮你初步判断原因并给出养护与急救建议，救回你的花花树树。">
+<meta name="keywords" content="绿植诊断,植物生病,黄叶原因,烂根,养花,盆栽,植物养护,治疗">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:60px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{color:#94a3b8;font-size:.85rem;margin-bottom:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🌿 AI 绿植病症诊断</h1><p>黄叶、发蔫、长斑？先把症状说给我，帮你判断原因和急救方法</p></div>
+
+<div class="card">
+<label>🌱 这是什么植物 + 出现了什么症状？</label>
+<textarea id="plant" placeholder="例如：君子兰，最近叶片发黄发软，边角还有点焦，土摸起来有点黏……"></textarea>
+<div class="param-row">
+<div><label>📏 摆放位置</label>
+<select id="place"><option value="窗台" selected>🪟 窗台/阳台有光</option><option value="室内">🛋 室内散光</option><option value="露养">🌤 户外露养</option></select></div>
+<div><label>💧 浇水习惯</label>
+<select id="water"><option value="见干见湿" selected>🌧 见干见湿</option><option value="多浇">💦 浇得偏多</option><option value="少浇">🏜 干到发裂才浇</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">🔎 诊断一下</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 初步诊断与养护建议</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制诊断</button>
+<div class="tip" style="margin-top:12px">💡 植物生病先别慌：多数问题出在"浇水、光照、通风"三件事上，调整往往比下药更有效。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const SYMP={
+'黄叶':{t:'黄叶',cause:'多数因浇水过多导致烂根缺氧，或光照不足；若叶尖焦黄则多为缺水或肥害。',fix:'先停水2-3天让盆土透气；检查根系，若有烂根剪掉换土；移到有散射光处缓苗。'},
+'发蔫':{t:'发蔫下垂',cause:'要么浇水过多闷根，要么缺水干透；闷根时盆土长期潮湿，缺水时土面干裂。',fix:'摸着土壤：湿则控水通风，干则浇透一次"透水"；避开正午烈日直射。'},
+'烂根':{t:'烂根/土黏',cause:'浇水过频且盆土不透气，导致根系缺氧腐烂，多伴随黄叶和难闻气味。',fix:'脱盆剪掉黑腐根系，用多菌灵处理，换疏松新土；之后见干见湿、别浇积水。'},
+'长斑':{t:'叶片长斑',cause:'可能是叶斑病、日灼或潮湿病害，通常与通风差、叶片长期沾水有关。',fix:'摘除病叶，增强通风，浇水别浇叶片；严重时喷杀菌剂并隔离。'}
+};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI绿植病症诊断 | AgentGongju.com'))return;
+const plant=document.getElementById('plant').value.trim();
+const place=document.getElementById('place').value;
+const water=document.getElementById('water').value;
+if(!plant){alert('请先描述植物和症状');return;}
+let key=null;
+for(const k of Object.keys(SYMP)){if(plant.includes(k)){key=k;break;}}
+const s=key?SYMP[key]:{t:'综合检查',cause:'症状信息较宽泛，难以锁定单一原因，建议按浇水、光照、通风逐项排除。',fix:'先调整到"见干见湿+散射光+通风"的通用养护，观察一周看是否有改善。'};
+const loc=place==='窗台'?'光照充足但避免暴晒':place==='室内'?'光线一般，需保证一定散射光':'户外光照充分，注意防暴晒';
+const wat=water==='见干见湿'?'浇水习惯不错，继续保持':water==='多浇'?'浇水偏多，容易闷根，建议减频':'浇水偏少，易缺水干枯，建议给足水分';
+let out=`🌿 绿植诊断报告\n\n`;
+out+=`📝 描述：${plant}\n\n`;
+out+='━━ 可能原因 ━━\n· '+s.cause+'\n';
+out+='· 环境（'+loc+'）；浇水（'+wat+'）。\n\n';
+out+='━━ 急救处理 ━━\n· '+s.fix+'\n\n';
+out+='━━ 日常养护 ━━\n· 浇水：见干见湿，盆土微微湿润即可；\n· 光照：多数绿植喜散射光，避开烈日直晒；\n· 通风：保持空气流通，减少病害滋生。\n\n【愿你家的绿植重焕生机 🌿】';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 诊断已复制！'))}
+</script>
+</body>
+</html>

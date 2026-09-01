@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI活动流程编排助手 | AgentGongju.com</title>
+<meta name="description" content="为婚礼、年会、生日派对等活动一键生成时间线流程表，安排签到、暖场、仪式、游戏、用餐等环节，井井有条。">
+<meta name="keywords" content="活动流程,婚礼流程,年会,生日派对,活动策划,时间安排,环节编排">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+textarea,input[type=text],select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:60px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:600px){.param-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🎉 AI活动流程编排助手</h1><p>婚礼年会生日趴，流程清清楚楚不抓瞎</p></div>
+
+<div class="card">
+<label>🎪 活动类型</label>
+<select id="type"><option value="wedding">婚礼</option><option value="annual">公司年会</option><option value="birthday">生日派对</option><option value="family">家庭聚会</option></select>
+<label>⏰ 活动开始时间</label>
+<input type="text" id="start" placeholder="例如：18:00">
+<label>🕒 持续时长（小时）</label>
+<select id="hours"><option value="2">2小时</option><option value="3">3小时</option><option value="4">4小时</option><option value="5">5小时</option></select>
+<label>🎯 想设计的环节偏好（可多填）</label>
+<input type="text" id="extra" placeholder="例如：要有抽奖、游戏互动、致辞、拍集体照">
+<button class="btn-gen" id="genBtn">🗓️ 生成流程表</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🎉 活动时间流程表</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制流程</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const typeName={wedding:'婚礼',annual:'公司年会',birthday:'生日派对',family:'家庭聚会'};
+const baseFlow={
+wedding:[['开场暖场+签到','宾客陆续入场，播放暖场音乐，茶歇小食'],['主持人开场','介绍新人，活跃气氛'],['新人入场仪式','交换戒指、宣誓、举杯'],['父母长辈致辞','感恩发言'],['游戏互动/抛花球','带动全场氛围'],['用餐环节','边用餐边播放成长相册'],['切蛋糕/合影','共同举杯，自由合影'],['答谢送客','发放伴手礼']],
+annual:[['签到+暖场','大屏播放公司年度回顾视频'],['领导开场致辞','年度总结与展望'],['颁奖环节','优秀员工/团队颁奖'],['才艺表演','员工节目演出'],['互动游戏+抽奖','全员参与，大奖揭晓'],['自由交流+用餐','边吃边聊，合影留念'],['合影散场','集体大合照']],
+birthday:[['暖场布置+签到','气球灯光就位，备好生日帽'],['开场互动','小游戏破冰'],['寿星亮相','歌唱生日歌环节预备'],['切蛋糕许愿','关灯点蜡烛，许愿切蛋糕'],['游戏/表演','朋友互动游戏'],['礼物与合影','赠送祝福、合影留念'],['自由派对','放松交流']],
+family:[['聚餐入座','围坐安排，寒暄开场'],['举杯致辞','长辈敬酒祝福'],['热菜上桌用餐','边吃边聊家常'],['互动小游戏','活跃气氛'],['合影留念','全家福'],['甜品水果','饭后放松'],['送客整理','依依惜别']]
+};
+function parseTime(t,fallback){if(!t)return null;const m=t.trim().match(/(\d{1,2})[:：](\d{1,2})/);return m?m[1].padStart(2,'0')+':'+m[2].padStart(2,'0'):null;}
+function addMin(time,min){const[m,h]=time.split(':').map(Number);const total=h+m*60+min;const hh=String(Math.floor(total/60)%24).padStart(2,'0');const mm=String(total%60).padStart(2,'0');return hh+':'+mm;}
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('AI活动流程编排助手 | AgentGongju.com'))return;
+const type=document.getElementById('type').value;
+const hours=parseInt(document.getElementById('hours').value);
+const extra=document.getElementById('extra').value.trim();
+let cur=parseTime(document.getElementById('start').value,'18:00')||'18:00';
+const flow=baseFlow[type];
+const segMin=Math.round(hours*60/flow.length);
+let out='【'+typeName[type]+'流程表】总时长约'+hours+'小时\n\n';
+flow.forEach(([name,desc],i)=>{
+out+='⏰ '+cur+' - '+addMin(cur,segMin)+'　'+name+'\n　　'+desc+'\n';
+cur=addMin(cur,segMin);
+});
+if(extra)out+='\n【你的补充环节】\n· '+extra+'（可按需插入上述环节之间，建议放在互动时段）\n';
+out+='\n【执行小贴士】\n· 提前30分钟做好场内布置和设备调试，主持人手里备一份流程单。\n· 各环节预留10-15分钟弹性时间，游戏环节见好就收。\n· 指定专人负责拍照、音响、礼品发放，责任到人不慌乱。🎉';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 流程已复制！'))}
+</script>
+</body>
+</html>

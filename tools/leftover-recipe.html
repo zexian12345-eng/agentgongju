@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI剩菜改造菜谱 | AgentGongju.com</title>
+<meta name="description" content="家里吃剩的米饭、菜、肉、汤别浪费！输入你手头的剩菜剩饭，AI帮你搭配出几个好吃的"翻身"做法。">
+<meta name="keywords" content="剩菜,剩饭,改造,菜谱,不浪费,剩菜新吃法,料理">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+input[type=text],select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:600px){.param-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>♻️ AI剩菜改造菜谱</h1><p>剩饭剩菜也翻身，美味又不浪费</p></div>
+
+<div class="card">
+<label>🍚 你手头的剩菜/剩饭（勾选并补充）</label>
+<div class="param-grid">
+<div><label>米饭</label><select id="rice"><option value="no">没有</option><option value="yes">有剩米饭</option></select></div>
+<div><label>荤菜</label><select id="meat"><option value="no">没有</option><option value="fried">剩的炒肉/排骨</option><option value="soup">剩的炖肉/汤肉</option></select></div>
+</div>
+<div class="param-grid">
+<div><label>素菜</label><select id="veg"><option value="no">没有</option><option value="yes">有剩素菜</option></select></div>
+<div><label>主食/面食</label><select id="staple"><option value="no">没有</option><option value="yes">有剩面/馒头</option></select></div>
+</div>
+<label>📝 其他剩的（可选）</label>
+<input type="text" id="other" placeholder="例如：剩了一锅汤、有鸡蛋、有火腿肠…">
+<label>🍳 操作偏好</label>
+<select id="complex"><option value="easy">越快越省事</option><option value="mid">接受简单炒/焖</option><option value="hard">愿意稍微费点功夫</option></select>
+<button class="btn-gen" id="genBtn">♻️ 生成改造菜谱</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">♻️ 剩菜新吃法</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制菜谱</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const ideas=[];
+const recipes={
+rice:'【黄金蛋炒饭】剩米饭打散，炒两颗打散的蛋至半熟，下米饭炒散加少许盐+生抽+葱花即可；剩荤菜切丁加进去更香。',
+meatFry:'【回锅肉丁炒菜】剩炒肉/排骨切小块，和剩米饭一起做成"肉丁煲仔饭"或复炒蔬菜，加少许青椒增加新鲜感。',
+meatSoup:'【炖肉煮面】剩汤肉撕小块+原汤汁兑水煮开，下挂面/剩面，加青菜和蛋，就是一碗浓郁汤面。',
+veg:'【蔬菜杂烩】剩素菜加鸡蛋回锅轻轻炒，讲究"热锅快炒"，既能去水气又能保持口感不烂。',
+staple:'【香煎剩主食】剩馒头/包子切片，用少许油煎至金黄酥脆；剩面条可做炒面。',
+soup:'【汤菜合一】剩汤可加豆腐、丸子或剩米饭做成泡饭，或勾芡淋在剩饭上变烩饭。'
+};
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('AI剩菜改造菜谱 | AgentGongju.com'))return;
+const rice=document.getElementById('rice').value;
+const meat=document.getElementById('meat').value;
+const veg=document.getElementById('veg').value;
+const staple=document.getElementById('staple').value;
+const other=document.getElementById('other').value.trim();
+const complex=document.getElementById('complex').value;
+let picks=[];
+if(rice==='yes')picks.push(recipes.rice);
+if(meat==='fried')picks.push(recipes.meatFry);
+if(meat==='soup')picks.push(recipes.meatSoup);
+if(veg==='yes')picks.push(recipes.veg);
+if(staple==='yes')picks.push(recipes.staple);
+if(!picks.length)picks.push(['【快手小熬粥】剩饭/剩菜加水熬成粥','【剩菜煎饼】剩菜切碎+面粉鸡蛋摊成饼'].flatMap(x=>[x]));
+let out='【剩菜改造菜谱】基于你手头的食材\n\n';
+picks.slice(0,2).forEach((r,i)=>{out+='🥣 方案'+(i+1)+'\n'+r+'\n\n';});
+if(other)out+='🥣 补充利用\n· 【'+other+'】可加入上述做法提鲜，或单独做成汤品/小菜。\n';
+out+='\n【安全提示】\n· 剩菜务必当天吃完，重新加热要彻底煮透（中心达100℃）。\n· 已隔夜且闻着不对、有异味的剩菜直接丢弃，别硬留。\n· 绿叶蔬菜剩菜亚硝酸盐偏高，尽量少留过夜。♻️';
+if(complex==='easy')out=out.replace('🥣 方案','⏱️ 快手方案');
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 菜谱已复制！'))}
+</script>
+</body>
+</html>

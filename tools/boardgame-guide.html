@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI桌游规则速览助手 | AgentGongju.com</title>
+<meta name="description" content="开箱即玩！输入你手头的桌游名（狼人杀、三国杀、UNO、剧本杀等），快速get规则要点、人数配件和上手小抄。">
+<meta name="keywords" content="桌游,规则,狼人杀,三国杀,UNO,剧本杀,游戏规则,聚会游戏">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+input[type=text],select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:600px){.param-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🎲 AI桌游规则速览</h1><p>开箱即玩，规则清清楚楚</p></div>
+
+<div class="card">
+<label>🎮 桌游名称</label>
+<select id="game"><option value="werwolf">狼人杀</option><option value="sanguosha">三国杀</option><option value="uno">UNO</option><option value="script">剧本杀</option><option value="mafia">谁是卧底</option><option value="dixit">画物语/只言片语</option></select>
+<label>👥 实际参与人数</label>
+<select id="num"><option value="3">3人</option><option value="4">4人</option><option value="6">6人</option><option value="8">8人</option><option value="10">10人及以上</option></select>
+<label>🧑‍🤝‍🧑 玩家熟悉度</label>
+<select id="skill"><option value="new">都是新手</option><option value="mix">有老手也有新手</option><option value="pro">都是老手</option></select>
+<button class="btn-gen" id="genBtn">🎲 生成规则小抄</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🎲 速览小抄</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制小抄</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const data={
+werwolf:{name:'狼人杀',players:'建议8-12人',need:'身份牌、法官(主持人)',rule:'夜间狼人睁眼刀人，神职发动技能→天亮公布死讯→辩论放逐投票→往复直到好人或狼人达成胜利。',tips:'新手先玩"标准板"(预女猎白)，老手加"守卫/白狼王"等变体。'},
+sanguosha:{name:'三国杀',players:'建议4-8人',need:'身份牌、武将牌、手牌',rule:'身份分发主公/忠臣/反贼/内奸。回合制：摸牌→出牌(杀/锦囊/装备)→弃牌过。主公死则反贼胜，反贼内奸死则主忠胜。',tips:'新手优先选技能简单的武将，先记"杀/闪/桃"三种基础手牌。'},
+uno:{name:'UNO',players:'2-10人',need:'标准108张牌',rule:'轮流出牌，须出与上家同色或同数字/功能牌。功能牌：+2、反转、跳过、变色、+4。先出完所有牌为胜，出到最后一张须喊"UNO"。',tips:'+4是"罚抽+变色"王牌，可针对上家使用。'},
+script:{name:'剧本杀',players:'建议5-7人',need:'剧本、主持人APP/DM',rule:'每位玩家拿到角色剧本，了解自己的故事与秘密。依次自我介绍→搜证线索→圆桌讨论→投票推理真凶→复盘真相。',tips:'新手别急着装凶手，先多听多聊；搜证尽量共享线索提高效率。'},
+mafia:{name:'谁是卧底',players:'建议6-10人',need:'词牌、主持人',rule:'7人局含2卧底1白板。每轮每人用一个词描述，投票淘汰嫌疑最大的，卧底被找出则平民胜。',tips:'描述越抽象越容易藏，白板要听别人节奏猜词。'},
+dixit:{name:'画物语/只言片语',players:'建议4-6人',need:'画卡、投票板',rule:'每轮讲述者出一张画并说一个词/句，其他人各出一张相似的画混入，大家都投票猜讲述者那张，猜中得分，讲述者要既有人猜中又别全猜中。',tips:'话说得越模棱两可越容易骗到人又得分。'}
+};
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('AI桌游规则速览助手 | AgentGongju.com'))return;
+const g=document.getElementById('game').value;
+const num=document.getElementById('num').value;
+const skill=document.getElementById('skill').value;
+const d=data[g];
+const numWarn=(parseInt(num)<parseInt(data[g].players.match(/(\d+)/)[1]))?'\n\n⚠️ 当前人数较少，建议按需缩减身份/增加规则宽容度，或改玩更轻量的聚会游戏。':'';
+const skillTip=skill==='new'?'\n· 新手局：先说明基础规则再开局，第一轮多给发言时间，输赢不重要。':skill==='mix'?'\n· 混合局：请老手当主持人/讲解，新手跟学，避免冲突体验。':'\n· 老手局：可直接上进阶变体规则，加快节奏。';
+let out='【桌游速览】'+d.name+'\n\n';
+out+='👥 推荐人数：'+d.players+'｜实际'+num+'人\n🎒 需要：'+d.need+'\n\n';
+out+='📖 规则要点\n'+d.rule+'\n';
+out+='\n💡 上手小抄\n'+d.tips+skillTip+numWarn+'\n';
+out+='\n🎲 祝玩得开心，注意气氛别吵架～';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 小抄已复制！'))}
+</script>
+</body>
+</html>

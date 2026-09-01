@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI梅雨季生活指南 | AgentGongju.com</title>
+<meta name="description" content="梅雨季来了怎么办？AI根据你的居住城市和房屋情况，给出防潮除湿、衣物防霉、饮食祛湿、出行防滑和家电养护的实用生活指南。">
+<meta name="keywords" content="梅雨季,除湿,防潮,祛湿,回南天,衣物防霉,霉菌,南方潮湿,梅雨季指南">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:600px){.param-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🌧 AI梅雨季生活指南</h1><p>南方回潮天，这份防潮作战手册请收好</p></div>
+
+<div class="card">
+<div class="param-grid">
+<div><label>📍 你所在的城市</label><input type="text" id="city" placeholder="例如：杭州 / 上海 / 广州"></div>
+<div><label>🏠 你的居住情况</label><select id="house"><option value="rent">出租屋（不方便大改）</option><option value="own">自购房</option><option value="basement">低楼层/地下/靠江</option></select></div>
+</div>
+<div class="param-grid">
+<div><label>🛒 手头电器</label><select id="device"><option value="none">只有风扇</option><option value="dehum">有除湿机</option><option value="ac">有空调(除湿模式)</option></select></div>
+<div><label>🧺 家里最头疼</label><select id="pain"><option value="clothes">衣物发霉</option><option value="wall">墙面发霉</option><option value="food">食物受潮</option><option value="smell">有霉味</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">📋 生成我的防潮指南</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🌧 梅雨季防潮作战手册</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制指南</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('AI梅雨季生活指南 | AgentGongju.com'))return;
+const city=document.getElementById('city').value.trim()||'你的城市';
+const house=document.getElementById('house').value;
+const device=document.getElementById('device').value;
+const pain=document.getElementById('pain').value;
+let out='【梅雨季防潮作战手册】\n所在地：'+city+'｜居住：'+houseLabel(house)+'\n═'.repeat(24)+'\n\n';
+// 核心防潮原则
+out+='【黄金三原则】\n· 潮湿天<strong>少开朝南窗</strong>，早上温度低尤其别开大窗。\n· 电器除湿比开门通风更有效，湿度>70%就开机。\n· 东西能离地10cm就离地，别贴墙堆。\n\n';
+out+='【针对你的情况】\n';
+if(house==='basement')out+='· 低楼层/临江湿气最重：地面可铺报纸/吸水垫，墙角备干燥剂，有条件放排水泵。\n';
+else if(house==='rent')out+='· 出租屋建议用可移动除湿机/烘干机，别大改墙面；衣柜放除湿盒勤换。\n';
+else out+='· 自购房必要时可做墙面防潮，注意墙根外排水。\n';
+if(device==='dehum')out+='· 你已有除湿机：湿度高于65%就开，水箱满了及时倒，房间密闭效果好。\n';
+else if(device==='ac')out+='· 空调除湿模式连开2小时能明显降湿，但长时间开注意能耗。\n';
+else out+='· 只有风扇时，可配合除湿盒/干燥剂，风扇加速空气流通减少闷湿。\n';
+if(pain==='clothes')out+='· 衣物防霉：晾不干的用烘干机/除湿袋，没干别收进柜，柜内放樟脑/除湿盒。\n';
+else if(pain==='wall')out+='· 墙面发霉：用漂白水(稀释)擦拭后通风，严重刷防霉漆，避免手摸后揉眼。\n';
+else if(pain==='food')out+='· 食物受潮：密封罐装好米面干货，放几包干燥剂，发霉的坚决不吃。\n';
+else out+='· 霉味：开窗通风+活性炭/绿植吸附，鞋柜衣物处可放除味盒。\n';
+out+='\n【饮食祛湿】\n· 多喝红豆薏米、冬瓜汤、陈皮水，少食生冷甜腻。\n· 常吃点生姜、洋葱、山药健脾祛湿，体感更清爽。\n\n';
+out+='【出行与家电】\n· 地砖/台阶湿滑易摔，门口铺吸水垫，穿防滑鞋。\n· 电视/路由器不用时保持通电散热，防受潮短路。\n· 相机、乐器等贵重物放进防潮箱。\n\n';
+out+='【一句话提醒】\n梅雨也就一个月左右，勤除湿、多通风(挑晴天)、管好门窗，熬过这段又见晴天 🌤';
+document.getElementById('outputBox').innerHTML=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function houseLabel(h){return{rent:'出租屋',own:'自购房',basement:'低楼层/临江'}[h]}
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 指南已复制！'))}
+</script>
+</body>
+</html>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>合同要点快速提取 | AgentGongju.com</title>
+<meta name="description" content="粘贴合同或协议文本，AI帮你快速提取关键条款，如合同双方、金额、期限、违约与保密等要点，辅助快速审阅。">
+<meta name="keywords" content="合同审阅,合同要点,合同提取,条款分析,协议重点,合同摘要">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+textarea,input[type=text],select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:120px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.focus{color:#f87171}
+@media(max-width:600px){.param-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📑 合同要点快速提取</h1><p>快速抓住一份合同的关键信息</p></div>
+
+<div class="card">
+<label>📝 粘贴合同/协议文本</label>
+<textarea id="contract" placeholder="将合同或协议全文粘贴到这里，AI将提取关键条款要点……"></textarea>
+<button class="btn-gen" id="genBtn">🔍 提取合同要点</button>
+<label style="margin-top:12px;color:#64748b;font-size:.8rem">* 本工具仅作辅助参考，不构成法律意见，重大合同建议咨询专业律师</label>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">📑 合同要点提取结果</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制要点</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('合同要点快速提取 | AgentGongju.com'))return;
+const text=document.getElementById('contract').value.trim();
+if(!text){alert('请先粘贴合同文本');return;}
+const t=text;
+const extract=(re)=>{const m=t.match(re);return m?m[0].replace(/^[：:]\s*/,''):'';};
+let out='【合同要点提取】\n';
+out+='【合同双方】\n';
+out+='· 甲方：'+(extract(/甲方[：:]([^\n，。]{2,30})/)||'未识别')+'\n';
+out+='· 乙方：'+(extract(/乙方[：:]([^\n，。]{2,30})/)||'未识别')+'\n\n';
+out+='【金额】'+(extract(/[0-9,，.]{2,20}\s*元|\d+\s*万元|人民币\s*\d+/)||'未识别到明确金额')+'\n\n';
+out+='【合同期限】'+(extract(/有效[^，。]{2,40}|期限[^，。]{2,40}|自[^，。]{2,20}止/)||'未识别到明确期限')+'\n\n';
+out+='【违约责任】';
+out+=(t.includes('违约')?'\n· 合同含违约责任条款，涉及'+(extract(/违约金[^，。]{2,30}|赔偿[^，。]{2,30}/)||'具体赔偿约定')+'。':'\n· 未识别到明显违约责任条款。')+'\n\n';
+out+='【保密条款】'+(t.includes('保密')?'\n· 含保密条款，涉及'+(extract(/保密[^，。]{2,30}/)||'保密义务约定')+'。':'\n· 未识别到保密条款。')+'\n\n';
+out+='【其他要点】\n';
+const extras=[];
+if(t.includes('解除'))extras.push('含合同解除条款');
+if(t.includes('争议')||t.includes('仲裁'))extras.push('含争议解决（'+(t.includes('仲裁')?'仲裁':'诉讼')+'）条款');
+if(t.includes('盖章')||t.includes('签字'))extras.push('含签署生效要求');
+if(t.includes('发票'))extras.push('涉及发票开具约定');
+if(t.includes('质保')||t.includes('售后'))extras.push('含质保/售后条款');
+if(!extras.length)extras.push('请人工核对合同其它细节');
+extras.forEach(x=>out+='· '+x+'\n');
+out+='\n【审阅提示】\n· 请重点核对金额、期限、违约与争议解决等核心条款与你的预期是否一致。\n· 对存疑条款建议标注后与对方或专业律师沟通确认。';
+document.getElementById('outputBox').innerHTML=out.replace(/(【审阅提示】)/g,'<div style="color:#f87171;margin-top:8px">$1</div>');
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 要点已复制！'))}
+</script>
+</body>
+</html>

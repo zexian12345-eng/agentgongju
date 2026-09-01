@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI深夜食堂文案 | AgentGongju.com</title>
+<meta name="description" content="输入你今晚想做的夜宵或想表达的心情，AI帮你写出有温度、有烟火气的深夜食堂感文案，适合发朋友圈或短文。">
+<meta name="keywords" content="深夜食堂,夜宵文案,深夜文案,美食文案,治愈文案,夜宵">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+textarea,input[type=text],select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:80px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tag-btn{display:inline-block;padding:5px 12px;background:rgba(99,102,241,0.12);border:1px solid rgba(99,102,241,0.25);border-radius:20px;color:#a5b4fc;cursor:pointer;font-size:.8rem;margin:3px;transition:all .2s}
+.tag-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🍜 AI深夜食堂文案</h1><p>深夜的一碗暖食，和最治愈的一句文案</p></div>
+
+<div class="card">
+<label>✨ 今晚想吃/想写什么</label>
+<div>
+<span class="tag-btn" onclick="setFood('面')">🍜 一碗面</span>
+<span class="tag-btn" onclick="setFood('火锅')">🍲 火锅/麻辣烫</span>
+<span class="tag-btn" onclick="setFood('烧烤')">🍢 烧烤</span>
+<span class="tag-btn" onclick="setFood('甜品')">🍮 甜品/夜宵</span>
+</div>
+<label>🏮 心情基调</label>
+<select id="mood"><option value="治愈">温暖治愈</option><option value="孤独">孤独文艺</option><option value="放松">放松惬意</option><option value="元气">元气满满</option></select>
+<label>📝 具体想写的（可选）</label>
+<textarea id="note" placeholder="例如：加班的夜晚来碗热面，治愈一天的疲惫……"></textarea>
+<button class="btn-gen" id="genBtn">✨ 生成深夜文案</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🍜 你的深夜食堂文案（3条）</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制文案</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const food={},
+texts={
+'面':['深夜的满足感，是一碗冒着热气的面。','面条吸溜进肚，疲惫也顺着喉咙滑走了。'],
+'火锅':['深夜的锅，咕嘟的是热气，也是生活。','麻辣烫里涮过的，都是白天的委屈。'],
+'烧烤':['炭火味里，是深夜最诚实的人间烟火。','一串接一串，把白天的烦闷都烤没了。'],
+'甜品':['甜食是深夜写给疲惫的解药。','一口甜，就能把晚风变温柔。']
+};
+const moodtail={
+'治愈':['生活偶尔需要被一点点热气抚平。','愿你今晚，也被温柔以待。'],
+'孤独':['胃暖了，心也会慢慢暖起来。','一个人也要吃得热气腾腾。'],
+'放松':['此刻没有KPI，只有面前这一碗。','慢下来的晚上，最是舒服。'],
+'元气':['吃饱了，明天又是有劲的一天。','能量充值成功，晚安世界。']
+};
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('AI深夜食堂文案 | AgentGongju.com'))return;
+const food=document.getElementById('food')?document.getElementById('food').value:'面';
+const mood=document.getElementById('mood').value;
+const note=document.getElementById('note').value.trim();
+const t=texts[food]||texts['面'];
+const mt=moodtail[mood];
+let out='【深夜食堂 · '+food+' · '+mood+'】\n\n';
+for(let i=0;i<3;i++){
+  out+='✨ 第'+(i+1)+'条：\n'+t[i%t.length]+'\n'+mt[i%mt.length]+'\n';
+  if(i===0&&note){out+='📌 '+note+'\n';}
+  out+='\n';
+}
+out+='—— 配上一张热气的实拍图，更有感觉 🌙';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function setFood(v){var el=document.getElementById('food');if(el){el.value=v;}else{var s=document.createElement('select');s.id='food';s.innerHTML='<option>'+v+'</option>';document.body.appendChild(s);}}
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 文案已复制！'))}
+</script>
+</body>
+</html>

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>中医九种体质自测 | AgentGongju.com</title>
+<meta name="description" content="通过简单问答，帮你初步辨识自己属于哪种中医体质（平和质、气虚质等九种），并给出对应的日常调理建议。仅供健康参考。">
+<meta name="keywords" content="中医体质,体质自测,九种体质,养生,调理,平和质,气虚质">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+textarea,input[type=text],select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:80px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.opt{display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.opt label{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:10px 16px;cursor:pointer;font-weight:400;font-size:.85rem;margin:0}
+.opt input{display:none}
+.opt input:checked+label{background:rgba(99,102,241,0.2);border-color:#6366f1;color:#a5b4fc}
+@media(max-width:600px){.param-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🌿 中医九种体质自测</h1><p>了解自己，从认识体质开始（仅供健康参考）</p></div>
+
+<div class="card">
+<label>📝 体质测试 · 请根据近一年真实感受作答</label>
+<div id="questions"></div>
+<button class="btn-gen" id="genBtn">🔍 测测我的体质</button>
+<label style="margin-top:12px;color:#64748b;font-size:.8rem">* 本测试仅为中医体质的基础辨识参考，不构成医疗诊断，如有不适请及时就医</label>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🌿 你的体质测评结果</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制调理建议</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const questions=[
+{id:'q1',text:'我常常感到精神充沛，睡醒后很有精神',key:'pinghe'},
+{id:'q2',text:'我比较容易累，说话声音偏低、不爱多说话',key:'qixu'},
+{id:'q3',text:'我手脚偏凉，怕冷，比别人更容易受寒',key:'yangxu'},
+{id:'q4',text:'我容易手脚心发热、口干咽燥，喜欢喝凉的',key:'yinxu'},
+{id:'q5',text:'我身上的肉偏松软，尤其是腹部，感觉痰多',key:'tanshi'},
+{id:'q6',text:'我的脸上容易出油，身上容易长小疙瘩',key:'shire'},
+{id:'q7',text:'我容易情绪不好、爱叹气，胸口总像堵着气',key:'qiyu'},
+{id:'q8',text:'我肤色偏暗，身上容易出现淤青或瘀斑',key:'xueyu'},
+{id:'q9',text:'我容易对花粉、灰尘等过敏，常常打喷嚏或起疹子',key:'tebing'}
+];
+const answers=['不/很少','有时','经常','总是'];
+const results={
+pinghe:{name:'平和质',desc:'体质较为平和，阴阳气血调和，是较为理想的状态。',tips:'保持现有作息与饮食规律，适度运动，注意劳逸结合，维持乐观心态即可。'},
+qixu:{name:'气虚质',desc:'常有疲乏、气短、易感冒的表现，多与脾气虚、肺气虚有关。',tips:'宜规律作息、睡眠充足，适当吃山药、小米、红枣等健脾益气食物，避免过度劳累和熬夜。'},
+yangxu:{name:'阳虚质',desc:'常畏寒怕冷、手足不温，属体内阳气不足。',tips:'注意保暖，少食生冷，适当晒太阳；可适量吃羊肉、生姜、桂圆等温补食物，坚持舒缓运动。'},
+yinxu:{name:'阴虚质',desc:'常感口干舌燥、手足心热，体内阴液偏不足。',tips:'避免熬夜与辛辣燥热食物，宜多喝水，吃百合、银耳、鸭肉等滋阴润燥之品，保持心境平和。'},
+tanshi:{name:'痰湿质',desc:'形体多偏胖、腹部松软，易感身重困倦，多因痰湿内盛。',tips:'控制饮食、少食油腻甜腻，适当增加运动排汗；可吃薏米、冬瓜、赤小豆等利湿食物。'},
+shire:{name:'湿热质',desc:'面易出油、易生暗疮，多与湿热内蕴有关。',tips:'少吃辛辣油炸、少饮酒，多吃绿豆、苦瓜、芹菜等清热利湿食物，保持规律作息。'},
+qiyu:{name:'气郁质',desc:'情绪多思多虑、易叹气，胸口易有闷堵感，与气机不畅有关。',tips:'学会释放压力，多与人交流，坚持快走、慢跑等运动；可喝玫瑰花、茉莉花茶疏肝解郁。'},
+xueyu:{name:'血瘀质',desc:'肤色偏暗，易有瘀斑瘀青，多见血行不畅。',tips:'避免久坐久站，坚持适度运动促进气血运行；可适量吃山楂、黑木耳，少吃生冷。'},
+tebing:{name:'特禀质',desc:'体质较为敏感，易对某些物质过敏，多与先天禀赋有关。',tips:'留意并远离已知过敏原，保持居所通风清洁，增强体质；必要时在医生指导下调整。'}
+};
+const qBox=document.getElementById('questions');
+questions.forEach(q=>{
+let html='<div style="margin-bottom:18px"><div style="color:#e2e8f0;font-size:.9rem;margin-bottom:8px">'+q.text+'</div><div class="opt">';
+answers.forEach((a,ai)=>html+='<input type="radio" name="'+q.id+'" id="'+q.id+'_'+ai+'" value="'+(ai+1)+'"><label for="'+q.id+'_'+ai+'">'+a+'</label>');
+html+='</div></div>';
+qBox.insertAdjacentHTML('beforeend',html);
+});
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('中医九种体质自测 | AgentGongju.com'))return;
+const score={};
+questions.forEach(q=>{
+  const val=document.querySelector('input[name="'+q.id+'"]:checked');
+  const v=val?parseInt(val.value):0;
+  score[q.key]=v;
+});
+if(Object.values(score).every(s=>s===0)){alert('请至少回答一道题');return;}
+// 计算平均分对应的程度
+let topKey='pinghe',topV=0;
+for(const k in score){if(score[k]>topV){topV=score[k];topKey=k;}}
+const r=results[topKey];
+const level=topV>=4?'较为明显':(topV===3?'有一定倾向':(topV>=2?'轻微倾向':'基本倾向'));
+let out='【测评结果】\n';
+out+='你的体质最接近：『'+r.name+'』（'+level+'）\n\n';
+out+='【体质特点】\n'+r.desc+'\n\n';
+out+='【日常调理建议】\n'+r.tips+'\n\n';
+out+='【温馨提醒】\n· 本测评基于常见表现，仅供健康参考。\n· 若身体有明显不适，建议咨询专业中医师或医生。\n· 调理贵在坚持，放平心态，规律生活最重要。🌿';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 结果已复制！'))}
+</script>
+</body>
+</html>

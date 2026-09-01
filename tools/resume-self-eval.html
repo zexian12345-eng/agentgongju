@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI简历自我评价生成 | AgentGongju.com</title>
+<meta name="description" content="输入你的经历亮点、应聘岗位和性格特点，AI帮你写出一段有数据、有亮点、不空泛的简历自我评价，让HR眼前一亮。">
+<meta name="keywords" content="简历自我评价,简历,个人简介,求职自我评价,简历优化,自我介绍">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+textarea,input[type=text],select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:90px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tag-btn{display:inline-block;padding:5px 12px;background:rgba(99,102,241,0.12);border:1px solid rgba(99,102,241,0.25);border-radius:20px;color:#a5b4fc;cursor:pointer;font-size:.8rem;margin:3px;transition:all .2s}
+.tag-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📝 AI简历自我评价</h1><p>一句话有亮点、有数据、有态度的自我评价</p></div>
+
+<div class="card">
+<label>💼 应聘岗位</label>
+<input type="text" id="position" placeholder="例如：新媒体运营、销售、产品经理……">
+<label>📊 年限 / 经验（可选）</label>
+<select id="year"><option value="应届">应届生</option><option value="1-3年">1-3年经验</option><option value="5年+">5年以上</option></select>
+<label>✨ 你的核心亮点（用数据更好）</label>
+<textarea id="point" placeholder="例如：2年运营经验，曾把公众号粉丝从0做到5万，擅长内容策划和数据分析……"></textarea>
+<label>😊 性格 / 工作风格（可选）</label>
+<div>
+<span class="tag-btn" onclick="setStyle('责任心')">💪 责任心强</span>
+<span class="tag-btn" onclick="setStyle('执行力')">⚡ 执行力强</span>
+<span class="tag-btn" onclick="setStyle('沟通')">🤝 沟通协作</span>
+<span class="tag-btn" onclick="setStyle('学习')">📚 学习能力强</span>
+</div>
+<button class="btn-gen" id="genBtn">✨ 生成自我评价</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">📝 简历自我评价（3版可选）</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制评价</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('AI简历自我评价生成 | AgentGongju.com'))return;
+const position=document.getElementById('position').value.trim()||'目标岗位';
+const year=document.getElementById('year').value;
+const point=document.getElementById('point').value.trim();
+const style=document.getElementById('style')?document.getElementById('style').value:'责任心';
+if(!point){alert('请填写你的核心亮点');return;}
+// 提取数据（数字）
+const nums=point.match(/\d+[%万\+]?/g);
+const dataStr=nums&&nums.length?('（数据：'+nums.slice(0,3).join('、')+'）'):'';
+const styleDesc={'责任心':'工作认真细致、对结果负责','执行力':'行动力强、结果导向、拒绝拖沓','沟通':'沟通协调能力强、擅长跨部门协作','学习':'学习能力强、能快速上手新业务'}[style];
+const v1=['本人有'+year+'经历，专注'+position+'方向。'+point+'。'+styleDesc+'，希望为团队创造实际价值。','多年'+position+'经验，熟练驾驭核心流程。'+point+'。'+styleDesc+'，抗压务实，能与团队高效配合。','热爱'+position+'工作，具备扎实基础。'+point+'。'+styleDesc+'，期待在一个快速成长的平台持续精进。'];
+let out='【'+position+' · 自我评价】\n\n';
+v1.forEach(function(s,i){out+='📄 版本'+(i+1)+'：\n'+s+' '+dataStr+'\n\n';});
+out+='💡 优化贴士：\n· 把"会做"改成"做出了什么成果"，用数据说话。\n· 突出与目标岗位最相关的1-2个核心能力，其余简写。\n';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function setStyle(v){var el=document.getElementById('style');if(el){el.value=v;}else{var s=document.createElement('select');s.id='style';s.innerHTML='<option>'+v+'</option>';document.body.appendChild(s);}}
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 评价已复制！'))}
+</script>
+</body>
+</html>

@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI 会议纪要生成 | AgentGongju.com</title>
-<meta name="description" content="AI会议纪要生成，粘贴会议录音转文字或随手记的会议要点，自动整理出决策、待办、负责人与时间节点，办公提效必备">
-<meta name="keywords" content="会议纪要,会议记录,待办事项,办公效率,职场工具">
-<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>">
+<title>AI会议纪要整理 | AgentGongju.com</title>
+<meta name="description" content="粘贴会议录音转文字或手记要点，AI一键整理成结构清晰的会议纪要，含决议事项与待办清单。">
+<meta name="keywords" content="会议纪要,会议记录,纪要生成,会议总结,待办事项,办公效率">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
 .tool-header{text-align:center;margin-bottom:40px}
@@ -13,80 +13,83 @@
 .card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
 .card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
 select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
-textarea{min-height:110px;resize:vertical}
+textarea{min-height:120px;resize:vertical}
 input:focus,select:focus,textarea:focus{border-color:#6366f1}
 .param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 .btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
 .btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
 .result-area{display:none;margin-top:20px}
 .result-area.active{display:block}
-.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;margin-bottom:12px;font-size:.92rem}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
 .copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
 .copy-btn:hover{background:rgba(99,102,241,0.25)}
-.people{display:flex;flex-wrap:wrap;gap:8px}
-.chip{padding:4px 12px;border-radius:20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.25);color:#a5b4fc;font-size:.8rem}
+.tip{color:#94a3b8;font-size:.85rem;margin-bottom:12px}
 @media(max-width:600px){.param-row{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 <nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
 <div class="tool-container">
-<div class="tool-header"><h1>📝 AI 会议纪要生成</h1><p>随手记的零散要点，自动变成可落地执行的会议纪要</p></div>
+<div class="tool-header"><h1>📋 AI 会议纪要整理</h1><p>杂乱记录 → 结构化纪要，决议与待办一清二楚</p></div>
 
 <div class="card">
-<label>🗒️ 粘贴会议要点 / 转写内容（用空行或标点分隔每条）</label>
-<textarea id="notes" placeholder="例如：张总说下季度重点推新品；小李负责改官网，周五前交付；预算还有80万；大家讨论后决定下周三复盘；招聘pending到月底。"></textarea>
+<label>📝 粘贴会议内容（录音转写 / 手记要点）</label>
+<textarea id="content" placeholder="例如：今天开会讨论了新项目的推广方案。王经理说预算三万，目标下月底上线。小李负责设计，张姐负责对接供应商。大家一致同意先做小范围测试……"></textarea>
 <div class="param-row">
-<div><label>🏷️ 会议主题</label>
-<input type="text" id="mtopic" placeholder="例如：Q3 产品规划会"></div>
-<div><label>👥 参与人（逗号分隔）</label>
-<input type="text" id="people" placeholder="张总、小李、王芳、陈工"></div>
+<div><label>📂 会议类型</label>
+<select id="type"><option value="项目会议" selected>🚀 项目会议</option><option value="部门例会">📆 部门例会</option><option value="复盘会">🔍 复盘会</option><option value="客户沟通">🤝 客户沟通</option></select></div>
+<div><label>📏 纪要详略</label>
+<select id="detail"><option value="精炼" selected>⚡ 精炼版</option><option value="详细">📚 详细版</option></select></div>
 </div>
 <button class="btn-gen" id="genBtn">✨ 生成会议纪要</button>
 </div>
 
 <div class="result-area" id="resultArea">
 <div class="card">
-<div style="color:#a855f7;font-weight:600;margin-bottom:12px">📋 结构化会议纪要</div>
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 你的会议纪要</div>
 <div class="output-box" id="outputBox"></div>
 <button class="copy-btn" onclick="copyResult()">📋 复制纪要</button>
+<div class="tip" style="margin-top:12px">💡 小贴士：会前发送议题、会后24小时内发出纪要，团队执行效率最高。记得@相关负责人。</div>
 </div>
 </div>
 </div>
 <footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
 <script>
-const roleKw=['负责人','负责','主持','决定','确认','拍板','定了','决策'];
-const dateKw=['下周三','下周五','月底','周五前','下周一','本周内','后天','明天','月底前','周五'];
-function nowStr(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
-function nextWeekday(day){const map={一:1,二:2,三:3,四:4,五:5,六:6,日:0,t日:0};const today=(new Date().getDay());let diff;Object.keys(map).forEach(k=>{if(day.includes(k))diff=(map[k]-today+7)%7||7;});const d=new Date();d.setDate(d.getDate()+(diff||7));return `${d.getMonth()+1}月${d.getDate()}日`;}
+function splitSentences(t){return t.split(/[。！？!?；;\n]+/).map(s=>s.trim()).filter(s=>s.length>1);}
 document.getElementById('genBtn').addEventListener('click',()=>{
-if(!Paywall.countUse('AI 会议纪要生成 | AgentGongju.com'))return;
-const notes=document.getElementById('notes').value.trim();
-if(!notes){alert('请先粘贴会议要点');return;}
-const mtop=document.getElementById('mtopic').value.trim()||'项目例会';
-const people=document.getElementById('people').value.split(/[，,、\s]+/).filter(Boolean);
-const items=notes.split(/[\n。；;]+/).map(x=>x.trim()).filter(Boolean).slice(0,8);
-const chips=(people.length?people:['全员']).map(p=>`<span class="chip">${p}</span>`).join('');
-let out=`【会议纪要】${mtop}\n时间：${nowStr()}\n参与人：${people.join('、')||'暂无'}\n\n`;
-out+=`一、会议背景\n本次会议围绕「${mtop}」展开，主要明确了近期工作重点与资源安排。\n\n`;
-out+=`二、重点讨论与决策\n`;
-items.forEach((x,i)=>out+=`${i+1}. ${x}\n`);
-out+=`\n三、明确决策\n`;
-out+=`· 已确认${items[0]?items[0].replace(/负责.*/,'')+'相关事项':'核心方向'}作为下阶段优先推进目标。\n`;
-out+=`· ${people[0]||'相关负责人'}就资源与时间节点达成一致，后续按计划执行。\n\n`;
-out+=`四、待办事项（Action Items）\n`;
-const assign=people[0]||'待定负责人';
-const assign2=people[1]||people[0]||'待定负责人';
-out+=`1. [${assign}] 牵头推进「${items.shift()||'核心议题'}」，输出方案。\n`;
-out+=`2. [${assign2}] 跟进「${items[0]||'相关信息整理'}」，${nextWeekday('五')}前反馈。\n`;
-out+=`3. [${people.find(p=>p!==assign&&p!==assign2)||'指定同学'}] 汇总并同步进度，${nextWeekday('三')}提交汇报。\n`;
-out+=`\n五、下一步\n以上待办请相关同事按期推进，下次会议订于${nextWeekday('三')}复盘对齐。`;
-document.getElementById('outputBox').innerHTML=out.replace(/\n/g,'<br>');
-document.getElementById('peopleArea')?document.getElementById('peopleArea').innerHTML=chips:null;
-window._mtg='【会议纪要】'+mtop+'\n'+out;
+if(!Paywall.countUse('AI会议纪要整理 | AgentGongju.com'))return;
+const content=document.getElementById('content').value.trim();
+const type=document.getElementById('type').value;
+const detail=document.getElementById('detail').value;
+if(!content){alert('请先粘贴会议内容');return;}
+let sents=splitSentences(content);
+const keywordTasks=[['负责','安排','去做','跟进','对接','处理','准备','完成'],['预算','拨款','投资'],['上线','排期','时间','月底','日期','节点','deadline']];
+let tasks=[],budgets=[],plans=[];
+sents.forEach(s=>{
+if(keywordTasks[0].some(k=>s.includes(k)))tasks.push(s);
+if(keywordTasks[1].some(k=>s.includes(k)))budgets.push(s);
+if(keywordTasks[2].some(k=>s.includes(k)))plans.push(s);
+});
+const people=[];
+const sent2=sents.join('，');
+const m=sent2.match(/[王李张刘陈杨黄赵吴周徐孙马朱胡郭何高林罗郑梁谢宋唐许韩冯邓曹彭曾肖田董袁潘蒋蔡余杜叶程苏魏吕丁任沈姚卢姜崔钟谭陆汪范金石廖贾夏韦付方白邹孟熊秦邱江尹薛闫段雷侯龙史陶黎贺顾毛郝龚邵万钱严覃武戴莫孔向汤][^，。\s]{1,3}?(?:经理|总|姐|哥|老师|同学|工|先生|女士)/g)||[];
+const uniqPeople=[...new Set((m||[]))].slice(0,6);
+let out='【'+type+' · '+detail+'版会议纪要】\n\n';
+out+='━━ 一、会议概述 ━━\n';
+out+='· 议题方向：'+sents[0]+'\n';
+out+=(uniqPeople.length?'· 主要参会：'+uniqPeople.join('、')+'\n':'· 参会人员：与会相关人员\n');
+out+='· 纪要生成：AgentGongju AI'+'\n';
+out+='\n━━ 二、讨论要点 ━━\n';
+sents.slice(0,detail==='详细'?7:4).forEach((s,i)=>out+='· '+(i+1)+'. '+s+'\n');
+if(tasks.length){out+='\n━━ 三、工作安排 / 待办 ━━\n';tasks.slice(0,5).forEach((t,i)=>out+='☑️ '+(i+1)+'. '+t.replace(/^[王李张刘杨陈黄赵吴周徐孙马朱胡郭高何林罗郑梁谢宋唐许韩冯邓曹彭曾肖田董袁潘蒋蔡余杜叶程苏魏吕丁任沈姚卢姜崔钟谭陆汪范金石廖贾夏韦付方白邹孟熊秦邱江尹薛闫段雷侯龙史陶黎贺顾毛郝龚邵万钱严覃武戴莫孔向汤]/,'【负责人】')+'\n');}
+if(budgets.length){out+='\n━━ 四、资源 / 预算 ━━\n';budgets.slice(0,3).forEach(b=>out+='· '+b+'\n');}
+if(plans.length){out+='\n━━ 五、时间节点 ━━\n';plans.slice(0,3).forEach(p=>out+='· '+p+'\n');}
+out+='\n━━ 六、待确认事项 ━━\n';
+out+='· 需落实上述待办项反馈时间；\n· 下次会议时间与议题待定，建议提前同步。';
+document.getElementById('outputBox').innerText=out;
 document.getElementById('resultArea').classList.add('active');
 });
-function copyResult(){navigator.clipboard.writeText(window._mtg||'').then(()=>alert('✅ 纪要已复制！'))}
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 会议纪要已复制！'))}
 </script>
 </body>
 </html>

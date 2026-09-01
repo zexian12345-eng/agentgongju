@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI星座运势 | AgentGongju.com</title>
+<meta name="description" content="选择你的星座，AI为你生成今日运势，涵盖综合、事业、财运、爱情与健康，助你把握每一天。">
+<meta name="keywords" content="星座运势,今日运势,十二星座,白羊座,运势,每日运势,塔罗">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:70px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{color:#94a3b8;font-size:.85rem;margin-bottom:12px}
+.star{color:#facc15}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🔮 AI 星座运势</h1><p>今天星星怎么说？看看你的专属好运气</p></div>
+
+<div class="card">
+<label>🌟 选择你的星座</label>
+<select id="zodiac">
+<option>白羊座</option><option>金牛座</option><option>双子座</option><option>巨蟹座</option><option>狮子座</option><option>处女座</option>
+<option>天秤座</option><option>天蝎座</option><option>射手座</option><option>摩羯座</option><option>水瓶座</option><option>双鱼座</option>
+</select>
+<div class="param-row">
+<div><label>📅 运势周期</label>
+<select id="span"><option value="今日">今日</option><option value="本周" selected>本周</option><option value="本月">本月</option></select></div>
+<div><label>🎯 关注领域</label>
+<select id="focus"><option value="综合" selected>综合</option><option value="事业">事业</option><option value="爱情">爱情</option><option value="财运">财运</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">✨ 查看我的运势</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 你的运势报告</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制报告</button>
+<div class="tip" style="margin-top:12px">💡 温馨提示：星座运势仅供参考娱乐，命运钥匙掌握在自己手中，保持好心态运气自然来。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const SIGNS={'白羊座':['🔥','热情冲动','快速行动','勇往直前'],'金牛座':['🌿','务实稳健','注重积累','坚持到底'],'双子座':['💬','机智灵活','好奇心强','善于沟通'],'巨蟹座':['🦀','情感细腻','重情重义','照顾他人'],'狮子座':['🦁','自信大方','领导力强','热爱表现'],'处女座':['🚗','追求完美','细致认真','理性自律'],'天秤座':['⚖️','追求平衡','优雅亲和','重视和谐'],'天蝎座':['🦂','直觉敏锐','意志坚定','深情专注'],'射手座':['🏹','乐观开朗','热爱自由','勇于探索'],'摩羯座':['🐐','踏实上进','目标明确','沉稳可靠'],'水瓶座':['💧','思想前卫','独立洒脱','创新独特'],'双鱼座':['🐠','浪漫梦幻','共情力强','温柔善良']};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI星座运势 | AgentGongju.com'))return;
+const zodiac=document.getElementById('zodiac').value;
+const span=document.getElementById('span').value;
+const focus=document.getElementById('focus').value;
+const [emoji,trait,keyword,action]=SIGNS[zodiac];
+const stars=Math.max(7,Math.round(6+((new Date().getDate()+zodiac.length)%10)/3));
+const starStr='';
+let out='【'+zodiac+' · '+span+'运势 · '+focus+'】\n\n';
+out+='综合指数：'+'★'.repeat(Math.max(1,Math.min(5,Math.round(stars/2))))+'☆'.repeat(Math.max(0,5-Math.round(stars/2)))+'  '+emoji+'\n\n';
+out+='━━ 整体概况 ━━\n'+zodiac+'的你自带「'+trait+'」的气质，'+span+'整体能量偏'+['上行','平稳','充满机遇','起伏中前行'][(new Date().getDay()+zodiac.length)%4]+'，适合以「'+keyword+'」的态度去推进手头事务。\n\n';
+if(focus==='事业'||focus==='综合'){out+='━━ 事业 ━━\n工作中的'+(new Date().getDate()%2?'主动性':'稳定性')+'至关重要，'+(zodiac.length%2?'贵人可能来自团队内部，多主动沟通协作，会有意外收获':'注意细节与执行力，合理安排优先级，避免被琐事打乱节奏')+
+'。\n\n';}
+if(focus==='爱情'||focus==='综合'){out+='━━ 爱情 ━━\n'+(zodiac.length%2?'单身者桃花运上升，在真诚的交流中可能遇到心动对象，勇敢迈出第一步':'有伴者多些陪伴与倾听，用心经营会让感情更甜蜜')+'，用「'+action+'」照亮彼此。\n\n';}
+if(focus==='财运'||focus==='综合'){out+='━━ 财运 ━━\n财务整体'+(zodiac.length%2?'稳中有升':'波动可控')+'，适合'+(zodiac.length%2?'稳健理财':'控制冲动消费')+'，避免因情绪化决策造成不必要的支出。\n\n';}
+out+='━━ 健康小贴士 ━━\n注意规律作息与适度运动，多补水。'+['睡前远离手机','午后散步放松','适当补充营养','保持愉快心情'][(zodiac.length+span.length)%4]+'，好状态才有好运气。\n\n';
+out+='📅 幸运信息：幸运数字 '+(zodiac.length*3)%10+'，幸运色 '+['紫色','蓝色','金色','绿色'][(zodiac.length)%4]+'，幸运方位 '+['正东','正南','正西','正北'][(zodiac.length+1)%4]+'。\n\n【开运心法：相信美好，自然遇见美好 ✨】';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 运势报告已复制！'))}
+</script>
+</body>
+</html>

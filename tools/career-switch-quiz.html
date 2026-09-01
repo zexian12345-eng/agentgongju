@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI职业转型评估 | AgentGongju.com</title>
+<meta name="description" content="回答几个关于现状、技能和期望的问题，AI帮你评估是否适合转型，并给出转型方向、风险提示和行动计划参考。">
+<meta name="keywords" content="职业转型,转行,职业规划,跳槽,转型建议,职场规划">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+textarea,input[type=text],select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:70px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tag-btn{display:inline-block;padding:5px 12px;background:rgba(99,102,241,0.12);border:1px solid rgba(99,102,241,0.25);border-radius:20px;color:#a5b4fc;cursor:pointer;font-size:.8rem;margin:3px;transition:all .2s}
+.tag-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🔄 AI职业转型评估</h1><p>转不转、怎么转？先停下来想清楚</p></div>
+
+<div class="card">
+<label>🔧 目前做的工作</label>
+<input type="text" id="now" placeholder="例如：传统制造业文员">
+<label>🎯 想转型的方向</label>
+<input type="text" id="target" placeholder="例如：互联网运营、数据分析、自由插画师……">
+<label>✨ 现状描述</label>
+<div>
+<span class="tag-btn" onclick="setStatus('想换方向')">😣 厌倦现状想换方向</span>
+<span class="tag-btn" onclick="setStatus('技能不足')">📉 目标门槛高怕跟不上</span>
+<span class="tag-btn" onclick="setStatus('经济压力')">💰 担心收入断档</span>
+<span class="tag-btn" onclick="setStatus('想清楚了')">✅ 已经比较坚定</span>
+</div>
+<label>📝 你的现状/顾虑（可选）</label>
+<textarea id="more" placeholder="例如：今年30岁，有房贷，会点Excel和写文案……"></textarea>
+<button class="btn-gen" id="genBtn">🧭 生成评估</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🧭 职业转型评估</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制评估</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('AI职业转型评估 | AgentGongju.com'))return;
+const now=document.getElementById('now').value.trim();
+const target=document.getElementById('target').value.trim();
+const status=document.getElementById('status')?document.getElementById('status').value:'想换方向';
+const more=document.getElementById('more').value.trim();
+if(!now||!target){alert('请填写现在的工作和想转型的方向');return;}
+const statusNote={
+'想换方向':'你已经厌倦现状，这是转型的最初动力，但别在情绪上头时仓促裸辞。',
+'技能不足':'你有清醒的认知，说明目标方向需要系统规划补课，这是可以克服的。',
+'经济压力':'经济是现实约束，建议采用"骑驴找马"或副业试水的渐进方式降低风险。',
+'想清楚了':'你已较坚定，接下来重点是把转型拆成可执行的小目标落地。'
+}[status];
+let out='【职业转型评估 · '+now+' → '+target+'】\n\n';
+out+='🧠 现状判断：'+statusNote+'\n\n';
+out+='✅ 转型前建议自查：\n· 这个方向你是否有核心技能/作品/证书支撑？\n· 目标岗位在本地/目标城市的招聘需求和薪资水平如何？\n· 你的可迁移能力（沟通、统筹、学习力）能否复用？\n\n';
+out+='🛠️ 建议的过渡方式：\n· 先利用业余时间学习/做小项目积累作品，验证自己是否真的喜欢且能胜任。\n· 通过内推、行业社群、免费/低价接单先小范围试水转型方向。\n· 不建议在没有储备的情况下直接裸辞，除非有足够的兜底资金。\n\n';
+out+='📅 3个月行动计划参考：\n· 第1个月：系统学习+做1个能展示的作品/案例。\n· 第2个月：投递实习/初级岗位+积累面试经验。\n· 第3个月：复盘调整，评估是否正式切换。\n\n';
+if(more)out+='📝 结合你补充的「'+more+'」：请把这些现实因素纳入你的方案里，量身调整节奏。\n\n';
+out+='🧭 转型是场马拉松，先动起来小步验证，比停在原地纠结更有意义。\n—— 本评估仅供参考，重大决定请结合自身实际 🙏';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function setStatus(v){var el=document.getElementById('status');if(el){el.value=v;}else{var s=document.createElement('select');s.id='status';s.innerHTML='<option>'+v+'</option>';document.body.appendChild(s);}}
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 评估已复制！'))}
+</script>
+</body>
+</html>

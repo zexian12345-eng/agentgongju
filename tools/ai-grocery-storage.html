@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI食材保鲜指南 | AgentGongju.com</title>
+<meta name="description" content="输入你买回家不知道怎么处理的食材，AI告诉你正确的保存方法和保鲜时长，减少浪费、吃得更新鲜，覆盖蔬菜、水果、肉类、海鲜等。">
+<meta name="keywords" content="食材保鲜,食材保存,保鲜,储存,冰箱,减少浪费,食物储存">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+textarea,input[type=text],select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:70px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tag-btn{display:inline-block;padding:5px 12px;background:rgba(99,102,241,0.12);border:1px solid rgba(99,102,241,0.25);border-radius:20px;color:#a5b4fc;cursor:pointer;font-size:.8rem;margin:3px;transition:all .2s}
+.tag-btn:hover{background:rgba(99,102,241,0.25)}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🥬 AI食材保鲜指南</h1><p>买对、存对，吃得更新鲜不浪费</p></div>
+
+<div class="card">
+<label>✨ 常见食材</label>
+<div>
+<span class="tag-btn" onclick="setFood('香蕉')">🍌 香蕉</span>
+<span class="tag-btn" onclick="setFood('牛肉')">🥩 牛肉</span>
+<span class="tag-btn" onclick="setFood('西兰花')">🥦 西兰花</span>
+<span class="tag-btn" onclick="setFood('三文鱼')">🐟 三文鱼</span>
+<span class="tag-btn" onclick="setFood('草莓')">🍓 草莓</span>
+<span class="tag-btn" onclick="setFood('鸡蛋')">🥚 鸡蛋</span>
+</div>
+<label>🥘 输入你想保存的食材</label>
+<textarea id="food" placeholder="例如：买了把韭菜、一块豆腐、半只鸡……怎么保存比较好？"></textarea>
+<button class="btn-gen" id="genBtn">🧊 查询保鲜方法</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🥬 食材保鲜方法</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制指南</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const foodTips={
+'香蕉':'🍌 常温存放，别放冰箱冷藏会让皮变黑；可用保鲜膜包住果柄延缓成熟。',
+'牛肉':'🥩 冷藏2-3天吃完；保鲜袋挤出空气冷藏，或分装冷冻可保存1-3个月。',
+'西兰花':'🥦 用保鲜袋扎几个孔放冷藏，或焯水后冷冻更耐放，建议3-5天内吃完。',
+'三文鱼':'🐟 冷藏建议1-2天内食用；若需久存，用厨房纸吸干水分再密封冷冻。',
+'草莓':'🍓 挑走坏果，盒底垫纸巾防潮，冷藏可放2-3天，吃前再洗不碰水。',
+'鸡蛋':'🥚 大头朝上冷藏，不要水洗，可放3-5周；取出后尽快用完。',
+'韭菜':'🌿 根部泡水或裹湿纸巾冷藏，3天内食用口感最佳。',
+'豆腐':'🫘 泡在盐水里冷藏，每天换水可放2-3天；也可冷冻做冻豆腐。',
+'鸡肉':'🍗 生鲜鸡肉冷藏2天内吃完，分装冷冻可保存半年。',
+'土豆':'🥔 阴凉处避光存放，别放冰箱（低温会变甜），发芽发绿就不能吃。',
+'苹果':'🍎 常温可放1-2周，冷藏更久；能和香蕉放一起催熟。',
+'米饭':'🍚 吃不完的放凉后冷藏可存3天，超过就冷冻成饭团，别常温过夜。'
+};
+const fallback=['叶菜类：摘掉烂叶，用厨房纸吸潮后保鲜袋冷藏，3天左右。','根茎类如萝卜：去掉叶子，阴凉通风处存放1-2周。','菌菇类：别洗，用纸袋或保鲜盒垫纸巾冷藏，尽快用完。','肉类：当天不吃的建议按每餐份量分装冷冻。','海鲜类：冷藏尽快食用，冷冻需密封防串味。'];
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('AI食材保鲜指南 | AgentGongju.com'))return;
+const food=document.getElementById('food').value.trim();
+if(!food){alert('请输入要保存的食材');return;}
+const found=[];
+for(const key in foodTips){
+  if(food.includes(key)){
+    found.push(foodTips[key]);
+  }
+}
+let out='【食材保鲜指南】\n\n';
+if(food)out+='你查询的：'+food+'\n\n';
+if(found.length)out+=found.slice(0,4).map((t,i)=>(''+(i+1)+'. '+t)).join('\n\n');
+else out+=fallback.slice(0,3).map((t,i)=>(''+(i+1)+'. '+t)).join('\n\n');
+out+='\n\n【通用保鲜要点】\n· 一买回家就及时处理，生熟分开、密封防串味。\n· 先买先吃，把放得久的食材往冰箱里层放。\n· 冷冻不是永鲜，最好贴标签记日期。\n· 腐烂变质的食材即使部分坏掉也不建议吃，健康第一。🥬';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function setFood(f){document.getElementById('food').value=f;}
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 指南已复制！'))}
+</script>
+</body>
+</html>

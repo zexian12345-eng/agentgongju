@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI早安情话 | AgentGongju.com</title>
+<meta name="description" content="每天一条不重样的早安情话，温暖甜腻又不油腻，适合发给爱的人开启美好一天。">
+<meta name="keywords" content="早安情话,早安文案,甜言蜜语,情话大全,恋爱文案,早安语录,发对象">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:60px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{color:#94a3b8;font-size:.85rem;margin-bottom:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>☀️ AI 早安情话</h1><p>用一句甜而不腻的早安，代替"早上好"把爱意送进 TA 心里</p></div>
+
+<div class="card">
+<label>💌 对方怎么称呼？（可留空用"宝贝"）</label>
+<input type="text" id="petname" placeholder="例如：小太阳、亲爱的、老婆……">
+<div class="param-row">
+<div><label>🎭 风格</label>
+<select id="style"><option value="甜腻" selected>🍬 甜腻</option><option value="俏皮">😜 俏皮</option><option value="文艺">📖 文艺</option><option value="直球">💘 直球告白</option></select></div>
+<div><label>🔢 条数</label>
+<select id="count"><option value="3" selected>3 条</option><option value="5">5 条</option><option value="8">8 条</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">💫 生成早安情话</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#f472b6;font-weight:600;margin-bottom:12px">✅ 为你准备好的早安情话</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制情话</button>
+<div class="tip" style="margin-top:12px">💡 配上表情符号会更鲜活，挑最戳心的一条，发出去就好。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const LIB={
+'甜腻':['早安呀{n}，本来想晚点醒，可一想到能多看看你，闹钟都变得温柔了。','清晨的第一缕阳光不是我，但我想做第一个想{n}的人。','把今天所有的甜，都攒着先分{n}一口，剩下的我慢慢给。'],
+'俏皮':['起床啦{n}，再睡太阳都要把我烤化了，可我还是想先抱抱你。','早安{n}！今天也是"你负责可爱，我负责想你"的一天。','天气这么好，适合{n}也适合我 — 那就和你一起吧。'],'文艺':['黎明把夜翻开，第一件事是想{n}，于是这世界开始发亮。','早安，{n}。愿你的今日，有风、有光、也有我的惦记。','把昨天还给昨天，把好心情都留给{n}。'],
+'直球':['早安{n}，清醒之后第一反应：好想一直和你在一起。','不管几点醒，想到{n}，我就觉得今天特别好。','世界很大，我的早安只想先说给{n}听。']
+};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI早安情话 | AgentGongju.com'))return;
+const pet=document.getElementById('petname').value.trim()||'宝贝';
+const style=document.getElementById('style').value;
+const n=parseInt(document.getElementById('count').value,10);
+const pool=LIB[style];
+let out=`☀️ 早安情话 · ${style}向\n\n`;
+for(let i=0;i<n;i++){out+=`${i+1}. `+pool[i%pool.length].replace('{n}',pet)+'\n';}
+out+='\n━━ 让效果翻倍 ━━\n· 结尾加一个适合的emoji，比如🌞/🌸/🧸；\n· 发之前先问问自己有没有"晚点回复"，有的话补一句"等你回消息"更有钩子。';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 情话已复制！'))}
+</script>
+</body>
+</html>

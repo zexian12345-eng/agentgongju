@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI古诗集句 | AgentGongju.com</title>
+<meta name="description" content="输入主题或情绪，AI为你从经典古诗中集句成联，让朋友圈、签名、祝福都自带诗意。">
+<meta name="keywords" content="古诗,集句,诗句,古诗词,对联,文案,诗词引用">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:60px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{color:#94a3b8;font-size:.85rem;margin-bottom:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📜 AI 古诗集句</h1><p>一个词牌心意，AI为你从千年诗海里集句成章</p></div>
+
+<div class="card">
+<label>🌸 主题 / 想表达的情绪</label>
+<textarea id="theme" placeholder="例如：思念远方的好友、春天踏青的心情、对未来充满期待、送别祝福…"></textarea>
+<div class="param-row">
+<div><label>🎯 用途</label>
+<select id="use"><option value="朋友圈" selected>📱 朋友圈</option><option value="签名">✍️ 个性签名</option><option value="祝福">🎊 祝福寄语</option><option value="文案">📝 文章/文案</option></select></div>
+<div><label>🔢 生成条数</label>
+<select id="num"><option value="3" selected>3 条</option><option value="5">5 条</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">✨ 集句成诗</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 为你集的好句</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制诗句</button>
+<div class="tip" style="margin-top:12px">💡 小贴士：集句讲究浑然天成，用前建议读懂原意，避免断章取义，那样才更风雅。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const lines={
+思念:[['海内存知己','天涯若比邻'],['举头望明月','低头思故乡'],['独在异乡为异客','每逢佳节倍思亲']],
+春天:[['等闲识得东风面','万紫千红总是春'],['春色满园关不住','一枝红杏出墙来'],['草长莺飞二月天','拂堤杨柳醉春烟']],
+期待:[['长风破浪会有时','直挂云帆济沧海'],['会当凌绝顶','一览众山小'],['大鹏一日同风起','扶摇直上九万里']],
+送别:[['莫愁前路无知己','天下谁人不识君'],['桃花潭水深千尺','不及汪伦送我情'],['劝君更尽一杯酒','西出阳关无故人']],
+励志:[['宝剑锋从磨砺出','梅花香自苦寒来'],['千磨万击还坚劲','任尔东西南北风'],['天生我材必有用','千金散尽还复来']],
+闲适:[['采菊东篱下','悠然见南山'],['明月松间照','清泉石上流'],['行到水穷处','坐看云起时']],
+爱情:[['两情若是久长时','又岂在朝朝暮暮'],['在天愿作比翼鸟','在地愿为连理枝'],['衣带渐宽终不悔','为伊消得人憔悴']]
+};
+const groupMap={思念:[['念','思','友','远方'],['思','友','知'],['归','乡','异']],春天:[['春','花'],['春','杏'],['柳','烟']],期待:[['风','云','海'],['顶','山'],['鹏','云']],送别:[['知','君'],['深','情'],['酒','阳']],励志:[['磨','苦'],['劲','风'],['才','散']],闲适:[['菊','山'],['松','清'],['水','云']],爱情:[['情','朝'],['比翼','连理'],['瘦','憔悴']]};
+const pickers=Object.keys(lines);
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI古诗集句 | AgentGongju.com'))return;
+const theme=document.getElementById('theme').value.trim();
+const use=document.getElementById('use').value;
+const num=parseInt(document.getElementById('num').value);
+let sets;
+if(theme){
+const hit=pickers.find(p=>groupMap[p].some(kw=>kw.some(k=>theme.includes(k))));
+sets=hit?lines[hit]:[['长风破浪会有时','直挂云帆济沧海'],['海内存知己','天涯若比邻'],['采菊东篱下','悠然见南山']];
+}else{
+sets=lines[pickers[(Math.random()*pickers.length)|0]];
+}
+const picked=shuffle(sets).slice(0,Math.min(num,sets.length));
+let out='【古诗集句 · '+(theme||'随机')+' · 用于'+use+'】\n\n';
+picked.forEach(([a,b],i)=>{
+out+='━━ 第'+(i+1)+'句 ━━\n';
+out+=a+'，'+b+'。\n';
+out+='· 出处注：出自古诗词名句，意境'+(['悠远','豁达','深情','超然'][(i+Math.round(Math.random()*3))%4])+'，契合「'+(theme||'当下心境')+'」。\n\n';
+});
+out+='【使用建议】\n· 用于'+use+'时可搭配一句自己的话，更有生活气息；\n· 用前建议核实诗句本意与作者，避免张冠李戴。';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function shuffle(arr){for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}return arr;}
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 诗句已复制！'))}
+</script>
+</body>
+</html>

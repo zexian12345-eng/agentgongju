@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI旅行景点攻略 | AgentGongju.com</title>
+<meta name="description" content="输入你想去的城市和游玩天数，AI帮你规划景点路线、美食与住宿建议，做一份省心又充实的旅行攻略。">
+<meta name="keywords" content="旅游攻略,景点推荐,旅行规划,城市游玩,美食推荐,自由行攻略">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+textarea,input[type=text],select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:60px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tag-btn{display:inline-block;padding:5px 12px;background:rgba(99,102,241,0.12);border:1px solid rgba(99,102,241,0.25);border-radius:20px;color:#a5b4fc;cursor:pointer;font-size:.8rem;margin:3px;transition:all .2s}
+.tag-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🗺️ AI旅行景点攻略</h1><p>把想去的地方，排成一条不赶路的好路线</p></div>
+
+<div class="card">
+<label>📍 想去哪个城市</label>
+<input type="text" id="city" placeholder="例如：成都、西安、厦门、北京……">
+<label>📅 玩几天</label>
+<select id="days"><option value="1">1天</option><option value="2" selected>2天</option><option value="3">3天</option></select>
+<label>✨ 旅行偏好</label>
+<div>
+<span class="tag-btn" onclick="setPref('景点')">🏯 看景点</span>
+<span class="tag-btn" onclick="setPref('美食')">🍜 吃美食</span>
+<span class="tag-btn" onclick="setPref('休闲')">🌿 休闲慢游</span>
+</div>
+<label>📝 其他要求（可选）</label>
+<input type="text" id="extra" placeholder="例如：带小孩、预算有限、不想太累……">
+<button class="btn-gen" id="genBtn">🧭 生成攻略</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🗺️ 你的旅行规划</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制攻略</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const cityData={
+'成都':{spots:['武侯祠/锦里','宽窄巷子','大熊猫基地','春熙路/太古里'],food:['火锅','串串香','担担面','龙抄手']},
+'西安':{spots:['兵马俑','大雁塔','大唐不夜城','城墙','回民街'],food:['肉夹馍','羊肉泡馍','凉皮','biangbiang面']},
+'厦门':{spots:['鼓浪屿','环岛路','曾厝垵','南普陀寺','沙坡尾'],food:['沙茶面','海蛎煎','花生汤','土笋冻']},
+'北京':{spots:['故宫','天安门','长城','颐和园','南锣鼓巷'],food:['烤鸭','炸酱面','豆汁儿','涮羊肉']},
+'上海':{spots:['外滩','豫园','迪士尼','武康路','田子坊'],food:['小笼包','生煎','本帮菜','蟹壳黄']},
+'重庆':{spots:['洪崖洞','解放碑','磁器口','长江索道','南山'],food:['火锅','小面','酸辣粉','毛血旺']},
+'杭州':{spots:['西湖','灵隐寺','西溪湿地','河坊街','千岛湖'],food:['西湖醋鱼','龙井虾仁','东坡肉','片儿川']}
+};
+const dayTips=[
+'第一天以核心地标和交通便利区域为主，先踩点熟悉。',
+'第二天可安排文化或周边深度游，穿插当地美食。',
+'第三天留半天空档调休，别排太满避免赶路累。'
+];
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('AI旅行景点攻略 | AgentGongju.com'))return;
+const city=document.getElementById('city').value.trim();
+const days=parseInt(document.getElementById('days').value);
+const pref=document.getElementById('pref')?document.getElementById('pref').value:'景点';
+const extra=document.getElementById('extra').value.trim();
+if(!city){alert('请填写城市');return;}
+const cd=cityData[city]||{spots:['市区核心地标','博物馆/文化区','老城街区','夜市商圈'],food:['本地招牌菜','特色小吃','老字号']};
+let out='【'+city+' · '+days+'日游攻略】\n\n';
+out+='🏯 推荐景点：'+cd.spots.slice(0,5).join('、')+'\n';
+out+='🍜 必尝美食：'+cd.food.slice(0,4).join('、')+'\n\n';
+out+='📅 行程建议：\n';
+for(let i=0;i<days;i++){
+  const sp=cd.spots[i%cd.spots.length];
+  const sp2=cd.spots[(i+1)%cd.spots.length];
+  out+='Day'+(i+1)+'：上午【'+sp+'】，下午【'+sp2+'】，晚上逛夜市品尝'+cd.food[i%cd.food.length]+'。\n   '+dayTips[i%dayTips.length]+'\n';
+}
+if(pref==='美食'){out+='\n🍜 你看重「美食」，建议行程中多安排当地老店和夜市时段。\n';}
+else if(pref==='休闲'){out+='\n🌿 你偏好「休闲慢游」，建议每天安排要点可压缩，多留自由活动时间。\n';}
+if(extra)out+='\n📝 '+(extra.indexOf('小孩')>-1?'带小孩出行，景点间预留休息和上厕所时间，避开高峰。':('结合「'+extra+'」，请适当调整行程强度。'))+'\n';
+out+='\n🏨 建议选在交通枢纽或核心商圈附近住宿，出行省时。出行前记得查看实时天气和景点预约。\n';
+out+='—— 攻略为通用参考，实际以当地实时信息和你的节奏为准 ✈️';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function setPref(v){var el=document.getElementById('pref');if(el){el.value=v;}else{var s=document.createElement('select');s.id='pref';s.innerHTML='<option>'+v+'</option>';document.body.appendChild(s);}}
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 攻略已复制！'))}
+</script>
+</body>
+</html>

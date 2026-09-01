@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 绕口令口部训练器 | AgentGongju.com</title>
+<meta name="description" content="生成随机绕口令与口部发声练习，帮助主持人、主播、播音艺考生提升口齿清晰度">
+<meta name="keywords" content="AI学习,绕口令,口部操,播音主持,普通话,发音练习,吐字归音">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:80px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.btn-gen:disabled{opacity:.5;cursor:not-allowed}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.panel{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.25);border-radius:12px;padding:16px 18px;margin-bottom:12px}
+.panel-line{font-size:.95rem;color:#e2e8f0;line-height:1.9}
+.panel-line b{color:#a855f7}
+.oral-list{list-style:none;padding:0;margin:8px 0 0;font-size:.85rem;color:#cbd5e1;line-height:1.9}
+.oral-list li::before{content:"▶ ";color:#6366f1}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🎙 AI 绕口令口部训练器</h1><p>练口齿、练气息、练吐字，播音主持必备</p></div>
+
+<div class="card">
+<label>🎯 训练方向</label>
+<select id="focus">
+<option value="综合">综合训练</option>
+<option value="平翘舌">平翘舌 (z/c/s vs zh/ch/sh)</option>
+<option value="前后鼻音">前后鼻音 (an/en vs ang/eng)</option>
+<option value="边鼻音">边鼻音 (n vs l)</option>
+<option value="气息">气息与节奏</option>
+</select>
+<label>🧾 数量（1-5个）</label>
+<input type="number" id="count" min="1" max="5" value="3">
+<button class="btn-gen" id="genBtn">🗣 开始训练</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 今日口部训练计划</div>
+<div id="box"></div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function rand(a){return a[Math.floor(Math.random()*a.length)]}
+const lib={
+'综合':['四是四，十是十，十四是十四，四十是四十','黑化肥发灰会挥发，灰化肥挥发会发黑','粉红墙上画凤凰，凤凰画在粉红墙','吃葡萄不吐葡萄皮，不吃葡萄倒吐葡萄皮','九十九条沟，九十九条河，九十九个姑娘在唱歌'],
+'平翘舌':['山西醋，陈米醋，老陈醋，吃醋不吃醋','四是死，十是石，死石是死石','小志养了四只鸡，小四买来四条鱼','粗树粗，秃树秃，粗树秃树不是一回事'],
+'前后鼻音':['蓝蓝的天上白云飘，白云下面马儿跑','扁担长，板凳宽，板凳没扁担长','登山观青山，青山叠高山，高山连青山'],
+'边鼻音':['牛郎恋刘娘，刘娘恋牛郎','门外有四十四只石狮子','刘奶奶找牛奶奶买牛奶','老农拿老牛，老牛拿老农'],
+'气息与节奏':['一二三，三二一，一二三四五六七','山前有个阎圆眼，山后有个颜眼圆','出东门，过大桥，大桥底下一树枣']};
+const oral=['唇齿操：反复念「八了百了标了兵了奔了北了坡」6遍','弹舌练习：把「得」「特」「讷」「勒」四个音加快循环','喷口练习：夸张发「p」音，感受气息冲出上唇','打牙关：张大嘴说「啊——」，体会口腔打开','气息下沉：吸气到丹田，缓缓数数到30不换气'];
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 绕口令口部训练器 | AgentGongju.com'))return;
+let n=parseInt(document.getElementById('count').value||3);n=Math.max(1,Math.min(5,n));
+const focus=document.getElementById('focus').value;
+const pool=[...lib[focus]].sort(()=>Math.random()-0.5).slice(0,n);
+const box=document.getElementById('box');box.innerHTML='';
+const div=document.createElement('div');div.className='panel';
+div.innerHTML=`<div class="panel-line"><b>🎤 绕口令训练（${focus}）</b></div><ul class="oral-list">${pool.map(t=>`<li>${t}</li>`).join('')}</ul>`;
+const div2=document.createElement('div');div2.className='panel';
+div2.innerHTML=`<div class="panel-line"><b>🧘 口部操热身（每次训练前做3-5分钟）</b></div><ul class="oral-list">${oral.sort(()=>Math.random()-0.5).slice(0,3).map(t=>`<li>${t}</li>`).join('')}</ul><div style="color:#64748b;font-size:.8rem;margin-top:8px">💡 建议：每个绕口令由慢到快念5遍，录音回听纠错，坚持一周口齿明显更清晰。</div>`;
+box.appendChild(div);box.appendChild(div2);
+});setTimeout(()=>{},0);
+</script>
+</body>
+</html>

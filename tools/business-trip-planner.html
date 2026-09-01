@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI出差行程手账 | AgentGongju.com</title>
+<meta name="description" content="把出差城市、天数、目的和预算填进去，AI一键生成含航班/高铁、酒店、会议安排、餐食与出行的完整出差行程表，还能生成报销清单思路。">
+<meta name="keywords" content="出差行程,出差计划,商务出行,差旅规划,行程表,出差清单,加班报销">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+textarea,input[type=text],select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:80px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+.day-table{width:100%;border-collapse:collapse;margin-bottom:10px}
+.day-table td{border:1px solid rgba(255,255,255,0.1);padding:8px 10px;font-size:.88rem}
+.day-table td.dt{color:#a5b4fc;font-weight:600;width:70px;white-space:nowrap}
+@media(max-width:600px){.param-grid{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🧳 AI出差行程手账</h1><p>一键生成完整出差日程与出行清单</p></div>
+
+<div class="card">
+<div class="param-grid">
+<div><label>🏙 出差城市</label><input type="text" id="city" placeholder="例如：上海"></div>
+<div><label>📅 出差天数</label><select id="days"><option value="1">1天</option><option value="2">2天</option><option value="3" selected>3天</option><option value="5">5天</option></select></div>
+<div><label>🎯 出差目的</label><select id="purpose"><option value="会议">参加会议</option><option value="客户">客户拜访</option><option value="培训">培训学习</option><option value="参展">展会参展</option><option value="验收">项目验收</option></select></div>
+</div>
+<label>📝 补充信息（会议时间、酒店入住偏好等，可选）</label>
+<textarea id="extra" placeholder="例如：周四上午9点有客户会议，酒店想住靠近地铁站，周日晚回程…"></textarea>
+<button class="btn-gen" id="genBtn">📋 生成出差行程</button>
+<label style="margin-top:12px;color:#64748b;font-size:.8rem">* 航班/车次等具体时间仅供参考，请以实际订票为准</label>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🧳 出差行程手账</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制行程</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function rnd(n){return Math.floor(Math.random()*n)}
+function pickTime(){const h=6+rnd(14),m=rnd(2)?'00':'30';return (h<10?'0':'')+h+':'+m;}
+const purposeLabel={会议:'参加会议',客户:'客户拜访',培训:'培训学习',参展:'展会参展',验收:'项目验收'};
+const tips=['每天给重要会议预留15分钟缓冲，避免赶场','把发票、车票拍下来存进相册，报销时不抓瞎','酒店优先选离出差目的地地铁30分钟内的，省时省心','出门前把电子行程共享给同事或家人一份','落地后先办入住/放行李，再安排工作，效率更高'];
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('AI出差行程手账 | AgentGongju.com'))return;
+const city=document.getElementById('city').value.trim()||'出差城市';
+const days=parseInt(document.getElementById('days').value);
+const purpose=document.getElementById('purpose').value;
+const extra=document.getElementById('extra').value.trim();
+const today=new Date();
+const fmt=d=>{const wd=['日','一','二','三','四','五','六'][d.getDay()];return month(d.getMonth())+'月'+d.getDate()+'日（周'+wd+'）';};
+function month(m){return m+1;}
+let out='【出差行程手账】\n目的地：'+city+'｜时长：'+days+'天｜目的：'+purposeLabel[purpose]+'\n'+(extra?'补充说明：'+extra+'\n':'')+'═'.repeat(26)+'\n\n';
+const base=new Date(today);base.setDate(base.getDate()+3); // 从未来3天开始
+for(let d=0;d<days;d++){
+const day=new Date(base);day.setDate(day.getDate()+d);
+const isFirst=d===0,isLast=d===days-1;
+out+=('第'+(d+1)+'天 '+fmt(day)+'\n');
+out+='┌ 上午\n';
+out+='　'+pickTime()+'  '+(isFirst?'出发前往'+city+'，办理交通/行李':purposeLabel[purpose]+'（上午场）')+'\n';
+out+='　'+pickTime()+'　'+(isFirst?'抵达入住酒店/安顿':'与当地对接人碰头')+'\n';
+out+='┌ 下午\n';
+out+='　'+pickTime()+'　'+purposeLabel[purpose]+'（下午场）'+'\n';
+out+='　'+pickTime()+'　'+(isLast?'整理纪要/取样回程准备':'现场整理记录、确认次日安排')+'\n';
+out+='┌ 晚上\n';
+out+='　'+(isLast?'返程 / 整理回程与后续跟进清单':'安排晚餐，整理当日要点与次日准备')+'\n\n';
+}
+out+='【随身清单】\n✓ 身份证/工作证　✓ 充电器+充电宝　✓ 洗漱包\n✓ 电脑及电源　✓ 换洗衣物(n天)　✓ 名片/资料\n✓ 常用药　✓ 可折叠雨具　✓ 商务着装\n\n';
+out+='【报销要留的凭证】\n· 交通（机票/高铁票/打车发票）\n· 住宿（酒店发票及明细）\n· 餐费（每餐发票或小票）\n· 其他（打印、话费、快递等）\n\n';
+out+='【贴心小建议】\n'+(tips.slice(0,4).map(x=>'· '+x).join('\n'));
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 行程已复制！'))}
+</script>
+</body>
+</html>

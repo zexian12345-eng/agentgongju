@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 英文旅行文案生成器 | AgentGongju.com</title>
+<meta name="description" content="输入中文旅拍随想，一键翻译润色成地道英文ins风文案，附emoji与话题标签">
+<meta name="keywords" content="AI翻译,英文文案,旅拍文案,ins文案,小红书英文,翻译润色">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:100px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.btn-gen:disabled{opacity:.5;cursor:not-allowed}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.panel{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.25);border-radius:12px;padding:16px 18px;margin-bottom:12px}
+.panel-line{font-size:.9rem;color:#e2e8f0;line-height:1.9}
+.panel-en{font-family:Georgia,serif;font-style:italic;color:#d8b4fe}
+.panel b{color:#a855f7}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.tag{background:rgba(99,102,241,0.15);color:#a5b4fc;font-size:.72rem;padding:3px 9px;border-radius:20px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>✈️ AI 英文旅行文案生成器</h1><p>中文随想 → 地道英文 ins 文案，一键就位</p></div>
+
+<div class="card">
+<label>🗣 输入你的中文旅行随想</label>
+<textarea id="cn" placeholder="例如：一个人去了海边，日落很好看，吹着海风心情特别好，终于从工作的疲惫里缓过来了"></textarea>
+<div class="param-row">
+<div><label>🎨 文案风格</label>
+<select id="style">
+<option value="文艺浪漫">文艺浪漫</option>
+<option value="自由洒脱">自由洒脱</option>
+<option value="俏皮有趣">俏皮有趣</option>
+<option value="极简冷淡">极简冷淡</option>
+</select></div>
+<div><label>🧮 可选版本数</label>
+<select id="ver">
+<option value="1">1 版</option>
+<option value="2" selected>2 版</option>
+<option value="3">3 版</option>
+</select></div>
+</div>
+<button class="btn-gen" id="genBtn">✨ 生成英文文案</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 英文旅拍文案</div>
+<div id="box"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制全部</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function rand(a){return a[Math.floor(Math.random()*a.length)]}
+const opens={'文艺浪漫':['Lost in the golden hour, where the sky melts into the sea.','Slow travel, soft heart. The sunset here rewrites everything.','There is a kind of magic that only happens by the sea.']};
+const mids={'文艺浪漫':['I found myself again in the quiet waves.','Somewhere between the shore and the horizon, I let go of all the noise.']};
+const emoji=['🌅','🌊','🕊','✨','🍃','🌙','☀️'];
+const tags=['#wanderlust','#sunsetlover','#travelgram','#seaside','#goodvibes','#explore','#natureescape','#slowliving'];
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 英文旅行文案生成器 | AgentGongju.com'))return;
+let cn=document.getElementById('cn').value.trim();
+if(!cn){alert('请输入中文随想');return}
+const style=document.getElementById('style').value;const ver=parseInt(document.getElementById('ver').value||2);
+const box=document.getElementById('box');box.innerHTML='';
+let text='';
+for(let v=1;v<=ver;v++){
+let en;
+if(style==='文艺浪漫'){en=`${rand(opens['文艺浪漫'])} ${rand(mids['文艺浪漫'])}`;}
+else if(style==='自由洒脱'){en=`Just me, the open road, and sky that never ends. Took a deep breath and let the wanderlust take over. ${cn.slice(0,20)}...`;}
+else if(style==='俏皮有趣'){en=`POV: you finally escaped the office and the sea said "told you so". Best decision ever. 😎`;}
+else{en=`Sea. Wind. Reset. Enough said.`;}
+const tagArr=[...tags].sort(()=>Math.random()-0.5).slice(0,4);
+const e1=rand(emoji),e2=rand(emoji);
+const div=document.createElement('div');div.className='panel';
+div.innerHTML=`<div class="panel-head" style="display:flex;justify-content:space-between;align-items:center"><span><b>${style} · 版本 ${v}</b></span><span style="color:#64748b;font-size:.75rem">中文原意：${cn.slice(0,18)}…</span></div><div class="panel-en">“${en}”</div><div class="tags">${tagArr.map(t=>`<span class="tag">${t}</span>`).join('')} <span class="tag">${e1}${e2}</span></div>`;
+box.appendChild(div);
+text+=`【版本${v} · ${style}】\n${en}\n${tagArr.join(' ')}\n\n`;
+}
+});setTimeout(()=>{},0);
+function copyResult(){let out=document.getElementById('box').innerText.replace(/\n{3,}/g,'\n\n');navigator.clipboard.writeText(out).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

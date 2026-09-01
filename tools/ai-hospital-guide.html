@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI医院就诊准备清单 | AgentGongju.com</title>
+<meta name="description" content="根据你要去的科室和病情症状，AI帮你整理一份就诊准备清单：该带什么证件、问医生什么问题、注意事项，让看病更高效少跑冤枉路。">
+<meta name="keywords" content="医院,就诊,挂号,看病,就诊准备,问诊,清单,就医">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+textarea,input[type=text],select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:80px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:600px){.param-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🏥 AI医院就诊准备清单</h1><p>提前准备，看病更高效</p></div>
+
+<div class="card">
+<div class="param-grid">
+<div><label>🏥 就诊科室</label><select id="dept"><option value="internal">内科/消化</option><option value="surgery">外科/骨科</option><option value="skin">皮肤科</option><option value="ent">耳鼻喉科</option><option value="pediatric">儿科</option><option value="other">其他</option></select></div>
+<div><label>📋 是复诊还是首诊</label><select id="visit"><option value="first">首次就诊</option><option value="return">复诊</option></select></div>
+</div>
+<label>📝 主要症状/想解决的问题</label>
+<textarea id="symptom" placeholder="例如：最近两周胃部隐隐作痛，饭后加重，有点反酸。""></textarea>
+<button class="btn-gen" id="genBtn">📋 生成准备清单</button>
+<label style="margin-top:12px;color:#64748b;font-size:.8rem">* 本工具仅作就医流程参考，不构成医学建议</label>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🏥 就诊准备清单</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制清单</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const deptQ={
+internal:'· 症状从什么时候开始的？\n· 饭后/空腹时是否更明显？\n· 有没有体重下降、黑便等情况？',
+surgery:'· 受伤/疼痛是怎么发生的？\n· 疼痛是否活动时加重？\n· 有没有做过相关影像检查？',
+skin:'· 皮疹/瘙痒是什么时候出现的？\n· 用了什么护肤品或接触过新东西？\n· 家里人或同类人群是否也有？',
+ent:'· 症状持续多久了，是单侧还是双侧？\n· 有没有伴发热、堵塞感？\n· 有无过敏史或长期鼻炎？',
+pediatric:'· 宝贝多大，症状从何时开始？\n· 有没有发烧、精神和胃口如何？\n· 近期接种或接触过生病的人吗？',
+other:'· 症状发生的时间、频率和诱因？\n· 做过什么检查、吃过什么药？\n· 有没有既往病史或家族史？'
+};
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('AI医院就诊准备清单 | AgentGongju.com'))return;
+const dept=document.getElementById('dept').value;
+const visit=document.getElementById('visit').value;
+const symptom=document.getElementById('symptom').value.trim();
+const q=deptQ[dept]||deptQ.other;
+let out='【就诊准备清单】'+deptName(dept)+' · '+(visit==='first'?'首次就诊':'复诊')+'\n\n';
+out+='📁 1. 必带物品\n· 身份证/医保卡（电子凭证也可以）\n· 病历本、以往检查报告/片子（复诊尤其重要）\n'+(visit==='return'?'· 上次就诊的病历、药方和用药记录\n':'· 有长期服药的请带上药盒/药单\n');
+out+=((dept==='pediatric')?'· 宝宝的水壶、尿不湿、奶粉等随身用品\n':'');
+out+='\n📝 2. 提前整理好的病情描述\n· '+symptom.replace(/\n/g,'；')||'按以下要点把症状说清楚';
+out+='\n\n❓ 3. 要问医生的问题\n'+q+'\n· 要紧吗？需要做什么检查？\n· 多久能好，日常生活有什么要注意？';
+out+='\n\n⚠️ 4. 温馨提示\n· 建议提前线上预约挂号，错峰就诊。\n· 有些检查(如空腹抽血)需要禁食，先确认好。\n· 症状危急(胸痛、大出血等)请直接去急诊。\n· 谨遵医嘱，别自行停药或加药。🏥';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function deptName(d){return{internal:'内科/消化',surgery:'外科/骨科',skin:'皮肤科',ent:'耳鼻喉科',pediatric:'儿科',other:'其他科室'}[d];}
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 清单已复制！'))}
+</script>
+</body>
+</html>

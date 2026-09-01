@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI手机省电攻略生成器 | AgentGongju.com</title>
+<meta name="description" content="根据你的手机品牌、电池状态和使用习惯，AI帮你生成一套个性化的省电方案，让电量用得更久。">
+<meta name="keywords" content="手机省电,电池,续航,充电,省电技巧,苹果,安卓,华为,小米">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+input[type=text],select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:600px){.param-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🔋 AI手机省电攻略</h1><p>量身定制省电方案，电量再多撑半天</p></div>
+
+<div class="card">
+<div class="param-grid">
+<div><label>📱 手机品牌</label><select id="brand"><option value="iphone">iPhone</option><option value="huawei">华为</option><option value="xiaomi">小米/红米</option><option value="oppo">OPPO/vivo</option><option value="samsung">三星</option><option value="other">安卓其他</option></select></div>
+<div><label>🔋 电池健康状态</label><select id="health"><option value="good">良好（新机）</option><option value="ok">一般（用1-2年）</option><option value="poor">老化（明显不耐用）</option></select></div>
+</div>
+<div class="param-grid">
+<div><label>🎮 主要用途</label><select id="use"><option value="daily">日常通勤/闲聊</option><option value="game">重度游戏</option><option value="photo">拍照/视频</option><option value="work">办公/强信号场景</option></select></div>
+<div><label>⏰ 每天续航期待</label><select id="need"><option value="a_morning">撑到晚上就行</option><option value="a_day">尽量一天不充</option><option value="a_long">重度也要顶住</option></select></div>
+</div>
+<label>📝 其他情况（可选）</label>
+<input type="text" id="extra" placeholder="例如：信号经常差、开了深色模式、有两个卡…">
+<button class="btn-gen" id="genBtn">⚡ 生成省电方案</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🔋 你的专属省电方案</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制方案</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const ios={brandTip:'iPhone：开启「低电量模式」、后台App刷新仅留常用、关闭不用的定位服务、关闭原彩/自动亮度波动',key3:'· iPhone健康度≤80%建议考虑换电池\n· 关闭5G切回4G（设置-蜂窝-语音与数据）\n· iCloud备份别频繁全量同步（关掉照片图库自动优化下载）'};
+const androidTip='安卓：开启「省电模式/智能省电」、限制后台自启动、关闭不常用推送、设置里统一管理"应用自启动"权限';
+const healTip={good:'电池状态好，重点是优化使用习惯',ok:'使用1-2年后，可适当开启省电模式延长单次续航',poor:'电池老化明显，建议随身充电宝或考虑更换电池/手机'};
+const useTip={
+daily:'· 每天早中晚各看一次电量，别一直挂着充电\n· 关闭"嘿Siri/小爱/等唤醒词"、抬腕亮屏可省不少',
+game:'· 游戏开启"性能/帧率上限"，别开极清画质糊里糊涂跑\n· 游戏和充电分开，边充边玩伤电池\n· 玩游戏时开免打扰，减少推送唤醒',
+photo:'· 拍照后即时退出相机，后台别挂相机进程\n· 视频拍摄会持续发热，注意别长期高亮屏',
+work:'· 办公场景连Wi-Fi比蜂窝省电，信号差时开飞行模式再开Wi-Fi\n· 邮件/IM推送间隔调长，别秒回全开'
+};
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('AI手机省电攻略生成器 | AgentGongju.com'))return;
+const brand=document.getElementById('brand').value;
+const health=document.getElementById('health').value;
+const use=document.getElementById('use').value;
+const need=document.getElementById('need').value;
+const extra=document.getElementById('extra').value.trim();
+let out='【手机省电攻略】品牌建议\n';
+out+=(brand==='iphone'?ios.brandTip:androidTip)+'\n\n';
+out+='\n一、你的电池状况\n· '+healTip[health]+'。\n';
+out+='\n二、按你的用途优化\n'+useTip[use].split('\n').map(x=>'　'+x.trim()).join('\n')+'\n';
+out+='\n三、通用省电三板斧\n· 屏幕亮度调到40-60%，开启自动亮度。\n· 5G/后台App/siri与搜索、位置权限按需关闭不用的。\n· 开深色模式（OLED屏更省电），关掉动态壁纸和桌面小组件刷新。\n';
+if(need==='a_morning')out+='\n四、续航目标\n· 撑到晚上即可，重点在上面的"用途优化"和关闭后台。\n';
+if(need==='a_day')out+='\n四、续航目标\n· 想撑一整天，建议开启"极致/超长续航"模式，把不常用App全部冻结。\n';
+if(need==='a_long')out+='\n四、续航目标\n· 重度使用也能顶住，建议配合充电宝+关闭高性能模式，必要时开飞行省电。\n';
+if(extra)out+='\n五、你的补充情况\n· '+extra+'：若信号长期差可开飞行模式再连Wi-Fi，比持续搜网省电得多。\n';
+out+='\n【充电保养建议】\n· 保持电量在20%-80%之间最养电池，别长期满充满放。\n· 避免边玩大型游戏边充电，过热最伤电池。🔋';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 方案已复制！'))}
+</script>
+</body>
+</html>

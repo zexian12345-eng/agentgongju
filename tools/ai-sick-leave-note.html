@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI请假条生成 | AgentGongju.com</title>
+<meta name="description" content="输入请假原因、日期和职务，一键生成正式得体、语气恰当的请假条，适用病假、事假、婚假、年假等多种场景，中文和英文均可。">
+<meta name="keywords" content="请假条,请假,事假,病假,请假申请,work leave,leave note">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+textarea,input[type=text],select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:80px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tag-btn{display:inline-block;padding:5px 12px;background:rgba(99,102,241,0.12);border:1px solid rgba(99,102,241,0.25);border-radius:20px;color:#a5b4fc;cursor:pointer;font-size:.8rem;margin:3px;transition:all .2s}
+.tag-btn:hover{background:rgba(99,102,241,0.25)}
+.param-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:600px){.param-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📝 AI请假条生成</h1><p>输入要点，一键生成得体正式的请假条</p></div>
+
+<div class="card">
+<label>✨ 请假类型</label>
+<div>
+<span class="tag-btn" onclick="setType('sick')">🤒 病假</span>
+<span class="tag-btn" onclick="setType('personal')">🙋 事假</span>
+<span class="tag-btn" onclick="setType('annual')">🌴 年假</span>
+<span class="tag-btn" onclick="setType('wedding')">💍 婚假</span>
+<span class="tag-btn" onclick="setType('family')">🏠 家事假</span>
+</div>
+<div class="param-grid">
+<div><label>👤 你的姓名</label><input type="text" id="name" placeholder="张三"></div>
+<div><label>🏢 所在部门/职务</label><input type="text" id="dept" placeholder="市场部·运营专员"></div>
+</div>
+<div class="param-grid">
+<div><label>📅 请假日期</label><input type="text" id="dates" placeholder="3月8日 - 3月10日，共3天"></div>
+<div><label>⏰ 请假时长</label><input type="text" id="duration" placeholder="3天"></div>
+</div>
+<label>📣 请假原因（简单说即可）</label>
+<textarea id="reason" placeholder="例如：感冒发烧，需在家休息观察两天，已提前安排好手头工作交接。"></textarea>
+<label>🔤 输出语言</label>
+<select id="lang"><option value="zh">中文</option><option value="en">English</option></select>
+<select id="type" style="display:none"><option value="sick">sick</option></select>
+<button class="btn-gen" id="genBtn">✍️ 生成请假条</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">📝 你的请假条</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制请假条</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const types={
+sick:{title:'病假',desc:'身体不适，需就医休息'},
+personal:{title:'事假',desc:'个人事务需处理'},
+annual:{title:'年假',desc:'申请使用年假'},
+wedding:{title:'婚假',desc:'举办婚礼，需休婚假'},
+family:{title:'家事假',desc:'家中事务需处理'}
+};
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('AI请假条生成 | AgentGongju.com'))return;
+const name=document.getElementById('name').value.trim()||'[姓名]';
+const dept=document.getElementById('dept').value.trim()||'[部门/职务]';
+const dates=document.getElementById('dates').value.trim()||'[日期]';
+const duration=document.getElementById('duration').value.trim()||'[时长]';
+const reason=document.getElementById('reason').value.trim();
+if(!reason){alert('请填写请假原因');return;}
+const type=document.getElementById('type').value;
+const lang=document.getElementById('lang').value;
+const t=types[type]||types.personal;
+let out;
+if(lang==='en'){
+out='To: [Manager Name]\nFrom: '+name+'\nDepartment: '+dept+'\nDate: [Today]\n\nSubject: Leave Application ('+type+ ')\n\nDear [Manager],\n\nI would like to request a leave of '+duration+' from '+dates+'. Reason: '+reason+'.\n\nMy work has been arranged and handed over properly before the leave. Please kindly approve my application.\n\nThank you for your understanding.\n\nBest regards,\n'+name;
+}else{
+out='【请假条】\n\n尊敬的[领导/老师]：\n\n您好！\n\n我是'+dept+'的'+name+'。因'+reason+'，我需要申请请假'+duration+'（时间：'+dates+'）。\n\n请假期间，我已提前将手头工作交代清楚，若有紧急事务可随时电话联系我（[手机号]）。\n\n恳请您批准为盼，谢谢！\n\n此致\n敬礼\n\n申请人：'+name+'\n[日期]';
+}
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function setType(v){document.getElementById('type').value=v;}
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 请假条已复制！'))}
+</script>
+</body>
+</html>

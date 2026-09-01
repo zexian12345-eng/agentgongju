@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI应季果蔬挑选指南 | AgentGongju.com</title>
+<meta name="description" content="根据当前季节和你想买的果蔬，AI告诉你什么正当季、怎么挑最新鲜、怎么保存最久。">
+<meta name="keywords" content="应季蔬菜,水果,挑选技巧,时令,买菜,保存,当季">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+input[type=text],select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:600px){.param-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🥬 AI应季果蔬挑选指南</h1><p>当季最新鲜，会挑才是真会买菜</p></div>
+
+<div class="card">
+<label>🌤️ 当前季节</label>
+<select id="season"><option value="spring">春季（3-5月）</option><option value="summer">夏季（6-8月）</option><option value="autumn">秋季（9-11月）</option><option value="winter">冬季（12-2月）</option></select>
+<label>🍎 想买的果蔬</label>
+<input type="text" id="item" placeholder="例：草莓、西瓜、青菜">
+<label>⌛ 打算放多久</label>
+<select id="keep"><option value="today">当天吃完</option><option value="few">放2-3天</option><option value="week">想存一周以上</option></select>
+<button class="btn-gen" id="genBtn">🍎 生成挑选指南</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🍎 挑选与保存建议</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制指南</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const seasonal={
+spring:{name:'春季',veg:['春笋','菠菜','芹菜','豌豆','莴笋','荠菜'],fruit:['草莓','菠萝','桑葚','枇杷','青枣']},
+summer:{name:'夏季',veg:['黄瓜','番茄','茄子','丝瓜','苦瓜','豇豆','空心菜'],fruit:['西瓜','桃子','樱桃','杨梅','荔枝','芒果','葡萄']},
+autumn:{name:'秋季',veg:['莲藕','山药','南瓜','萝卜','白菜','秋葵'],fruit:['梨','柿子','石榴','猕猴桃','柑橘','无花果']},
+winter:{name:'冬季',veg:['萝卜','白菜','蒜苗','青菜心','冬笋','西兰花'],fruit:['柚子','橙子','甘蔗','沙糖桔','苹果']}
+};
+const pickTips={
+'草莓':'挑色泽鲜红均匀、果形端正、蒂叶翠绿的，闻起来有浓郁果香，果身硬挺不软榻。',
+'西瓜':'看瓜脐小而凹陷、敲起来"咚咚"清脆、声音发空者更熟，纹路清晰有光泽。',
+'青菜':'选深色、叶面厚实有光泽、茎部粗壮的，发黄萎蔫或折断处出水的别要。',
+'番茄':'挑自然红、手感略软有弹性、带绿叶的，颜色越红番茄味越足。',
+'桃子':'闻有桃香、果皮柔滑有茸毛、轻按有弹性者是熟度最佳，青硬的基本没熟。'};
+function lookup(item){
+for(const k of Object.keys(pickTips)){if(item.includes(k))return pickTips[k];}
+return null;
+}
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('AI应季果蔬挑选指南 | AgentGongju.com'))return;
+const season=document.getElementById('season').value;
+const item=document.getElementById('item').value.trim();
+const keep=document.getElementById('keep').value;
+const s=seasonal[season];
+const tips=Object.keys(pickTips).filter(k=>item.includes(k)).map(k=>'· '+k+'：'+pickTips[k]);
+let out='【应季果蔬指南】当前：'+s.name+'\n\n';
+out+='🌱 当季蔬菜推荐\n· '+s.veg.join('、')+'\n';
+out+='🍓 当季水果推荐\n· '+s.fruit.join('、')+'\n\n';
+out+='🛒 「'+item+'」挑选要点\n'+(tips.length?tips.join('\n'):'· 优先选当季 + 外表新鲜无损 + 手感适中的。到当季正是它好吃又便宜的时候。')+'\n';
+const keepTip={
+today:'· 当天吃：洗净即用，别久泡，营养流失少。',
+few:'· 放2-3天：叶菜用厨房纸包好入保鲜袋冷藏，别和水果混放。',
+week:'· 存一周以上：根茎类可阴凉通风存放；绿叶菜建议先焯水冷冻或尽快食用。'
+}[keep];
+out+='\n⏳ 保存建议（'+keep+'）\n'+keepTip+'\n';
+out+='\n💡 小贴士\n· 上市期前后价格波动大，应季价廉且口感好。\n· 买回来后先摊开散潮气再入冰箱，能放更久。';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 指南已复制！'))}
+</script>
+</body>
+</html>

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI家乡菜谱风味介绍 | AgentGongju.com</title>
+<meta name="description" content="输入你的家乡或想吃的地方菜系，AI为你推荐几道代表性菜肴，介绍风味特点、关键食材与简要做法。">
+<meta name="keywords" content="家乡菜,地方菜,菜系,特色菜,家常菜谱,菜谱推荐">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+textarea,input[type=text],select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:60px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tag-btn{display:inline-block;padding:5px 12px;background:rgba(99,102,241,0.12);border:1px solid rgba(99,102,241,0.25);border-radius:20px;color:#a5b4fc;cursor:pointer;font-size:.8rem;margin:3px;transition:all .2s}
+.tag-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🍜 AI家乡菜谱风味介绍</h1><p>一方水土一方味，带你寻味家乡</p></div>
+
+<div class="card">
+<label>✨ 选择菜系/地区</label>
+<div>
+<span class="tag-btn" onclick="setRegion('四川')">🌶️ 川菜</span>
+<span class="tag-btn" onclick="setRegion('广东')">🥘 粤菜</span>
+<span class="tag-btn" onclick="setRegion('江浙')">🦀 江浙</span>
+<span class="tag-btn" onclick="setRegion('西安')">🥟 西北</span>
+<span class="tag-btn" onclick="setRegion('湖南')">🔥 湘菜</span>
+</div>
+<label>📍 输入家乡 / 想吃的地区菜系</label>
+<input type="text" id="region" placeholder="例如：重庆、潮汕、新疆、哈尔滨……">
+<label>🍽️ 想了解几道菜</label>
+<select id="count"><option value="3" selected>3道代表菜</option><option value="5">5道代表菜</option></select>
+<button class="btn-gen" id="genBtn">🍳 生成风味介绍</button>
+<label style="margin-top:12px;color:#64748b;font-size:.8rem">* 内容为大众口味的风味参考，具体做法可再根据当地特色调整</label>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🍜 家乡风味菜谱介绍</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制介绍</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const cuisine={
+'四川':{style:'麻辣鲜香、百菜百味',dishes:[['麻婆豆腐','麻辣',['豆腐','牛肉末','豆瓣酱','花椒'],['豆腐焯水','炒香肉末和豆瓣酱','下豆腐加高汤烧入味','花椒粉提香出锅']],['回锅肉','咸鲜微辣、肉香四溢',['五花肉','青蒜','豆瓣酱','甜面酱'],['五花肉煮至断生切片','炒出油','下豆瓣酱甜面酱','加青蒜翻炒出锅']],['水煮鱼','麻辣鲜香、滑嫩',['草鱼片','豆芽','干辣椒','花椒'],['鱼片腌制','豆芽垫底','炒香底料浇热油','鱼片烫熟淋热油']]]},
+'广东':{style:'清淡鲜美、注重原味',dishes:[['白切鸡','皮爽肉滑、原汁原味',['三黄鸡','姜','沙姜','花生油'],['鸡浸熟','斩件','调姜葱油碟','蘸食']],['干炒牛河','镬气足、爽滑',['河粉','牛肉','豆芽','葱'],['牛肉滑油','猛火爆炒河粉','下牛肉豆芽','调味出锅']],['老火靓汤','清润滋补',['鸡/排骨','玉米','胡萝卜','红枣'],['食材焯水','加水大火煮开','转小火炖1.5小时','加盐调味']]]},
+'江浙':{style:'清淡精致、咸甜适中',dishes:[['西湖醋鱼','酸甜开胃、造型讲究',['草鱼','醋','糖','姜末'],['鱼汆水','调糖醋汁','淋汁','撒姜末']],['红烧肉','浓油赤酱、软糯',['五花肉','冰糖','酱油','料酒'],['肉块焯水炒糖色','加调料慢炖','收汁'],['龙井虾仁','清香鲜嫩',['虾仁','龙井茶','蛋清'],['虾仁上浆','泡龙井茶','滑炒','茶汁调味']]]},
+'西安':{style:'面食之乡、酸辣浓郁',dishes:[['羊肉泡馍','汤浓肉烂、馍香',['羊肉','馍','粉丝','香料'],['炖羊肉汤','掰馍','泡煮','撒葱花香菜']],['凉皮','酸辣爽滑',['凉皮','黄瓜','面筋','辣椒油'],['调蒜汁辣椒油','拌黄瓜丝','浇料汁'],['肉夹馍','肥瘦相间、腊汁香',['腊汁肉','白吉馍'],['卤肉','剁碎','夹入热馍']]]},
+'湖南':{style:'香辣下饭、口味浓郁',dishes:[['剁椒鱼头','鲜辣入味',['鱼头','剁椒','姜蒜'],['鱼头腌味','铺剁椒','蒸熟','淋热油']],['辣椒炒肉','香辣下饭',['五花肉','青椒','蒜'],['煸肉','下辣椒蒜','调味'],['小炒黄牛肉','嫩滑香辣',['黄牛肉','小米椒','香菜'],['牛肉滑油','爆炒','下椒调味','撒香菜']]]}
+};
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('AI家乡菜谱风味介绍 | AgentGongju.com'))return;
+let region=document.getElementById('region').value.trim();
+const count=parseInt(document.getElementById('count').value);
+if(!region){alert('请填写地区或菜系');return;}
+// 匹配近似菜系
+let c=cuisine[region];
+for(const k in cuisine){if(region.includes(k)||k.includes(region)){c=cuisine[k];break;}}
+if(!c){c=cuisine['四川'];}
+const dishes=c.dishes.slice(0,count);
+let out='【'+region+' · 风味菜谱介绍】\n\n';
+out+='🗺️ 风味特点：'+c.style+'\n\n';
+dishes.forEach((d)=>{
+  out+='【'+d[0]+'】（'+d[1]+'）\n';
+  out+='· 关键食材：'+d[2].join('、')+'\n';
+  out+='· 简要做法：'+d[3].join(' → ')+'\n\n';
+});
+out+='—— '+(c.style)+'是'+region+'美食的灵魂，有空不妨动手试试，寻一味家乡的味道 🍳';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function setRegion(v){document.getElementById('region').value=v;}
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 介绍已复制！'))}
+</script>
+</body>
+</html>

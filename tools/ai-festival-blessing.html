@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI节日祝福语生成 | AgentGongju.com</title>
+<meta name="description" content="选择节日、对象与风格，AI生成走心、得体、不落俗套的节日祝福语，送礼发圈两相宜。">
+<meta name="keywords" content="节日祝福,祝福语,新年祝福,中秋,春节,问候语,贺卡">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:50px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{color:#94a3b8;font-size:.85rem;margin-bottom:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🎊 AI 节日祝福语生成</h1><p>节日 + 对象 + 风格，发出去体面又走心</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>🎆 选择节日</label>
+<select id="fest"><option value="春节" selected>🧧 春节</option><option value="中秋">🌕 中秋</option><option value="元宵">🏮 元宵</option><option value="国庆">🇨🇳 国庆</option><option value="元旦">🎉 元旦</option><option value="教师节">📖 教师节</option><option value="情人节">💘 情人节</option><option value="母亲节">🌷 母亲节</option><option value="父亲节">👔 父亲节</option><option value="生日">🎂 生日</option></select></div>
+<div><label>👥 送给谁</label>
+<select id="to"><option value="朋友" selected>🤝 朋友</option><option value="家人">🏠 家人</option><option value="恋人">💑 恋人</option><option value="领导">💼 领导</option><option value="同事">👥 同事</option><option value="老师">📚 老师</option></select></div>
+</div>
+<div class="param-row">
+<div><label>🎨 风格</label>
+<select id="style"><option value="温馨" selected>💛 温馨走心</option><option value="幽默">😄 幽默俏皮</option><option value="文艺">🌿 文艺诗意</option><option value="正式">🎩 正式得体</option></select></div>
+<div><label>🔢 数量</label>
+<select id="num"><option value="3" selected>3 条</option><option value="5">5 条</option></select></div>
+</div>
+<label>✍️ 想加入的内容（选填，如昵称或愿望）</label>
+<textarea id="extra" placeholder="例如：愿我们明年一起旅行、祝身体健康…"></textarea>
+<button class="btn-gen" id="genBtn">✨ 生成祝福</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 精选祝福语</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制祝福语</button>
+<div class="tip" style="margin-top:12px">💡 小贴士：带上对方昵称或具体的共同回忆，祝福会瞬间变得专属又走心。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const festEmoji={春节:'🧧',中秋:'🌕',元宵:'🏮',国庆:'🇨🇳',元旦:'🎉',教师节:'📖',情人节:'💘',母亲节:'🌷',父亲节:'👔',生日:'🎂'};
+const base={
+春节:['新年快乐，愿你蛇年万事顺遂、阖家安康！','㊗️福你新的一年财源广进、天天开心，常回家看看！','辞旧迎新，愿你的日子像这烟火一样红红火火、热热闹闹。'],
+中秋:['中秋快乐，愿月圆人团圆，家好月圆事事圆！','愿你的中秋节甜甜的，像月饼一样又香又暖。','清风明月本无价，愿你花好月圆人长久。'],
+元宵:['元宵快乐，愿你的生活像汤圆一样甜甜蜜蜜！','灯火万家，愿你前程似锦、团团圆圆！','吃碗热元宵，愿好运与你常相伴。'],
+国庆:['国庆快乐，愿你假期玩得尽兴，日子越过越红火！','祝福祖国也祝福你，事业蒸蒸日上、平安喜乐！','七天小长假，愿你收获满满好心情，元气满满再出发！'],
+元旦:['元旦快乐，愿新的一年所有的美好如约而至！','新年新气象，愿你平安顺遂、心想事成！','元启新程，愿你岁岁常欢愉、年年皆胜意。'],
+教师节:['老师您辛苦了，祝您教师节快乐、桃李满天下！','感谢您的教诲，愿您健康常伴、笑口常开！','一朝沐杏雨，一生念师恩。祝老师节日快乐！'],
+情人节:['情人节快乐，有你在的每一天都是好日子！','愿我们朝朝暮暮，岁岁年年，一直牵手走下去。','遇见你是最美好的事，愿这份喜欢长长久久。'],
+母亲节:['妈妈母亲节快乐，您辛苦了，愿您永远健康美丽！','感谢您把最好的都给了我，愿您被岁月温柔以待。','愿时光慢些，让我多陪陪您，母亲节快乐！'],
+父亲节:['老爸父亲节快乐，您是我心中永远的超级英雄！','谢谢您撑起整个家，愿您健康常在、快乐常伴。','平时不说，今天要说：爸，我爱你！节日快乐！'],
+生日:['生日快乐，愿你新的一岁被好运围绕、万事胜意！','祝你生日快乐，长了一岁也更要开心、要发光！','愿你的每一天都比蛋糕更甜，生日快乐呀！' ]};
+const extraLine={朋友:'· 朋友一生一起走，特别的日子想第一个祝福你～',家人:'· 家人就是最温暖的港湾，记得常聚。',恋人:'· 往后每一个节日，我都想陪你一起过。',领导:'· 感谢领导指导，祝您诸事顺遂！',同事:'· 工作辛苦啦，节日好好放松充充电！',老师:'· 师恩难忘，祝您平安喜乐！'};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI节日祝福语生成 | AgentGongju.com'))return;
+const fest=document.getElementById('fest').value;
+const to=document.getElementById('to').value;
+const style=document.getElementById('style').value;
+const num=parseInt(document.getElementById('num').value);
+const extra=document.getElementById('extra').value.trim();
+const emo=festEmoji[fest]||'🎊';
+const pool=base[fest]||base['春节'];
+const picked=shuffle(pool).slice(0,num);
+let out='【'+emo+fest+' · 送给'+to+' · '+style+'风】\n\n';
+picked.forEach((p,i)=>{
+let line=p;
+if(style==='幽默'){line=humorize(line);}
+if(style==='文艺'){line=artize(line);}
+if(style==='正式'){line='谨致美好的祝愿：'+p.slice(0,10)+extraSub(p,i);}
+out+='【祝福'+(i+1)+'】\n'+line;
+out+='\n'+extraLine[to];
+if(extra){out+='\n· 特别寄语：'+extra;}
+out+='\n\n';
+});
+function extraSub(p,i){return i===0?'，愿一切顺心如意。':'';}
+function humorize(s){return s.replace(/天天开心/,'天天抽到好运').replace(/红红火火/,'红红火火恍恍惚惚').replace(/万事顺遂/,'好运连连不加班');}
+function artize(s){return s.replace(/万事顺遂/,'星河长明，诸事顺遂').replace(/心想事成/,'念念不忘，皆有回响').replace(/天天开心/,'日子温软，清风徐来');}
+out+='【✨ 使用建议】\n· 可根据收信人昵称微调称呼，更显专属；\n· 搭配节日表情包或照片，效果更佳。';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function shuffle(arr){for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}return arr;}
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 祝福语已复制！'))}
+</script>
+</body>
+</html>

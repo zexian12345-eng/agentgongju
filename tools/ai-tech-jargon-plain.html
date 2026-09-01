@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI技术黑话大白话 | AgentGongju.com</title>
+<meta name="description" content="看不懂的技术术语？输入"分布式""云原生"等黑话，AI用大白话讲清楚，还配一句生活化比喻，新人秒懂。">
+<meta name="keywords" content="技术术语,黑话翻译,大白话解释,程序员术语,入门科普,技术名词,云原生,分布式">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:60px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{color:#94a3b8;font-size:.85rem;margin-bottom:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🗣 AI 技术黑话大白话</h1><p>把听不懂的术语切成三两句人话，新人也能秒懂"黑话"</p></div>
+
+<div class="card">
+<label>🔤 想弄懂的技术词</label>
+<input type="text" id="term" placeholder="例如：分布式、云原生、API、大模型、微服务、负载均衡……">
+<div class="param-row">
+<div><label>👤 讲解对象</label>
+<select id="aud"><option value="外行" selected>🙋 零基础外行</option><option value="非技术">🧑‍💼 非技术同事</option><option value="新手">🎓 技术新手</option></select></div>
+<div><label>📏 篇幅</label>
+<select id="len"><option value="简洁" selected>✂️ 一句话</option><option value="适中">📄 中等篇幅</option><option value="详细">📚 详细讲解</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">🧠 解释给我听</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 大白话解释</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制解释</button>
+<div class="tip" style="margin-top:12px">💡 跟技术同学沟通时，先用"一句话版本"确认概念，再看要不要深入。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const TERMS={
+'分布式':{s:'就是把一个大任务拆给很多台电脑一起干，像十几个厨师一起出菜，又快又不挤。',m:'分布式=多台机器协作完成同一件事',d:'传统做法是一台电脑扛所有，"分布式"把任务拆小分给一群电脑并行处理，遇到故障也能互相替代，所以抗压更强、扩展也更方便。'},
+'云原生':{s:'就是专门为"跑在云端"而设计的软件，天生就在线、能伸缩、能自己恢复。',m:'云原生=为云而生、随云伸缩的玩法',d:'不止是把软件搬上云，而是从架构上就围绕云设计：容器打包、自动扩容、故障自愈。就像为外卖而生的中央厨房，而不是把路边摊硬塞进商城。'},
+'api':{s:'就是程序之间"喊话"的约定接口，你点一下按钮，它帮你叫后厨下单。',m:'API=程序之间约定好的对话窗口',d:'API（应用程序接口）是软件与软件通信的大门。你按下"下单"，App 通过 API 告诉服务器要什么，服务器再回传结果，全程遵循固定格式，让不同系统能协作。'},
+'微服务':{s:'把一个大软件拆成一堆独立小服务，各自分工，互不拖后腿。',m:'微服务=一块大蛋糕切成很多小格子',d:'微服务把单体应用拆成多个独立部署的小服务，各自管自己的事、可单独开发扩容。好处是灵活好维护，坏处是数量多、管理更复杂。'},
+'负载均衡':{s:'把涌来的访问量平均分给多台服务器，别让一台忙死、其他看戏。',m:'负载均衡=前台按忙闲给大家派活的门卫',d:'用户请求很多时，负载均衡器把流量分摊到后端多台服务器上，避免单台过载。像饭店门口迎宾，把客人均匀安排到各个服务员的桌上。'},
+'大模型':{s:'就是读过海量资料、会聊天写文章的超级AI，你给它提示，它顺着往下编。',m:'大模型=预训练过的全能型AI大脑',d:'大模型是在海量数据上训练出的深度学习模型，能理解语言、生成内容、推理总结。它本质是"概率预测"，根据上下文推测最可能的下文，所以既能写代码也能写情书。'}
+};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI技术黑话大白话 | AgentGongju.com'))return;
+let term=document.getElementById('term').value.trim();
+const aud=document.getElementById('aud').value;
+const len=document.getElementById('len').value;
+if(!term){alert('请先输入一个技术术语');return;}
+let t=TERMS[term];
+if(!t){t={s:'「'+term+'」'+(aud==='外行'?'可以理解为：一种新工具/新概念，用起来方便、解决现实中某个具体问题。':'是某领域的一个专业概念，核心在于通过特定方式解决一类问题。'),m:'「'+term+'」建议结合上下文与官方文档理解',d:'「'+term+'」并非词语本身难懂，而是在特定语境下有精确内涵。建议从"它解决什么问题"切入，先看官方定义，再结合例子记忆，最后尝试向别人复述一遍，往往就牢固了。'};}
+let out=`🧠 大白话解释「${term}」\n\n`;
+if(len==='简洁'){out+='━━ 一句话版本 ━━\n'+t.s+'\n';}
+else if(len==='适中'){out+='━━ 一句话版本 ━━\n'+t.s+'\n\n━━ 一句话记忆 ━━\n'+t.m+'\n';}
+else{out+='━━ 一句话版本 ━━\n'+t.s+'\n\n━━ 一句话记忆 ━━\n'+t.m+'\n\n━━ 展开说说 ━━\n'+t.d+'\n';}
+out+='\n【祝你越用越懂 💪】';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 解释已复制！'))}
+</script>
+</body>
+</html>

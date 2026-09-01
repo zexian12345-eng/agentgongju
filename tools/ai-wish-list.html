@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI心愿清单规划 | AgentGongju.com</title>
+<meta name="description" content="输入你想实现的愿望，AI帮你把抽象心愿拆解为具体可执行的行动计划，含时间节点、步骤与激励方式。">
+<meta name="keywords" content="心愿清单,目标规划,愿望清单,行动计划,bucket list,个人成长">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+textarea,input[type=text],select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:60px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tag-btn{display:inline-block;padding:5px 12px;background:rgba(99,102,241,0.12);border:1px solid rgba(99,102,241,0.25);border-radius:20px;color:#a5b4fc;cursor:pointer;font-size:.8rem;margin:3px;transition:all .2s}
+.tag-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🌟 AI心愿清单规划</h1><p>把心愿写下来，再一步步变成现实</p></div>
+
+<div class="card">
+<label>✨ 心愿类型</label>
+<div>
+<span class="tag-btn" onclick="setWish('想学会游泳')">🏊 学会游泳</span>
+<span class="tag-btn" onclick="setWish('想存下一笔旅行基金')">✈️ 存旅行基金</span>
+<span class="tag-btn" onclick="setWish('想坚持健身一年')">🏋️ 坚持健身</span>
+<span class="tag-btn" onclick="setWish('想养成阅读习惯')">📚 坚持阅读</span>
+</div>
+<label>💭 你的心愿/目标</label>
+<textarea id="wish" placeholder="例如：我想在半年内学会游泳；想今年读20本书；想存3万元去云南旅行……"></textarea>
+<label>⏳ 期望达成时间</label>
+<select id="time"><option value="3">3个月内</option><option value="6" selected>半年内</option><option value="12">一年内</option><option value="24">两三年内</option></select>
+<button class="btn-gen" id="genBtn">🗺️ 生成心愿计划</button>
+<label style="margin-top:12px;color:#64748b;font-size:.8rem">* 计划帮你拆解步骤，贵在坚持执行</label>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🌟 你的心愿实现计划</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制计划</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const steps=['明确目标、细化衡量标准','制定每月小目标','规划每周具体安排','搭建习惯与提醒机制','定期复盘与调整'];
+const rewards=['完成阶段目标奖励自己一顿美食','达成后买一件心仪的物品','成功后给自己安排一次旅行','和好友庆祝一下这个里程碑'];
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('AI心愿清单规划 | AgentGongju.com'))return;
+const wish=document.getElementById('wish').value.trim();
+const time=document.getElementById('time').value;
+if(!wish){alert('请填写你的心愿');return;}
+const months=time+'个月';
+let out='【心愿清单计划】\n';
+out+='心愿：'+wish+'\n';
+out+='达成时限：'+months+'\n\n';
+out+='一、把心愿拆成里程碑\n';
+out+='· 阶段一（前'+(Math.max(1,Math.floor(time/4)))+'月）：打基础/起好步\n';
+out+='· 阶段二（中段）：稳步推进、形成节奏\n';
+out+='· 阶段三（收尾）：强化冲刺、验收成果\n\n';
+out+='二、关键行动步骤\n';
+steps.forEach((s,i)=>{out+='步骤'+(i+1)+'：'+s+'\n';});
+out+='\n三、每周可执行小行动\n';
+out+='· 固定：每周至少投入 '+(time<=3?'2':'3')+' 次专门时间。\n';
+out+='· 习惯：与自己约定的固定时间/场景绑定，更容易坚持。\n';
+out+='· 记录：每完成一次就在清单上打勾，获得即时正反馈。\n\n';
+out+='四、激励与提醒\n';
+out+='· '+rewards[Math.floor(Math.random()*rewards.length)]+'。\n';
+out+='· 把心愿写在显眼处，设置手机提醒，让目标看得见。\n';
+out+='· 邀请朋友互相监督，增加坚持动力。\n\n';
+out+='五、复盘与调整\n';
+out+='· 每月末回顾进度，肯定已完成的部分。\n';
+out+='· 若进度滞后，别自责，调整为更现实的节奏继续前进。\n\n';
+out+='—— 心愿是种子，行动是浇灌，愿你心想事成 🌟';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function setWish(v){document.getElementById('wish').value=v;}
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 计划已复制！'))}
+</script>
+</body>
+</html>

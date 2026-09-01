@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI节气养生指导 | AgentGongju.com</title>
+<meta name="description" content="输入二十四节气中的任意一个，AI为你生成该节气的养生要点，包括起居作息、饮食宜忌、运动建议和情绪调适，顺应天时更健康。">
+<meta name="keywords" content="节气,二十四节气,养生,立春,冬至,夏至,秋分,顺时养生">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+textarea,input[type=text],select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:70px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tag-btn{display:inline-block;padding:5px 12px;background:rgba(99,102,241,0.12);border:1px solid rgba(99,102,241,0.25);border-radius:20px;color:#a5b4fc;cursor:pointer;font-size:.8rem;margin:3px;transition:all .2s}
+.tag-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>☀️ AI节气养生指导</h1><p>顺应二十四节气，把日子过得更健康</p></div>
+
+<div class="card">
+<label>✨ 选择节气</label>
+<div>
+<span class="tag-btn" onclick="setJ('立春')">🌱 立春</span>
+<span class="tag-btn" onclick="setJ('清明')">🍃 清明</span>
+<span class="tag-btn" onclick="setJ('夏至')">☀️ 夏至</span>
+<span class="tag-btn" onclick="setJ('立秋')">🍂 立秋</span>
+<span class="tag-btn" onclick="setJ('霜降')">🌾 霜降</span>
+<span class="tag-btn" onclick="setJ('冬至')">❄️ 冬至</span>
+</div>
+<label>🏷 节气（可自由输入）</label>
+<input type="text" id="jieqi" placeholder="例如：大暑、小寒、白露……">
+<label>🧑 你的体质/情况（可选）</label>
+<select id="body"><option value="normal">一般</option><option value="cold">怕冷/手脚凉</option><option value="heat">易上火/怕热</option><option value="fatigue">易疲劳/气虚</option></select>
+<button class="btn-gen" id="genBtn">🌸 生成养生指南</button>
+<label style="margin-top:12px;color:#64748b;font-size:.8rem">* 养生建议仅供日常参考，不替代医嘱</label>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">☀️ 节气养生指南</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制指南</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const guide={
+立春:['春气始动，宜早睡早起、舒展形体','少酸多甘，多吃春韭、豆芽、菠菜等升发之品','适当户外散步、太极，畅达情志，忌郁怒'],
+立夏:['天气转热，宜午间小憩、养心安神','饮食清淡，多吃苦瓜、绿豆、冬瓜清热','运动宜适量出汗，忌大汗淋漓耗气'],
+夏至:['阳气最盛，宜晚睡早起、午休养心','宜食酸咸之品如番茄、鸭肉以免伤津','避免暴晒，绿豆汤、酸梅汤可解暑'],
+立秋:['暑气渐消，宜收敛神气、早卧早起','润燥为先，多吃梨、百合、银耳、蜂蜜','少辛多酸，忌贪凉、防秋燥咳嗽'],
+霜降:['深秋转凉，注意保暖谨防着凉','宜进补润燥，山药、栗子、莲藕正当季','进补不宜过燥，适量运动增强抗寒力'],
+冬至:['冬至一阳生，宜早睡晚起、储蓄阳气','进补佳期，羊肉、桂圆、老母鸡汤温补','注意头部脚部保暖，忌熬夜伤阳'],
+清明:['气清景明，肝气旺盛宜疏泄','多吃荠菜、香椿等时令野菜，祛湿排毒','踏青赏景悦情志，忌过度劳累'],
+大暑:['一年最热，防暑降温尤为关键','多吃绿豆、西瓜、莲子，多饮温水','避免高温时段外出，午后可小憩'],
+小寒:['天寒地冻，宜养肾防寒','进补以温补为主，宜食核桃、黑豆、羊肉','室温适当，泡脚驱寒，早睡养阳'],
+白露:['早晚转凉，昼夜温差大需防着凉','宜润肺滋阴，梨、银耳、芝麻正当时','及时添衣，尤其护好脖子和肚脐']
+};
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('AI节气养生指导 | AgentGongju.com'))return;
+const tagBtn=document.getElementById('jieqi').value.trim();
+const jieqi=tagBtn||'立春';
+const body=document.getElementById('body').value;
+const g=guide[jieqi]||guide['立春'];
+const bodyTip={normal:'',cold:'\n· 你偏怕冷，饮食可适当偏温，注意四肢保暖，坚持泡脚。',heat:'\n· 你偏易上火，宜多喝水、少辛辣，适量吃些凉性蔬果。',fatigue:'\n· 你易疲劳，注意规律作息、不过度消耗，可适当进补益气之品。'}[body];
+let out='【'+jieqi+' · 养生指南】\n\n';
+out+='1️⃣ 起居作息\n· '+g[0]+'\n';
+out+='\n2️⃣ 饮食宜忌\n· '+g[1]+'\n';
+out+='\n3️⃣ 运动情志\n· '+g[2]+'\n';
+out+='\n4️⃣ 体质提醒\n· 顺时养生，量力而行。'+bodyTip;
+out+='\n\n【今日小提示】\n· 起居有常，情绪平和是最好的养生。\n· 若身体确有不适，请及时咨询医生。🌿';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function setJ(v){document.getElementById('jieqi').value=v;}
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 指南已复制！'))}
+</script>
+</body>
+</html>

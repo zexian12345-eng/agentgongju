@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI公文写作助手 | AgentGongju.com</title>
+<meta name="description" content="一键生成通知、请示、报告、函、会议纪要等公文格式初稿，帮你快速搭好框架，措辞规范得体。">
+<meta name="keywords" content="公文写作,通知,请示,报告,函,会议纪要,公文格式,机关文书">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+textarea,input[type=text],select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:60px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:600px){.param-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📜 AI公文写作助手</h1><p>通知、请示、报告轻松搭框架，措辞规范</p></div>
+
+<div class="card">
+<label>📄 公文类型</label>
+<select id="docType"><option value="notice">通知</option><option value="request">请示</option><option value="report">报告</option><option value="letter">函</option><option value="minutes">会议纪要</option></select>
+<div class="param-grid">
+<div><label>🏢 发文单位</label><input type="text" id="dept" placeholder="例如：公司行政部"></div>
+<div><label>📝 事由主题</label><input type="text" id="subject" placeholder="例如：关于开展消防安全检查的通知"></div>
+</div>
+<label>🗒️ 关键内容要点（用顿号或逗号隔开）</label>
+<textarea id="points" placeholder="例如：检查时间下周五、范围全楼层、需各部门配合、落实责任人张三"></textarea>
+<label>👤 收文对象 / 落款日期（可选）</label>
+<div class="param-grid">
+<div><input type="text" id="target" placeholder="主送对象，如全体部门"></div>
+<div><input type="text" id="date" placeholder="落款日期，如2026年8月26日"></div>
+</div>
+<button class="btn-gen" id="genBtn">✍️ 生成公文初稿</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">📜 公文初稿</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制初稿</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const tmpl={
+notice:{t:'通知',head:'关于开展相关工作的通知',body:function(s,p){return '现将有关事项通知如下：\n一、工作内容\n'+(p||'（请补充具体工作内容）')+'\n二、时间安排\n（请填写具体时间节点）\n三、工作要求\n请各部门高度重视，按期落实，如有问题请及时反馈。'},end:'特此通知。'},
+request:{t:'请示',head:'关于请求批准相关事项的请示',body:function(s,p){return '为顺利推进相关工作，现将有关情况请示如下：\n一、背景情况\n（简要说明起因背景）\n二、请示事项\n'+(p||'（请说明希望批准的具体事项）')+'。\n三、具体方案\n（补充实施安排与预算等）\n妥否，请批示。'},end:''},
+report:{t:'报告',head:'关于工作情况的报告',body:function(s,p){return '现将有关工作情况报告如下：\n一、开展情况\n（总体进展与具体做法）\n二、取得成效\n（阶段性成果数据）\n三、存在问题\n（说明不足之处）\n四、下一步打算\n（后续改进方向）'},end:'特此报告。'},
+letter:{t:'函',head:'关于商洽相关事宜的函',body:function(s,p){return '为解决共同关切的事项，现就相关事宜函商如下：\n一、发函缘由\n（简述背景与必要性）\n二、商洽事项\n'+(p||'（请说明希望双方共同推进的事项）')+'\n三、协作建议\n（提出便于对接的时间、联系人等）\n烦请贵方予以支持，盼复为谢。'},end:''},
+minutes:{t:'会议纪要',head:'会议纪要',body:function(s,p){return '一、会议概况\n会议时间：＿＿＿＿　地点：＿＿＿＿　主持人：＿＿＿＿\n二、会议内容\n'+(p||'（请概括讨论的议题与结论）')+'\n三、纪要事项\n1. ＿＿＿＿（形成决议）\n2. ＿＿＿＿（明确责任人与时限）'},end:'（参会人员签收）'}
+};
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('AI公文写作助手 | AgentGongju.com'))return;
+const type=document.getElementById('docType').value;
+const dept=document.getElementById('dept').value.trim();
+const subject=document.getElementById('subject').value.trim();
+const points=document.getElementById('points').value.trim();
+const target=document.getElementById('target').value.trim();
+const date=document.getElementById('date').value.trim();
+const t=tmpl[type];
+let out='────────────────────\n'+t.t.head+(subject?'：'+subject:'')+'\n'+(target?'\n'+target+'：':'')+'\n\n'+'　　'+t.body(subject,points)+'\n\n'+(t.end?'　　'+t.end+'\n\n':'\n');
+out+=(dept?'　　'+dept+'\n':'')+(date?'　　'+date+'\n':'');
+out+='────────────────────';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 初稿已复制！'))}
+</script>
+</body>
+</html>

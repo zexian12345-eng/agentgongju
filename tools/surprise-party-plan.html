@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI生日惊喜策划 | AgentGongju.com</title>
+<meta name="description" content="输入为谁策划、预算和对方喜好，AI帮你规划一套温馨不重样的生日惊喜方案，包括布置、流程、礼物和小细节。">
+<meta name="keywords" content="生日惊喜,生日策划,生日派对,惊喜方案,生日派对布置,送什么礼物">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+textarea,input[type=text],select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:70px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tag-btn{display:inline-block;padding:5px 12px;background:rgba(99,102,241,0.12);border:1px solid rgba(99,102,241,0.25);border-radius:20px;color:#a5b4fc;cursor:pointer;font-size:.8rem;margin:3px;transition:all .2s}
+.tag-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🎂 AI生日惊喜策划</h1><p>一份用心的惊喜，比礼物更让人难忘</p></div>
+
+<div class="card">
+<label>🎁 为谁策划</label>
+<div>
+<span class="tag-btn" onclick="setWho('对象')">💞 对象/伴侣</span>
+<span class="tag-btn" onclick="setWho('闺蜜')">👭 闺蜜/好友</span>
+<span class="tag-btn" onclick="setWho('家人')">👨‍👩‍👧 家人(父母/孩子)</span>
+<span class="tag-btn" onclick="setWho('同事')">🤝 同事/朋友</span>
+</div>
+<label>💰 预算范围</label>
+<select id="budget"><option value="200以内">200元以内</option><option value="200-500">200-500元</option><option value="500-1000">500-1000元</option><option value="1000+">1000元以上</option></select>
+<label>🎯 对方喜欢什么（可选）</label>
+<input type="text" id="interest" placeholder="例如：喜欢烘焙、爱猫、喜欢拍照、爱吃火锅……">
+<label>📝 其他想法</label>
+<textarea id="more" placeholder="例如：想在家办、想录个视频、想送个特别点的……"></textarea>
+<button class="btn-gen" id="genBtn">🎉 生成惊喜方案</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🎉 生日惊喜策划方案</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制方案</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const whoNote={
+'对象':['安排一顿有仪式感的晚餐/烛光，穿插告白或走心的话。','亲手准备或定制一件有纪念意义的小礼物。'],
+'闺蜜':['邀上几个好友一起，布置轻量气球和中意的甜品台。','准备一本相册或视频，回顾你们的友谊高光时刻。'],
+'家人':['安排一顿团圆饭，别忘了长辈/孩子的口味。','实用又贴心的礼物+一张全家福更显心意。'],
+'同事':['办公室小惊喜：蛋糕+贺卡，大家齐唱生日歌。','准备一份精致小零食或实用办公好物。']
+};
+const budgetTip={
+'200以内':'轻布置+走心礼物，重在心意而非花销。',
+'200-500':'可以请一顿不错的饭，搭配有纪念意义的礼物。',
+'500-1000':'可安排一晚小聚会或短途活动，提升仪式感。',
+'1000+':'可以策划一次小度假或升级版派对体验。'
+};
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('AI生日惊喜策划 | AgentGongju.com'))return;
+const who=document.getElementById('who')?document.getElementById('who').value:'对象';
+const budget=document.getElementById('budget').value;
+const interest=document.getElementById('interest').value.trim();
+const more=document.getElementById('more').value.trim();
+const wn=whoNote[who]||whoNote['对象'];
+let out='【'+who+' · 生日惊喜方案】\n\n';
+out+='🧩 核心思路：'+wn[0]+'\n   '+wn[1]+'\n';
+out+='💰 预算('+budget+')：'+budgetTip[budget]+'\n\n';
+out+='📅 建议流程：\n';
+out+='· Step1：提前3-5天悄悄踩点/预定场地，买好小道具。\n';
+out+='· Step2：当天白天照常制造"淡忘"感，晚上时机成熟时切换惊喜。\n';
+out+='· Step3：先送出惊喜瞬间（蛋糕/布置），再附上走心贺卡或小礼物。\n';
+out+='· Step4：一起切蛋糕、拍照，把这一刻定格下来。\n\n';
+if(interest)out+='🎯 结合对方喜欢「'+interest+'」：把这份喜好融入布置、礼物或环节里（如'+interest+'-主题甜品），会比通用惊喜更戳心。\n\n';
+if(more)out+='📝 你的想法「'+more+'」已纳入考虑，可据此微调场地、形式与预算分配。\n\n';
+out+='💡 惊喜不贵在花多少钱，贵在让对方感受到"你是真的用心记住了我"。\n—— 提前确认对方当天时间安排，别让惊喜变惊吓 😉';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function setWho(v){var el=document.getElementById('who');if(el){el.value=v;}else{var s=document.createElement('select');s.id='who';s.innerHTML='<option>'+v+'</option>';document.body.appendChild(s);}}
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 方案已复制！'))}
+</script>
+</body>
+</html>

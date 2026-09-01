@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI随礼参考 | AgentGongju.com</title>
+<meta name="description" content="根据你与收礼人的关系亲疏、所在地区和场合，AI帮你估算合适的红包/份子钱金额档位，并给出体面说法与回礼建议，礼到情到不尴尬。">
+<meta name="keywords" content="随礼,份子钱,红包,随份子,结婚礼金,礼金,红包金额">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+textarea,input[type=text],select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:70px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tag-btn{display:inline-block;padding:5px 12px;background:rgba(99,102,241,0.12);border:1px solid rgba(99,102,241,0.25);border-radius:20px;color:#a5b4fc;cursor:pointer;font-size:.8rem;margin:3px;transition:all .2s}
+.tag-btn:hover{background:rgba(99,102,241,0.25)}
+.param-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:600px){.param-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🧧 AI随礼参考</h1><p>算一算合适的份子钱，礼到情到不尴尬</p></div>
+
+<div class="card">
+<label>✨ 场合</label>
+<div>
+<span class="tag-btn" onclick="setOcc('wedding')">💍 结婚</span>
+<span class="tag-btn" onclick="setOcc('baby')">🍼 满月/百天</span>
+<span class="tag-btn" onclick="setOcc('birthday')">🎂 寿宴/生日</span>
+<span class="tag-btn" onclick="setOcc('house')">🏠 乔迁</span>
+<span class="tag-btn" onclick="setOcc('funeral')">🕊 丧事(白事)</span>
+</div>
+<label>🤝 与收礼人的关系</label>
+<select id="relation"><option value="close">至亲/闺蜜挚友</option><option value="normal">普通亲友/同事</option><option value="acquaintance">点头之交/泛泛之交</option></select>
+<label>📍 所在地区</label>
+<select id="region"><option value="big">一线城市(北上广深)</option><option value="mid">二三线城市</option><option value="small">县城/乡镇/农村</option></select>
+<label>📝 备注（可选）</label>
+<select id="occ" style="display:none"><option value="wedding">wedding</option></select>
+<input type="text" id="memo" placeholder="例如：对方上次多随了我、想顺便带上家属">
+<button class="btn-gen" id="genBtn">💰 估算随礼金额</button>
+<label style="margin-top:12px;color:#64748b;font-size:.8rem">* 地区及习俗差异大，结果仅供社交参考</label>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🧧 随礼参考建议</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制建议</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const base={
+wedding:{close:[1000,2000],normal:[600,1000],acquaintance:[300,600]},
+baby:{close:[600,1200],normal:[300,600],acquaintance:[200,300]},
+birthday:{close:[500,1000],normal:[200,500],acquaintance:[100,200]},
+house:{close:[500,1000],normal:[200,500],acquaintance:[100,200]},
+funeral:{close:[500,1000],normal:[200,400],acquaintance:[100,200]}
+};
+const regionMul={big:1.3,mid:1.0,small:0.7};
+const occName={wedding:'结婚',baby:'满月/百天',birthday:'寿宴/生日',house:'乔迁',funeral:'丧事(白事)'};
+const relationName={close:'至亲/挚友',normal:'普通亲友/同事',acquaintance:'点头之交'};
+const wishes={wedding:'祝新人百年好合、永结同心！',baby:'祝宝宝健康茁壮、平安快乐成长！',birthday:'祝寿星福寿安康、笑口常开！',house:'贺乔迁之喜，祝新居万事顺遂！',funeral:'节哀顺变，请多保重身体。'};
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('AI随礼参考 | AgentGongju.com'))return;
+const occ=document.getElementById('occ').value;
+const rel=document.getElementById('relation').value;
+const region=document.getElementById('region').value;
+const memo=document.getElementById('memo').value.trim();
+let [lo,hi]=base[occ][rel];
+lo=Math.round(lo*regionMul[region]/50)*50;
+hi=Math.round(hi*regionMul[region]/50)*50;
+let out='【随礼参考】场合：'+occName[occ]+'｜关系：'+relationName[rel]+'｜地区：'+regionName(region)+'\n\n';
+out+='🔢 建议金额区间：'+lo+' - '+hi+' 元\n';
+out+='👍 稳妥档位：'+(lo+ (hi-lo>300?Math.round((hi-lo)*0.4/50)*50:0))+'\n';
+out+='🎖 关系加分档：'+hi+' 元左右\n\n';
+if(memo)out+='【你的补充】'+memo+'\n鉴于该情况，可酌情在上/下限基础上调整约50-100元。\n\n';
+out+='【体面说法】\n红包附言："'+wishes[occ]+'"\n现场可说："一点心意，祝一切顺利！"\n\n';
+out+='【回礼小贴士】\n· 参考以往来往金额，避免太失衡。\n· 携带家属或单独赴宴，可适当上浮。\n· 转账建议整百或吉利数字(如666/888)，忌讳4的场合注意避开。\n· 若经济压力大，心意到位即可，不必勉强攀比。🧧';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function setOcc(v){document.getElementById('occ').value=v;}
+function regionName(r){return{big:'一线城市',mid:'二三线城市',small:'县城/乡镇'}[r]||r;}
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 建议已复制！'))}
+</script>
+</body>
+</html>

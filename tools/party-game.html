@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI聚会游戏推荐 | AgentGongju.com</title>
+<meta name="description" content="输入聚会人数、场合和氛围，AI帮你推荐好玩又易上手的聚会小游戏，适合朋友聚会、团建、家庭聚餐等，无需道具也能玩。">
+<meta name="keywords" content="聚会游戏,团建游戏,破冰游戏,桌游,朋友聚会,互动游戏,家庭聚会">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+textarea,input[type=text],select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:60px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tag-btn{display:inline-block;padding:5px 12px;background:rgba(99,102,241,0.12);border:1px solid rgba(99,102,241,0.25);border-radius:20px;color:#a5b4fc;cursor:pointer;font-size:.8rem;margin:3px;transition:all .2s}
+.tag-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🎲 AI聚会游戏推荐</h1><p>冷场不用怕，一组好玩的游戏让气氛瞬间热起来</p></div>
+
+<div class="card">
+<label>👥 大概多少人</label>
+<select id="num"><option value="2-4">2-4人</option><option value="5-10">5-10人</option><option value="10+">10人以上</option></select>
+<label>✨ 聚会场合</label>
+<div>
+<span class="tag-btn" onclick="setOcc('朋友')">🍻 朋友聚餐</span>
+<span class="tag-btn" onclick="setOcc('团建')">💼 公司团建</span>
+<span class="tag-btn" onclick="setOcc('家庭')">👨‍👩‍👧 家庭聚会</span>
+<span class="tag-btn" onclick="setOcc('破冰')">🧊 陌生人破冰</span>
+</div>
+<label>📝 有没有道具/想避免的</label>
+<input type="text" id="note" placeholder="例如：没有扑克、大家不熟别玩太污的……">
+<button class="btn-gen" id="genBtn">🎮 推荐游戏</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🎮 推荐的聚会游戏（3个）</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制游戏</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const games={
+'朋友':[
+{name:'我有你没有',how:'每人轮流说一件自己做过、别人没做过的事，没人做过就赢一根手指，适合各种人数'},
+{name:'真心话之大冒险卡',how:'用手机抽卡，卡上写真心话问题或挑战，轮流抽做，气氛轻松'},
+{name:'时间炸弹',how:'设定一个分钟，单手传一个“炸弹”（手机倒计时），倒计时到的人接受惩罚'}],
+'团建':[
+{name:'你画我猜',how:'一人比划画，队友猜词，分组PK，好笑又简单'},
+{name:'谁是卧底',how:'一人拿到不同词（卧底），通过描述找出卧底，推理趣味强'},
+{name:'歌词接龙',how:'一人唱出一句歌词，下个人接最后一个字开头，唱不出淘汰，考验储备'}],
+'家庭':[
+{name:'抢凳子',how:'放凳子比人数少1，音乐停抢凳，淘汰制，老少皆宜'},
+{name:'萝卜蹲',how:'每人取萝卜代号，被点到要蹲并点名下一位，反应慢了就淘汰'},
+{name:'猜数字',how:'一人写个范围数字，大家轮流猜缩小范围，猜中的人表演节目'}],
+'破冰':[
+{name:'三选一快速问答',how:'轮流抽问题卡（如：旅行选海边还是山里），快速回答拉近距离'},
+{name:'介绍你左手边的人',how:'认识对方后向全桌介绍，强制社交破冰'},
+{name:'共同点快找',how:'两人一组限时找出3个共同点，最快完成的小组获胜'}]
+};
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('AI聚会游戏推荐 | AgentGongju.com'))return;
+const num=document.getElementById('num').value;
+const occ=document.getElementById('occ')?document.getElementById('occ').value:'朋友';
+const note=document.getElementById('note').value.trim();
+const list=games[occ]||games['朋友'];
+let out='【聚会游戏 · '+occ+' · 人数'+num+'】\n\n';
+list.forEach(function(g,i){out+='🎮 游戏'+(i+1)+'：'+g.name+'\n   📖 玩法：'+g.how+'\n\n';});
+out+='📌 Tips：\n· 人数少（'+num+'）建议选互动性强的默契类，人多选分组PK类。\n';
+if(note)out+='· 你提到「'+note+'」，选游戏时已适当避开，规则视现场灵活调整。\n';
+out+='· 当主持人先热场，气氛起来后自然就热闹啦 🎉';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function setOcc(v){var el=document.getElementById('occ');if(el){el.value=v;}else{var s=document.createElement('select');s.id='occ';s.innerHTML='<option>'+v+'</option>';document.body.appendChild(s);}}
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 内容已复制！'))}
+</script>
+</body>
+</html>

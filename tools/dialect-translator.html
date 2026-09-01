@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI方言趣味翻译器 | AgentGongju.com</title>
+<meta name="description" content="把普通话一键翻译成各地方言，支持东北话、四川话、粤语、吴语、闽南话等多种方言，趣味满满，还带语气词。">
+<meta name="keywords" content="方言,翻译,东北话,四川话,粤语,吴语,闽南话,表情包,趣味">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+textarea,input[type=text],select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:90px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.9;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{background:rgba(168,85,247,0.08);border:1px dashed #a855f7;border-radius:10px;padding:10px 14px;color:#c4b5fd;font-size:.82rem;margin-top:10px}
+@media(max-width:600px){.param-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🗣️ AI方言趣味翻译器</h1><p>普通话秒变各地方言，味同嚼蜡的文案瞬间接地气</p></div>
+
+<div class="card">
+<label>📝 输入普通话</label>
+<textarea id="text" placeholder="例如：你吃饭了吗？今天天气真不错呀！"></textarea>
+<div class="param-grid">
+<div><label>🗺️ 目标方言</label>
+<select id="dialect"><option>东北话</option><option>四川话</option><option>粤语</option><option>上海吴语</option><option>闽南话</option><option>湖南话</option><option>陕西话</option><option>河南话</option></select></div>
+<div><label>😄 语气浓度</label>
+<select id="flavor"><option>轻口味</option><option>标准地道</option><option>重口味老乡</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">✨ 翻译成方言</button>
+<div class="tip">💡 本工具为趣味词库式翻译，用于轻松娱乐与二次创作，非学术语言学标注。</div>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🗣️ 方言版译文</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制译文</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const dict={
+'东北话':{'你吃饭了吗':'你瞅啥呢，搁这旮旯整吃饭了没','今天天气真不错':'今儿个天儿贼拉好，真带劲','干什么':'搁那干啥呢','很好':'贼好','非常':'老','漂亮':'带劲儿','不知道':'不几道','什么东西':'啥玩意','生气了':'急眼了','厉害':'牛逼闪闪','回家':'回屯子','真的吗':'真滴假滴','谢谢':'谢了您嘞','朋友':'铁子','聊天':'唠嗑','没问题':'妥妥地','快点':'麻溜地'},
+'四川话':{'你吃饭了吗':'你吃莽莽了没有嘛','今天天气真不错':'今天太阳巴适得很','干什么':'搞啥子名堂','很好':'安逸得很','非常':'巴适','漂亮':'乖得很','不知道':'晓不得','什么东西':'啥子东西','回家了':'回切咯','厉害':'凶得很','真的吗':'真的嗦','谢谢':'谢了噢','朋友':'耍得好的','聊天':'摆龙门阵','没问题':'莫得问题','快点':'搞快点儿'},
+'粤语':{'你吃饭了吗':'你食咗饭未啊','今天天气真不错':'今日天气真系唔错','干什么':'做乜嘢','很好':'好好','非常':'好鬼','漂亮':'靓爆镜','不知道':'唔知','什么东西':'咩嘢','回家了':'返屋企','厉害':'好犀利','真的吗':'系咪真嘎','谢谢':'唔该晒','朋友':'老友','聊天':'倾偈','没问题':'冇问题','快点':'快啲'},
+'上海吴语':{'你吃饭了吗':'饭阿吃过了伐','今天天气真不错':'今朝天气蛮好的','干什么':'做啥','很好':'灵光','非常':'老','漂亮':'噱头灵','不知道':'勿晓得','什么东西':'啥物事','回家了':'回转去','厉害':'结棍','真的吗':'真额嘎','谢谢':'谢谢侬','朋友':'朋友','聊天':'嘎三胡','没问题':'没问题','快点':'快点噢'},
+'闽南话':{'你吃饭了吗':'汝有吃未','今天天气真不错':'今嗨天气真没','干什么':'勒创虾米','很好':'真好','非常':'真','漂亮':'水','不知道':'莫宰羊','什么东西':'虾米','回家了':'到位','厉害':'金厉害','真的吗':'金系阿拉','谢谢':'多谢','朋友':'朋友','聊天':'话仙','没问题':'没虾米','快点':'卡紧'},
+'湖南话':{'你吃饭了吗':'你恰饭了冒','今天天气真不错':'今日天气硬是蛮好','干什么':'搞么子','很好':'蛮好','非常':'好','漂亮':'乖','不知道':'不晓得','什么东西':'么子东西','回家了':'回去哒','厉害':'扎实','真的吗':'是真的么','谢谢':'谢谢你','朋友':'伙计','聊天':'扯谈','没问题':'冇得问题','快点':'快点子'},
+'陕西话':{'你吃饭了吗':'你咥饭了没','今天天气真不错':'今儿个天气美得很','干什么':'弄啥呢','很好':'美得很','非常':'贼','漂亮':'撩咋咧','不知道':'不知道','什么东西':'啥嘛','回家了':'回家咧','厉害':'奏事','真的吗':'真嘟','谢谢':'谢谢你','朋友':'伙计','聊天':'谝闲传','没问题':'么麻达','快点':'快些'},
+'河南话':{'你吃饭了吗':'你吃饭了咪','今天天气真不错':'今儿个日头真得劲','干什么':'弄啥嘞','很好':'可中','非常':'老','漂亮':'俊','不知道':'不张','什么东西':'啥','回家了':'回屋嘞','厉害':'牛','真的吗':'真嘞假嘞','谢谢':'麻烦你了','朋友':'伙计','聊天':'喷空','没问题':'中','快点':'快点矣'}
+};
+const flair={
+'轻口味':1,'标准地道':1.4,'重口味老乡':2
+};
+function translate(text,dialect,level){
+let result=text;let used=0;
+const d=dict[dialect];
+for(const k in d){
+if(result.includes(k)){
+result=result.split(k).join(d[k]);
+}
+}
+// 追加地道语气词
+const particles={
+'东北话':['哎妈呀','咋的了','整挺好','完事了都'],
+'四川话':['巴适','嘛','哦豁','嗦'],
+'粤语':['啦','嘛','系咁样'],
+'上海吴语':['伐','的呀','蛮好的'],
+'闽南话':['阿','哦','拉'],
+'湖南话':['咯','哒','啰'],
+'陕西话':['咧','么','嘞'],
+'河南话':['嘞','类','个']
+};
+const n=Math.round(level/1);
+const ps=particles[dialect]||[];
+let suffix='';
+for(let i=0;i<n&&ps.length;i++){suffix+=' '+ps[i%ps.length];}
+return result+suffix;
+}
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI方言趣味翻译器 | AgentGongju.com'))return;
+const text=document.getElementById('text').value.trim();
+if(!text){alert('请先输入要翻译的文案');return;}
+const d=document.getElementById('dialect').value;
+const l=flavor[document.getElementById('flavor').value];
+const out='【原句】\n'+text+'\n\n【'+d+'译文】\n'+translate(text,d,l)+'\n\n【地道小贴士】\n'+d+'的特点：'+({'东北话':'卷舌儿化音多、语气豪爽','四川话':'尾音带“嘛/嗦”、节奏铿锵','粤语':'九声六调、语气词丰富','上海吴语':'入声字、软糯温柔','闽南话':'保留了较多古汉语音','湖南话':'声调上扬、尾音硬朗','陕西话':'短促有力、儿化音','河南话':'中气十足、朴实地道'}[d]||'')+'。';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 译文已复制！'))}
+</script>
+</body>
+</html>

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI养生食谱助手 | AgentGongju.com</title>
+<meta name="description" content="根据你的体质状态或想调理的方向（熬夜、水肿、气血不足、上火等），AI为你推荐调理食谱和养生小妙招。">
+<meta name="keywords" content="养生,养生食谱,食疗,调理身体,气血,祛湿,熬夜调理,汤谱">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+textarea,input[type=text],select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:60px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tag-btn{display:inline-block;padding:5px 12px;background:rgba(99,102,241,0.12);border:1px solid rgba(99,102,241,0.25);border-radius:20px;color:#a5b4fc;cursor:pointer;font-size:.8rem;margin:3px;transition:all .2s}
+.tag-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🍵 AI养生食谱助手</h1><p>对症下"食"，一日三餐也能调理身体</p></div>
+
+<div class="card">
+<label>✨ 想调理的方向</label>
+<div>
+<span class="tag-btn" onclick="setGoal('熬夜')">😴 熬夜疲惫</span>
+<span class="tag-btn" onclick="setGoal('湿气')">💧 祛湿去水肿</span>
+<span class="tag-btn" onclick="setGoal('气血')">❤️ 补气血</span>
+<span class="tag-btn" onclick="setGoal('上火')">🔥 上火痘肌</span>
+</div>
+<label>🍲 想要的形式</label>
+<select id="form"><option value="汤品">养生汤/粥</option><option value="茶饮">代茶饮</option><option value="一日">一日三餐食谱</option></select>
+<label>📝 其他条件（可选，如偏寒体质、忌辛辣）</label>
+<input type="text" id="extra" placeholder="例如：怕冷、阴虚、消化不太好……">
+<button class="btn-gen" id="genBtn">🍵 生成养生方案</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🍵 你的养生食谱方案</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制方案</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const plans={
+'熬夜':{soup:'红枣桂圆枸杞茶：红枣5颗掰开，桂圆肉5粒，枸杞一小把，沸水焖泡10分钟，下午当水喝，缓疲提神。',day:['早餐：小米南瓜粥+水煮蛋','午餐：番茄牛腩+糙米饭+青菜','晚餐：清蒸鲈鱼+山药段+杂粮粥'],tip:'熬夜后第二天多补水，午间小睡20分钟，避免连续硬扛。'},
+'湿气':{soup:'陈皮薏米红豆汤：薏米和赤小豆提前泡2小时，加陈皮同煮1小时成汤，健脾祛湿利水。',day:['早餐：山药薏米粥+白煮蛋','午餐：清炒冬瓜+瘦肉+米饭','晚餐：赤小豆排骨汤+少量馒头'],tip:'少吃甜腻生冷，晚餐清淡，白天适当运动出出汗有助排湿。'},
+'气血':{soup:'黄芪当归炖鸡汤：鸡块焯水，加黄芪、当归、红枣炖1.5小时，一周1-2次温和补气血。',day:['早餐：红枣黑米粥+鸡蛋','午餐：牛肉+菠菜+米饭','晚餐：牛肉炖胡萝卜+小米饭'],tip:'补气血要趁温热喝，避免空腹喝浓汤，手脚冰凉可常吃红肉和红枣。'},
+'上火':{soup:'雪梨百合银耳羹：银耳泡发，加雪梨块、百合、冰糖炖至软糯，滋阴润燥降火。',day:['早餐：绿豆粥+全麦面包','午餐：清蒸鱼+冬瓜海带汤+米饭','晚餐：莲藕排骨汤+蒸南瓜'],tip:'少吃辛辣油炸和牛羊肉，多喝温水，早睡有助于减少上火长痘。'}
+};
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('AI养生食谱助手 | AgentGongju.com'))return;
+const goal=document.getElementById('goal')?document.getElementById('goal').value:'熬夜';
+const form=document.getElementById('form').value;
+const extra=document.getElementById('extra').value.trim();
+const p=plans[goal]||plans['熬夜'];
+let out='【'+goal+'调理 · 养生方案】\n\n';
+if(form==='汤品'){out+='🍲 推荐滋补/调理品：\n'+p.soup+'\n\n';}
+else if(form==='茶饮'){var tea=p.soup.split('：')[1]||p.soup;out+='🍵 代茶饮：\n'+tea+'\n\n';}
+else{out+='🥘 一日三餐参考：\n'+p.day.join('\n')+'\n\n';}
+out+='💡 养生小贴士：'+p.tip+'\n\n';
+if(extra)out+='📝 结合你提到「'+extra+'」，选择食材时请避开不适合自身偏性的部分，并咨询专业人士。\n\n';
+out+='—— 食疗是日常调理辅助，身体不适请及时就医，勿完全依赖食疗 🙏';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function setGoal(v){var el=document.getElementById('goal');if(el){el.value=v;}else{var s=document.createElement('select');s.id='goal';s.innerHTML='<option>'+v+'</option>';document.body.appendChild(s);}}
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 方案已复制！'))}
+</script>
+</body>
+</html>

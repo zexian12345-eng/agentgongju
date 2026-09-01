@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI节日祝福贺卡生成器 | AgentGongju.com</title>
+<meta name="description" content="选择节日和祝福对象，一键生成走心又文雅的祝福贺卡文案，覆盖春节、中秋、生日、感恩、圣诞等喜庆场景。">
+<meta name="keywords" content="贺卡,祝福,节日,生日,春节,中秋,感恩,贺词,情书">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+textarea,input[type=text],select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:60px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.9;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🎁 AI节日祝福贺卡生成器</h1><p>把心意凝成文字，让祝福更有温度</p></div>
+
+<div class="card">
+<label>🎉 选择节日场景</label>
+<select id="festival"><option>春节</option><option>中秋节</option><option>元宵节</option><option>母亲节</option><option>父亲节</option><option>情人节</option><option>生日</option><option>感恩节</option><option>圣诞节</option><option>新年</option></select>
+<div class="param-grid">
+<div><label>👤 祝福对象</label>
+<select id="target"><option>长辈</option><option>父母</option><option>朋友</option><option>同事</option><option>恋人</option><option>老师</option></select></div>
+<div><label>📝 文案风格</label>
+<select id="style"><option>温馨走心</option><option>吉利讨喜</option><option>文艺雅致</option><option>俏皮幽默</option></select></div>
+</div>
+<label>✍️ 想加入的专属话语（可选）</label>
+<textarea id="extra" placeholder="例如：希望您身体安康，明年一起去看海"></textarea>
+<button class="btn-gen" id="genBtn">✨ 生成祝福贺卡</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🎁 你的祝福贺卡文案</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制贺卡</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const bank={
+'春节':['愿您岁岁常欢愉，年年皆胜意，阖家团圆，万事顺遂。','新春大吉，五福临门，愿这一年好运连连，喜乐长安。','金玉满堂，福寿安康，春节快乐，心想事成！'],
+'中秋节':['月圆人团圆，愿您花好月圆，生活如月饼般甜甜蜜蜜。','但愿人长久，千里共婵娟，中秋阖家幸福安康。','皓月当空，情谊长存，愿您中秋佳节心想事成。'],
+'元宵节':['花灯璀璨，汤圆香甜，愿您元宵团圆，日子越过越甜。','元宵佳节，愿您阖家欢乐，幸福美满，万事如意。'],
+'母亲节':['感恩您无私的爱，愿您妈妈永远健康美丽，母亲节快乐！','你的碎碎念念，温暖了我的岁岁年年。妈妈，我爱您。'],
+'父亲节':['您是家里的顶梁柱，辛苦了！祝爸爸父亲节快乐，身体硬朗。','少言却重如山，愿岁月温柔待您，父亲节快乐。'],
+'情人节':['世界那么大，遇见你是最美的相遇。情人节快乐，我想你。','愿与你晨昏共度，四季相随，爱你每一天。'],
+'生日':['祝你生日快乐，岁岁无忧，梦想都能闪闪发光！','每一个今天都是最好的礼物，愿新的一岁平安喜乐，万事胜意。'],
+'感恩节':['感谢一路有你，愿我们行远自迩，常怀感恩，未来可期。','谢谢你的陪伴与照顾，愿好运永远与你相随。'],
+'圣诞节':['铃儿响叮当，好运伴身旁，祝你圣诞快乐，愿望都实现！','平安夜快乐，圣诞快乐，愿温暖与你常相伴。'],
+'新年':['旧岁千般皆如意，新年万事定称心，祝你新年快乐！','辞旧迎新，愿新年胜旧年，所求皆如愿，所行化坦途。']
+};
+const targetNote={
+'长辈':'敬祝您身体健康，笑口常开，福泽绵长。',
+'父母':'愿二老福寿安康，喜乐常伴，儿女的牵挂永远在您身边。',
+'朋友':'愿我们的友谊长存，未来一起奔赴更好的风景。',
+'同事':'愿工作顺遂，步步高升，合作愉快，前程似锦。',
+'恋人':'愿与你携手同行，把每一天都过成蜜糖。',
+'老师':'愿桃李满天下，春晖遍四方，师恩永铭于心。'
+};
+const styleHead={
+'温馨走心':'🌷 '+''+'',
+'吉利讨喜':'🧧 ',
+'文艺雅致':'🎐 ',
+'俏皮幽默':'😄 '
+};
+const jovial={
+'春节':['外面的鞭炮震天响，我的祝福也不甘示弱：祝你吃好喝好睡好，钱包鼓鼓，烦恼拜拜！','收红包收到手软，吃饺子吃到肚圆，春节快乐，别忘了给我发压岁钱哈哈哈！'],
+'生日':['又长一岁啦，蛋糕归你，胖归你，快乐也全都归你！生日快乐！','寿星请就位，今天你最大，想怎么造怎么造，生日嗨皮！'],
+'圣诞':['圣诞老人送礼物，我送你一个鸿运当头，快乐加倍，不许拒绝！','麋鹿迷路没关系，我的祝福绝不缺席，圣诞快乐鸭！']
+};
+function getJovial(f){return (jovial[f]||['图个乐呵，愿好运全都砸向你！'])[Math.floor(Math.random()*jovial[f].length)];}
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI节日祝福贺卡生成器 | AgentGongju.com'))return;
+const f=document.getElementById('festival').value;
+const t=document.getElementById('target').value;
+const st=document.getElementById('style').value;
+const extra=document.getElementById('extra').value.trim();
+let main;
+if(st==='俏皮幽默')main=getJovial(f);
+else main=bank[f][Math.floor(Math.random()*bank[f].length)];
+const out='【'+f+'祝福贺卡】\n\n'+styleHead[st]+main+'\n\n'+(st==='俏皮幽默'?'':'『')+(extra?extra+'\n':'')+targetNote[t]+(st==='俏皮幽默'?'':'』')+'\n\n—— 愿真诚的文字，抵达温暖的心 💌';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 贺卡文案已复制！'))}
+</script>
+</body>
+</html>

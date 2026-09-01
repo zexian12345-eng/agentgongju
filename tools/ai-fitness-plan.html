@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI 健身计划 | AgentGongju.com</title>
-<meta name="description" content="AI健身计划生成器，根据身体目标、训练频率与时长，智能生成周训练安排与饮食建议">
-<meta name="keywords" content="AI健身,健身计划,减脂,增肌,训练安排,饮食计划,健康">
+<title>AI健身计划 | AgentGongju.com</title>
+<meta name="description" content="输入你的目标、性别与健身基础，AI为你定制一周健身训练计划，含动作安排、训练频率与饮食建议。">
+<meta name="keywords" content="AI健身,健身计划,训练计划,减脂,增肌,运动计划,一周计划">
 <link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
 <style>
 .tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
@@ -12,88 +12,71 @@
 .tool-header p{color:#94a3b8}
 .card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
 .card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
-select,input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px;box-sizing:border-box}
-input:focus,select:focus{border-color:#6366f1}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:70px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
 .param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 .btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
 .btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
 .result-area{display:none;margin-top:20px}
 .result-area.active{display:block}
-.day-block{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:14px 16px;margin-bottom:10px}
-.day-block .d{color:#a855f7;font-weight:600;margin-bottom:8px}
-.day-block .c{color:#e2e8f0;line-height:1.9;font-size:.9rem}
-.diet{background:rgba(99,102,241,.1);border:1px dashed #6366f1;border-radius:10px;padding:14px 16px;color:#e2e8f0;line-height:1.9;font-size:.9rem;margin-top:14px}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
 .copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
 .copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{color:#94a3b8;font-size:.85rem;margin-bottom:12px}
 @media(max-width:600px){.param-row{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 <nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
 <div class="tool-container">
-<div class="tool-header"><h1>🏋️ AI 健身计划</h1><p>根据你的目标，定制专属周训练与饮食方案</p></div>
+<div class="tool-header"><h1>💪 AI 健身计划</h1><p>量身定制一周训练计划，照着练就行</p></div>
 
 <div class="card">
+<label>🎯 你的健身目标</label>
+<select id="goal"><option value="减脂" selected>🔥 减脂瘦身</option><option value="增肌">💪 增肌塑形</option><option value="塑形">✨ 整体塑形</option><option value="增强体能">🏃 增强体能</option></select>
 <div class="param-row">
-<div><label>🎯 健身目标</label>
-<select id="goal"><option value="减脂">🔥 减脂塑形</option><option value="增肌">💪 增肌</option><option value="保持健康">🌱 保持健康</option><option value="体能提升">⚡ 体能提升</option></select></div>
-<div><label>📅 每周训练次数</label>
-<select id="freq"><option value="3">3 次</option><option value="4">4 次</option><option value="5" selected>5 次</option></select></div>
+<div><label>⚧️ 性别</label>
+<select id="sex"><option value="男">👨 男性</option><option value="女" selected>👩 女性</option></select></div>
+<div><label>📈 训练基础</label>
+<select id="level"><option value="新手" selected>🌱 新手</option><option value="进阶">🌿 进阶（1-2年）</option><option value="熟练">🌳 熟练</option></select></div>
 </div>
-<div class="param-row">
-<div><label>⏱️ 每次时长（分钟）</label>
-<input type="number" id="mins" value="45" min="20" max="120"></div>
-<div><label>📍 训练地点</label>
-<select id="place"><option value="健身房">🏢 健身房</option><option value="居家">🏠 居家自重</option><option value="户外">🌳 户外跑步</option></select></div>
-</div>
-<button class="btn-gen" id="genBtn">✨ 生成健身计划</button>
+<button class="btn-gen" id="genBtn">📋 定制我的计划</button>
 </div>
 
 <div class="result-area" id="resultArea">
 <div class="card">
-<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 你的专属计划</div>
-<div id="planOut"></div>
-<button class="copy-btn" onclick="copyPlan()">📋 复制计划</button>
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 你的专属健身计划</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制计划</button>
+<div class="tip" style="margin-top:12px">💡 安全提醒：开始前先热身5-10分钟，运动后拉伸放松，量力而行，循序渐进，坚持最重要。</div>
 </div>
 </div>
 </div>
 <footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
 <script>
-const plans={
-'减脂':{gym:['热身5分钟+力量训练20分钟+有氧30分钟+拉伸','腿臀训练（深蹲、硬拉、箭步蹲）+40分钟快走','上肢力量（推举、划船、弯举）+动感单车30分钟','核心训练（平板支撑、卷腹）+45分钟慢跑','全身循环训练+高强度间歇20分钟'],
-home:['开合跳热身+深蹲+俯卧撑+平板支撑组合','原地高抬腿+登山跑+箭步蹲循环','波比跳+卷腹+臀桥+拉伸','跳绳30分钟+核心训练','全身自重循环（俯卧撑、深蹲、平板）'],
-out:['慢跑5公里+拉伸','快走+间歇跑','骑行40分钟+核心训练','爬坡走/台阶训练','轻松跑+瑜伽拉伸']},
-'增肌':{gym:['胸+三头：卧推、飞鸟、绳索下压','背+二头：引体向上、划船、弯举','肩+腿：推举、深蹲、腿举','手臂+核心日','胸背超级组+有氧20分钟'],
-home:['俯卧撑+双杠臂屈伸组合','徒手深蹲+箭步蹲+臀桥','反手划船（桌子/床沿）+反向卷腹','负重背包深蹲+肩推','全身力量循环+拉伸'],
-out:['自重深蹲+冲刺跑组合','爬坡跑力量增强','弹跳训练+上肢','阻力带训练（背+肩）','轻松恢复跑+拉伸']},
-'保持健康':{gym:['全身循环：划船+深蹲+推举+平板','有氧30分钟+核心','上肢日：推+拉组合','下肢日：深蹲+硬拉','综合：瑜伽体式+轻力量'],
-home:['拜日式瑜伽+靠墙静蹲','全身自重循环','普拉提核心训练','活力有氧操30分钟','放松拉伸+冥想'],
-out:['轻松慢跑30分钟','快走1万步目标','骑行+拉伸','爬山/公园散步','瑜伽拉伸恢复']},
-'体能提升':{gym:['高强度循环（战绳、划船机、波比）','间歇跑（冲刺30s+慢走60s）×8','综合体能：抛球+敏捷梯+跳箱','力量爆发：高翻、深蹲跳','体能测试+恢复拉伸'],
-home:['Tabata训练（20s全力+10s休息）×8','跳绳高强度间歇','快速俯卧撑+深蹲跳超级组','登山跑+波比挑战','恢复性瑜伽+深呼吸'],
-out:['法特莱克跑（变速跑）','间歇冲刺跑×6','坡道冲刺+快走恢复','长距离耐力跑','恢复放松跑+拉伸']}
+const PLAN={
+减脂:{weeks:['周一·有氧+核心','周二·力量训练','周三·休息/轻运动','周四·全身HIIT','周五·有氧+核心','周六·力量训练','周日·休息'],sets:[['快走/慢跑40min+平板支撑3×30s','深蹲3×15+开合跳3×20','躺平放松，快走20min','波比跳3×12+登山跑3×30s','慢跑40min+卷腹3×20','硬拉3×12+平板支撑3×30s','彻底休息，多喝水']]},
+增肌:{weeks:['周一·胸背','周二·腿臀','周三·休息','周四·肩臂','周五·核心+有氧','周六·全身','周日·休息'],sets:[['卧推4×8+划船4×10','深蹲4×10+臀桥4×12','休息，补充蛋白','推举4×10+弯举4×12','卷腹4×15+快走30min','推举+深蹲+硬拉组合','放松按摩']]},
+塑形:{weeks:['周一·臀腿','周二·核心','周三·休息','周四·上肢','周五·臀腿+有氧','周六·全身拉伸','周日·休息'],sets:[['臀桥4×15+深蹲4×12','平板支撑+俄罗斯转体','休息','俯卧撑3×12+划船4×12','臀桥+快走40min','全身拉伸+瑜伽','主动休息']]},
+'增强体能':{weeks:['周一·耐力','周二·力量','周三·休息','周四·速度','周五·综合','周六·户外','周日·休息'],sets:[['间歇跑+跳绳','俯卧撑+深蹲+引体','休息','冲刺跑+高抬腿','HIIT综合训练','爬山/骑行/游泳','恢复拉伸']]}
 };
-const diet={减脂:'· 早餐：鸡蛋+无糖豆浆+全麦面包\n· 午餐：优质蛋白(鸡胸/鱼)+粗粮+大量蔬菜\n· 晚餐：清淡蛋白质+蔬菜，减少主食\n· 加餐可选：坚果、无糖酸奶\n· 每日饮水2000ml以上，戒含糖饮料\n· 原则：制造温和热量缺口，循序渐进',
-增肌:'· 每日蛋白质摄入约1.6-2g/kg体重\n· 早餐：鸡蛋+牛奶+燕麦\n· 加餐：香蕉/蛋白棒（练前练后）\n· 午餐晚餐：足量肉类+主食+蔬菜\n· 睡前可加一餐蛋白质\n· 保证充足睡眠，训练后补充碳水+蛋白',
-保持健康:'· 均衡饮食：荤素搭配，粗细粮结合\n· 每日蔬菜水果不少于500g\n· 减少油炸与高糖，清淡为主\n· 按时三餐，少食多餐也可\n· 每天喝足水，早睡早起',
-体能提升:'· 训练前适度补碳水，练后及时补蛋白\n· 每日蛋白质充足，支持恢复\n· 重视睡眠，保证7-8小时\n· 训练日可适当补充电解质\n· 营养围绕支持高强度训练为主'};
-const note={减脂:'记得每周给自己一个"cheat day"，避免心态崩盘，稳定才是长期主义。',增肌:'增肌需要热量盈余+足够休息，别只练不吃，肌肉是吃出来的。',保持健康:'健康是一场马拉松，别追求速成，坚持比强度更重要。',体能提升:'训练强度要循序渐进，注意休息日的恢复，避免过度训练。'};
 document.getElementById('genBtn').addEventListener('click',()=>{
-if(!Paywall.countUse('AI 健身计划 | AgentGongju.com'))return;
+if(!Paywall.countUse('AI健身计划 | AgentGongju.com'))return;
 const goal=document.getElementById('goal').value;
-const freq=document.getElementById('freq').value;
-const mins=document.getElementById('mins').value;
-const place=document.getElementById('place').value;
-const n=Math.min(5,parseInt(freq));const exercises=plans[goal][place];
-let html='<div style="color:#94a3b8;font-size:.9rem;margin-bottom:16px">🏋️ 目标：'+goal+' · 频率：每周'+n+'次 · 每次约'+(mins||45)+'分钟 · 地点：'+place+'</div>';
-const dayNames=place==='户外'?['一','三','五']:['一','三','五'];
-for(let i=0;i<n;i++){html+='<div class="day-block"><div class="d">day '+(i+1)+' · 周'+dayNames[i%3]+'</div><div class="c">'+exercises[i%exercises.length]+'</div></div>';}
-html+='<div class="diet"><b>🍽️ 饮食建议</b><br>'+diet[goal].replace(/\n/g,'<br>')+'</div>';
-html+='<div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:12px 16px;color:#94a3b8;font-size:.9rem;margin-top:12px">💡 '+note[goal]+'</div>';
-document.getElementById('planOut').innerHTML=html;
+const sex=document.getElementById('sex').value;
+const level=document.getElementById('level').value;
+const plan=PLAN[goal];
+let out='【'+sex+'性 · '+goal+' · '+level+' · 一周健身计划】\n\n';
+out+='━━ 一周训练安排 ━━\n';
+plan.weeks.forEach((w,i)=>{out+=w+'\n  ↳ '+plan.sets[0][i]+'\n';});
+out+='\n━━ 频率建议 ━━\n'+(level==='新手'?'每周3-4次，其余时间休息，让身体逐步适应':level==='进阶'?'每周4-5次，适当提升强度，注意训练与恢复平衡':'每周5-6次，可加入高强度间歇与力量递增')+'。\n\n';
+out+='━━ 饮食建议（'+goal+'）━━\n'+(goal==='减脂'?'控制热量缺口，蛋白质每公斤1.2-1.5g，多吃蔬菜，少油少糖':goal==='增肌'?'热量盈余，蛋白质每公斤1.6-2g，注重碳水与优质脂肪':'均衡饮食，蛋白质充足，粗细搭配，控制精制糖')+'。\n\n';
+out+='━━ 小贴士 ━━\n· 每次训练前充分热身，避免受伤；\n· 训练后补充蛋白质，帮助恢复；\n· 保证7-8小时睡眠；\n· 每周记录体重与围度，见证变化。\n\n【坚持就是胜利，练出一个更好的自己 💪】';
+document.getElementById('outputBox').innerText=out;
 document.getElementById('resultArea').classList.add('active');
 });
-function copyPlan(){const t=document.getElementById('planOut').innerText;navigator.clipboard.writeText(t).then(()=>alert('✅ 计划已复制！'))}
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 计划已复制！'))}
 </script>
 </body>
 </html>
