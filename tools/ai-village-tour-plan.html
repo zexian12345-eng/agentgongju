@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>乡村游打卡计划生成器 | AgentGongju.com</title>
+<meta name="description" content="一键生成去村里放松的一日游打卡计划，含时间安排、拍照点与地道玩法，周末去乡村躺平充电">
+<meta name="keywords" content="乡村游,农家乐,古镇,周末游,田园,打卡">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:60px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:22px;color:#e2e8f0;line-height:2;white-space:pre-wrap;min-height:60px;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🌾 AI 乡村游打卡计划</h1><p>周末去村里，把日子过成诗</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>📍 目的地（可填地区或村名）</label><input type="text" id="dest" placeholder="如：浙江莫干山 / 云南束河 / 随便一个有田的地方"></div>
+<div><label>🚗 出行方式</label><select id="traffic"><option value="drive">自驾</option><option value="train">高铁+打车</option><option value="bus">大巴/公交</option><option value="e-bike">骑行/电动车</option></select></div>
+</div>
+<div class="param-row">
+<div><label>👥 和谁一起去</label><select id="partner"><option value="couple">情侣</option><option value="family">亲子全家</option><option value="friends">朋友小分队</option><option value="solo">独自放空</option></select></div>
+<div><label>🍃 想体验的重点</label><select id="focus"><option value="food">吃地道农家菜</option><option value="photo">拍照出片</option><option value="relax">躺平发呆</option><option value="child">亲子带娃玩</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">🗒 生成我的乡村一日游</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">🌾 田园一日游行程单</div>
+<div class="result-box" id="result"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制行程</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function rand(a){return a[Math.floor(Math.random()*a.length)]}
+const foodPick=['土鸡炖野菇','柴火灶红烧肉','现摘的青菜炒蛋','手工豆腐脑','竹笋咸肉汤','老板自家晒的腊味','清晨刚挖的红薯粥','柴火饭配锅巴菜'];
+const photoSpot=['村口的千年老樟树','错落的青瓦白墙','金黄的稻田埂','溪边洗衣的石板桥','爬满藤蔓的夯土老屋','晨雾未散的山间小路','一垄一垄的时令菜园'];
+const kidActivity=['带着孩子认一认田里的蔬菜','去老乡家后院看鸡鸭鹅','在小溪边打水漂','一起秋千看云','跟着农人摘一篮草莓/时令果','DIY 一双草编/陶土小玩意'];
+const relaxNote=['挑个有树荫的竹椅，什么也不做，听蝉鸣鸟叫就是半天','带上本书，在院子的躺椅上翻几页就眯着了','泡壶老板自家采的野茶，看云从山那头慢慢飘过来','傍晚坐在门槛看炊烟升起，心一下就静了'];
+function cap(s){return s.charAt(0).toUpperCase()+s.slice(1)}
+function build(){
+const dest=document.getElementById('dest').value.trim()||'那边的小村子';
+const traffic=document.getElementById('traffic').value;
+const partner=document.getElementById('partner').value;
+const focus=document.getElementById('focus').value;
+const drive={'drive':'一早自驾出发','train':'坐早班高铁到最近县城再打车进村','bus':'搭班车一路摇摇晃晃到站','e-bike':'迎着晨风骑过去'}[traffic];
+const pnote={couple:'两个人慢悠悠散步，说些有的没的',family:'孩子第一次来田野，什么都是新大陆',friends:'一伙人放声大笑，把烦恼留在身后',solo:'独处放空，允许自己什么都不想'}[partner];
+let schedule=`🚗 ${drive}，直奔${dest}，车窗外的风景已经切换成大片田野与远山。
+
+🌅 上午 · 慢时光
+先到村子里安顿，回绝老板迎上的第一杯茶会不礼貌——先喝口${rand(['自家种的绿茶','新煮的玉米茶','晾的桂花茶'])}缓一缓。然后沿主路慢慢逛，随处都是风景：
+· ${rand(photoSpot)}，随手一拍都是壁纸
+· ${randomSlots(2,4).join('\n· ')}
+
+🍚 中午 · 柴火灶的满足
+在老乡家里点一桌${rand(['土鸡','河鲜','时令山珍','荤素均衡的农家菜'])}(推荐：${pickN(foodPick,3).join('、')})，锅气足、分量大，是城市外卖给不了的味道。`;
+if(focus==='photo'){schedule+='\n\n📷 摄影党重点：等下午四点半的斜阳，逆光拍稻田和人物剪影最绝，村口老桥、绿油油的菜田都是天然摄影棚。'}
+else if(focus==='child'){schedule+='\n\n🧸 亲子时光：'+pickN(kidActivity,3).join('；')+'。注意防蚊防晒，孩子玩疯了要记得补水。'}
+else if(focus==='relax'){schedule+='\n\n🍵 躺平计划：'+pickN(relaxNote,2).join('；')+'。把手机调成勿扰，让时间自然流淌。'}
+else{schedule+='\n\n🥘 美食雷达：问问老板「今天地里冒了什么新菜」，跟着节令吃总没错，临走再捎点土鸡蛋和现磨米回家，才算尽兴。'}
+schedule+=`\n\n🌇 下午 · ${partner==='child'||partner==='family'?'亲子撒欢':partner==='couple'?'二人悠悠':'放空发呆'}时光
+· ${rand(['去田埂上追一场落日','在溪边石头坐下来泡脚','租辆小车沿村道兜风','去当地集市淘点手作','到观景台等晚霞'])}
+
+🌙 傍晚 · 满载而归
+吃一碗村里人自己煮的${rand(['南瓜粥','应季野菜面','柴火炖的排骨'])}当收尾，若时间充裕还可以住一晚，看看没有灯光的星空。返程时${traffic==='drive'?'慢慢开，注意山路弯多':'留意末班车/高铁时间'}，记得带走照片和满满的松弛感 🌿
+
+💡 一句话：乡村游的精髓是"慢"，不必塞满行程，${pnote}，就是最好的度假。`;
+document.getElementById('resultArea').classList.add('active');
+document.getElementById('result').textContent=schedule;
+}
+function pickN(a,n){var c=[].concat(a),o=[];while(c.length&&o.length<n){o.push(c.splice(Math.floor(Math.random()*c.length),1)[0])}return o}
+function randomSlots(x,y){return pickN(['去看当地阿姨编竹篮','蹲在院子看晒秋的辣椒','找块石头坐下听溪水','尝一尝现摘的番茄','逗一逗村里的大黄狗','走一趟古老的石板巷'],Math.floor(Math.random()*(y-x+1))+x)}
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('乡村游打卡计划生成器 | AgentGongju.com'))return;
+build();});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('result').textContent).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

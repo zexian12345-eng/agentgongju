@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>小程序起名助手 | AgentGongju.com</title>
+<meta name="description" content="输入小程序的功能和行业，一键生成好记好传播的中文名字并给出商标可用性小提示，注册前先来灵感">
+<meta name="keywords" content="小程序起名,起名,微信小程序,App取名,品牌名">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:22px;color:#e2e8f0;line-height:2;white-space:pre-wrap;min-height:60px;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📱 AI 小程序起名助手</h1><p>好名字自带传播力，注册前先来取灵感</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>🧩 小程序主要功能</label><input type="text" id="func" placeholder="如：记账打卡 / 优惠券聚合 / 菜谱"></div>
+<div><label>🏷 所属行业</label><select id="ind"><option value="life">生活服务</option><option value="shop">电商购物</option><option value="edu">教育学习</option><option value="tool">效率工具</option><option value="social">社交社区</option><option value="fitness">健康运动</option></select></div>
+</div>
+<div class="param-row">
+<div><label>🎯 风格偏好</label><select id="style"><option value="fun">活泼亲民</option><option value="tech">科技简约</option><option value="elegant">文艺雅致</option><option value="lucky">讨喜吉利</option><option value="cool">潮流有个性</option></select></div>
+<div><label>📏 名字长度</label><select id="len"><option value="three">三个字（主流）</option><option value="two">两个字（好记）</option><option value="four">四个字（独特）</option></select></div>
+</div>
+<label>💡 想保留的品牌字（可选）</label>
+<input type="text" id="brand" placeholder="如：想保留「马、喵、青」等字">
+<button class="btn-gen" id="genBtn">🎲 生一批给我挑</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">🏷 为你准备的名字清单</div>
+<div class="result-box" id="result"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制候选名</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+var R=function(a){return a[Math.floor(Math.random()*a.length)]};
+var P=function(a,n){var c=[].concat(a),o=[];while(c.length&&o.length<n){o.push(c.splice(Math.floor(Math.random()*c.length),1)[0]);}return o;};
+var SW={fun:['乐','淘','趣','萌','小','逗','哦','哎'],tech:['云','智','光','闪','曜','极','迅','码'],elegant:['拾','青','叙','慕','黛','集','橼','雾'],lucky:['盈','顺','福','吉','旺','丰','元','盛'],cool:['燃','仔','潮','野','雀','镜','局','酷']};
+var MID2={fun:['宝','豆','喏','一下'],tech:['闪','速','键','方'],elegant:['辞','笺','叙','印'],lucky:['满','光','锦','瑞'],cool:['造','客','力','研']};
+var TWOtail={fun:['乐','派','豆','吧'],tech:['算','辑','速','控'],elegant:['集','所','廊','舘'],lucky:['丰','运','吉','堂'],cool:['界','库','域','机']};
+var SUF={two:'',three:'',four:['一站','口袋','指尖','随身','生活+']};
+var indNote={life:'生活服务类名字直白些更好搜',shop:'购物类带「好买/划算」的味道更讨喜',edu:'学习类加「途/记/堂」显上进',tool:'工具类重「快、一键、顺手」',social:'社区类带场景或人味更亲切',fitness:'健康类加「动/轻/呼」传递轻盈'};
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('小程序起名助手 | AgentGongju.com'))return;
+var func=document.getElementById('func').value.trim()||'帮用户解决问题';
+var st=document.getElementById('style').value;
+var len=document.getElementById('len').value;
+var brand=document.getElementById('brand').value.trim();
+var ind=document.getElementById('ind').value;
+var roots=SW[st].slice().sort(function(){return Math.random()-0.5;});
+var list=[];var guard=0;
+while(list.length<6&&guard++<300){
+  var name='';
+  if(len==='two'){name=R(roots)+R(TWOtail[st]);}
+  else if(len==='four'){name=R(roots)+R(MID2[st])+R(SUF.four);}
+  else{name=R(roots)+R(roots)+R(['站','记','豆','屋','社','箱','拍','圈']);}
+  if(list.indexOf(name)<0){list.push(name);}
+}
+if(brand){var bw=brand.trim().split(/[,，\s]/)[0]||brand;bw=bw.replace(/[^\u4e00-\u9fa5a-zA-Z0-9]/g,'');if(bw)list.unshift(bw+(len==='four'?'工具箱':len==='three'?'工坊':'派'));}
+var out='🎯 给你准备了 '+list.length+' 个候选名（'+func.slice(0,20)+' 方向）：\n\n';
+list.forEach(function(n,i){out+=(i+1)+'. '+n+'\n';});
+out+='\n📌 起名建议\n· '+indNote[ind]+'，名字 2–4 个字最好记。\n· 提前在「微信搜一搜」和商标局官网自查是否已被占用/撞名，避开大厂同类爆款。\n· '+R(['若能带一点情绪或动词，记忆点更强（如“顺手”“暖心”）','谐音/叠字往往更好传播，但别为了谐音拗口难念','先挑 2–3 个备选去注册账号验证可用性，再投钱注册商标'])+'\n· 好的小程序名要三好：好念、好记、好搜。';
+document.getElementById('resultArea').classList.add('active');
+document.getElementById('result').textContent=out;
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('result').textContent).then(function(){alert('✅ 已复制！');});}
+</script>
+</body>
+</html>

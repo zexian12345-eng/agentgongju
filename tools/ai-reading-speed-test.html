@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>阅读速度测试训练 | AgentGongju.com</title>
+<meta name="description" content="用一段约300字的短文做1分钟计时阅读测试，填入你实际读到哪一行即可测出每分钟阅读字数，再加一套提速训练法">
+<meta name="keywords" content="阅读速度,速读,测速,专注力,训练,读书">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+textarea{min-height:220px;font-family:serif;font-size:1.05rem;line-height:2;color:#e2e8f0;cursor:text}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.sub-btn{display:inline-block;margin-top:6px;padding:10px 20px;background:rgba(99,102,241,.15);border:1px solid rgba(99,102,241,.3);border-radius:10px;color:#a5b4fc;cursor:pointer;font-size:.9rem;transition:all .2s}
+.sub-btn:hover{background:rgba(99,102,241,.28)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:22px;color:#e2e8f0;line-height:2;white-space:pre-wrap;min-height:60px;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.hint{color:#94a3b8;font-size:.8rem;margin-top:-6px;margin-bottom:8px}
+.hint2{color:#64748b;font-size:.82rem;text-align:center;margin-top:8px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>⏱ AI 阅读速度测试训练</h1><p>1分钟测出你的速度，再送你一套提速法</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>⏱ 计时时长(秒)</label><select id="tlen"><option value="60">60秒</option><option value="30">30秒</option><option value="90">90秒</option></select></div>
+<div><label>🎯 提升目的</label><select id="goal"><option value="study">备考/高效学习</option><option value="work">工作/报告阅读</option><option value="book">阅读书籍/专业积累</option></select></div>
+</div>
+<label>📖 阅读正文（约320字，点击「开始」后从首字向右匀速阅读，别回头）</label>
+<textarea id="passage" readonly style="font-family:serif;line-height:2.2">春天是一步步醒来的。清晨推开窗，风里带着细细的湿意，那是夜雨散尽后的尾巴。窗下的桃花一夜之间开了大半，粉色重重叠叠，像是有人把颜料盒打翻在了枝头。麻雀们落在电线上排成一行，叽叽喳喳地开着早会，像是在商量今年的第一窝该筑在哪里。天越来越暖，燕子衔着雨后的湿泥从南边飞了回来，屋檐下渐渐有了动静。院子里的韭菜冒出了密密的新芽，嫩得能掐出水来。墙根处，老人半眯着眼晒太阳，喃喃说着等过了谷雨就能种瓜点豆了。我找了一把椅子，坐在半明半暗的廊下翻书。读到会心之处，便抬眼看看窗外越养越浓的绿，让目光同手中的文字一起舒展开来。阳光一寸寸斜过去，把树影拉得很长。这时候喝茶最好，一壶热水，几片新叶，看它们在杯中打着旋儿舒展开。时间仿佛被谁调慢了。原来生活真正的轮廓，不在那些热热闹闹的大事里，而在这样一段一段安静而温热的坐定之中。</textarea>
+<div style="display:flex;align-items:end;gap:10px">
+<div style="flex:1"><label>🙋 1分钟到后，你大约读到了文中哪个位置？</label>
+ <select id="pos"><option value="all">读完了全文（从头到尾）</option><option value="p80">约读了 4/5</option><option value="p60">约读了 3/5</option><option value="p40">约读了 2/5</option><option value="p20">只读了开头 1/5</option></select></div>
+</div>
+<button class="btn-gen" id="startBtn">⏱ 开始计时</button>
+<div style="text-align:center;margin-top:6px"><span style="color:#64748b;font-size:.8rem">倒计时走完后会自动算出结果，无需手动停止</span></div>
+<div class="result-area" id="resultArea"><div class="card"><div style="color:#22c55e;font-weight:600;margin-bottom:12px">📊 测试结果与训练建议</div><div class="result-box" id="result"></div><button class="copy-btn" onclick="copyResult()">📋 复制结果</button></div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#94a3b8;text-align:center;padding:20px;font-size:.85rem">本测试为方便的自测估算法，速度请以“能复述大意”为前提追求。真正的高效阅读是快而不丢信息。</p></div></footer>
+<script>
+var FULL='春天是一步步醒来的。清晨推开窗，风里带着细细的湿意，那是夜雨散尽后的尾巴。窗下的桃花一夜之间开了大半，粉色重重叠叠，像是有人把颜料盒打翻在了枝头。麻雀们落在电线上排成一行，叽叽喳喳地开着早会，像是在商量今年的第一窝该筑在哪里。天越来越暖，燕子衔着雨后的湿泥从南边飞了回来，屋檐下渐渐有了动静。院子里的韭菜冒出了密密的新芽，嫩得能掐出水来。墙根处，老人半眯着眼晒太阳，喃喃说着等过了谷雨就能种瓜点豆了。我找了一把椅子，坐在半明半暗的廊下翻书。读到会心之处，便抬眼看看窗外越养越浓的绿，让目光同手中的文字一起舒展开来。阳光一寸寸斜过去，把树影拉得很长。这时候喝茶最好，一壶热水，几片新叶，看它们在杯中打着旋儿舒展开。时间仿佛被谁调慢了。原来生活真正的轮廓，不在那些热热闹闹的大事里，而在这样一段一段安静而温热的坐定之中。';
+function R(a){return a[Math.floor(Math.random()*a.length)];}
+var TOTAL=FULL.replace(/\s/g,'').length; // 约320
+var timer=null,left=0;
+function setBtn(txt){var b=document.getElementById('startBtn');b.textContent=txt;}
+document.getElementById('startBtn').addEventListener('click',function(){
+ if(!Paywall.countUse('阅读速度测试训练 | AgentGongju.com'))return;
+ clearInterval(timer);
+ var secs=parseInt(document.getElementById('tlen').value)||60;
+ left=secs;setBtn('⏱ 还剩 '+left+' 秒，请匀速往下读…');
+ // 自动滚到开头
+ document.getElementById('passage').scrollTop=0;
+ timer=setInterval(function(){
+   left--;
+   if(left<=0){setBtn('⏱ 计时已结束');clearInterval(timer);compute();}
+   else{setBtn('⏱ 还剩 '+left+' 秒，请匀速往下读…');}
+ },1000);
+ // 第一次点击后锁住入口避免重复
+ this.disabled=true;setTimeout(function(){document.getElementById('startBtn').disabled=false;},secs*1000);
+});
+function compute(){
+ var secs=parseInt(document.getElementById('tlen').value)||60;
+ var frac={all:1,p80:.8,p60:.6,p40:.4,p20:.2}[document.getElementById('pos').value];
+ var readChars=Math.round(TOTAL*frac);
+ var wpm=Math.round(readChars/secs*60);
+ document.getElementById('resultArea').classList.add('active');
+ var lvl=wpm<280?'处于逐字慢读区间，多数人是太爱“默读+回看”':wpm<450?'稳定在普通舒适阅读水准，很健康':wpm<750?'已达偏快的精读水平，效率不错':'已经是很高效的快读水平，注意保持理解';
+ var out='读时 '+secs+' 秒 · 你读到约 '+(frac<1? '第'+Math.round(frac*10)+'成':'全文')+'，估算速度约 '+wpm+' 字/分钟。\n\n';
+ out+='📈 水平判断\n· '+lvl+'。'+R(['正常成年人读小说舒适区间约300–500字/分，看专业文献200–400字/分也属正常','阅读速度不是越快越好，“读完能讲出大意”才是唯一及格线','若你已有600字/分以上，真正缺的不是速度而是记忆与输出'])+'\n\n';
+ out+='🏋️ 给你的提速训练法（每周3–4次、每次10分钟）\n· 热身 · 用指尖在字下轻轻匀速滑动做“指读”，眼睛跟着指尖走，练熟后提速。\n· 阻断 · 读完一行立刻用手/卡片盖上，训练“不回看”，这是最见效的一招。\n· 宽带 · 练习一次“组块读”（一次看3–4个词），在书页上做竖排匀速扫。\n· '+R(['每次只比上次快约5%，太快丢了理解就退回一档','每周末用这篇短文再测一次，记录进步曲线很能打气','提速有平台期很正常，休息两天多半能突破'])+'\n\n';
+ out+=(function(){var m={'study':'备考人群建议多练“带问题跳读”，先把题干考点快速定位，再用精读抓细节','work':'工作阅读建议“结论前置”，用扫读先抓段首句和关键词，效率提升更明显','book':'爱读书想让速度与理解兼得，就多练“读完整章后合上书复述大纲”的输出闭环'}[document.getElementById('goal').value];return m;})()+'。\n\n';
+ out+='✨一句话：速度的终点是理解。快的准头练稳了，书读得又多又牢，才是真本领。';
+ document.getElementById('result').textContent=out;
+}
+function copyResult(){navigator.clipboard.writeText(document.getElementById('result').textContent).then(function(){alert('✅ 已复制！');});}
+</script>
+</body>
+</html>

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>高效午休/小睡指南 | AgentGongju.com</title>
+<meta name="description" content="根据你午休的时间和当前疲惫状态，推荐最适合的小睡时长、姿势与唤醒法，睡醒元气满满不打盹">
+<meta name="keywords" content="午休,小睡,打盹,午睡,精力恢复,提神,睡眠">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:22px;color:#e2e8f0;line-height:2;white-space:pre-wrap;min-height:60px;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>😴 AI 高效午休指南</h1><p>不睡困，睡多了更困？专家把午休睡给你看</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>⏰ 你大概能休息多久</label><select id="time"><option value="n10">只有不到10分钟</option><option value="m20">10–20分钟</option><option value="m30">20–40分钟</option><option value="m60">能睡40分钟以上</option></select></div>
+<div><label>🥱 现在的疲惫程度</label><select id="level"><option value="mild">轻微犯困还能撑</option><option value="tired">明显困倦没精神</option><option value="exhaust">昨晚没睡好很疲惫</option></select></div>
+</div>
+<div class="param-row">
+<div><label>🪑 午休条件</label><select id="place"><option value="office">办公室/工位</option><option value="home">在家床/沙发</option><option value="class">教室/图书馆/通勤</option></select></div>
+<div><label>☕ 平时喝咖啡/茶吗</label><select id="caf"><option value="yes">常喝，中午会想喝</option><option value="no">基本不喝/只在早上</option></select></div>
+</div>
+<label>📝 特别状况（可选）</label>
+<input type="text" id="note" placeholder="如：胃不太好、下午有重要会议、想长睡又怕睡不醒">
+<button class="btn-gen" id="genBtn">🛌 生成我的午休方案</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">😌 你的专属午休处方</div>
+<div class="result-box" id="result"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制方案</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function R(a){return a[Math.floor(Math.random()*a.length)];}
+var DUR={n10:{n:'「微午睡」',len:'<10分钟',why:'浅睡不打鼾也不进深睡，睡醒不迷糊，适合碎片时间快速回血',do:'闭眼放空、只睡到刚迷糊就起，效果像一次“软关机重启”',t:'定个8分钟闹钟，别真睡过去'},
+m20:{n:'「能量小憩」',len:'10–20分钟',why:'正好卡在浅睡眠，几乎不进入深睡，起来神清气爽无惯性',do:'躺下放松全身，可加个轻音乐，20分钟内务必醒',t:'这是午睡“黄金时间带”，性价比最高'},
+m30:{n:'「完整小睡」',len:'20–40分钟',why:'若中间有深度睡眠，易出现醒来迟钝的“睡眠惯性”',do:'尽量控制在30分钟上下，睡醒先坐一会儿揉揉太阳穴再起身',t:'若你下午还要开车或上大课，宁选20分钟也别睡满40'},
+m60:{n:'「长午休」',len:'40分钟以上',why:'可能进入深睡，睡太久晚上反而睡不好',do:'优先安排需要高度专注工作前的“修复性补觉”，但别天天睡满',t:'控制在90分钟内，且最好在下午3点前完成'}};
+var EXHAUST='昨晚严重缺觉时，其实可以睡到一个完整的睡眠周期（约90分钟）来真正修复，但会占用较多时间，需合理安排';
+var POSE={office:['工位趴睡别趴太久压迫颈椎，可用U型枕靠后仰睡','戴眼罩耳塞遮光隔音，座椅调低微后仰更护腰'],home:['在家睡直接躺平最能恢复，拉上窗帘把手机调静音','上床别玩10分钟以上手机，不然反而兴奋失眠'],class:['在教室/图书馆可伏案眯眼“闭目养神”，也能回血','若在车上，靠窗睡注意头颈支撑，可用颈枕以防落枕']};
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('高效午休/小睡指南 | AgentGongju.com'))return;
+var t=document.getElementById('time').value,lv=document.getElementById('level').value,place=document.getElementById('place').value,caf=document.getElementById('caf').value,note=document.getElementById('note').value.trim();
+var d=DUR[t];
+var levelNote=lv==='exhaust'?EXHAUST+'。':'轻微犯困其实眯上10-20分钟就足够，别把午休睡成“下午课”。';
+var out='😴 推荐给你的「'+d.n+'」('+d.len+')\n· 为什么：'+d.why+'。\n· 怎么睡：'+d.do+'。\n· 小提醒：'+d.t+'。\n\n';
+out+='📏 '+(lv!=='exhaust'?'以你的疲惫度，'+levelNote:'以你现在的状态，'+levelNote)+'\n\n';
+out+='🪑 适应你的环境\n· '+R(POSE[place])+'\n· '+R(['生理时钟下午1–3点睡意最浓，适合小睡补充','刚吃完午饭别立刻躺，先坐15-20分钟消化'])+'\n\n';
+out+=caf==='yes'?'☕ 咖啡小贴士：可在午睡前喝半杯，咖啡因约20分钟后起效，正好配合“小睡唤醒”，睡醒更清醒但注意别过量影响夜里。\n\n':'☕ 若下午需熬夜加班又不想整天昏沉，可在下午3点后以散步、洗冷水脸代替咖啡提神，避免影响夜间睡眠。\n\n';
+out+=note?('· 关于「'+note+'」：'+R(['午休别逼自己睡着，“闭眼休息”本身也能恢复精力，睡不着也别焦虑','下午有重要安排时，宁短勿长，醒后先喝口水再上阵','如果怕睡不醒，设好闹钟并告诉同事在午睡及时叫醒你'])+'\n\n'):'';
+out+='✨ 终极提醒：午睡是用来“续命”的，不是越睡越累的法宝。控制在下午3点前、别超90分钟，保持规律，你就能睡出好状态。祝你下午元气满满！⚡';
+document.getElementById('resultArea').classList.add('active');
+document.getElementById('result').textContent=out;
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('result').textContent).then(function(){alert('✅ 已复制！');});}
+</script>
+</body>
+</html>

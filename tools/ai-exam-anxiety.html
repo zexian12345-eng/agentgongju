@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>考前焦虑舒缓助手 | AgentGongju.com</title>
+<meta name="description" content="根据你的考前状态与剩余时间，给出一套可执行的舒缓方案：呼吸法、心态调整和考场小锦囊，帮你稳住状态">
+<meta name="keywords" content="考前焦虑,考试心态,减压,紧张,呼吸放松,中考高考">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:22px;color:#e2e8f0;line-height:2;white-space:pre-wrap;min-height:60px;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🫶 AI 考前焦虑舒缓助手</h1><p>稳住，你能行。</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>🎯 距考试还有</label><select id="time"><option value="days">还有几天</option><option value="tonight">今晚就考/明天考</option><option value="mid">还有一两周</option><option value="long">一个多月以后</option></select></div>
+<div><label>😟 现在最困扰你的是</label><select id="issue"><option value="memory">总怕复习不完</option><option value="sleep">紧张得睡不好</option><option value="blank">一想起考试就心慌/脑子空白</option><option value="peer">担心考不好被比较</option></select></div>
+</div>
+<div class="param-row">
+<div><label>📚 复习方式</label><select id="method"><option value="bybook">按书本/错题本学</option><option value="bytime">按时间点突击</option><option value="group">喜欢和别人一起刷题</option></select></div>
+</div>
+<label>📝 想吐槽/想留的一句话（可选）</label>
+<input type="text" id="note" placeholder="如：数学总是算错、怕考英语听力">
+<button class="btn-gen" id="genBtn">🧘 给我一份定制安抚方案</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">💆 你的考前舒缓锦囊</div>
+<div class="result-box" id="result"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制锦囊</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function R(a){return a[Math.floor(Math.random()*a.length)];}
+function S(a,n){var c=[].concat(a),o=[];while(c.length&&o.length<n){o.push(c.splice(Math.floor(Math.random()*c.length),1)[0]);}return o;}
+var TIMEMAP={tonight:{head:'今晚/明日就要上场',do:'今晚别再摊大饼式复习，把最熟的公式和易错点过一遍就收工，早点睡，比多熬一小时管用十倍',mind:'考前一晚的「临时抱佛脚」边际效果有限，真正决定状态的是睡眠。明天把它当成一场「和平常一样的模拟考」'},days:{head:'还剩几天',do:'回归课本和错题本，别再刷新题了。把知识框架和易踩的坑再顺一遍就行',mind:'剩几天别追求「全都会」，抓住高频必考点，允许自己有不会的地方，这是正常且健康的'},mid:{head:'还有一两周',do:'做一两次限时套卷找节奏，其余时间回归补短板，每一科的「重灾区」逐个消灭',mind:'一两周能做的事远超你想象，按计划走，焦虑和效率是可以共存的'},long:{head:'还有一个月以上',do:'把大目标拆成每周小目标，稳步推进，先搭建知识地图再填充细节',mind:'时间还够，把战线拉长的关键是「均匀用力」，别头几天打满鸡血后面熄火'}};
+var ISSUE={
+ memory:['「复习不完」是每个考生的错觉——考场上真正会考的高频点永远有限，把掌握最牢的那部分练到万无一失，你已经赢了',
+         '给每科列一张「一定会考」的核心清单，对着清单过一遍，比漫无目的翻书踏实得多'],
+ sleep:['睡前1小时放下手机，调暗灯光，试试「478呼吸法」：吸气4秒、屏息7秒、呼气8秒，循环几次就能明显放松',
+        '如果躺下睡不着也别硬躺，起来看两页轻松的笔记再回去睡，告诉自己「闭眼休息」本身也有用'],
+ blank:['心慌时先做个简单动作：双手放在桌上,用力握拳再松开，重复几次，把注意力从「怕」拉回到「现在能做什么」',
+        '脑中一片空白大多是因为大脑过载。先放下笔做三次深呼吸，再从会的、熟悉的小题做起进入状态'],
+ peer:['你只需对自己的这场考试负责，同学的进度和评价都不应该成为你的参照物，比昨天的自己稳，就足够了',
+        '别人看起来淡定，未必是真的轻松。专注自己的题目，别让比较偷走你的专注力']
+};
+var BREATH='当你感觉心跳加快或要崩的时候，立刻做「478呼吸法」：鼻子吸气4秒→屏住7秒→嘴巴缓缓呼8秒，重复4–6组。做完通常心率就会回落，脑子也能重新运转。';
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('考前焦虑舒缓助手 | AgentGongju.com'))return;
+var tm=document.getElementById('time').value,iss=document.getElementById('issue').value,note=document.getElementById('note').value.trim();
+var t=TIMEMAP[tm],i=ISSUE[iss];
+var out='💌 '+(note?'你在意的「'+note+'」——别太苛责自己，这恰恰说明你在乎这场考试，把这份认真转成行动即可。':'先深呼吸一下，你愿意点进来，就已经在主动照顾自己了，这很棒。')+'\n\n';
+out+='🗓 关于时间（'+t.head+'）\n· '+t.do+'\n· '+t.mind+'\n\n';
+out+='🧠 关于「'+({memory:'复习不完',sleep:'睡不着',blank:'心慌空白',peer:'怕被比较'}[iss])+'」\n· '+i[0]+'\n· '+i[1]+'\n\n';
+out+='🧘 立刻能用的放松法\n· '+R(['闭上眼睛做三次长呼气，呼气比吸气慢一倍','起来走动、洗把冷水脸或拉开窗吹吹风','把担心的点写在纸上，写完就把它「存档」暂时不想'])+'\n· '+BREATH+'\n\n';
+out+='🎈 考场小锦囊\n· '+R(['拿到卷先浏览全卷，从有把握的题开始建立节奏','遇到卡壳先跳过，别让一道题毁掉整场心态','考场上默念「大家都紧张，我只需要把会的做对」'])+'\n\n';
+out+='你为这场考试已经准备了很久，此刻的你，真的比想象中更强大。稳住，按自己的节奏来就好。✨';
+document.getElementById('resultArea').classList.add('active');
+document.getElementById('result').textContent=out;
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('result').textContent).then(function(){alert('✅ 已复制！');});}
+</script>
+</body>
+</html>

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>古代穿越生存指南 | AgentGongju.com</title>
+<meta name="description" content="趣味模拟：如果你穿越到古代某个朝代该怎么活下去——穿衣、避坑、职业和社交礼仪一网打尽">
+<meta name="keywords" content="穿越,古代,唐朝,宋朝,生存指南,趣味历史">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:22px;color:#e2e8f0;line-height:2;white-space:pre-wrap;min-height:60px;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>⏳ AI 古代穿越生存指南</h1><p>一觉醒来回到古代，你该怎么活下去？</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>🛸 想穿越到哪个朝代</label><select id="dynasty"><option value="tang">大唐盛世</option><option value="song">精致大宋</option><option value="tang2">汉代</option><option value="qing">明清之交</option></select></div>
+<div><label>🧍 你的现代身份/特长</label><select id="skill"><option value="tech">程序员/理工科</option><option value="doctor">学医的</option><option value="art">会写作画画</option><option value="cook">爱下厨</option><option value="trade">会做生意</option></select></div>
+</div>
+<div class="param-row">
+<div><label>👨‍👩‍👦 落地后的身份</label><select id="role"><option value="noble">书香之家子弟</option><option value="farm">乡野农家</option><option value="city">城里小市民</option><option value="lost">两手空空的光棍</option></select></div>
+<div><label>💪 想过的生活</label><select id="goal"><option value="rich">发家致富</option><option value="safe">平安保命</option><option value="official">考取功名</option><option value="free">做个咸鱼游侠</option></select></div>
+</div>
+<label>📎 还能带一件随身信物（可选）</label>
+<input type="text" id="gift" placeholder="如：一包盐、打火机、一本《本草纲目》、智能手机">
+<button class="btn-gen" id="genBtn">🃏 摊开我的穿越剧本</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">📜 你的穿越生存指南</div>
+<div class="result-box" id="result"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制剧本</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function rand(a){return a[Math.floor(Math.random()*a.length)]}
+const era={
+ tang:{name:'大唐',garb:'圆领袍/胡服与霓裳颇为流行',food:'胡饼、羊肉与葡萄酒是街头顶流',geo:'长安与洛阳最繁华，驿站通达'},
+ song:{name:'大宋',garb:'交领右衽，士人爱戴幞头',food:'夜市小吃与勾栏瓦舍烟火气浓',geo:'汴京（开封）与临安（杭州）'},
+ tang2:{name:'大汉',garb:'深衣曲裾衣袂飘飘',food:'面食与腊肉，偶尔有西域来的葡萄',geo:'长安为都，兼通西域商路'},
+ qing:{name:'明末清初',garb:'明代汉服与旗装并存',food:'南北百味已具雏形，茶馆戏园兴盛',geo:'江南市镇因商而兴'},
+};
+const skillJob={tech:'你可以靠「新技术」立足——比如给官宦家里的器物写个简易的计步/报时装置，或利用数学计算替商号盘账，混个账房先生或清客',doctor:'识药草、断症候，先在医馆做学徒也行，凭现代医学常识很容易成为名满一方的「神医」',art:'会吟诗作对或者画工出色，在士人圈里很吃得开，也可替书画坊代写诗笺',cook:'凭一手现代美食（辣椒炒肉、番茄炒蛋）先征服口味挑剔的老饕，再从食肆做起',trade:'懂市场逻辑又知定价，从跑单帮到开铺子，利用信息差赚钱是捷径'};
+const jobTips={rich:'低买高卖别贪心，留够周转银钱，勾搭上有门路的商帮能事半功倍',safe:'少议论朝政，财不露白，谨记「民不与官斗，何必站错队」，平日备些药品与银两',official:'科举是正道，读圣贤书同时练一手好楷书，还得准备润笔的盘缠',free:'云游四方最好有张通行文书/路引，结识几位肝胆相照的江湖朋友互相照应'};
+const taboos=['当众喊「穿越」和相关词汇，遇上迷信的人会把你当妖异','别用现代汉语随意吐槽，注意古人多忌讳「死、病」等字，说话留余地','见到官府的人尽量彬彬有礼、少起冲突','金银不要露在明处，出门要有路引','别轻易表现出「奇装异服」的气场，先换上当地粗布衣裳融入人群'];
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('古代穿越生存指南 | AgentGongju.com'))return;
+const dy=document.getElementById('dynasty').value;
+const skill=document.getElementById('skill').value;
+const role=document.getElementById('role').value;
+const goal=document.getElementById('goal').value;
+const gift=document.getElementById('gift').value.trim();
+const e=era[dy];
+const sj=skillJob[skill];
+const jt=jobTips[goal];
+const roleStr={noble:'你托生在一户略有余粮的书香之家，起点不算低',farm:'你落在乡野农家，得先学会干农活用镰刀除草',city:'你是城里的小市民，住在坊市周边，营生尚可糊口',lost:'你两手空空还带着现代的口音，先低调寻个落脚处'}[role];
+let out='🎬 欢迎回到【'+e.name+' 】——'+roleStr+'。当务之急不是做梦，是活下去。\n\n';
+out+='🌾 开局三天，先做三件事：\n1. 剪短太扎眼的现代发型/换掉衣服，买身合适的'+e.garb.split('，')[0]+'体面入乡随俗；\n2. 摸清当地货币：凭'+(role==='noble'?'书香门第':role==='farm'?'庄稼把式':role==='city'?'市井手艺':'游方客')+'的身份先找点差事解决温饱；\n3. '+rand(['熟悉方言口音，尽量少说奇怪的现代词','找位靠谱良善的本地人做向导，别跟官府和地痞硬碰'])+'；\n'+(gift?'而你带来的「'+gift+'」就是奇货，先藏好，别轻易在人前炫：'+rand(['可换盘缠救命','可当敲门砖换个体面的营生','先留给最需要的时刻'])+'。\n\n':'');
+const sname={tech:'理工生',doctor:'医学生',art:'文艺咖',cook:'美食家',trade:'生意人'}[skill];
+out+='🏮 你的核心优势\n凭着你'+sname+'的底子，'+sj+'\n\n';
+out+='🍽 融入'+(goal==='rich'?'发财':goal==='official'?'仕途':goal==='free'?'闲游':'保平安')+'路线：'+jt+'。\n\n';
+out+='🈲 避雷须知（说错话可能掉脑袋）\n· '+rand(taboos)+'\n· '+rand(['最稳妥是「装个略有见识的普通人」，别急着显摆现代知识引起猜忌','牢记你穿越的这个时代还没有，别点破未来之事'])+'\n\n';
+out+='🏯 风物拾趣\n· 那会儿的人穿'+e.garb+'；\n· 餐桌上常见'+e.food+'；\n· 繁华去处是'+e.geo+'。祝你在这段'+(gift?'带着信物':'两手空空')+'的穿越里，有惊无险、自带主角光环，把它过成一场值得吹一年的奇幻旅行 ⚔️';
+document.getElementById('resultArea').classList.add('active');
+document.getElementById('result').textContent=out;
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('result').textContent).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

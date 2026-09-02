@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>居家消防安全排查清单 | AgentGongju.com</title>
+<meta name="description" content="生成一份贴合你家的消防安全自查清单，覆盖电器、燃气、起火逃生等要点，花10分钟给家做个安全体检">
+<meta name="keywords" content="消防安全,居家安全,火灾,逃生,自查清单,插座燃气">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s;margin-top:6px}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:22px;color:#e2e8f0;line-height:2;white-space:pre-wrap;min-height:60px;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🧯 AI 居家消防安全自查</h1><p>花10分钟，给家做个安全体检</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>🏠 住房类型</label><select id="htype"><option value="bldg">高层住宅/电梯房</option><option value="low">多层老小区</option><option value="house">自建房/独栋</option><option value="rent">出租房/合租</option></select></div>
+<div><label>🍳 做饭方式</label><select id="cook"><option value="gas">管道/瓶装燃气</option><option value="elec">电磁炉/电为主</option><option value="mixed">燃气+电混用</option></select></div>
+</div>
+<div class="param-row">
+<div><label>🐾 家里有老人小孩宠物？</label><select id="who"><option value="none">就我自己</option><option value="elder">有老人</option><option value="child">有小孩</option><option value="pet">有宠物</option></select></div>
+<div><label>🛎 楼里消防设施</label><select id="pubb"><option value="have">有灭火器/烟雾报警器</option><option value="none2">不清楚/没有</option></select></div>
+</div>
+<label>🔍 特别担心的隐患（可选）</label>
+<input type="text" id="worry" placeholder="如：电动车楼道充电、插座老化、油烟机很油">
+<button class="btn-gen" id="genBtn">🧾 生成我的自查清单</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">🧾 居家消防安全自查清单</div>
+<div class="result-box" id="result"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制清单</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function R(a){return a[Math.floor(Math.random()*a.length)];}
+function sample(a,n){var c=[].concat(a),o=[];while(c.length&&o.length<n){o.push(c.splice(Math.floor(Math.random()*c.length),1)[0]);}return o;}
+var COOK={
+ gas:['燃气软管若超2年未换请尽快更换（普通软管寿命约2年）','用肥皂水涂在软管接口，冒泡说明漏气——立即关阀开窗并报修，切勿开灯点火','做饭时人不离灶，油锅起火千万不能浇水，盖锅盖或湿布隔绝空气即可扑灭','燃气灶超8年是强制报废年限，劣质无熄火保护的灶具宁可换掉'],
+ elec:['电磁炉等大功率用完即拔插头，不留整夜待机','厨房电插排远离水槽，湿手不碰开关，专插专用减少过载'],
+ mixed:['燃气与电磁炉等电热器具之间保持安全间距，分开线路使用','燃气软管不要贴近明火/高温处，注意是否被老鼠啃咬']
+};
+var VOLT=['同一个插排不要同时插入空调、电暖等大功率电器','发现电线发烫、外皮开裂、插头打火，先断电再找电工，别用透明胶带将就','手机充电器不要整夜插在床头插座，人走电断','充电宝千万别在被窝或枕边充电，散热不良极易鼓包起火'];
+var WHO={
+ elder:['老人房间尽量安排在低楼层且靠近门口、通风的位置','帮记性不好的长辈贴「出门关燃气断电」便签，条件允许装个燃气/烟雾报警器','老人行动较慢，床边常放手电与鞋，逃生时别穿高跟鞋或拖鞋'],
+ child:['打火机、火柴放在孩子够不到并上锁的地方，教育「不玩火」','教孩子认识烟雾报警器、119，遇到火情低姿捂湿毛巾按逃生路线走','和孩子做一次家庭逃生演练，规划至少两条撤离路线'],
+ pet:['宠物不要放进厨房/插座密集区乱钻','给猫狗备好应急航空箱/牵引，逃生以人优先，条件允许再带回宠物'],
+ none:['独居更要养成「出门三查」：关燃气、断大功率、清阳台杂物']
+};
+var HADD={
+ bldg:['摸清你所在层的两个逃生方向与避难层，楼道出口绝不上锁','严禁在走廊、前室、楼梯间堆放杂物或停放电动车','熟记「小火快跑、浓烟关门」：出门先用手背碰门，发热就别开门'],
+ low:['老楼道多为木质/可燃装修，坚决不要在楼道堆放纸箱杂物','若楼下起火且门外已浓烟，别盲目冲，先关门、用湿布封缝、退往有窗房间待援'],
+ house:['院内柴堆纸箱草垛等与房屋保持安全距离，及时清理','建议配置2个以上灭火器和独立式烟雾报警器','电动三轮车/电瓶车严禁推进屋内或楼道充电'],
+ rent:['入住先确认楼道有无被堵、是否具备逃生缓降/安全出口','与室友明确燃气关闭、灶具使用等责任，贵重逃生设备自备一份保险']
+};
+var FAM=[['建议配备『一提二拔三握四压』可用的灭火器与烟雾报警器','定期（每季度）擦拭传感器并测试按钮看是否正常']];
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('居家消防安全排查清单 | AgentGongju.com'))return;
+var htype=document.getElementById('htype').value;
+var cook=document.getElementById('cook').value;
+var who=document.getElementById('who').value;
+var pubb=document.getElementById('pubb').value;
+var worry=document.getElementById('worry').value.trim();
+var extra=pubb==='have'?['趁小区物业在的时候，学一下楼道灭火器怎么用，记住逃生通道位置']:['强烈建议自购一个独立式烟雾报警器（几十块）装厨房/卧室附近，能救命'];
+var out='';out+='⏳ 自查重点'+(worry?'（你担心的「'+worry+'」正是高危项，请最先处理它）：':'：')+'\n\n';
+out+='🔥 一、用火/厨房\n· '+sample(COOK[cook]===undefined?COOK.gas:COOK[cook],2).join('\n· ')+'\n\n';
+out+='⚡️ 二、用电\n· '+sample(VOLT,2).join('\n· ')+'\n\n';
+out+='🏠 三、楼栋与逃生\n· '+sample(HADD[htype],2).join('\n· ')+'\n\n';
+out+='👨‍👩‍👧 四、家人防护\n· '+sample(WHO[who],2).join('\n· ')+'\n\n';
+out+='🧯 五、设施与演练\n· '+sample(extra.concat(['每月按一次家用烟雾报警器测试键确认能响','每半年清理一次油烟机和灶台陈年油垢']),2).join('\n· ')+'\n\n';
+out+='🆘 万一着火怎么办：'+sample(['先报警119并说清地址，火小可用灭火器「一提二拔三握四压」，火大立刻撤离','油锅着火盖锅盖，电起火先断电再灭火，绝不能浇水','逃生低姿捂湿毛巾，靠墙走楼梯绝不乘电梯，捂住口鼻少说话'],2).join('；')+'。';
+document.getElementById('resultArea').classList.add('active');
+document.getElementById('result').textContent=out;
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('result').textContent).then(function(){alert('✅ 已复制！');});}
+</script>
+</body>
+</html>

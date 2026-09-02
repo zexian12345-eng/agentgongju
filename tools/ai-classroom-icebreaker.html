@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>课堂/班会破冰游戏助手 | AgentGongju.com</title>
+<meta name="description" content="给老师准备的新学期破冰游戏生成器，根据班级规模、学生年龄段和时长推荐合适的小游戏并附主持要点">
+<meta name="keywords" content="破冰游戏,班会活动,课堂互动,开学第一课,团建,老师">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:22px;color:#e2e8f0;line-height:2;white-space:pre-wrap;min-height:60px;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🎈 AI 课堂破冰游戏助手</h1><p>开学第一课，先让孩子们笑起来</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>👶 学生年龄段</label><select id="age"><option value="primary">小学低年级</option><option value="junior">小学高年级/初中</option><option value="senior">高中/大学</option></select></div>
+<div><label>👥 班级人数</label><select id="size"><option value="small">30人以下</option><option value="mid">30–50人</option><option value="large">50人以上</option></select></div>
+</div>
+<div class="param-row">
+<div><label>⏱ 可用时长</label><select id="time"><option value="five">5–10分钟</option><option value="fifteen">10–20分钟</option><option value="long">20分钟以上</option></select></div>
+<div><label>🎯 主要目的</label><select id="goal"><option value="meet">让大家互相认识</option><option value="warm">活跃气氛提精神</option><option value="team">分组合作热身</option><option value="focus">收心进入学习状态</option></select></div>
+</div>
+<label>📝 特别说明（可选）</label>
+<input type="text" id="note" placeholder="如：有两个转学生、教室里位置很挤、怕冷场">
+<button class="btn-gen" id="genBtn">🃏 帮我排个课表</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">🎲 适合你班级的破冰方案</div>
+<div class="result-box" id="result"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制方案</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function R(a){return a[Math.floor(Math.random()*a.length)];}
+var AGE={primary:{word:'名字接龙拍手歌》《我是小记者》这类简单动作游戏，规则简化到一两句话就懂',tone:'多用鼓励和夸张的语气，第一个示范很重要'},
+junior:{word:'可以用「你画我猜」「真假自我介绍」「兴趣爱好Bingo」这类稍需思考的',tone:'初中生最怕的是尴尬和被迫表现，给足「可选参与」的台阶，先让外向的孩子打样'},
+senior:{word:'适合「人生清单分享」「两真一假」「三句话认识你」等走心又不太幼稚的',tone:'大学生在意边界，主题可以轻松但别做过分幼稚的游戏，尊重每个人的参与尺度'}};
+var SIZEmax={small:'全班围坐一圈，人人都有开口的机会',mid:'可先分列击鼓传花或小组内先滚雪球，再全班代表分享',large:'尽量多小组并行、轮流上台，控制单环节举手的时长'};
+var GOAL={
+ meet:['「滚雪球式介绍」：第1人说名字+爱好，第2人复述前1人再报自己，依次叠加，最后老师点名抽查，既记名又暖场','「两真一假」快速传开：每人说两个真事一个假事，大家猜哪个是假的，气氛一下子就能热起来'],
+ warm:['「相同点找朋友」：老师喊“同个月份生日/同星座/同喜欢运动的人”站起来互相击掌换位置，快速破冰又活动筋骨','“动作模仿接龙”：第一个人做个动作，下一个人复制再加一个，难度逐步上升笑料不断'],
+ team:['分组后各小组想一个组名+口号并用3个动作表演，比谁能最快记住组员名字','“接龙造句子/接成语”，每组限时配合完成，磨合出默契'],
+ focus:['从假期见闻的「一句话接龙吐槽/分享」入手，讲完顺势引导“收假收心、一起定新学期小目标”','每人写下一个新学期想达成的小愿望匿名放进箱子，随机抽出来读并集体给掌声，开心又励志']
+};
+var close={meet:'活动结尾可以让大家跟你击掌/碰拳问好，接受度高的孩子会觉得很暖',warm:'游戏后就顺势坐下进入正课，情绪还热着，注意力最好',team:'分好组后记得把座位略作调整，让同组坐近些后续更好配合',focus:'用一句轻松的话收尾，比如“新学期我们一起加油”，把能量带进课堂'};
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('课堂/班会破冰游戏助手 | AgentGongju.com'))return;
+var age=document.getElementById('age').value,size=document.getElementById('size').value,time=document.getElementById('time').value,goal=document.getElementById('goal').value,note=document.getElementById('note').value.trim();
+var a=AGE[age],gl=GOAL[goal];
+var out='🎈 给'+(size==='small'?'小班':size==='mid'?'中班':'大班')+'（'+(time==='five'?'5-10':time==='fifteen'?'10-20':'20+')+'分钟）准备的开学破冰方案：\n\n';
+out+='👋 主力游戏\n· '+R(gl)+'\n· '+R(['如果时间宽裕，可再搭配一个「猜猜我是谁」小环节收尾余兴','若担心冷场，先请两名性格开朗的班干部/老师自己先示范一轮','建议规则用“我说一遍+请个同学复述一遍”来确认大家都懂'])+'\n\n';
+out+='📌 主持要点（'+a.tone+'）\n· '+R(['眼神要多停留、多给正向反馈，谁出声就给谁掌声和目光','声音节奏要有起伏，控制好每轮时长避免拖沓','冷场时老师自己先接梗抛话题把气氛暖起来'])+'\n\n';
+out+='🧭 排布建议\n· '+SIZEmax[size]+'\n· '+close[goal]+'\n\n';
+out+=note?('· 你提到「'+note+'」：'+R(['那就优先选听讲和分组并行、不用大幅度跑动的静音版游戏','把转学生或害羞的同学安排先一对一熟悉，再引入集体','万一真冷场也别慌，坦然开启个人分享话题也能救场'])+'\n\n'):'';
+out+='💡 一句话心态：破冰不是为了“赢”，而是让每个孩子都被“看见”一次。气氛到位了，后面的课就顺了。祝你的新学期开满堂彩！🎉';
+document.getElementById('resultArea').classList.add('active');
+document.getElementById('result').textContent=out;
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('result').textContent).then(function(){alert('✅ 已复制！');});}
+</script>
+</body>
+</html>

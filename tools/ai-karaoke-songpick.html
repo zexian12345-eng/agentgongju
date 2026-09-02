@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>K歌选曲助手 | AgentGongju.com</title>
+<meta name="description" content="根据你的心情、嗓音条件和同伴组合，智能推荐适合在KTV点唱的歌曲，告别歌荒和抢话筒尴尬">
+<meta name="keywords" content="K歌,KTV点歌,唱歌,选歌,麦霸,嗓音">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:22px;color:#e2e8f0;line-height:2;white-space:pre-wrap;min-height:60px;margin-bottom:12px}
+.tag{display:inline-block;background:rgba(99,102,241,.15);color:#a5b4fc;border:1px solid rgba(99,102,241,.3);border-radius:6px;padding:2px 8px;font-size:.75rem;margin-right:6px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🎤 AI K歌选曲助手</h1><p>今晚想惊艳全场？先来挑一首对的歌</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>🎵 说话音色</label><select id="voice"><option value="low">低沉浑厚（男低音/女生偏烟嗓)</option><option value="mid">中音稳（正常聊天音）</option><option value="high">偏高细腻（好上高音）</option><option value="sweet">清亮甜嗓</option></select></div>
+<div><label>😄 此刻心情</label><select id="mood"><option value="happy">嗨到起飞</option><option value="sad">有点emo</option><option value="love">甜蜜恋爱</option><option value="heal">想被治愈</option><option value="old">致敬经典老歌</option></select></div>
+</div>
+<div class="param-row">
+<div><label>👥 场子情况</label><select id="crowd"><option value="hot">一群麦霸抢唱</option><option value="mix">熟朋友随意唱</option><option value="new">有领导/新朋友</option><option value="solo">一个人唱爽</option></select></div>
+<div><label>🙋 想挑战难度？</label><select id="diff"><option value="easy">安全区，稳拿不翻车</option><option value="mid">有点挑战，进阶露一手</option><option value="hard">我就是来炸场的</option></select></div>
+</div>
+<label>🎧 有没有特别想唱的类型（可选）</label>
+<input type="text" id="genre" placeholder="如：周杰伦、粤语歌、民谣、抖音热歌、五月天">
+<button class="btn-gen" id="genBtn">🎶 帮我挑几首</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">🎼 今晚的私人歌单</div>
+<div class="result-box" id="result"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制歌单</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function rand(a){return a[Math.floor(Math.random()*a.length)]}
+const pool={
+ hot:['《海阔天空》Beyond','《离开地球表面》五月天','《倒带》蔡依林/周杰伦','《死了都要爱》信','《浮夸》陈奕迅','《要你管》时代少年团'],
+ mix:['《晴天》周杰伦','《平凡之路》朴树','《成都》赵雷','《后来》刘若英','《稻香》周杰伦','《如果这就是爱情》张靓颖'],
+ new:['《朋友》周华健','《一路向北》周杰伦','《岁月神偷》金玟岐','《平凡之路》朴树','《夜空中最亮的星》逃跑计划','《突然好想你》五月天'],
+ solo:['《十年》陈奕迅','《可惜没如果》林俊杰','《体面》于文文','《修炼爱情》林俊杰','《泡沫》邓紫棋','《江南》林俊杰']
+};
+const easy=['《朋友》周华健','《童话》光良','《月亮代表我的心》邓丽君','《因为爱情》陈奕迅','《老男孩》筷子兄弟','《晴天》周杰伦'];
+const mid=['《海阔天空》Beyond','《勇气》梁静茹','《后来》刘若英','《演员》薛之谦','《小幸运》田馥甄','《飞云之下》韩红/林俊杰'];
+const hard=['《死了都要爱》信','《浮夸》陈奕迅','《煎熬》李佳薇','《左手指月》萨顶顶','《青藏高原》李娜','《易燃易爆炸》陈粒'];
+const emoPick={
+ sad:['《夜半小夜曲》李克勤','《消愁》毛不易','《体面》于文文','《刚刚好》薛之谦','《那些你很冒险的梦》林俊杰','《后来》刘若英'],
+ happy:['《快乐崇拜》潘玮柏/张韶涵','《爱的主打歌》萧亚轩','《失恋阵线联盟》草蜢','《大舌头》吴克群','《恋爱ing》五月天','《快乐指南》孙悦'],
+ love:['《告白气球》周杰伦','《有点甜》汪苏泷','《偏爱》陈势安','《小幸运》田馥甄','《甜甜的》周杰伦','《最浪漫的事》赵咏华'],
+ heal:['《夜空中最亮的星》逃跑计划','《平凡之路》朴树','《明天，你好》牛奶咖啡','《好想爱这个世界啊》华晨宇','《慢慢喜欢你》莫文蔚','《稻香》周杰伦'],
+ old:['《甜蜜蜜》邓丽君','《上海滩》叶丽仪','《千里之外》周杰伦','《朋友》周华健','《月亮代表我的心》邓丽君','《同桌的你》老狼']
+};
+function pickN(a,n){var c=[].concat(a),o=[];while(c.length&&o.length<n){o.push(c.splice(Math.floor(Math.random()*c.length),1)[0])}return o}
+function uniqueAppend(a,b){var r=[].concat(a);b.forEach(function(x){if(r.indexOf(x)<0)r.push(x)});return r}
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('K歌选曲助手 | AgentGongju.com'))return;
+const crowd=document.getElementById('crowd').value;
+const mood=document.getElementById('mood').value;
+const diff=document.getElementById('diff').value;
+const voice=document.getElementById('voice').value;
+const genre=document.getElementById('genre').value.trim();
+const diffMap={easy:'适合大众传唱、Key不高，稳稳拿下',mid:'旋律有记忆点，副歌能掀起小高潮',hard:'高音炸场，唱好直接封神'}[diff];
+const voiceNote={low:'低音区浑厚，适合走深沉抒情路线',mid:'音域正常，可选性最大，稳字当头',high:'上高音不吃力，可以挑些需要拔高的',sweet:'清亮甜嗓，唱情歌和轻快旋律很加分'}[voice];
+const seed=uniqueAppend(pool[crowd],emoPick[mood]);
+const diffSongs=diff==='easy'?easy:(diff==='mid'?mid:hard);
+let chosen=pickN(seed,diff==='hard'?4:3).concat(pickN(diffSongs,2));
+chosen=uniqueAppend([],chosen).slice(0,6);
+let out='🎶 根据你的「'+(crowd==='hot'?'抢唱麦霸局':crowd==='mix'?'熟人局':crowd==='new'?'有重要嘉宾的局':'一个人的专场')+'」与此刻心情，替你按出场顺序排好了 6 首歌：\n\n';
+chosen.forEach(function(s,i){out+=(i+1)+'. '+s+'  '+(i===0?'（暖场开嗓，别太猛）':i===chosen.length-1?'（压轴，留个回味）':'—— '+diffMap.split('，')[0])+'\n'});
+out+='\n🎼 选曲心得\n· '+diffMap+'。\n· 你的嗓音属'+voiceNote+'，第一首建议从中速抒情切入，先把气顺了再上高音。\n';
+if(genre){out+='· 额外加点你爱的「'+genre+'」，可以直接凭感觉在包厢点几首当彩蛋，唱得开心最重要。\n';}
+out+=crowd==='new'?'· 有重要的人在，来一首雅俗共赏、大家都会跟唱的，气氛一下就活了。\n':crowd==='solo'?'· 一个人就放开唱，点几首能飙高音的爽一把，麦克风是你一个人的。\n':'· 想炸场也行，但要留到中后段，热歌冷落冷场时拿出来最有效。\n';
+out+='\n💡 小贴士：别从头猛唱到尾，把最拿手的留给真正的高光时刻，全场记住的永远是你状态最好的那首。';
+document.getElementById('resultArea').classList.add('active');
+document.getElementById('result').textContent=out;
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('result').textContent).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

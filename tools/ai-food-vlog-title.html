@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>美食视频标题生成器 | AgentGongju.com</title>
+<meta name="description" content="输入你做的是什么美食、视频风格与平台，一键生成高点击率的美食短视频标题，吸睛又自然不标题党">
+<meta name="keywords" content="美食视频,标题,短视频,抖音,小红书,B站,做饭,文案">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:22px;color:#e2e8f0;line-height:2;white-space:pre-wrap;min-height:60px;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🍜 AI 美食视频标题生成器</h1><p>好标题是第一口食欲</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>🍳 你做了什么美食</label><input type="text" id="food" placeholder="如：可乐鸡翅 / 番茄牛腩 / 葱花手抓饼"></div>
+<div><label>📱 发在哪个平台</label><select id="plat"><option value="douyin">抖音</option><option value="kuaishou">快手</option><option value="xhs">小红书</option><option value="bili">B站</option></select></div>
+</div>
+<div class="param-row">
+<div><label>🎬 视频风格</label><select id="vg"><option value="asmr">治愈慢生活/声控</option><option value="fast">快节奏教程</option><option value="vlog">一日三餐日常</option><option value="hack">懒人快手/省钱</option></select></div>
+<div><label>🧑‍🍳 账号定位</label><select id="ren"><option value="home">普通家庭做菜</option><option value="chef">精致料理</option><option value="fresh">新手小白</option><option value="solo">一人食/宿舍党</option></select></div>
+</div>
+<label>📝 最想突出的点（可选）</label>
+<input type="text" id="ki" placeholder="如：超简单、巨下饭、外面卖28块、一口就停不下来">
+<button class="btn-gen" id="genBtn">📛 帮我取标题</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">📛 高点击标题候选</div>
+<div class="result-box" id="result"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制标题</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function R(a){return a[Math.floor(Math.random()*a.length)];}
+var STYLE={
+ asmr:['治愈系','慢下来的一餐','被这口温柔治愈','冒热气的深夜食堂','一人食的仪式感'],
+ fast:['3分钟学会','零失败教程','新手直接抄作业','一次就成功的做法','香到邻居来敲门'],
+ vlog:['认真生活的烟火气','平凡又踏实的一顿','记录今天好好吃饭','把日子过出香喷喷的样子'],
+ hack:['懒人党狂喜','免开火的偷懒做法','省钱又下饭','打工人的快手晚餐','30分钟搞定的硬菜']
+};
+var PEOPLE={home:['全家老小都爱','家常味天花板','普通人家也能做','外婆传下来的味道'],
+chef:['餐厅级水准','米其林灵感复刻','细节控的精修版','宴客镇得住场'],
+fresh:['厨房小白也能搞定','照着做不翻车','第一道拿手菜','零基础友好'],
+solo:['一人食刚刚好','宿舍党也方便','独居的治愈晚餐','给自己加个蛋的满足']};
+var PLAT={douyin:['抖音前几字最关键，把「菜名+最大卖点」放最前面','可带 #美食 #家常菜 #教程 话题'],kuaishou:['快手用户爱实在，写清「做法+效果」更对味，口语化一点'],xhs:['小红书重收藏价值，标题给「可复现的好处」并搭配高颜值封面','可加 #在家做饭 等话题'],bili:['B站可稍长些，做成「讲究做法+真实结果」的结构很有干货感']};
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('美食视频标题生成器 | AgentGongju.com'))return;
+var food=document.getElementById('food').value.trim()||'这道菜';
+var style=document.getElementById('vg').value,ren=document.getElementById('ren').value,plat=document.getElementById('plat').value,ki=document.getElementById('ki').value.trim();
+var pool=[];
+var st=STYLE[style],pe=PEOPLE[ren];
+var k=ki||'，香到让人流口水';
+// 构造标题
+var titles=[];
+titles.push(R(st)+'｜'+food+',配你家饭桌刚刚好');
+titles.push(food.slice(0,14)+'别只去外面吃,'+R(pe));
+titles.push(R(['自己在家做','告别外卖自己做'])+food+','+(ki?ki+'、':R(st))+'学会给生活加点甜');
+titles.push(food+':'+R(['不粘锅','零失败','入味到骨子里','下三碗饭的前提'])+',新手看了也会做');
+titles.push(pe[0]+'的'+food+',一口下去就是家的味道');
+if(ki){titles.unshift(food+'｜'+ki.replace(/[，,]/g,'')+'，这一盘酸菜留不住');}
+var lines=titles.slice(0,6).map(function(t,i){return (i+1)+'. '+t+'\n';}).join('');
+var out='为你准备了 5 个候选标题（'.concat(food,'）：\n\n',lines);
+out+='\n📌 平台贴士\n· '+R(PLAT[plat]===undefined?PLAT.douyin:PLAT[plat])+'\n· '+R(['标题尽量精炼在20字内，前6-10个字决定是否被划走','放具体菜名+具体好处是最稳的点击组合','避免图文严重不符，标题夸张但视频没亮点反而挨骂'])+'\n';
+out+=(ki?'你写的卖点「'+ki+'」融合进了标题，记得让封面真的体现它，点击率和完播率才都稳。':'')+'\n\n✨ 美食视频标题的秘诀：短短几个字，让人像闻到香味一样想点开。配上冒热气的封面，就赢了一大半。';
+document.getElementById('resultArea').classList.add('active');
+document.getElementById('result').textContent=out;
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('result').textContent).then(function(){alert('✅ 已复制！');});}
+</script>
+</body>
+</html>

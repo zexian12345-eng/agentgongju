@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>狗狗萌照配文生成器 | AgentGongju.com</title>
+<meta name="description" content="给你的爱犬照片一键生成可爱朋友圈文案，支持不同风格语气与场景，配上狗狗照片更出圈">
+<meta name="keywords" content="狗狗,宠物,萌照,朋友圈文案,宠物文案">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:60px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px;white-space:pre-wrap}
+.result-area.active{display:block}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:22px;color:#e2e8f0;line-height:2;margin-bottom:12px}
+.opt{display:inline-block;margin:5px 10px 0 0;padding:9px 16px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:10px;color:#fff;font-size:.9rem;font-weight:600;cursor:pointer;transition:all .2s}
+.opt:hover{opacity:.85}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🐶 AI 狗狗萌照配文</h1><p>替毛孩子说句最可爱的话</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>🐕 狗狗品种/昵称</label><input type="text" id="dog" placeholder="如：金毛 / 二哈 / 我家旺财"></div>
+<div><label>📍 照片场景</label><select id="scene"><option value="sleep">睡觉打盹</option><option value="eat">吃东西</option><option value="play">玩耍疯跑</option><option value="out">出门遛弯</option><option value="cute">歪头卖萌</option><option value="bathe">洗澡吹毛</option></select></div>
+</div>
+<div class="param-row">
+<div><label>💬 当前心情</label><select id="mood"><option value="happy">超开心</option><option value="tired">累并快乐</option><option value="proud">我家宝真棒</option><option value="miss">想家里狗了</option><option value="funny">搞笑日常</option></select></div>
+<div><label>🎨 文案风格</label><select id="style"><option value="meng">软萌撒娇</option><option value="haha">幽默沙雕</option><option value="warm">温柔治愈</option><option value="moan">傲娇吐槽</option><option value="philo">人间哲理</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">✨ 生成配文</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">📸 试试这几条，换一换口味</div>
+<div class="result-box" id="result"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制这条配文</button>
+<div style="margin-top:14px"><span style="color:#64748b;font-size:.85rem">🔁 想换不同语气？点下方重新随机</span><br><button class="opt" onclick="make()">🎲 再来一条同风格</button></div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function rand(a){return a[Math.floor(Math.random()*a.length)]}
+const LIB={
+ sleep:{meng:['嘘，世界都安静了，只有我家小狗在认真做美梦 🌙','充电五分钟，续航一整天，说的就是我家这位睡神'],
+ haha:['不知道他梦里是不是也在拆家','人家是睡美人，我家是睡狗王，鼾声震天'],
+ warm:['睡得这么香，一定是白天被爱包围着吧','连呼吸都是软乎乎的，治愈了我一整天'],
+ moan:['工作日我996，周末他886，这狗生不公平','我搬砖他睡觉，谁才是生活的主子一目了然'],
+ philo:['有时候快乐很简单，就是一个安稳的午觉','能在闹市安然入睡的，都是心里没亏心事的家伙']},
+ eat:{meng:['干饭第一名非他莫属，光盘行动守护者 🍖','给根骨头能开心到起飞，也太容易满足了吧'],
+ haha:['干饭界的卷王，吃饭比上班还积极','别抢，这块肉是本大爷凭本事等来的'],
+ warm:['认真吃饭的样子，是人间最踏实的烟火气','他满足了，我也就满足了'],
+ moan:['吃我的、住我的，还一脸"我这是给你面子"','一到饭点准时蹲守，比闹钟还准时的只有饭点'],
+ philo:['真正的富足，是把每顿饭都吃出仪式感','细嚼慢咽，是对美食最基本的尊重']},
+ play:{meng:['草地就是他的全世界，撒起欢来没心眼 🌿','疯跑的小身影，是我心里最自由的画面'],
+ haha:['追了三圈其实啥也没追到，快乐就是这么没道理','电量和好感都在蹭蹭上涨，狗都疯了球也疯了'],
+ warm:['看他无忧无虑奔跑，好像所有烦恼都追不上他','有你在的每个傍晚，都值得被认真记录'],
+ moan:['遛他半小时，他掏出100%电，我只剩20%','体力好到怀疑他充电器是水能发电'],
+ philo:['快乐有时不需要理由，撒欢就够了','他教会我：专注当下，才能跑得快跑得久']},
+ out:{meng:['今日遛弯营业完毕，全世界都闻了一遍 🐾','带你见见世面，也见见云朵和晚风'],
+ haha:['出门是条龙，进门是条虫','一步三停只为做标记，这届狗子地盘意识太强'],
+ warm:['慢一点走，风是甜的，陪你是最要紧的事','傍晚的散步，是属于我们俩的小小默契'],
+ moan:['说好遛狗，全程被他遛得气喘吁吁','人家是散步，我家是负重越野'],
+ philo:['路途的意义，在于身边有人陪你走','每一条走过的路，都算数，都作数']},
+ cute:{meng:['歪头杀了解一下，萌度已超标 🥺','他要是开口说话，一定是软软的撒娇声'],
+ haha:['这表情管理，建议直接出道当表情包','歪头不是卖萌，是在怀疑你又要作妖'],
+ warm:['一歪头，我整颗心都化成了水','小脑袋里装着星辰大海，装着对我满满的信赖'],
+ moan:['又歪头装无辜，拆家的是谁自己心里没点数','每次犯错就这样，我人都麻了'],
+ philo:['单纯的目光，是这个世界上最贵的东西','他眼里的光，提醒我别弄丢了简单的快乐']},
+ bathe:{meng:['洗完澡香喷喷的小团子，快来rua一把 🛁','落汤狗也挡不住颜值，吹干又是帅气小狗'],
+ haha:['洗澡像杀猪现场，吹干又是一条好汉','全程惨叫，不知道的以为我是moose了他'],
+ warm:['干干净净的小宝贝，要睡个好觉哦','香香软软地窝在怀里，这就是家的模样'],
+ moan:['一个月一次的大型洗猫洗狗合作项目','吹毛一小时，掉毛一整年，我太难了'],
+ philo:['洗去尘埃，才能轻装上阵','生活如洗澡，冲走烦恼才能焕然一新']}
+};
+function cap(s){return s.charAt(0).toUpperCase()+s.slice(1)}
+function make(){
+const dog=document.getElementById('dog').value.trim()||'我家毛孩子';
+const scene=document.getElementById('scene').value;
+const style=document.getElementById('style').value;
+const cap=rand(LIB[scene][style]);
+const t=rand(['他永远是','这个小家伙','咱这位狗主子',dog+'本人']);
+const intro=rand(['📷 今日份','🎬 现场直击','☁️ 生活碎片','💌 记录一下','✨ 想炫耀一下']);
+const tag=rand(['#狗狗日常','#萌宠','#铲屎官的快乐','#狗狗的快乐你不懂','#家有萌宠']);
+const out=cap+'\n\n'+intro+'，'+t+'的美颜暴击，请查收～ '+(scene==='sleep'?'愿他好梦，也愿你今夜安眠。':(scene==='cute'?'这么可爱他到底知不知道自己很犯规？':'快乐其实很简单，就在这些细碎的小时光里。'))+'\n\n'+tag;
+document.getElementById('resultArea').classList.add('active');
+document.getElementById('result').textContent=out;
+document.getElementById('result').dataset.text=""+out;
+}
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('狗狗萌照配文生成器 | AgentGongju.com'))return;
+make();});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('result').textContent).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

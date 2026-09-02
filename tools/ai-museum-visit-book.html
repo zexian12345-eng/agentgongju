@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 看展攻略簿 | AgentGongju.com</title>
+<meta name="description" content="输入展馆与偏好，一键生成看展路线、重点展品与参观小贴士，让看展不再走马观花">
+<meta name="keywords" content="看展,博物馆,美术馆,展览攻略,参观路线">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:60px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:22px;color:#e2e8f0;line-height:2;white-space:pre-wrap;min-height:60px;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🏛 AI 看展攻略簿</h1><p>做你的专属展览导览，看展不走马观花</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>🏢 展馆名称</label><input type="text" id="museum" placeholder="如：故宫博物院 / 上海博物馆"></div>
+<div><label>🗂 展览类型</label><select id="mtype"><option value="art">美术/当代艺术展</option><option value="history">历史文化展</option><option value="arch">建筑/城市展</option><option value="science">科技互动展</option><option value="nature">自然/地球科学展</option></select></div>
+</div>
+<div class="param-row">
+<div><label>👨‍👩‍👧 同行伙伴</label><select id="companion"><option value="solo">独自观展</option><option value="couple">情侣约会</option><option value="family">亲子家庭</option><option value="friend">朋友结伴</option></select></div>
+<div><label>⏰ 预计时长(小时)</label><input type="number" id="hours" value="2" min="1" max="6" placeholder="1-6"></div>
+</div>
+<label>💕 感兴趣的主题（可选，逗号分隔）</label>
+<input type="text" id="interest" placeholder="如：字画、瓷器、恐龙、印象派、装置艺术">
+<button class="btn-gen" id="genBtn">🧭 生成我的看展攻略</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">🎫 你的专属观展路线</div>
+<div class="result-box" id="result"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制攻略</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const intros={
+ art:['当代艺术像一面镜子，映照观看者当下的心境','绘画是时间的琥珀，把情绪凝固在画布上','艺术展是城市写给远方的一封情书'],
+ history:['每一件文物，都是沉睡了岁月的信使','历史在展柜里静静呼吸，等待与你四目相对','文物不说话，却讲了千年的故事'],
+ arch:['建筑是凝固的音乐，也是城市的骨骼','一块砖，一段墙，藏着一座城的呼吸','看展如读一座城的自传'],
+ science:['科学与童真相遇，每一次互动都是唤醒好奇','把宇宙装进展厅，把未知摊开在指尖','科技的表达，是理性写给浪漫的情书'],
+ nature:['自然展厅是通往远古与深海的一扇任意门','矿石与化石，是大地上写下的悠长日记','在方寸展厅里，丈量亿万年的地球史']
+};
+const themes=['感受色彩与光影的叙事','留意作品与空间的关系','读一下导览牌背后的创作故事','在代表作前多停留一会儿，允许自己被打动'];
+const tips=['展馆一般周一闭馆，记得提前在公众号预约，节假日票源紧俏','建议穿舒适的平底鞋，站久了脚会抗议','展厅内请勿使用闪光灯和自拍杆，玻璃展柜前的倒影更美','可以先在入口租一个语音导览器，2小时内听完重点即可','肚子饿的话先去层楼餐厅，边看展边补充能量','观展结束别忘了去文创商店，把「喜欢」带回家','遇到喜欢的作品，可以拍下作品名，回家再慢慢做功课'];
+function rand(a){return a[Math.floor(Math.random()*a.length)]}
+function pickN(arr,n){var c=[].concat(arr),o=[];while(c.length&&o.length<n){o.push(c.splice(Math.floor(Math.random()*c.length),1)[0])}return o}
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 看展攻略簿 | AgentGongju.com'))return;
+const name=document.getElementById('museum').value.trim()||'这座展馆';
+const mt=document.getElementById('mtype').value;
+const cp=document.getElementById('companion').value;
+const hours=parseInt(document.getElementById('hours').value)||2;
+const interest=document.getElementById('interest').value.trim();
+const cpName={solo:'一个人',couple:'和TA一起',family:'带着孩子',friend:'和朋友结伴'}[cp];
+const spots=Math.min(hours*1.5,6);
+const spotNames=interest?interest.split(/[,，]/).map(s=>s.trim()).filter(Boolean).splice(0,3):[];
+const t1=spotNames.length?`「${spotNames.join('」「')}」这几个方向`:'几件馆藏代表作';
+const spotsLines=pickN(themes,Math.min(3,Math.max(2,hours))).map((x,i)=>`${i+1}. ${x}`);
+const route=`⏳ 出发前：${cp==='family'?'给小朋友准备点小零食和小本子，边看边画':cp==='couple'?'提前约好停车和晚餐，安心享受二人时光':'查好交通与闭馆时间，留足从容'}。
+
+🗺 推荐观展顺序（${name}）
+先把馆藏分布图拍进手机，按「冷门→热门→临展」的思路安排，能巧妙避开人流高峰。建议从 ${spotNames.length?'你最感兴趣的':'常设展中年代最久远的'} 那一侧开始，边走边看，不必追求看完每一件。
+
+${t1}，是这趟${name}之行的主线。${cp==='family'?'每个展柜前问问孩子"你觉得它为什么在这里？"，让好奇心自然生长':''}
+\n📌 途中请这样「看懂」作品
+${spotsLines.join('\n')}
+
+${cp==='family'?'👨‍👩‍👧 带娃专属建议：观展节奏放慢些，大人在每件展品前停留约 3 分钟，累了就到休息区补充能量，切忌"赶场式"看展。':'🌟 让这次体验更难忘：观展后找个咖啡馆，聊聊你最喜欢的一件展品，把「看过」变成「记住」。'}
+
+🧾 实用小贴士
+${pickN(tips,3).join('\n')}
+
+${rand(intros[mt])}。愿你在${name}，与一段好时光不期而遇 🎈`;
+document.getElementById('resultArea').classList.add('active');
+document.getElementById('result').textContent=route;
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('result').textContent).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

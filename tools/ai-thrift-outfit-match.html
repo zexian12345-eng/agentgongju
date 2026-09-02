@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>旧衣新搭改造器 | AgentGongju.com</title>
+<meta name="description" content="翻翻衣柜里闲置的旧衣服告诉我你有什么，AI帮你想出新的搭配思路与日常穿搭方案，省钱又出彩">
+<meta name="keywords" content="旧衣改造,穿搭,搭配,衣橱,时尚,一衣多穿">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:60px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:22px;color:#e2e8f0;line-height:2;white-space:pre-wrap;min-height:60px;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🧥 AI 旧衣新搭改造器</h1><p>不用买新衣服，也能穿出新感觉</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>👕 手头闲置的单品（可多写几件）</label><input type="text" id="items" placeholder="如：白衬衫、格子裙、阔腿裤、长卫衣"></div>
+<div><label>🎨 主要色调</label><select id="tone"><option value="basic">黑白灰百搭</option><option value="warm">大地色/暖色系</option><option value="bright">明亮彩色系</option><option value="mixed">花纹混搭</option></select></div>
+</div>
+<div class="param-row">
+<div><label>📅 常穿场合</label><select id="occ"><option value="work">通勤上班</option><option value="date">约会逛街</option><option value="casual">日常休闲</option><option value="sport">运动出游</option></select></div>
+<div><label>🌦 最近季节/天气</label><select id="season"><option value="spring">春（微凉）</option><option value="summer">夏（热）</option><option value="autumn">秋（舒适）</option><option value="winter">冬（冷）</option></select></div>
+</div>
+<label>📝 想重点拯救哪一件？（可选）</label>
+<input type="text" id="focus" placeholder="如：那条一直穿不出去的工装裤">
+<button class="btn-gen" id="genBtn">🎉 帮我把旧衣穿活了</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">👗 旧衣新穿方案</div>
+<div class="result-box" id="result"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制方案</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function rand(a){return a[Math.floor(Math.random()*a.length)]}
+const addOns={
+ work:{top:'西装外套/针织开衫',bottom:'直筒裤或过膝半裙',shoes:'尖头平底鞋或乐福鞋',tip:'腰带收腰或塞衣角更显利落'},
+ date:{top:'小开衫或吊带外搭',bottom:'修身裙或高腰裤',shoes:'穆勒鞋或细带凉鞋',tip:'露出手腕/锁骨，加个小丝巾增色'},
+ casual:{top:'宽松卫衣或牛仔外套',bottom:'休闲裤或百褶裙',shoes:'白色板鞋',tip:'把衣角打个结更随性'},
+ sport:{top:'轻薄冲锋衣或防晒衣',bottom:'工装裤或运动束脚裤',shoes:'跑鞋',tip:'叠穿打底更轻盈'},
+};
+const layers={spring:'叠穿薄开衫，颜色上可以多pick浅色系',summer:'选透气料子，领口微松显清爽',autumn:'层次是灵魂，衬衫+马甲或毛衣+裙子',winter:'加打底和围巾，用亮色小物提整体'};
+const twists=['把原本当外套的衬衫反穿当内搭','把长卫衣当裙子配光腿神器/打底裤','把旧T恤在腰间系个结当点缀','卷起袖口和裤脚，露出纤细部分显高','把外套领子立起来，内搭大领口制造层次','一件下装换三件上衣，就有了三套新look'];
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('旧衣新搭改造器 | AgentGongju.com'))return;
+const items=document.getElementById('items').value.trim()||'一两件基础款';
+const tone=document.getElementById('tone').value;
+const occ=document.getElementById('occ').value;
+const season=document.getElementById('season').value;
+const focus=document.getElementById('focus').value.trim();
+const a=addOns[occ];
+const toneMsg={basic:'黑白灰永不出错，加一个亮色小包或袜子和配饰点睛',warm:'大地色系显温柔，同色系深浅叠穿很有质感',bright:'彩色系建议同色深浅或三色内统一，避免太花',mixed:'印花款配纯色单品中和，印花更显高级'}[tone];
+const tonePair={basic:['白色/黑色下装','浅牛仔','燕麦色裙装'],warm:['米色阔腿裤','焦糖色半裙','卡其长裤'],bright:['奶油色或黑色下装','同色系深一档裤子','牛仔中和彩色'],mixed:['素色下装压住花','黑色让花纹沉稳','同取花朵里的一种纯色做下装']}[tone];
+let out='🧥 先认清这件的「潜力」：'+ (focus?'你点名想救的「'+focus+'」反而是整套look的亮点，别急着放弃它！':'被搁置的单品往往只是缺一个「新语境」，稍作变化就活了。')+'\n\n';
+out+='【给你 3 套新穿法】\n';
+const fs=focus||rand(['那件闲置上装','那条闲置下装']);
+out+='Look 1｜上班通勤版：'+fs+' + '+a.top+'，下搭'+rand(tonePair)+'，脚踩'+a.shoes+'。重点：'+a.tip+'。\n';
+out+='Look 2｜周末慵懒版：'+fs+(occ==='date'||occ==='casual'?'披一件'+rand(['针织开衫','牛仔外套']):'配一条'+rand(['高腰阔腿裤','A字裙']))+'，'+layers[season]+'，整体很松弛。\n';
+out+='Look 3｜一衣巧变：试试「'+rand(twists)+'」，'+rand(['立刻有微妙的时差感','从「旧」里救出新鲜感','改变了原本的比例，更新鲜']) +'。\n\n';
+out+='【配色与细节】\n· '+toneMsg+'\n· '+rand(['把袖口挽两折露出手腕','加一条与单品格调相衬的腰带提腰线','小面积亮色(包/袜/丝巾)让整身不沉闷','配饰少而精：手腕一只表或项链即可'])+'\n\n';
+out+='【省钱的尽头是「利用」】\n别急着断舍离，先按上面的法子穿一个礼拜。如果还是不喜欢，再考虑改短、改版或送二手平台，让旧衣各得其所。省钱的小日子，也能很时尚 ✨';
+document.getElementById('resultArea').classList.add('active');
+document.getElementById('result').textContent=out;
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('result').textContent).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>婚礼吉日挑选助手 | AgentGongju.com</title>
+<meta name="description" content="输入你们的生辰与意向月份，结合宜嫁娶、避开冲忌等常识帮你排一排合适的结婚吉日候选，兼顾黄道与假期">
+<meta name="keywords" content="结婚吉日,黄道吉日,婚期,婚礼日期,择日,生辰八字">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:22px;color:#e2e8f0;line-height:2;white-space:pre-wrap;min-height:60px;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>💍 AI 婚礼吉日挑选助手</h1><p>好日子配好婚事，帮你把日子挑得既吉利又省心</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>🌸 意向办婚礼的月份</label><select id="month"><option value="1">1月</option><option value="2">2月</option><option value="3">3月</option><option value="4">4月</option><option value="5">5月</option><option value="6">6月</option><option value="7">7月</option><option value="8">8月</option><option value="9">9月(秋)</option><option value="10">10月(国庆季)</option><option value="11">11月</option><option value="12">12月</option></select></div>
+<div><label>📅 更看重</label><select id="pri"><option value="lucky">图个吉利宜嫁娶</option><option value="holiday">亲友好请假/好日子</option><option value="season">季节风景气候</option><option value="balance">兼顾吉日与实惠</option></select></div>
+</div>
+<div class="param-row">
+<div><label>👰 新娘属相</label><select id="bsheng"><option value="rat">鼠</option><option value="ox">牛</option><option value="tiger">虎</option><option value="rabbit">兔</option><option value="dragon">龙</option><option value="snake">蛇</option><option value="horse">马</option><option value="goat">羊</option><option value="monkey">猴</option><option value="rooster">鸡</option><option value="dog">狗</option><option value="pig">猪</option></select></div>
+<div><label>🏙 婚礼主要在</label><select id="city"><option value="north">北方城市</option><option value="south">南方/沿海城市</option><option value="midwest">中西部</option><option value="outdoor">打算办户外婚礼</option></select></div>
+</div>
+<label>📝 特殊偏好（可选，如固定某周几/避开周几）</label>
+<input type="text" id="pref" placeholder="如：一定要周六；避开每月高峰价">
+<button class="btn-gen" id="genBtn">📆 帮我把好日子找出来</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">💐 推荐婚期候选与功课</div>
+<div class="result-box" id="result"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制功课</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function R(a){return a[Math.floor(Math.random()*a.length)];}
+var MOODAY={5:['月初和15日前后常热的几个吉日要早定场地'],10:['整个10月尤其国庆这几天大师与场地方档期都抢手，一定要提前半年到一年锁定']};
+var PRI={lucky:{note:'以「宜嫁娶」日为主，同时当天别和两人属相「相冲」，稳妥做法是参考双方先生/亲人一致同意的黄历',tabu:['避开某些黄历标注「诸事不宜」或冲你的日'],sug:'订室外的话再核对当天气象，别为吉日硬扛暴雨'},
+holiday:{note:'亲友能否到场是大事，优先选周六、节假日或调休能连假的周末',tabu:['避开黄金周人挤人、机票酒店翻倍的高峰日'],sug:'冷门周的周六往往性价比高又清净'},
+season:{note:'按季节风景选，春秋温度宜人也更适合拍照办户外',tabu:['避开当地雨水/台风集中期'],sug:'结合你们恋爱纪念日挑个有意义的数字也好'},
+balance:{note:'吉日之外，场地档期价、宾客请假难度都是现实功课，挑个「宜嫁娶且非爆款」的周六最稳',tabu:['别只盯着全城疯抢的那一天'],sug:'周二三四办的话很多场地有折扣，不如索性办成朋友小聚的私房婚礼'}};
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('婚礼吉日挑选助手 | AgentGongju.com'))return;
+var month=document.getElementById('month').value,pri=document.getElementById('pri').value,bs=document.getElementById('bsheng').value,city=document.getElementById('city').value,pref=document.getElementById('pref').value.trim();
+var mStr=month+'月';var p=PRI[pri];
+var seasonNote={1:'1月北方偏冷，若在室内办刚好避寒；南方可考虑温暖的地方',3:'3月乍暖还寒，正是办室内或开春草坪的好时候',5:'5月气候宜人拍照最美，恰逢春季婚礼小高潮要早订',6:'6月有些南方城市开始湿雨季，多备雨备方案',10:'10月秋高气爽景色最出片，婚宴档期也最紧俏',12:'12月适合室内圣诞系主题，宾客好安排'}[month]||'这个月的季节感需要你们结合当地气候体会';
+var unluckZodiac={'rooster':'· 黄历提示与属「鸡」者多有冲，若新人有属鸡的提前跟家人协商避开相关冲日','ox':'· 属「牛」与部分日子相冲，留意当日宜忌里的「冲牛」提示'}[bs]||'· 择日时留意黄历中的「冲X」是否冲到你/对方属相，稳妥一些可以请家中长辈或先生帮把个关';
+var tail=PRI[pri].note+'\n'+PRI[pri].tabu.join('\n')+'\n'+PRI[pri].sug;
+var out='📆 意向'.concat(mStr,'·',{lucky:'图吉利',holiday:'亲友方便',season:'季节风景',balance:'兼顾实惠'}[pri],'的择日功课\n\n');
+out+='✅ 你可以重点盯这样几个「好日子」\n· '+R(['这个月黄历标「宜嫁娶」的周六/周末各挑1–2个去约场地','结合法定节假日与调休，挑能凑成「小长假」的档期办婚宴','选一个与你们恋爱细节有关联的日子（认识纪念日等），既有意义也好记'])+'\n· '+seasonNote+'\n\n';
+out+='📕 择日小守则\n· '+R(['黄历「宜嫁娶」优先，但同一吉日全城庆宴，别忘了核对天气与场地','别只纠结某一个「唯一良辰」，放宽到前后三四天的区间，选择余地大得多','当天别安排太满，留点时间给彼此和爸妈'])+'\n'+unluckZodiac+'\n';
+out+=pref?('· 你的偏好「'+pref+'」很实际：'+R(['那就把候选圈在符合你要求的那个周末，再现场地','按这个条件去约档期，能避开的雷都避开了'])+'\n'):'';
+out+='\n🔍 实际操作建议：拿上这份功课，用手机日历或专门的择日工具，把'+mStr+'里「宜嫁娶＋合你要求」的日期都标出来，然后第一时间去约酒店和摄影，好日子真的不等人。\n\n';
+out+='💍 最后说句实在话：日子选得再好，都不如两个人情投意合。把它办成一场让所有宾客都暖心的仪式，才是最重要的「大吉」。祝你们百年好合！';
+document.getElementById('resultArea').classList.add('active');
+document.getElementById('result').textContent=out;
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('result').textContent).then(function(){alert('✅ 已复制！');});}
+</script>
+</body>
+</html>

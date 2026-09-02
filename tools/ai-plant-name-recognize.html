@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>植物养护百科识别 | AgentGongju.com</title>
+<meta name="description" content="用叶子形状、花色、习性等特征帮你推断可能是哪种植物，并给出对应的浇水、光照、施肥养护建议">
+<meta name="keywords" content="植物识别,养花,绿植,盆栽,养护,浇水">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:60px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:22px;color:#e2e8f0;line-height:2;white-space:pre-wrap;min-height:60px;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🪴 AI 植物识别与养护</h1><p>不知道怎么养？先猜猜它是谁</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>🍃 叶片长什么样</label><select id="leaf"><option value="big">宽大的绿叶子</option><option value="thin">细长/带条纹</option><option value="fleshy">厚厚肉肉的</option><option value="needle">针状/如松针</option><option value="pattern">有花纹斑点</option></select></div>
+<div><label>🌸 开不开花/花色</label><select id="flower"><option value="none">基本不开花</option><option value="red">开红花</option><option value="purple">开紫/粉色</option><option value="yellow">开黄/橙色</option><option value="white">开小白花</option></select></div>
+</div>
+<div class="param-row">
+<div><label>🌞 家里光照情况</label><select id="light"><option value="sun">有直射阳光的阳台</option><option value="bright">明亮但无直射</option><option value="low">光线比较暗</option><option value="var">半天阳光半天阴</option></select></div>
+<div><label>🪴 养在哪里</label><select id="place"><option value="indoor">室内桌面</option><option value="balcony">阳台/窗台</option><option value="office">办公室</option><option value="garden">庭院/露台</option></select></div>
+</div>
+<label>📝 再补充两句特征（可选）</label>
+<input type="text" id="extra" placeholder="如：很高、会爬藤、刚买回来黄叶了">
+<button class="btn-gen" id="genBtn">🔍 猜猜它 + 我要怎么养</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">🌱 识别结果与养护指南</div>
+<div class="result-box" id="result"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制养护指南</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#a5b4fc;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function rand(a){return a[Math.floor(Math.random()*a.length)]}
+const GUESS={
+ 'big_none_sun':{n:['绿萝','龟背竹','发财树','鸭脚木'],w:'见干见湿',l:'耐半阴也耐散光',sp:'春夏15–20天1次，冬季减少',f:'观叶为主，可薄施通用肥'},
+ 'fleshy_none_sun':{n:['多肉（如吉娃娃/桃蛋）','芦荟','虎刺梅'],w:'宁干勿湿，土干透再浇',l:'喜充足光照，夏日需遮午晒',sp:'春秋10天左右1次，夏季休眠少浇',f:'用多肉专用土，加少许缓释肥'},
+ 'thin_none_low':{n:['吊兰','富贵竹','龟背竹幼株'],w:'保持微润',l:'耐阴，忌暴晒',sp:'夏季3–5天1次，冬季7–10天',f:'富贵竹/吊兰少肥，偶尔喷水'},
+ 'needle_sun_indoor':{n:['茉莉','栀子','长寿花'],w:'见干见湿',l:'喜光，阳台最合适',sp:'春夏勤浇，见干即浇',f:'开花前补磷钾肥'},
+ 'red_var_garden':{n:['月季','三角梅','扶桑','杜鹃'],w:'土微干即浇',l:'喜充足阳光',sp:'生长期保持见干见湿',f:'月季薄肥勤施，花前补磷钾'},
+ 'purple_bright':{n:['绣球花','薰衣草','蓝雪花','紫罗兰'],w:'保持湿润不积水',l:'散光明亮处好',sp:'见干就浇，别等蔫',f:'孕育花苞时上花肥'},
+ 'yellow_bright_indoor':{n:['黄金葛','白掌','一帆风顺'],w:'见干见湿',l:'耐阴，忌强光直晒',sp:'每周1–2次，保持湿润',f:'薄肥，水培更省心'},
+};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('植物养护百科识别 | AgentGongju.com'))return;
+const leaf=document.getElementById('leaf').value;
+const flower=document.getElementById('flower').value;
+const light=document.getElementById('light').value;
+const place=document.getElementById('place').value;
+const extra=document.getElementById('extra').value.trim();
+let key=(leaf+'_'+flower+'_'+light).toLowerCase();
+// 若知识库没有完全对应的组合，改用"叶形+光照"最接近的兜底
+const lightZone=(light==='sun'||light==='var')?'sun':(light==='bright'?'bright':'low');
+const fallbackLeaf={
+ big:'big_none_sun', thin:(lightZone==='low'?'thin_none_low':'big_none_sun'), fleshy:'fleshy_none_sun',
+ needle:'needle_sun_indoor', pattern:(lightZone==='low'?'purple_bright':'big_none_sun')
+}[leaf]||'big_none_sun';
+let entry=GUESS[key]||GUESS[leaf+'_none_'+light]||GUESS[fallbackLeaf];
+const n=rand(entry.n);
+const cand=['实际品种请以花朵&果实物证对照为准，我给的只是常见方向','把照片发给我或查识花App能与文字描述互相印证','不同地区、盆器大小也会影响具体节奏','刚买回来的绿植先放阴凉处缓苗3–5天再正常养护'];
+let out='🌱 根据您对叶形 / 开花 / 光照的描述，我推断很可能是：'+n+'\n\n';
+out+='【怎么养它】\n· 光照：'+entry.l+'\n· 浇水：'+entry.w+'（'+entry.sp+'）\n· 施肥与土：'+entry.f+'\n· 摆放：'+(place==='office'?'办公室桌面建议保持通风，避开空调直吹':'参照你家光照，往明亮处靠')+'\n\n';
+out+='【新手最容易踩的坑】\n· '+rand(['管住手，宁干勿涝','看见黄叶先排查是缺水还是水多：土干了补水，土湿就先停浇','换盆/换环境要给它几天「缓苗」时间','别用刚接的自来水直浇，晾一晚再用更好'])+'\n';
+out+=extra?('· 你提到「'+extra+'」——如果是黄叶掉叶，八成是水或光照突变了，先环境稳定观察一阵；如果是长得太高太密，可以考虑修剪或换大一号的盆。\n'):'';
+out+='\n💡 温馨提醒：文字识别有一定局限，'+rand(cand)+'。种花养草最要紧的是「懂它的脾气」，用心观察就是最好的园丁。🌿';
+document.getElementById('resultArea').classList.add('active');
+document.getElementById('result').textContent=out;
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('result').textContent).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>
