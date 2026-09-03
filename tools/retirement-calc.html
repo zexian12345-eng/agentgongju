@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>个人养老储蓄规划 | AgentGongju.com</title>
+<meta name="description" content="输入当前年龄、目标退休年龄与每月愿存金额，AI测算个人养老金缺口，并给出储蓄目标与配置建议。">
+<meta name="keywords" content="养老规划,退休,个人养老金,养老储蓄,养老缺口,储蓄计划">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{color:#94a3b8;font-size:.85rem;margin-bottom:12px}
+.meter{height:8px;background:rgba(255,255,255,.08);border-radius:6px;margin:8px 0 4px;overflow:hidden}
+.meter>div{height:100%;background:linear-gradient(90deg,#6366f1,#a855f7);border-radius:6px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🧓 AI 养老储蓄规划</h1><p>现在每月存一点，老来更有底气——测算你的养老缺口与储蓄目标</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>🎂 当前年龄(岁)</label><input type="number" id="age" value="30" min="20" max="60"></div>
+<div><label>🏁 计划退休年龄(岁)</label><input type="number" id="retAge" value="60" min="50" max="70"></div>
+</div>
+<div class="param-row">
+<div><label>💰 目前每月养老积蓄(元)</label><input type="number" id="save" value="1000" min="0"></div>
+<div><label>🌆 期望退休后月生活费(元)</label><input type="number" id="need" value="6000" min="2000"></div>
+</div>
+<label>💡 预期退休来源(可多选，按多少排序)</label>
+<select id="src"><option value="社保为主" selected>依靠社保为主</option><option value="社保加商保">社保+个人养老金账户</option><option value="全面配置">社保+商保+自己投资</option></select>
+<button class="btn-gen" id="genBtn">📈 测算我的养老计划</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 养老测算结果</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制计划</button>
+<div class="tip" style="margin-top:12px">💡 本测算为粗略模型(按年化4%复利、简单不含通胀精算)，实际请咨询专业人士。越早开始，复利的力量越大。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('个人养老储蓄规划'))return;
+let age=+document.getElementById('age').value,rAge=+document.getElementById('retAge').value,save=+document.getElementById('save').value,need=+document.getElementById('need').value,src=document.getElementById('src').value;
+if(age<18||age>=rAge||rAge>75){alert('请检查年龄填写：当前年龄需小于退休年龄且≥18');return;}
+const yrs=rAge-age,rate=0.04;
+// 本金按每月定投复利 FV=P[((1+r)^n -1)/r]
+const mr=rate/12,n=yrs*12;
+const fv=P=>P*((Math.pow(1+mr,n)-1)/mr);
+const pot=fv(save);
+const lifeYrs=20; // 退休后再生活约20年，简单用年金
+const annualNeed=need*12;
+const needPot=annualNeed*(1-Math.pow(1/(1+rate),lifeYrs))/rate; // 现值年金估算退休初需总额
+let gap=Math.round(needPot-pot);
+const monthlyNeed=gap<=0?0:Math.ceil(gap/((Math.pow(1+mr,n)-1)/mr)/100)*100;
+let out='【个人养老储蓄测算】\n\n';
+out+='· 当前 '+age+' 岁 → 计划 '+rAge+' 岁退休，还有 '+yrs+' 年\n· 期望退休月生活费 ¥'+need+'，当前每月已存 ¥'+save+'\n';
+out+='\n━━ 测算结果(按年化4%假设) ━━\n· 到退休时，你的储蓄可能积累约：¥'+Math.round(pot/1000)+' 千\n· 若只靠这笔钱支撑约20年退休生活，每月大约可支撑：¥'+Math.round(pot*rate/(1-Math.pow(1/(1+rate),-lifeYrs))/12/100)*100+'\n';
+out+='· 你的养老资金缺口(按现值算)：¥'+(gap>0?Math.round(gap/1000)+' 千':Math.round(-gap/1000)+' 千(已有富余)')+'\n';
+if(gap>0){
+out+='\n━━ 弥补缺口 ━━\n· 从现在起每月约需新增储蓄：￥'+monthlyNeed.toLocaleString()+'\n';
+out+='· 或把起始养老账户本金一次性补入约：￥'+Math.round(gap/1000).toLocaleString()+' 千可快速拉平\n';
+out+='\n💡 距目标还很远也别灰心，可从以下入手逐渐增大储蓄率：\n· 记账找出可有可无的开销，每月先“先存后花”\n· 每年调薪时顺手把加薪部分的一半转入养老\n· 开通国家『个人养老金账户』每年1.2万额度，享个税优惠(省到就是赚到)\n';
+out+=src==='社保为主'?'· ⚠ 单靠社保退休替代率通常有限，建议至少补一份商业养老保险或用指数基金长期定投\n':src==='社保加商保'?'· 社保打底+个人养老金账户，已是较稳健的打法，可按风险喜好搭配\n':'· 全面配置者可将宽基指数/债券/保险按“核心-卫星”思路长期持有，避免频繁择时\n';
+}else{
+out+='\n🎉 好消息：按当前节奏你已有一定富余！\n· 富余部分建议提高抗通胀资产的比重(与寿命相关的不确定性是最大风险)\n· 可适当留足现金池应急，其余做稳健长期理财\n';
+}
+out+='\n━━ 配置参考(稳健型) ━━\n· 应急现金 10%｜储蓄/稳健理财 30-40%｜混合/指数基 20-30%｜商保(重疾+年金) 剩余\n· 越接近退休，越要降低波动、增加保本比重\n\n【人无远虑必有近忧，越早出发路越好走 🌱】';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 计划已复制！'))}
+</script>
+</body>
+</html>

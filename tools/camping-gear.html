@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI露营装备清单 | AgentGongju.com</title>
+<meta name="description" content="按露营类型、季节与人数组装AI，生成专属露营装备checklist、预算分配与新手避坑建议。">
+<meta name="keywords" content="露营,装备清单,帐篷,野餐,露营装备,自驾露营,新手露营">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{color:#94a3b8;font-size:.85rem;margin-bottom:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>⛺ AI 露营装备清单</h1><p>第一次露营别乱买，按玩法与季节给你一份“够用不浪费”的装备清单</p></div>
+
+<div class="card">
+<label>🏕 露营玩法</label>
+<select id="type">
+<option value="精致露营" selected>精致露营(过夜/大场地)</option><option value="轻量露营">轻量徒步露营</option><option value="日归野餐">不过夜日归野餐</option><option value="车顶/床车">自驾车床露营</option></select>
+<div class="param-row">
+<div><label>📅 出行季节</label><select id="season"><option value="春秋" selected>春秋(温和)</option><option value="夏">夏季(多雨/热)</option><option value="冬">冬季(严寒)</option></select></div>
+<div><label>🧑‍🤝‍🧑 人数</label><select id="n"><option value="1">1人独行</option><option value="2" selected>2人结伴</option><option value="家">家庭(有孩子)</option><option value="团">多人/团队</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">🎒 生成清单</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 你的露营装备单</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制清单</button>
+<div class="tip" style="margin-top:12px">💡 出发前装包后过一遍清单打勾能省很多麻烦；轻量化原则：能共用/可替代的别多带。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI露营装备清单'))return;
+const type=document.getElementById('type').value,season=document.getElementById('season').value,n=document.getElementById('n').value;
+let out='【'+type+'装备清单 · '+season+'季 · '+(n==='家'?'家庭出行':n==='团'?'团队':n+'人')+'】\n\n';
+out+='━━ 一、过夜核心(露营通用) ━━\n';
+if(type==='日归野餐')out+='(不过夜，可不带睡眠系统) 椅/桌 + 天幕或遮阳伞即可\n';
+else if(type==='轻量徒步露营')out+='· 轻量帐篷(2kg内/人) + 睡袋(按温标) + 防潮垫(R值) + 头灯\n· 背包尽量轻，重量控制在体重1/4内\n';
+else if(type==='车顶/床车')out+='· 车床垫/硬顶本身 = 帐篷；备车窗纱+遮光帘保温\n· 收纳按“车内固定、随手可取”逻辑摆放\n';
+else out+='· 帐篷('+(n==='1'?'1-2人':n==='家'?'家庭大帐+前厅':n==='团'?'团体大天幕+若干小帐':'2-3人')+') + 睡袋温标按季 + 充气/蛋巢垫\n· 天幕/遮阳棚、蛋卷桌、折叠椅若干、露营灯串\n';
+out+=(season==='冬'?(type==='日归'?'':'· ⚠ 严冬睡觉保暖优先级最高：睡袋舒适温标至少-5℃，加羽绒/抓绒内衬与铝箔地垫反热\n'):season==='夏'?'· ⚠ 夏季防雨是关键：双向往来帐门+防潮垫记得带，傍晚前务必搭好天幕\n':'· 春秋温差大，晚间备一层抓绒/薄羽绒\n');
+out+='\n━━ 二、餐厨系统 ━━\n· 炉头/卡式炉 + 气罐 + 挡风板 + 便携锅具套\n· 餐具(每人杯碗勺筷) + 可折叠水桶/净水\n· 保温壶(热水救命) + (冬天/烧烤)煤炭与烤网\n';
+out+='\n━━ 三、照明(过夜必带) ━━\n· 营地灯(主光源) + 每人头灯或手电 + 应急备用电池\n· 手摇充电/充电宝：保证手机与灯不断电\n';
+out+='\n━━ 四、衣物与睡眠裹覆 ━━\n· '+(n==='家'?'孩子尤其要备：厚睡袋+隔潮垫+宽松睡衣+备用手套帽袜保暖全套':n==='1'?'':n==='团'?'个人按：3层穿衣法(排汗/保暖/防风)各自备好':'')+'· 排汗内衣(别穿棉打底) + 保暖中层 + 防水冲锋衣外层\n'+(season==='冬'?'· 帽子/手套/羊毛袜/暖宝宝——低体温是冬营最大杀手\n':'· '+(season==='夏'?'防晒霜+长袖防晒衣+驱蚊液，防中暑多补水\n':'· 压缩羽绒/小毯子备不时之需\n'));
+out+='\n━━ 五、工具/应急小件 ━━\n· 多功能刀 + 打火器备用 + 急救包 + 充电宝\n· 收纳袋若干 + 大垃圾袋(带走所有垃圾)\n· 折叠雪铲/地钉锤 + 地图/离线导航\n';
+out+='\n━━ 预算分配参考 ━━\n· '+(type==='日归野餐'?'桌椅餐具天幕 300-800元即可起步':type==='轻量徒步露营'?'把预算优先砸进背包、睡袋、垫子(轻量=贵)，其余够用就好，约1000-2500元':type==='车顶/床车'?'床垫与保温窗帘最值，其次炉具与小冰箱，逐步升级':'帐篷+床垫约40%预算，睡袋20%、炉具餐厨15%，桌椅天幕照明合计25%')+'\n';
+out+='\n━━ 新手附赠避坑 ━━\n· 先租/借一次再买大件，别一次买齐全家桶\n· 看好当地天气预报，预警雷雨/大风就不硬去\n· 走前拍张营地照 + 告知家人归期，安全第一\n\n【把生活搬到帐篷边，好好松弛一回 🔥】';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 清单已复制！'))}
+</script>
+</body>
+</html>

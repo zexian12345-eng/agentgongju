@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI签证材料清单 | AgentGongju.com</title>
+<meta name="description" content="按目的地与出行目的，AI一键生成签证办理的必备材料清单、流程步骤与常见拒签避坑提示。">
+<meta name="keywords" content="签证,材料清单,办签证,申根,日本签证,旅游签证,签证攻略">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{color:#94a3b8;font-size:.85rem;margin-bottom:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🛂 AI 签证材料清单</h1><p>选好目的地与出行目的，秒出《材料+流程+避坑》一站式攻略</p></div>
+
+<div class="card">
+<label>🌏 目的地</label>
+<select id="dest">
+<option value="日" selected>🇯🇵 日本(单次)</option><option value="申">🇪🇺 欧洲申根</option><option value="美">🇺🇸 美国B1/B2</option><option value="韩">🇰🇷 韩国</option><option value="泰">🇹🇭 泰国免签/落地</option><option value="澳">🇦🇺 澳大利亚(旅游)</option>
+</select>
+<label>🧑‍💼 出行目的</label>
+<select id="purpose"><option value="旅游" selected>✈️ 旅游</option><option value="探亲">👨‍👩‍👧 探亲访友</option><option value="商务">💼 商务/参展</option><option value="留学">📚 留学/游学</option></select>
+<div class="param-row">
+<div><label>💼 当前身份</label><select id="job"><option value="在职" selected>在职上班族</option><option value="学生">在校学生</option><option value="自由">自由职业/个体</option><option value="退休">退休人员</option></select></div>
+<div><label>🧾 以往出国记录</label><select id="record"><option value="有" selected>有发达国家记录</option><option value="无">纯白本护照</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">🛂 生成材料清单</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 你的签证材料 + 流程</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制清单</button>
+<div class="tip" style="margin-top:12px">💡 材料仅供参考，各领区与使领馆细则有差异，办理前请以官方最新要求为准，并预留至少1个月办理时间。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI签证材料清单'))return;
+const d=document.getElementById('dest').value,p=document.getElementById('purpose').value,j=document.getElementById('job').value,r=document.getElementById('record').value;
+let out='【'+{日:'日本',申:'申根区',美:'美国',韩:'韩国',泰:'泰国',澳:'澳大利亚'}[d]+'签证 · '+p+'办理清单】\n\n';
+out+='━━ 一、通用必备材料 ━━\n📌 护照原件(有效期6个月以上，至少2页空白)\n📌 签证申请表 + 白底/两寸照片(按领区要求张数)\n📌 身份证 + 户口本复印件\n';
+if(r==='白本'&&p==='旅游'&&(d==='美'||d==='申'))out+='📌 近6个月银行流水(余额建议5万+)——白本建议多准备资产佐证\n';
+else out+='📌 流水与在职/在读证明(证明稳定收入与约束力)\n';
+out+='\n━━ 二、按身份补充 ━━\n';
+if(j==='在职')out+='· 在职证明(公司抬头纸盖章)+ 营业执照副本复印件盖章\n· 近6-12个月工资流水，余额稳定在3-5万更稳妥\n';
+else if(j==='学生')out+='· 在校证明/学生证 + 父母一方出资证明与流水、关系公证\n· 附行程单与机酒预订单更有说服力\n';
+else if(j==='自由')out+='· 营业执照/收入来源说明 + 大额资产佐证(房产、车、理财)\n· 收入流水尽可能清晰、呈稳定趋势\n';
+else out+='· 退休证 + 养老金流水/存款证明，余额充足就好\n';
+if(p!=='旅游')out+='\n━━ 按出行目的 ━━\n'+({探亲:'· 邀请人的邀请函、在留/居留证明复印件、亲属关系/关系证明材料；附邀请人护照或身份页',商务:'· 中方公司派遣函(附职务、行程) + 外方邀请函，必要时需公证外办认证',留学:'· 学校录取通知书/在学证明 + 资金证明(cover学费生活费) + 学习计划'}[p])+'\n';
+out+='\n━━ 三、办理流程(以'+{日:'日签',申:'申根',美:'美签',韩:'韩签',泰:'泰签',澳:'电子签'}[d]+'为例) ━━\n1️⃣ 准备材料(提前1-3个月)  →  2️⃣ 填空/预约面签(申根&美签尤其要抢号)\n3️⃣ 递交材料/录指纹 → 4️⃣ 审核等待(约3-15个工作日) → 5️⃣ 出签+核对信息\n\n━━ 四、避坑提示 ━━\n· 流水切忌一次性大额存入，易引起资金来源怀疑\n· 出行时间、机票酒店与申请表务必一致，逻辑自洽\n· 申根需含全程保额3万欧元以上的旅行医疗保险\n· 日本/申根旅游一般需通过认证旅行社/签证中心递交\n\n【材料备齐，静候出签 🍀】(泰签淡季可免签/落地，出行前请确认最新政策)';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 清单已复制！'))}
+</script>
+</body>
+</html>

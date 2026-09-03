@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI搬家打包攻略 | AgentGongju.com</title>
+<meta name="description" content="选好搬家类型与屋况，AI一键生成《打包流程 + 房间清单 + 避坑提醒》，轻松搞定搬家这件大事。">
+<meta name="keywords" content="搬家,打包,装箱,搬家清单,租房搬家,整理收纳,换房">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{color:#94a3b8;font-size:.85rem;margin-bottom:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📦 AI 搬家打包全攻略</h1><p>一屋子的东西怎么装？按房型生成分步清单，告别搬家手忙脚乱</p></div>
+
+<div class="card">
+<label>🏠 搬家类型</label>
+<select id="type">
+<option value="整屋" selected>整屋搬家(2-3人居住)</option><option value="单人">单人/学生宿舍</option><option value="跨城">跨城长途搬</option></select>
+<div class="param-row">
+<div><label>🧺 房屋规模</label><select id="size"><option value="小">小户型(一室/开间)</option><option value="中" selected>标准两居</option><option value="大">大三居以上</option></select></div>
+<div><label>🚚 请不请搬家公司</label><select id="co"><option value="请" selected>请专业搬家公司</option><option value="自己">自己动手/货拉拉运</option></select></div>
+</div>
+<div class="param-row">
+<div><label>🍳 有易碎大件(钢琴/鱼缸)?</label><select id="fragile"><option value="无" selected>没有</option><option value="有">有(需特殊搬运)</option></select></div>
+<div><label>🕓 计划提前几天开始</label><select id="days"><option value="7">提前一周</option><option value="3" selected>提前3天冲刺</option><option value="1">只提前1天</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">📦 生成搬家攻略</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 你的搬家计划</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制清单</button>
+<div class="tip" style="margin-top:12px">💡 搬家前先“断舍离”一次，把不常用、过期、重复的东西清掉，能省一大半力气和搬运费。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI搬家打包攻略'))return;
+const type=document.getElementById('type').value,size=document.getElementById('size').value,co=document.getElementById('co').value,fragile=document.getElementById('fragile').value,days=document.getElementById('days').value;
+let out='【搬家全攻略 · '+type+' · '+size+'】\n\n';
+out+='━━ 工具/材料准备(提前买好) ━━\n· 纸箱(中小号为主)约'+({小:'12',中:'20',大:'30'}[size])+'个 + 大号收纳袋、编织袋\n· 气泡膜/报纸、缠绕膜、封箱胶带3卷、记号笔\n· 标签贴、真空压缩袋(衣物被褥)、剪刀美工刀\n\n';
+out+=days==='7'?'━━ D-7~D-5 第一阶段：清点与断舍离 ━━\n· 每个房间清点：留用/丢弃/送人/带回三分类\n· 处理：闲鱼转卖、旧物回收，把用不上的先请出去\n\n':'';
+out+=days!=='1'?"━━ 打包顺序(由轻到重、按房间) ━━\n· 先包：反季衣物、被褥(用真空袋压扁)、书籍、装饰品\n· 再包：当季衣物 → 厨房餐具 → 洗护用品\n· 最后：每天要用的(洗漱包+换洗衣+充电器)单独装『过夜包』随身带\n":'━━ ⚠ 只剩1天：抓重点！ ━━\n· 只打包“确定要带”的，其余直接装袋定点；优先衣物被褥与贵重小件\n· 易碎/大件原地最后搬，多备胶带与旧布减震\n';
+out+='\n━━ 分房间清单(装箱) ━━\n🛏 卧室/衣柜：衣物真空压缩、床品单放、首饰证件贴身收纳\n🍽 厨房：易碎碗盘用气泡膜单个包、竖放装盒塞紧不留空\n🛁 卫浴：洗漱用品封口装袋防漏、毛巾卫浴单箱\n📚 客厅/书房：书本竖放重底、电子设备原盒/软布包裹\n🪴 阳台：花盆清土减重，杂物归类\n';
+out+='\n━━ 贵重与特殊 ━━\n· 证件/现金/首饰/电脑：随身拎，绝不放车里货厢\n· 文件档案与发票单放一箱并贴『重要』标签\n'+(fragile==='有'?'· ⚠ 有易碎大件：务必告知搬家公司需特殊设备，全程边上看着指挥，宁可多付服务费也别硬搬\n':'');
+out+='\n━━ 搬家日当天 ━━\n1️⃣ 先对新家同地址，拍下旧家水电表/钥匙(退租用)  2️⃣ 箱外用记号笔大字标注房间+内容+“重/易碎”\n3️⃣ 贵重过夜包随身，指挥上货并清点箱数  4️⃣ 装车前拍照留证\n'+(co==='请'?'5️⃣ 全程起码有一人在车上看货，确认封车后再出发\n':'5️⃣ 货拉拉请备注需要两个人帮忙搬，超时费提前问清\n');
+out+='\n━━ 到新家 ━━\n· 先铺地垫→装大件家具→按房间送箱归位\n· 检查拍照并申请改水电气、宽带移机与快递改地址\n· 最后扫描旧房确认无遗漏，退押金更顺利\n\n【搬家顺利，新生活开启 🏡】';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 攻略已复制！'))}
+</script>
+</body>
+</html>

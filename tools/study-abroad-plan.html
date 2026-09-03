@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI留学申请规划 | AgentGongju.com</title>
+<meta name="description" content="输入你的目标国家、专业与背景，AI为你生成留学选校定位、GPA/语言目标、时间线与申请材料清单。">
+<meta name="keywords" content="留学规划,出国留学,选校,申请时间线,雅思,托福,留学申请">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{color:#94a3b8;font-size:.85rem;margin-bottom:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🎓 AI 留学申请规划</h1><p>输入你的背景与目标，一键生成选校定位 + 语言/GPA目标 + 全流程时间线</p></div>
+
+<div class="card">
+<label>🎯 目标国家/地区</label>
+<select id="country">
+<option value="英" selected>🇬🇧 英国</option><option value="美">🇺🇸 美国</option><option value="澳">🇦🇺 澳大利亚</option><option value="港">🇭🇰 中国香港</option><option value="新">🇸🇬 新加坡</option><option value="加">🇨🇦 加拿大</option>
+</select>
+<label>📚 计划申请学历</label>
+<select id="level"><option value="硕士" selected>硕士 (Master)</option><option value="博士">博士 (PhD)</option><option value="本科">本科 (Undergrad)</option></select>
+<div class="param-row">
+<div><label>🧮 当前均分 GPA(/4.0)</label><select id="gpa"><option value="B">3.0-3.3</option><option value="A" selected>3.3-3.7</option><option value="S">3.7以上</option><option value="C">3.0以下</option></select></div>
+<div><label>⏱ 距申请还有</label><select id="time"><option value="长" selected>1年以上(大一/大二)</option><option value="中">半年-1年</option><option value="紧">3-6个月冲刺</option><option value="急">不足3个月(已毕业)</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">✨ 生成我的留学计划</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 你的个性化留学规划</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制规划</button>
+<div class="tip" style="margin-top:12px">💡 规划为通用参考，各校实际要求以官网为准。建议根据专业排名、预算与国内认证情况综合选校。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI留学申请规划'))return;
+const c=document.getElementById('country').value,l=document.getElementById('level').value,g=document.getElementById('gpa').value,t=document.getElementById('time').value;
+const lang={英:'雅思6.5(单项6.0)+',美:'托福95 / 雅思7.0',澳:'雅思6.5(单项6.0)',港:'雅思6.5 / 托福90',新:'雅思6.5 / 托福92',加:'雅思6.5(单项6.0)'}[c];
+const buck={A:['QS前50冲刺','QS50-100稳妥','QS100-150保底'],B:['QS80-120冲刺','QS100-150稳妥','QS150+名校保底'],S:['QS30冲刺','QS50-80稳妥','QS80-120保底'],C:['QS150冲刺','QS200稳妥','建议同步提升GPA']}[g];
+const lines={
+长:'时间充裕，建议按“先修GPA→语言考试→科研/实习→文书→网申”节奏推进，每期一项核心任务。',
+中:'进入加速期，优先语言出分，同步启动推荐人与文书素材收集，暑假完成实习/科研。',
+紧:'聚焦策略，先锁定2-3所把握较大的院校，优先语言 + 完善文书，降低保底校梯度。',
+急:'已毕业可直接准备次年春季/秋季入学，重点打磨语言与就业型专业的实践经历，文书强调职业规划。'};
+let out='【AI 留学全程规划 · '+c+'国/'+l+'】\n\n';
+out+='━━ 一、选校定位 ━━\n主申梯队：\n· 🚀 冲刺：'+buck[0]+'\n· ✅ 主力：'+buck[1]+'\n· 🛡 保底：'+buck[2]+'\n\n';
+out+='━━ 二、硬性目标 ━━\n· 语言要求参考：'+lang+'\n· 建议语言目标：冲刺校'+lang.replace('+','+0.5 / 高')+'\n· 若申博士：需提前套磁 + 准备研究计划(RP) + 强推荐信\n\n';
+out+='━━ 三、阶段规划 ━━\n'+lines[t]+'\n一月 | 定校清单+文书素材\n二月 | 语言模考·薄弱项补强\n三月 | 联系推荐人 / 套磁\n四月 | 初稿个人陈述(PS)+简历\n五月 | 修改定稿+材料公证翻译\n六月 | 递交申请+跟进录取\n\n';
+out+='━━ 四、申请材料清单 ━━\n· 成绩单(GPA换算+中英双语盖章)\n· 语言成绩(雅思/托福/PTE)\n· 个人陈述 PS · 简历 CV · 推荐信2-3封\n· 在读证明/毕业证学位证 · 存款证明\n· 护照复印件'+((l==='博士')?' · 研究计划RP · 套磁邮件':l==='本科'?' · 高中成绩+高考/会考成绩+文书essay':'')+'\n\n';
+out+='━━ 五、给现在的你 ━━\n· '+(g==='C'?'利用重修/选修把GPA拉到3.0以上，GPA是硬门槛。':g==='B'?'冲名校可多靠语言高分与高质量实习补足GPA差距。':g==='S'?'GPA是你的优势，把精力放在科研/实习与文书差异化上。':'保持绩点，用实习/论文等软实力拉高区分度。')+'\n· 尽早办理护照，热门语言考位务必提前2个月预约。\n· 预算预留：中介+考试+签证+押金，建议首年预留15-30万人民币(国家不同)。\n\n【祝你Offer拿到手软 🎓】';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 规划已复制！'))}
+</script>
+</body>
+</html>

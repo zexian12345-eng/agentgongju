@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>亲子财商启蒙课 | AgentGongju.com</title>
+<meta name="description" content="给孩子上一堂好玩不怕数的零花钱课：储蓄、预算、分清想要与需要，搭配亲子零花钱契约模板。">
+<meta name="keywords" content="财商,育儿,零花钱,储蓄,亲子,儿童理财,财商启蒙">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{color:#94a3b8;font-size:.85rem;margin-bottom:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🧒 亲子财商启蒙课</h1><p>不教条的零花钱课堂 + 一份可打印的“零花钱契约”，陪孩子从小会管钱</p></div>
+
+<div class="card">
+<label>👧 孩子的年龄</label>
+<select id="age"><option value="幼" selected>3-6岁(幼儿园)</option><option value="小低">小学低年级(6-9岁)</option><option value="小高">小学高年级(9-12岁)</option><option value="青">青少年(12岁+)</option></select>
+<div class="param-row">
+<div><label>💰 打算每月给多少零花钱(元)</label><input type="number" id="amt" value="50" min="0"></div>
+<div><label>🗂 主要用途场景</label><select id="use"><option value="零食玩具" selected>零食/玩具</option><option value="文具书籍">文具/书籍</option><option value="充值游戏">手机游戏/短视频充值处</option><option value="综合">综合学习用品+玩具</option></select></div>
+</div>
+<label>🎯 你最想培养的习惯</label>
+<select id="goal"><option value="储蓄" selected>储蓄意识</option><option value="预算">会做预算不超额</option><option value="需要想要">分清“需要”与“想要”</option><option value="付出赚钱">理解赚钱不易</option></select>
+<button class="btn-gen" id="genBtn">🧮 生成财商小课堂</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 课堂 + 零花钱契约</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制契约模板</button>
+<div class="tip" style="margin-top:12px">💡 财商启蒙核心不是“给多少”，而是让孩子从小在自己可支配范围内体验选择与后果，家长多陪伴复盘更好。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('亲子财商启蒙课'))return;
+const age=document.getElementById('age').value,amt=+document.getElementById('amt').value,use=document.getElementById('use').value,goal=document.getElementById('goal').value;
+let out='【零花钱财商小课堂 · 适合'+({幼:'3-6岁',小低:'6-9岁',小高:'9-12岁',青:'12岁+'}[age])+'】\n\n';
+out+='━━ ① 跟孩子这样说「钱是什么」 ━━\n';
+out+=age==='幼'?'· 用实物硬币游戏教认钱币大小，玩“商店老板”角色扮演\n· 把“想买的东西”贴纸贴到储蓄罐上，看得见目标才愿意存'
+:age==='小低'?'· 一起数清每月约定¥'+amt+'怎么来的，对应要付出的小家务\n· 教三种罐子：花掉/存起来/分享给他人'
+:age==='小高'?'· 引导自己做简单记账本，学会算结余与比价\n· 引入“想要vs需要”清单，为一件大件目标分期攒'
+:'· 聊利率、单利/复利雏形与理性广告观，可给一张专属储蓄卡\n· 约定大额消费需“冷静期”(例如隔一夜再决定)';
+out+='\n\n━━ ② '+({储蓄:'存钱',预算:'做预算',需要想要:'分清需要想要',付出赚钱:'体会赚钱'}[goal])+'的现成方法 ━━\n';
+out+='✔ '+({储蓄:'“先给自己发工资”——每月零花钱一到，先拿出约30%放进“存钱罐/小金库”，剩下才自由花',预算:'给零花钱分装成几叠信封(零食/文具/存钱)，哪叠花完这月不再补，自然学会规划',需要想要:'购物前问两句魔法话：这是“需要”还是“想要”？等3天还想要再买吗',付出赚钱:'用“专职小家务”赚零花(整理房间这类义务不算)，做得好有额外任务卡可获得奖励'}[goal])+'\n';
+out+='\n━━ ③ 全家可执行的零花钱契约(建议打印) ━━\n\n《家庭零花钱契约书》\n1. 甲方(孩子)每月可领零花钱 ¥'+amt+'，于每月1日发放。\n2. 用途约定：'+use+'；其中储蓄部分建议不低于总额的'+({储蓄:'40',预算:'20',需要想要:'25',付出赚钱:'30'}[goal])+'%。\n3. 其他规则：\n   · 超额不预支；(小高以上)大件消费有1晚冷静期；\n   · 乱花钱不斥责，但下次商量如何避免；\n   · 义务家务与零花钱无关，额外服务可赚节日费。\n4. 家长承诺：尊重孩子支配权，不克扣、不事后指责；每月陪孩子对一次账(15分钟)。\n签名：孩子______  家长______   日期______\n';
+out+='\n━━ ④ 给家长的话 ━━\n· 犯错是孩子最好的老师，偶尔一次花光买来教训远比说教有效。\n· 别用零花钱奖惩成绩，会把“金钱”和“爱/自尊”混为一谈。\n· '+'🧧 压岁钱建议：和孩子约定「存多少/花多少/做多少」，顺势开启储蓄与礼仪双课。\n\n【陪孩子学会和钱做朋友 🌱】';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 契约已复制，可粘贴打印！'))}
+</script>
+</body>
+</html>

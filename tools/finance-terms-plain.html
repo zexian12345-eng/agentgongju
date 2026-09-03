@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>金融名词大白话 | AgentGongju.com</title>
+<meta name="description" content="利率、复利、基金定投…那些理财新闻里的词到底啥意思？AI用生活化比喻一秒钟讲明白。">
+<meta name="keywords" content="金融术语,理财,大白话,基金,利率,复利,定投,理财基础">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+select:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{color:#94a3b8;font-size:.85rem;margin-bottom:12px}
+.pill{display:inline-block;background:rgba(99,102,241,.15);border:1px solid rgba(99,102,241,.3);color:#a5b4fc;border-radius:20px;padding:3px 12px;margin:4px 6px 4px 0;cursor:pointer;font-size:.85rem;user-select:none}
+.pill:hover{background:rgba(168,85,247,.28)}
+@media(max-width:600px){}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>💬 金融名词大白话</h1><p>订金好还是定金好？复利怎么个香？看不太懂的财经词，用比喻讲给你听</p></div>
+
+<div class="card">
+<label>🔎 选一个想问的词(或直接点词)</label>
+<div id="pills"></div>
+<select id="term" style="margin-top:6px">
+<option value="利率">利率 / 年化收益</option>
+<option value="复利">复利</option>
+<option value="定投">基金定投</option>
+<option value="通胀">通货膨胀</option>
+<option value="杠杆">杠杆</option>
+<option value="定金">定金 vs 订金</option>
+<option value="仓">清仓/加仓/满仓是什么</option>
+<option value="风险">风险与收益的关系</option>
+<option value="tax">个税专项扣除</option>
+</select>
+<div class="param-row" style="margin-top:14px">
+<div><label>🧠 想用哪种讲法</label><select id="style"><option value="来点例子" selected>多来点生活例子</option><option value="简洁点">越简洁越好</option><option value="顺便避坑">带上避坑提醒</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">🔍 给我讲明白</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 大白话解读</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制笔记</button>
+<div class="tip" style="margin-top:12px">💡 本解读用于科普，不构成投资建议。涉及具体产品请以合同与监管说明为准。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const D={
+利率:{one:'钱借出去的“使用费比例”',body:a=>'🎯 一句话：利率就是你把钱借给别人/存进银行，对方为“用你的钱”付给你的价格，或反过来你借钱要付的成本。\n\n🧮 生活例子：存1万一年利率2%，一年后到手约1.02万——那200块就是“利息”。买东西分期，手续费分摊下来其实就是隐藏的年化利率，务必用真实年化去比。\n'+a+'\n\n⚠️ 记住：看“年化”而不是只看数字大小；复利产品收益要算进再投资的部分才是真的“复利”效果。'},
+复利:{one:'“利滚利”，让钱生钱又生钱',body:a=>'🎯 一句话：上一期赚的利息，下一期也加入本金继续赚，像滚雪球越滚越大。\n\n🍡 生活例子：1万块年利10%，不取利息——1年后1.1万，2年后1.21万,第10年约2.6万，第20年约6.7万。到后半段翻得特别快。\n'+a+'\n\n⚠️ 反着看也一样残酷：信用卡/网贷逾期利滚利时，欠款会像雪球越滚越大。借钱先看真实利率。'},
+定投:{one:'每月固定金额买基金，平滑成本',body:a=>'🎯 一句话：不管涨跌，每月固定投一笔，跌时买到更多份额、涨时少买点，长期把“平均买入成本”摊平滑。\n\n🍙 生活例子：像食堂每天固定花20元买米，米贵时买得少、米贱时买得多，攒下来的平均斤价往往比一次囤货更稳。\n'+a+'\n\n⚠️ 定投适合长期+能承受波动的钱;情绪上头“追涨杀跌”才是大多数人亏钱的原因。存下可长期不动的闲钱再定投更好。'},
+通胀:{one:'钱越来越不“值钱”，物价往上走',body:a=>'🎯 一句话：通货膨胀就是同样100块,明年能买到的东西比今年少——购买力缩水。\n\n🥐 生活例子：10年前5块的盒饭现在要15块，中间的差额很多就是通胀“吃掉”的。长期理财跑不赢通胀，钱包等于偷偷缩水。\n'+a+'\n\n⚠️ 合理应对：别只存死期，也配置能保值/增值的资产；但也要区分“物价上涨”和“短期波动”，别被忽悠去乱投。'},
+杠杆:{one:'用别人的钱放大收益(也放大风险)',body:a=>'🎯 一句话：借钱去投资或买房，用小资金撬动大标的——“以小博大”。\n\n🏠 生活例子：首付三成买房=用了“房贷”这个杠杆。房价涨10%,首付能翻约30%(扣利息前)；可若房价跌，跌的部分也是放大算在你首付头上的。\n'+a+'\n\n⚠️ 杠杆是把双刃剑：涨靠它放大，跌也会“雪上加霜”甚至倒贴。闲钱无压力才敢上杠杆，量力而行最安心。'},
+定金:{one:'“定”金有约束，“订”金更灵活',body:a=>'🎯 一句话：法律上“定金”代表合同担保，违约要双倍返还或没收；而“订(意)金”更接近预付款、意向金性质。\n\n📜 生活例子：交“定金”买家电后你不买了，定金一般要不回；商家违约则需双倍退。交“订金”则通俗宽松得多，通常可退。\n'+a+'\n\n⚠️ 付款前看清票据写的是哪个字!大宗/购房更要留书面凭证，写“定金不退”慎签。一字之差，钱袋子天壤之别。'},
+仓:{one:'“仓”=你的持仓。“加/减/清”=买进卖出',body:a=>'🎯 一句话：满仓=钱全投进去了，空仓=手上没货全现金；加仓=越跌越买摊低,清仓=全部卖出离场。\n\n💼 生活例子：像开小卖部：货架堆满叫满仓,清仓大甩卖全清掉叫清仓——只不过基金经理的“货”是股票债券。\n'+a+'\n\n⚠️ “补仓降成本”没毛病，但别借钱补仓扛不住波动;大涨后“清仓离场”也要想清楚是否还能再入场。'},
+风险:{one:'风险和收益通常成正比的“跷跷板”',body:a=>'🎯 一句话：想要高收益,就要能承受相应的高波动与亏钱可能——世上少有又稳又高收益的好事。\n\n🎢 生活例子：存银行像坐慢悠悠的小火车稳当但慢；买基金/股票像坐过山车又high又刺激,心脏受不了就别硬坐。\n'+a+'\n\n⚠️ 最好的做法是“按能接受回撤的大小”决定投多少:以睡得着觉为准，别拿生活费去博高息。'},
+tax:{one:'国家给你的“减税额度”清单',body:a=>'🎯 一句话：个税专项附加扣除=你在子女教育、房子房贷/房租、赡养老人等项目上的支出，可以用来冲抵一部分计税收入，帮你少交点税。\n\n📝 生活例子：在“个人所得税”App里填报房贷/房租、赡养60岁以上老人等,符合条件的能减税——是每年都在领的“小省一笔”。\n'+a+'\n\n⚠️ 每年12月可在App确认次年扣除项；别嫌麻烦漏填，那是实实在在少缴的税。'}
+};
+// build pills from keys
+let ph='';
+Object.keys(D).forEach((k,i)=>{ph+='<span class="pill" data-t="'+k+'">'+k+'</span>';});
+document.getElementById('pills').innerHTML=ph;
+document.querySelectorAll('#pills .pill').forEach(p=>{p.onclick=()=>{document.getElementById('term').value=p.dataset.t;gen();};});
+function gen(){
+if(!Paywall.countUse('金融名词大白话'))return;
+const t=document.getElementById('term').value,s=document.getElementById('style').value;
+const d=D[t];let a=s==='来点例子'?'\n\n💡 再来个例子：'+(['买房时中介列的各种“杂费”，其实多问几句大多能谈，别只看首付','同是“2元/斤”的菜，一次买够整个冬天和隔天买其实买法不同——定投同理','飞机票提前多少天买便宜、当天贵,跟市场供需一个道理'][Math.floor(Math.random()*3)]):s==='简洁点'?'\n\n✅ 想更快记住,就抓这三个关键词：概念/举例/别踩的坑。':'\n\n🧭 避坑版小结：先问清代价→看清是“定”还是“订”→量力不借钱→落字留凭证。';
+let out='【金融大白话 · '+t+'】\n\n'+d.one+'\n\n'+d.body(a)+'\n\n【今天又搞懂一个理财小知识 👏】';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+}
+document.getElementById('genBtn').addEventListener('click',gen);
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 解读已复制！'))}
+</script>
+</body>
+</html>

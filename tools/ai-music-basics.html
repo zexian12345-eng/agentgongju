@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI零基础乐理教练 | AgentGongju.com</title>
+<meta name="description" content="想学唱歌弹琴却不识谱？AI用大白话讲懂简谱、五线谱、节拍、音阶与和弦，配练耳小练习。">
+<meta name="keywords" content="乐理,简谱,五线谱,音阶,和弦,节拍,零基础学音乐,识谱">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{color:#94a3b8;font-size:.85rem;margin-bottom:12px}
+.pill{display:inline-block;background:rgba(99,102,241,.15);border:1px solid rgba(99,102,241,.3);color:#a5b4fc;border-radius:20px;padding:3px 12px;margin:4px 4px 0 0;cursor:pointer;font-size:.82rem;user-select:none}
+.pill:hover{background:rgba(168,85,247,.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🎵 AI 零基础乐理教练</h1><p>不背书也能懂了！点一个想学的话题，用大白话 + 顺口溜讲懂</p></div>
+
+<div class="card">
+<label>📄 想学的话题</label>
+<div id="topicWrap">
+<div class="pill" data-t="简谱">① 简谱怎么读</div>
+<div class="pill" data-t="五线谱">② 五线谱入门</div>
+<div class="pill" data-t="节拍">③ 节拍与节奏</div>
+<div class="pill" data-t="音阶">④ 音阶与大调</div>
+<div class="pill" data-t="和弦">⑤ 和弦与伴奏</div>
+<div class="pill" data-t="唱名">⑥ 唱名与音准</div>
+</div>
+<div class="param-row" style="margin-top:14px">
+<div><label>👤 现在的水平</label><select id="lv"><option value="纯小白" selected>纯小白(完全没基础)</option><option value="哼得来">能哼歌但不懂术语</option><option value="会一点">会看简谱想进阶</option></select></div>
+<div><label>🎯 主要目的是</label><select id="goal"><option value="唱歌" selected>唱歌音准更好</option><option value="乐器">自学乐器(吉他/钢琴)</option><option value="搞懂">纯好奇想搞懂</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">🎼 给我讲明白</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 乐理大白话课堂</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制笔记</button>
+<div class="tip" style="margin-top:12px">💡 乐理是工具不是目的，先“够用”再“深入”。搭配手机节拍器与钢琴App(如完美钢琴)边看边听效果更好。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+let topic='简谱';
+document.querySelectorAll('.pill').forEach(p=>{p.onclick=()=>{topic=p.dataset.t;document.querySelectorAll('.pill').forEach(x=>x.style.borderColor='rgba(99,102,241,.3)');p.style.borderColor='#a855f7';}});
+const lessons={
+简谱:{t:'简谱其实就七个阿拉伯数字',body:a=>'🎵 核心：1 2 3 4 5 6 7 对应 do re mi fa sol la si——数字在哪，音就在哪。'+a+"\n\n1️⃣ 数字 = 唱名。2️⃣ 上加一点『·』表示高八度，下加一点是低八度。\n3️⃣ 数字右上角小圆点叫『附点』延长一半，下面加横线叫减时线表示『更快更短』。\n4️⃣ 开头 1=C 或 1=G 表示这台歌的『调』；4/4 表示每小节4拍、以四分音符为一拍。\n\n🍚 顺口溜：一do二re三mi四fa，五sol六la七si它；加点高低要分清，横线长短管快慢。"},
+五线谱:{t:'五根线记下了音乐的“心电图”',body:a=>'🎵 想像五根线与四个间是五层楼：写越高音越高，像爬山。'+a+"\n\n1️⃣ 五线谱像电梯楼层表，从下往上数1-5线、1-4间，越高音越高。\n2️⃣ 开头的高音谱号(像&)右手/旋律常用，低音谱号(像蝌蚪)左手/低音常用。\n3️⃣ 线间上写的是 do→re→mi 或要根据调号变化哦——这就是为什么要看调号。\n4️⃣ 线下的短横线是『下加一线』，常写中央C，也就是钢琴正中间的 do。\n\n🎹 口诀：五线上面住高音，线上一间一台阶；下加一线中音do，一路往上爬上去。"},
+节拍:{t:'节拍就是音乐里的“拍手点”',body:a=>'🎵 跟着音乐点头、拍手、打节拍就是节奏。'+a+"\n\n1️⃣ 节拍器滴答滴答就是『拍』，4/4 表示每小节有四拍，第一拍通常最强(强-弱-次强-弱)。\n2️⃣ 3/4 拍像圆舞曲：蹦-擦-擦；6/8 拍像小船晃悠，常用于抒情。\n3️⃣ 把音符长短拆开看：全音符4拍、二分音符2拍、四分音符1拍、八分音符半拍。\n4️⃣ 先用手拍节奏再开口唱，是练准绳的最好办法。\n\n🍚 口诀：一小节里拍数明，四四三三记得清；第一拍重往下砸，心里打拍不走神。"},
+音阶:{t:'音阶是歌曲的“原材料货架”',body:a=>'🎵 流行歌九成用的是大调或小调音阶。'+a+"\n\n1️⃣ 自然大调按『全全半全全全半』排列：do re mi fa sol la si do。\n2️⃣ 记住『全半关系』：mi↔fa 是半音(相邻的琴键)，si↔高音do也是半音，其余为全音。\n3️⃣ 把这条关系从不同起点往上挪，就得到 G大调、D大调……所以很多歌标 1=G。\n4️⃣ 听感上大调明亮快乐，小调(la开头 la si do…)偏忧伤。\n\n🎹 口诀：全全半全全全半，放在头上就是do；从哪个音唱全，就是什么调的歌。"},
+和弦:{t:'和弦是好几层“同时响的声音”',body:a=>'🎵 为什么钢琴听感“厚”，就是因为同时按了几个音(和弦)。'+a+"\n\n1️⃣ 把 do mi sol 三个音同时按下，就是 C 和弦(大三和弦)，听感明亮。\n2️⃣ 数字谱吉他谱常见 C Am F G 就是最常用的『万能四大和弦』，能弹无数流行歌。\n3️⃣ 大三和弦=do mi sol(隔一个取一个)，小三和弦把中间音降半音更温柔(如 Am：la do mi)。\n4️⃣ 伴奏逻辑：左手或吉他按和弦，旋律唱在上面，C→Am→F→G 循环就能伴奏很多歌。\n\n🎸 口诀：隔一取一层层搭，三音和弦有个家；C多Gso大调路，Am温柔是伪装。"},
+唱名:{t:'唱名与音准——别怕“五音不全”',body:a=>'🎵 音准基本是练出来的，几乎没人天生准。'+a+"\n\n1️⃣ do re mi fa sol la si 叫『唱名』，1234567 是对应标记；多听多跟唱自然顺。\n2️⃣ 想练音准：放钢琴/笛子每按一个音跟着哼，先哼单个音，再哼两音之间(音程)。\n3️⃣ 唱不上去别硬撑——先换合适的调(降调)，勇敢用假声/轻声。\n4️⃣ 模仿你最喜欢的歌手，逐句跟唱并录音对比，进步最快。\n\n🎤 口诀：音准不是天生的，多听多哼就会稳；录下自己回放听，一字一句慢慢啃。"},
+};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI零基础乐理教练'))return;
+const lv=document.getElementById('lv').value,goal=document.getElementById('goal').value;
+const L=lessons[topic];const g=goal==='唱歌'?'(唱歌用，重点体会音高与气息)':goal==='乐器'?'(玩乐器用，重点落在按位与和弦)':'(纯兴趣，先建立画面感就好)';
+let extra=lv==='纯小白'?'别怕，就像学认字一样，咱们只学最常用的几样，其他以后再说。':lv==='哼得来'?'你看得懂音乐的感觉，现在是把“感觉”翻译成“名词”。':'你有基础了，这一课帮你把零散知识串成体系。';
+let out='【乐理小课堂 · '+topic+' · '+goal+'】\n\n';
+out+=L.t+'\n\n'+L.body(extra)+'\n\n━━ 结合你的情况 ━━\n· 目标：'+goal+g+'，'+(goal==='唱歌'?'先抓“听+跟”，再学认谱，音准比懂术语更重要。':goal==='乐器'?'先学C调与四大和弦，能弹几首再扩充知识面。':'看懂“为什么”，很多名词其实就是给熟悉的声音起名字。')+'\n· '+extra+'\n\n【每天10分钟，一周就有感觉 🎵】';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 笔记已复制！'))}
+</script>
+</body>
+</html>

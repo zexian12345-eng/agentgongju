@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI二手闲置估价 | AgentGongju.com</title>
+<meta name="description" content="输入闲置物品类别、品牌、新旧程度，AI给出合理出手建议价区间、定价策略与售卖渠道推荐。">
+<meta name="keywords" content="二手估价,闲置,闲鱼,转卖,旧物,断舍离,变现">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{color:#94a3b8;font-size:.85rem;margin-bottom:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>💸 AI 二手闲置估价</h1><p>旧物别乱贱卖，帮你摸清含金量，给个聪明的出手建议价</p></div>
+
+<div class="card">
+<label>📦 闲置物品类别</label>
+<select id="cat">
+<option value="数码" selected>📱 数码3C(手机/相机)</option><option value="家电">📺 家电(电视/小家电)</option><option value="服饰">👗 服饰箱包</option><option value="美妆">💄 美妆护肤</option><option value="家居">🛏 家居/母婴</option><option value="其他">🎲 其他/潮流玩具</option>
+</select>
+<div class="param-row">
+<div><label>🏷 品牌档次</label><select id="brand"><option value="高" selected>高端旗舰/奢侈</option><option value="中">主流中端</option><option value="低">平价/国产品牌</option></select></div>
+<div><label>🆕 新旧程度</label><select id="cond"><option value="充新" selected>充新(几乎未用)</option><option value="95">95新(轻微使用)</option><option value="9">9成新</option><option value="8">8成新(可见使用痕迹)</option><option value="旧">老旧/有磕碰故障</option></select></div>
+</div>
+<label>💴 当年购入价格(元)</label>
+<input type="number" id="price" placeholder="例如：5999" value="3000">
+<button class="btn-gen" id="genBtn">🔍 AI 估价</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 估价结果与出手建议</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制估价单</button>
+<div class="tip" style="margin-top:12px">💡 估价为通用模型参考，实际售价受行情、成色细节、是否有票据与配件影响，上下浮动约15%。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI二手闲置估价'))return;
+const cat=document.getElementById('cat').value,brand=document.getElementById('brand').value,cond=document.getElementById('cond').value;
+let price=parseFloat(document.getElementById('price').value);if(!(price>0)){alert('请先填写购入价格');return;}
+const catKeep={数码:0.45,家电:0.3,服饰:0.32,美妆:0.35,家居:0.35,其他:0.4}[cat];
+const condAdj={充新:0.95,'95':0.82,9:0.68,8:0.5,旧:0.3}[cond];
+const brandAdj={高:1.25,中:1.0,低:0.8}[brand];
+const rate=Math.min(0.8,catKeep*condAdj*brandAdj+0.05);
+let base=Math.round(price*rate);
+// 数码按保值 手机iPhone>安卓
+if(cat==='数码')base=Math.round(base*1.15);
+const p1=Math.round(base*0.82),p2=Math.round(base*1.15);
+let out='【AI 二手估价单】\n\n';
+out+='📦 '+cat+'｜档次：'+brand+'｜成色：'+cond+'｜原价约 ¥'+price+'\n';
+out+='\n💡 综合残留价值率：约 '+(rate*100).toFixed(0)+'%\n';
+out+='━━ 建议出手价区间 ━━\n· 心理底价(速出)：￥'+p1+'\n· 建议挂价(主力)：￥'+base+'\n· 挂高试水价(可等)：￥'+p2+'\n';
+out+='\n━━ 定价策略 ━━\n· 建议挂牌价略高于心理价'+base+'元成交，给买家留砍价空间。\n· 若着急回血，直接以'+p1+'元左右的价格并包邮，通常几天内能成交。\n';
+const tipArray={
+数码:['数码最保值的是苹果及热门续航机型，上架记得保留原盒、充电器发票更易加分','手机建议先把个人数据彻底清除并截图录屏以做凭证'],
+家电:['家电二手运费高，建议本地自提优先，跨城买家谨慎','小家电清洗消毒后展示细节图更好卖'],
+服饰:['奢侈箱包需附购买凭证与防尘袋、肩带等配件以证真伪','穿搭类拍上身图比平铺图更易出手'],
+美妆:['美妆注意包装完整与保质期，临期物品请如实标注','中样小样可打包“福袋”快速清'],
+家居:['母婴用品明确使用状态与消毒情况，安全可信是成交关键','成套售卖往往比单品更划算'],
+其他:['限定款/绝版潮玩可能高于原价，先去平台查成交记录','冷门物品可联同周边打包组合抬升客单']}[cat];
+out+='\n━━ 出手TIP ━━\n· '+tipArray.split('，')[0]+'；\n· '+tipArray.split('，')[1]+(brand==='高'&&cond==='充新'?('。\n· ⚠ 高端品高成色建议先验证行情再定价，勿被“秒拍验货拍下不买”套路。'):'。')+'\n';
+out+='\n━━ 渠道建议 ━━\n· 手机/小件：闲鱼、转转（可加验机）\n· 品牌数码：官方回收/爱回收做价格对比垫底\n· 服饰箱包美妆：闲鱼+红布林/只二\n· 大宗家电：闲鱼同城+本地二手回收比价\n\n【卖个好价，快速回血 🎉】';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 估价单已复制！'))}
+</script>
+</body>
+</html>

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI自驾游路书策划 | AgentGongju.com</title>
+<meta name="description" content="选择出行的天数、主题与自驾经验，AI帮你排出一份每日行程路书,包括路线、节奏、加油充电与备用停车点。">
+<meta name="keywords" content="自驾游,自驾,路书,自驾路线,旅行计划,公路旅行,国内自驾">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{color:#94a3b8;font-size:.85rem;margin-bottom:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🚙 AI 自驾路书策划</h1><p>把“想去哪儿”变成一份张弛有度的日行驶路书，一路不赶不急</p></div>
+
+<div class="card">
+<label>🧭 这次出行的方向/大致区域</label>
+<select id="reg">
+<option value="沿海" selected>沿海线(山海/海鲜)</option><option value="西北">西北大环线(草原/戈壁)</option><option value="西南">西南/川西(藏区/雪山)</option><option value="江南">江南水乡古镇</option><option value="自己">(我已有大目标地)</option></select>
+<div class="param-row">
+<div><label>📅 计划天数</label><select id="days"><option value="2">周末2-3天短途</option><option value="5" selected>5-7天中长途</option><option value="10">10天以上环线</option></select></div>
+<div><label>🚗 每天想开多久</label><select id="pace"><option value="轻松">轻松(≤3-4h)</option><option value="适中" selected>适中(≤5-6h)</option><option value="赶路">赶路型(≥8h)去远方</option></select></div>
+</div>
+<div class="param-row">
+<div><label>🔌 车辆</label><select id="car"><option value="油车" selected>燃油车</option><option value="电车">纯电车(需规划充电)</option><option value="混动">混动/增程</option></select></div>
+<div><label>🐾 随行成员</label><select id="ppl"><option value="成人">都是成人朋友</option><option value="带娃">带娃家庭</option><option value="带老">带老人同行</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">🗺 生成我的路书框架</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 路书框架 + 自驾提醒</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制路书</button>
+<div class="tip" style="margin-top:12px">💡 本工具给的是节奏框架，实际请结合高德/百度地图核实封路、景区预约与住宿是否可订。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI自驾游路书策划'))return;
+const reg=document.getElementById('reg').value,days=document.getElementById('days').value,pace=document.getElementById('pace').value,car=document.getElementById('car').value,ppl=document.getElementById('ppl').value;
+const n=days==='2'?2:days==='5'?6:11;
+const hour=pace==='轻松'?4:pace==='适中'?6:8;
+let out='【自驾路书框架 · '+reg+' · '+n+'天 · 每日约'+hour+'h车程】\n\n';
+out+=(reg==='沿海'?'沿海线建议：“城市人文—山海公路慢游—海岛渔村—返程”，南段(福建/广东)物价亲民、北段(山东/辽宁)海鲜出众。\n':reg==='西北'?'西北环线建议走“青海湖—茶卡—翡翠湖—敦煌”经典串：住镇不住高速，景点多在沿途不钻回头路。\n':reg==='西南'?'川西/藏区务必查好边防证、高反阶梯爬升与季节窗口(避开雨季/冬季封山)，低海拔镇留宿缓冲。\n':reg==='江南'?'江南用“古镇集群”串：西塘/乌镇可选一，配周庄或南浔错峰；停车坞多在镇外接驳。\n':'自定义路线请把每日落脚“宿在镇上不赶夜路”当铁律。\n');
+out+='\n━━ 每日节奏模板(套到你的天数) ━━\n· 早8-9点出发为主，留出午间“风景停车+休息20分钟”\n· 每开约2h进一次服务区休息15分钟再上路\n· 天黑前1h停进当天住宿点，晚间只在镇内步行活动\n'+(pace==='赶路'?'· 赶路日安排最多2天连开,达成后切轻松节奏缓冲\n':'· 每天最多安排1段山路/回头路为佳，其余走平坦主干道\n');
+out+='\n━━ '+n+'天建议骨架(可按自己重点裁剪) ━━\n';
+for(let i=1;i<=n;i++){
+  let row='D'+i+' · ';
+  if(i===1){
+    row += (reg==='西北'?'出发+沿途补给，首日宿低海拔镇适应节奏':reg==='沿海'?'前往海岸首城安顿，傍晚海边散步看落日':reg==='西南'?'驱车进谷地宿低海拔镇，先做高反舒缓准备':reg==='江南'?'前往水乡一带，午后入古镇安顿遛弯':'出发抵达预热，不安排太满行程');
+  } else if(i===n){
+    row += '返程日：早点出发避开高峰，途中停1次，加个顺路美食点收尾';
+  } else {
+    row += '白天行'+(i%2?'景':'车')+'· '+(hour===8?('长途赶路约'+hour+'h，打卡2处海拔亮点'):('沿途'+ (hour+1) +'h景色段，只留1个大点深度玩')) + '，傍晚入宿镇内觅食';
+  }
+  out+=row+'\n';
+}
+out+='\n━━ 车辆 & 伙伴专项提醒 ━━\n';
+out+=(car==='电车'?'· 🔌 电车纯电长途务必每段先查充电地图，高速服务区易排队，节假日多备缓冲站，冬季续航打折要按6-7折计算。\n':car==='混动'?'· 混动按油车规划但尽量在纯电续航内做高架路段更省。\n':'· 出发前查胎压/机油/玻璃水/备胎，异地救援电话存好。\n');
+out+=(ppl==='带娃'?'· 👶 带娃每1.5-2h必须停靠放电，备零食玩具保温壶,酒店优先有儿童区的。\n':'带老'?'· 👴 带老人每2h休息,午间安排躺平缓冲,路线避开坑洼山路,景点配轮椅/观光车更省力。\n':'· 分工明确:司机专注,副驾看导航递水,换手前确保休息好。\n');
+out+=(reg==='西北'||reg==='西南')?'· ⛰ 高原/山路地区出发前备氧袋、确定最近乡镇医疗点；拐弯会车宁停勿抢。\n':'';
+out+='\n━━ 出发前checklist ━━\n· 酒店/景区先电话确认停靠与预约 → · 车载充气泵+应急电源\n· 下载离线地图(山区信号弱) → · 沿途加油站/充电信息已存\n· 把车牌/路线/归期告知家人 → · 临走前一天洗车检查灯光\n\n【山路虽远,风景在眼前——慢慢开就好 🛣】';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 路书已复制！'))}
+</script>
+</body>
+</html>

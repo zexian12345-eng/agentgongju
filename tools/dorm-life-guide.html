@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>大学新生宿舍开学指南 | AgentGongju.com</title>
+<meta name="description" content="按住宿类型、地区与预算选用品，AI为你生成新生宿舍采购清单、报到流程与室友相处生存指南。">
+<meta name="keywords" content="大学新生,开学,宿舍,宿舍用品,报到,入学清单,新生指南">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{color:#94a3b8;font-size:.85rem;margin-bottom:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🎒 大学新生宿舍指南</h1><p>开学不焦虑，把“该带什么、怎么报到、如何和室友处好”一次讲明白</p></div>
+
+<div class="card">
+<label>🏠 高中是在</label>
+<select id="from"><option value="本地" selected>就在本市读</option><option value="省内">省内外市</option><option value="跨省">跨省就读(需长途)</option></select>
+<label>🛌 预计宿舍条件(报到前的常见配置)</label>
+<select id="room"><option value="上床下桌" selected>上床下桌(较新)</option><option value="上下铺">上下铺/六人间</option><option value="未知">还不清楚(先按通用带)</option></select>
+<div class="param-row">
+<div><label>☀️ 学校所在气候</label><select id="cli"><option value="南方" selected>南方(湿热/多雨)</option><option value="北方">北方(干燥/冬季冷)</option><option value="高原">川渝云贵/高原地带</option></select></div>
+<div><label>🎯 最关心</label><select id="care"><option value="带什么" selected>该带的清单</option><option value="相处">室友相处之道</option><option value="报到">报到流程全清楚</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">🎒 生成我的新生指南</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 你的开学清单 & 指南</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制清单</button>
+<div class="tip" style="margin-top:12px">💡 大件(床垫、被褥)建议按学校通知或到校再买/网购寄到，而非硬塞行李箱；先问清是否统一订购。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('大学新生宿舍开学指南'))return;
+const from=document.getElementById('from').value,room=document.getElementById('room').value,cli=document.getElementById('cli').value,care=document.getElementById('care').value;
+let out='【大学新生 · 宿舍开学指南 · '+({本地:'本市就读',省内:'省内外市',跨省:'跨省就读'}[from])+'】\n\n';
+out+='━━ 一、证件与材料(最金贵，随身!) ━━\n· 录取通知书+身份证+报到要求复印件若干\n· 户口迁移单(如需)、证件照(蓝底白底各一版)\n· 团员/组织关系、银行卡、足够现金少量\n'+(from==='跨省'?'· 跨省建议把证件放随身包，途中别托运。\n':'');
+out+='\n━━ 二、必带生活清单 ━━\n· 洗漱：毛巾牙刷、洗发沐浴露、拖鞋、剃须/护肤\n· 床上：三件套(可到校买)、薄厚被子各一(按气候)\n· 穿着：换季衣物各几套 + 睡衣 + 常穿鞋+拖鞋\n· 学习：电脑/平板(如需要)、U盘、插线板(带线长)、小台灯\n· 杂物：衣架若干、收纳盒、卫生纸、杯子碗筷、锁\n';
+out+=(cli==='北方'?'· ❄ 北方：厚外套/棉服可开学后再加购不迟，但秋冬保暖被与床垫护腰要到位，宿舍干燥备润唇膏加湿。\n':cli==='南方'?'· 🌧 南方：换洗衣物务必多备，除湿袋/挂篮与抽屉干燥剂很关键，湿季备一两双不怕湿的鞋。\n':cli==='高原'?'· ⛰ 云贵川渝：天气多变早晚凉，备薄款羽绒+防水外套，湿度大防潮防霉不可少。\n':'');
+out+=(room==='上床下桌'?'· 🛏 上床下桌别买太高的收纳柜占桌面，用悬挂篮与床侧收纳即可。\n':room==='上下铺'?'· 🛏 上下铺遮光帘+耳塞是“作息不同”人群的保命神器，建议提前沟通谁睡上铺。\n':'· 🛏 不确定铺位先少买大件，被褥用学校/寄送最稳妥。\n');
+out+='\n━━ 三、报到当天流程(心中有数) ━━\n1️⃣ 到校→按院系迎新点签到、领宿舍钥匙与一卡通\n2️⃣ 办理住宿登记→进宿舍认床位、装柜贴名\n3️⃣ 依次办：手机号/校园网/水卡电卡/体检与军训安排\n4️⃣ 和室友互留联系方式，一起吃了顿迎新饭破冰\n5️⃣ 傍晚开个“宿舍会”：作息、卫生轮值、用电安全约定\n';
+if(care==='相处')out+='\n━━ 四、室友相处守则(重点来了) ━━\n· 头三件大事先谈清：作息时间、卫生轮值、能否外放/煲电话\n· 自己的“边界”白纸黑字别憋着：零食我不吃你的、用我东西提前问\n· 睡前刷剧带耳机；进屋先敲门；垃圾顺手多扔一两次不吃亏\n· 意见不合时用“我句式”表达，别让小事在心里发酵成宿舍冷暴力\n· 记住咱是来交朋友不是来当保姆/圣母，真心+分寸就够\n';
+else if(care==='带什么')out+='\n━━ 四、容易忘记但很实用 ━━\n· 分体插线板(USB口)、耳塞眼罩、床边挂钩、门后置物袋\n· 消毒湿巾、创可贴常用药、指甲刀针线、雨伞结实些\n';
+else out+='\n━━ 四、报到前三天必做 ━━\n· 确认报到时间与需带材料清单(很多都有线上预报到)\n· 提前订好车票/机票，抵达当晚住宿确认好\n· 把学校定位、报到点与辅导员电话存手机，迷路不发慌\n';
+out+='\n━━ 五、给元气满满的你 ━━\n· 军训防晒多补水，备好鞋垫更耐走\n· 刚开学最易破费，购物先列清单不冲动\n· 多参加一次社团招新、一次朋友约饭，比窝在被窝里强\n\n【新生活开幕啦，冲吧少年 🎉】';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 指南已复制！'))}
+</script>
+</body>
+</html>

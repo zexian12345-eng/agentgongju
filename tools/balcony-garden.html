@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI阳台菜园规划 | AgentGongju.com</title>
+<meta name="description" content="选阳台朝向、采光与种植经验，AI帮你规划阳台种什么菜、怎么摆放光照、防治病虫害与收获周期。">
+<meta name="keywords" content="阳台种菜,家庭菜园,种菜,盆栽,小番茄,青菜,阳台农业,都市农夫">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{color:#94a3b8;font-size:.85rem;margin-bottom:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🥬 AI 阳台菜园规划</h1><p>小阳台也能当都市农夫——按朝向帮你挑菜、摆位、管护到收获</p></div>
+
+<div class="card">
+<label>☀️ 阳台朝向/采光</label>
+<select id="sun">
+<option value="南" selected>南向，全日照(≥6小时)</option><option value="东">东向，半日照(早晨~4小时)</option><option value="西">西向，下午强光西晒</option><option value="北">北向，散射光少直射</option>
+<option value="封闭">封闭式阳台(可控温湿)</option></select>
+<div class="param-row">
+<div><label>🪴 种植经验</label><select id="exp"><option value="新手" selected>纯新手(第一次)</option><option value="有些">种过一些有心得</option><option value="老手">老手想挑战进阶</option></select></div>
+<div><label>🎯 主要想收获</label><select id="want"><option value="叶菜" selected>青菜/叶菜快速吃</option><option value="果菜">番茄/辣椒等果菜</option><option value="香草">香草/薄荷调味</option><option value="好看">好看易养出片</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">🌱 规划我的阳台菜园</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 阳台种菜方案</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制方案</button>
+<div class="tip" style="margin-top:12px">💡 建议第一次先选1-2样“容易成功”的菜(如生菜、薄荷、小葱)建立信心，再逐步扩大菜园。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI阳台菜园规划'))return;
+const sun=document.getElementById('sun').value,exp=document.getElementById('exp').value,want=document.getElementById('want').value;
+const pick={南:{叶菜:['生菜','油麦菜','小白菜'],果菜:['樱桃番茄','辣椒','草莓'],香草:['薄荷','罗勒','迷迭香'],好看:['多肉拼盆','向日葵','四季海棠']},东:{叶菜:['生菜','小葱','韭菜'],果菜:['辣椒','耐阴番茄'],香草:['薄荷','香菜','罗勒'],好看:['吊兰','绿萝','薄荷盆栽']},西:{叶菜:['木耳菜','苋菜'],果菜:['番茄','苦瓜','茄子'],香草:['紫苏','罗勒'],好看:['太阳花','长春花','三角梅']},北:{叶菜:['鸡毛菜','芹菜','韭菜'],果菜:['(果菜难，宜选观叶/香草)'],香草:['薄荷','鱼腥草'],好看:['龟背竹','蕨类','绿萝']},封闭:{叶菜:['全年可种各类叶菜'],果菜:['番茄','辣椒','黄瓜'],香草:['各类香草皆宜'],好看:['多肉','番茄墙']}}[sun][want];
+let out='【AI阳台菜园规划 · '+sun+'向 · 目标:'+want+'】\n\n';
+out+='━━ ① 推荐品种(新手先从易成功的开始) ━━\n· 主力：'+(pick[0]||'——')+' ｜ 搭配：'+(pick[1]||'光照不足地区建议从香草起步')+'\n'+(sun==='北'?'· ⚠ 北向光照弱，果菜一般难坐果，建议专注叶菜与香草，配合补光灯可扩展。\n':'· 想要更有成就感可再添『'+(pick[2]||'小葱')+'』，几乎不占地又耐造。\n');
+out+='\n━━ ② 摆放布局(采光最优先) ━━\n';
+out+=sun==='南'?'· 靠外c位给喜光果菜，靠墙/内层放耐阴香草，中高架层叠增加立体亩产\n':sun==='东'?'· 晨光柔和是叶菜天堂，果菜尽量贴阳台最外缘抢光\n':sun==='西'?'· 下午西晒高温，瓜茄类最受益；但正午后需遮阴防灼叶，叶菜放阴影处\n':sun==='北'?'· 少直射，多选耐阴观叶；可用反光板/镜面或补光灯辅助\n':'· 封闭阳台保暖保湿好，注意通风防徒长，夏季别暴晒成“闷罐”\n';
+out+='· 经验法则：最高的靠后/靠墙，采光足的都留给需要全日照的果菜。\n';
+out+='\n━━ ③ 新手最容易踩的坑 ━━\n· 浇水太勤烂根 → 等土表微干2-3cm再浇，手指插土试湿度\n· 徒长变细 → 刚发芽需及时见光；错过就容易全军覆没\n· 结果掉花 → 番茄等常因光照不足或缺硼，磷钾肥跟上\n';
+if(exp==='新手')out+='· 别一次种太多种，先练2-3盆找感觉\n';
+out+='\n━━ ④ 日常管护节奏 ━━\n· 浇水：春秋早晚一次，夏季晴天可早一次；见干见湿\n· 施肥：薄肥勤施(叶片菜看氮、果菜看磷钾)，每1-2周一次稀液肥\n· 转盆：每3-5天转动花盆让四面均匀受光不歪脖\n';
+out+='\n━━ ⑤ 防虫三板斧(阳台党不走药) ━━\n· 黄板粘蚜虫飞虱、物理隔离；\n· 叶背常检查，见虫用手/湿布清掉；\n· 简易“肥皂水”喷施对付蚜虫——先在小范围试用。\n';
+out+='\n━━ 收获周期参考 ━━\n· 快速型：薄荷/生菜/小葱 约25-40天可吃\n· 中级：樱桃番茄 约70-90天\n· 耐心型：看图照样乐趣无穷，周末收获幸福感翻倍。\n\n【采点自己种的菜，心里美滋滋 🥗】';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 方案已复制！'))}
+</script>
+</body>
+</html>
