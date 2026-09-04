@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI场景联想记单词法 | AgentGongju.com</title>
+<meta name="description" content="死记硬背记不住？输入单词，AI用画面场景+小故事帮你生成形象记忆联想，配谐音梗、生活场景与例句，让单词过目不忘。英语学习者的高效记忆助手。">
+<meta name="keywords" content="背单词,英语单词记忆,张弛法联想,词根记忆,形象记忆,英语学习工具">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+input[type=text],textarea,select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s;margin-top:6px}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:1rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.output-box{font-size:.9rem}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🧠 AI场景联想记单词法</h1><p>背单词不靠死磕，靠画面和小故事</p></div>
+
+<div class="card">
+<div><label>🔤 要记的单词 / 短语</label>
+<input type="text" id="word" placeholder="例如：ambulance / accomplish / abandon"></div>
+<div class="param-grid">
+<div><label>👤 联想人群视角</label>
+<select id="view"><option selected>学生党</option><option>打工上班族</option><option>美食吃货</option><option>恋爱脑</option><option>游戏玩家</option><option>旅行者</option></select></div>
+<div><label>🎨 记忆风格</label>
+<select id="style"><option selected>谐音梗</option><option>画面故事</option><option>词根拆解</option><option>生活场景</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">✨ 生成记忆联想</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🧠 你的专属记忆包</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制记忆卡</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+// 内置小词库演示
+const BANK={
+'ambulance':{zh:'救护车',sound:'俺不能死',story:'俺不能死！于是叫来救护车救命——谐音+画面双重锁定。'},
+'accomplish':{zh:'完成、实现',sound:'俺渴望完成',story:'目标还没完成，都怪俺渴望刷手机——先放弃拖延再谈完成。'},
+'abandon':{zh:'放弃、抛弃',root:'a(去)+bandon=band(绑)→解开捆绑=放弃',story:'考研词汇第一名，反复背到想abandon，但请坚持到最后一个单词。'},
+'pest':{zh:'害虫',sound:'拍死它',story:'看到害虫第一反应就是“拍死它”！'},
+'groom':{zh:'新郎 / 梳理',sound:'（谐音）哥入膜？No，联想：新郎今天要好好“梳理”发型出场。',story:'婚礼上，新郎新娘都要好好groom（打理）自己。'},
+'gloom':{zh:'忧郁、阴郁',sound:'咕噜噜~像心里闷着一团',story:'天灰蒙蒙(gl-oo-m)，心情也跟着阴郁起来。'},
+'scene':{zh:'场景',sound:'cene像“seen看”，所以scene是“看得见的场景”',story:'路过事发现场(s-cene)要停下来看(seen)一眼'},
+'labor':{zh:'劳动、劳工',root:'lab(实验室)+or→在实验室里的劳作',story:'labor和lab同源：泡实验室=苦力劳动(dān)咯。'},
+'bloom':{zh:'开花、绽放',sound:'不噜慕？不，联想b+loom(织机)》把花“织”出来',story:'春天一来，满树的花都bloom开来，蜜蜂嗡嗡嗡。'},
+'miserable':{zh:'悲惨的',root:'miser(守财奴)+able→守财奴守着钱却过得悲惨',story:'守财奴钱罐装满却舍不得花，日子过得真miserable。'}
+};
+function pick(a){return a[Math.floor(Math.random()*a.length)];}
+const EYE={
+'学生党':['在想“今晚还有多少张卷子”的场景里','在图书馆刷题刷到眼皮打架时','赶早八闹钟响了第三次的早晨','考完试对答案战战兢兢的时刻'],
+'打工上班族':['在早高峰地铁里被挤到怀疑人生的瞬间','赶项目的深夜工位上','等着老板回复消息的空档','月底看工资条的那一刻'],
+'美食吃货':['刚掀开螺蛳粉盖子的幸福时刻','跟同事纠结中午吃什么时','看到深夜放毒朋友圈咽口水的瞬间','抢到最后一份限量甜品的心情'],
+'恋爱脑':['偷瞄喜欢的人被发现的慌张','暗恋对象路过时的小鹿乱撞','看到前任官宣朋友圈的时刻','纪念日挑礼物选择困难的时候'],
+'游戏玩家':['排位连跪还想再开最后一把的时候','开盲盒抽到心头好的瞬间','组队语音里队友激情开麦的场面','通关后长舒一口气的放松'],
+'旅行者':['落地新城市拖着行李箱探路时','第一次看海的傍晚','在异国小店点餐靠手语比划时','在景点被人群裹挟拍照的现场']
+};
+const STYLE_TIP={
+'谐音梗':'用读音最接近的中文/画面去“记住它的发音”，再绑定中文义',
+'画面故事':'把单词丢进一个有起承转合的小漫画场景里',
+'词根拆解':'把前缀词根词缀拆开，理解构词逻辑，举一反三记一批',
+'生活场景':'把单词焊进你最熟悉的生活片段里，触发即回想'
+};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI场景联想记单词法 | AgentGongju.com'))return;
+const word=document.getElementById('word').value.trim().toLowerCase();
+if(!word){alert('请输入要记的单词');return;}
+const view=document.getElementById('view').value;
+const styl=document.getElementById('style').value;
+const eye=pick(EYE[view]);
+let r='【'+word+' · 记忆联想卡】\n\n';
+if(BANK[word]){
+  const b=BANK[word];
+  r+='📖 中文义：'+b.zh+'\n';
+  if(b.sound)r+='🗣 谐音联：'+b.sound+'\n';
+  if(b.root)r+='🧩 词根拆：(源自内置示例) '+b.root+'\n';
+  if(b.story)r+='🎬 图像联想：'+b.story+'\n';
+  r+='\n—— 强化代入 ——\n现在把上面信息装进：'+(view.indexOf('恋爱')>-1?'今天他又想约你逛街':'今天你要用这个词去描述')+'——先默记住中文意，再脑补这就是发生在你身上的画面，睡前一分钟过一遍就能进长时记忆。\n';
+  r+='\n（注意：此为演示词库示例。复杂生僻词建议换个权威词典核对释义）';
+  document.getElementById('outputBox').innerText=r;
+  document.getElementById('resultArea').classList.add('active');
+  return;
+}
+// 非内置：按风格给通用助记模板
+const template={
+'谐音梗':function(){
+  const seg=word.slice(0,3);
+  return '为「'+word+'」找一句能撬动发音的记忆中文：把开头'+seg.toUpperCase()+'处理成“'+seg+'-类”的语气或人名近音字，再把它写成一个带画面的顺口溜，想象在'+eye+'时你正好要用这个词说出口。';
+},
+'画面故事':function(){return '想象'+eye+'的画面里，主角必须说出这个词(“'+word+'”即其中文义)再行动——把它编排进一个夸张到离谱却很好笑的小短剧里，越荒谬越难忘。';},
+'词根拆解':function(){return '建议把'+word+'拆成 前缀-词根-后缀 去查（如 pre-, con-, -tion 等），并联想同根词记一串，本工具对未收词的拆根请用权威词源词典二次确认：'+word;},
+'生活场景':function(){return '把'+word+'（中文义请自己查准）硬贴进你最常发生的场景：想象在'+eye+'时反复默念这个发音三遍，让它和那个画面绑死。';}
+};
+r+=template[styl](word)+'\n\n💡 万能三步：\n① 先标中文义（背错义=白背）\n② 找1个画面/谐音钩子\n③ 睡前+醒来各复习1次\n\n本工具对未收录词条提供结构化思路框架——教学动作稳定，词义请务必以词典为准。';
+document.getElementById('outputBox').innerText=r;
+document.getElementById('resultArea').classList.add('active');
+});
+let upper=function(){};
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 记忆卡已复制！'))}
+</script>
+</body>
+</html>

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI场景穿搭灵感搭配 | AgentGongju.com</title>
+<meta name="description" content="面试穿什么、约会怎么搭、年会走什么风格？输入场合与你的风格，AI给出一整套色彩方案、核心单品和不出错公式，附急救替换建议。衣柜里有它就稳。">
+<meta name="keywords" content="穿搭搭配,场景穿搭,面试穿搭,约会穿搭,年会穿搭,穿搭公式">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+input[type=text],select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input[type=text]:focus,select:focus{border-color:#6366f1}
+.param-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s;margin-top:6px}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.95;white-space:pre-wrap;font-size:0.95rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.sdot{display:inline-block;width:14px;height:14px;border-radius:4px;margin-right:6px;vertical-align:middle}
+@media(max-width:600px){.output-box{font-size:.88rem}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>👔 AI场景穿搭灵感搭配</h1><p>明天穿什么？交给它三秒出公式</p></div>
+
+<div class="card">
+<div class="param-grid">
+<div><label>📍 场合</label>
+<select id="occ"><option selected>求职面试</option><option>第一次约会</option><option>公司年会</option><option>见长辈家长</option><option>朋友聚会</option><option>入职第一天</option><option>通勤上班</option><option>音乐节/聚会打卡</option></select></div>
+<div><label>🎨 你的偏好风格</label>
+<select id="style"><option selected>简约干练</option><option>温柔气质</option><option>休闲松弛</option><option>复古学院</option><option>飒爽酷感</option><option>青春活力</option></select></div>
+</div>
+<div><label>👤 补充信息（可留空）</label>
+<input type="text" id="note" placeholder="例如：女性/男·气温20度·背两用包更实用 等"></div>
+<button class="btn-gen" id="genBtn">✨ 生成搭配方案</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:10px">👔 你的场景穿搭方案</div>
+<div id="occName" style="color:#a5b4fc;font-size:.85rem;margin-bottom:6px"></div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制方案</button>
+</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const LOOK={
+'求职面试':{rule:'干净、可信、稍正式而不压抑',pal:'白/灰/深蓝/米色，避开大面积高饱和',core:['剪裁利落的白衬衫/浅色针织+直筒或西装裤','低跟乐福或小短靴，鞋面保持干净','带一个通勤包应付材料'], tip:'宁可素也不花哨，配饰只留一样点睛'},
+'第一次约会':{rule:'显精神但不刻意,留一点让人想多看两眼的小心机',pal:'柔和色系+一个点睛亮色单品',core:['简洁有型的上衣+能显腿型的裤子/裙子','干净中性香水,口气清新','衣领挺括不要皱巴巴'], tip:'第一次见面做加法不如做减法,干净+精神最加分'},
+'公司年会':{rule:'在“正式”与“年会氛围”间取平衡',pal:'可大胆一点的黑/亮片/丝绒/低饱和彩色',core:['一件有质感的西装或连衣裙','亮片或丝绒类可作重点款','鞋包选同色系降低出错率'], tip:'若是抽奖主持/表演,可把重点款留给舞台,平时穿适度低调'},
+'见长辈家长':{rule:'得体大方,给人踏实可靠的好印象',pal:'暖调中性色(米/卡其/柔蓝)',core:['平整有质感的衬衫或连衣裙','颜色不过分暴露或花哨','素净妆容配简单的手表/小包'], tip:'第一次见家长衣服干净平整就好,气质=表情+问候'},
+'朋友聚会':{rule:'穿出你自己,舒服又出片',pal:'按你自己风格来,可尝试当季流行色',core:['舒适但有设计感的上衣+牛仔裤/半裙','一件外套可应对温差','舒服的鞋方便走动'], tip:'聚会拍照多,记住正面/侧面有个好线条更重要'},
+'入职第一天':{rule:'比日常正式半格,给同事“靠谱”的初印象',pal:'低调基础色,黑/白/灰/蓝稳妥',core:['熨烫平整的衬衫+裁剪合身的裤子或半身裙','备用一件薄外套应对空调','低调实用的包能装下资料'], tip:'第一天大家记你脸,穿得干净有精神胜过花里胡哨'},
+'通勤上班':{rule:'耐用好搭,走路开会都舒服',pal:'中性深色为主+少量点缀',core:['不易皱的衬衫+挺括西装裤','舒适好走路的平底鞋或低跟鞋','能放电脑的实用托特'], tip:'通勤公式=基础款×3+1件有设计感的单品'},
+'音乐节/聚会打卡':{rule:'放开玩,颜色和层次都可以大胆',pal:'黑白灰底+大面积撞色/亮色点缀',core:['透气面料打造出造型感','一件外套应对晚间降温','亮色包或鞋当记忆点'], tip:'先把舒服度解决,拍照才放得开,帽子/墨镜是出片利器'}
+};
+const STYLE={
+'简约干练':['多用直线条的西装、风衣','搭配上用同色系深浅制造层次','配饰极简:细链条或一枚腕表','少即是多,色不过三'],
+'温柔气质':['善用针织、真丝等柔软材质','浅杏、燕麦、雾粉一类低饱和','裙装比裤装更出温柔氛围','领口与袖长要利落显精神'],
+'休闲松弛':['宽松但不邋遢,肩线到位','牛仔裤/工装裤+基础T恤打底','用叠穿制造随性层次','舒服的鞋,脚上放松人才松弛'],
+'复古学院':['格纹、Polo、针织背心做元素','牛津鞋/乐福鞋+中筒袜','色系走棕、藏青、酒红等复古调','细边眼镜/领巾是点睛之笔'],
+'飒爽酷感':['利落的夹克与直筒裤营造廓形','黑/炭灰为主,配金属小设计','皮靴或厚底鞋加气场','收紧的腰线才不会显臃肿'],
+'青春活力':['亮色或条纹上身很有活力','卫衣+半身裙/直筒裤平衡休闲','运动鞋兜底,舒服又减龄','背个双肩/斜挎包更利落']
+};
+function pick(a){return a[Math.floor(Math.random()*a.length)];}
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI场景穿搭灵感搭配 | AgentGongju.com'))return;
+const occ=document.getElementById('occ').value;
+const styl=document.getElementById('style').value;
+const note=document.getElementById('note').value.trim();
+const L=LOOK[occ];const S=STYLE[styl];
+let r='【'+occ+' × 偏好：'+styl+'】\n\n';
+r+='■ 场合心法\n'+L.rule+'\n\n';
+r+='■ 色彩方案\n'+L.pal+'。配色建议主色占60%、辅30%、点缀10%,避免全身上下超过3个颜色。\n\n';
+r+='■ 可抄的核心单品\n';
+L.core.forEach((c,i)=>{r+=(i+1)+'. '+c+'\n';});
+r+='\n■ 收尾替身(翻衣柜不出错)\n'+L.tip+'\n';
+r+='\n■ 往你喜欢的「'+styl+'」上靠一点\n'+pick(S)+'；\n'+pick(S)+'。\n';
+if(note)r+='\n补充信息「'+note+'」已参考：温度/实用需求请优先,好看要让位给舒服与得体。\n';
+r+='\n万能急救：拿不准就“白衬衫+深色下装+干净鞋”,九成场合不会翻车。';
+document.getElementById('outputBox').innerText=r;
+document.getElementById('occName').innerText='场合：'+occ+'　｜　偏好：'+styl;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 方案已复制！'))}
+</script>
+</body>
+</html>

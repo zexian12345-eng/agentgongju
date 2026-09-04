@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI送礼灵感攻略 | AgentGongju.com</title>
+<meta name="description" content="送妈妈、送对象、送朋友、送老师……不知道该送什么？输入收礼对象与预算，AI给出买得出手还送到心坎里的礼物清单与挑选避坑指南。">
+<meta name="keywords" content="送礼攻略,礼物灵感,礼物推荐,送女朋友,送长辈,送礼预算">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+input[type=text],select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input[type=text]:focus,select:focus{border-color:#6366f1}
+.param-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s;margin-top:6px}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.95;white-space:pre-wrap;font-size:0.95rem;margin-bottom:12px}
+.pill{display:inline-block;padding:3px 12px;border-radius:16px;background:rgba(99,102,241,0.15);color:#a5b4fc;font-size:.82rem;margin-bottom:10px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.output-box{font-size:.9rem}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🎁 AI送礼灵感攻略</h1><p>送到心坎里的礼物，是有方法可循的</p></div>
+
+<div class="card">
+<div class="param-grid">
+<div><label>🎯 送谁</label>
+<select id="to"><option selected>男朋友</option><option>女朋友</option><option>妈妈</option><option>爸爸</option><option>闺蜜/好朋友</option><option>老师</option><option>刚毕业的朋友</option><option>领导/同事</option></select></div>
+<div><label>💰 预算档位</label>
+<select id="budget"><option selected>小意思（100以内）</option><option>有心意（100-300）</option><option>够意思（300-800）</option><option>大件（800以上）</option></select></div>
+</div>
+<div><label>👤 对方的偏好/场合（写点线索更好）</label>
+<input type="text" id="hint" placeholder="例如：情人节 / 她喜欢喝咖啡爱手账 / 妈妈颈椎不太好 等"></div>
+<button class="btn-gen" id="genBtn">✨ 生成送礼灵感</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:10px">🎁 送礼方案</div>
+<div class="pill" id="pill"></div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制方案</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const REC={
+'男朋友':{tone:'实用主义+一点点仪式感最能打动直男',map:{'小意思（100以内）':['一款战损风机械键盘键帽','蓝牙耳机防丢挂件+贴纸礼盒','他喜欢的游戏联名周边活页夹'],'有心意（100-300）':['机械键盘/游戏鼠标提前打好他常用款','轻便双肩包/运动护腕','他常听的歌单定制黑胶杯垫'],'够意思（300-800）':['他念叨很久的升降桌或显示器支架','一双好看的球鞋/通勤带扣皮带','一次双人周边短线游(票+酒店刚在预算内)'],'大件（800以上）':['新款手柄/游戏机正版卡带瞄准他打','一通高品质通勤耳机','一次“属于你俩”的周边旅行大礼包']}},
+'女朋友':{tone:'送到审美点上+表达在意，比砸钱更给力',map:{'小意思（100以内）':['好看不贵的发圈礼盒/丝巾','她爱泡泡浴的香薰蜡烛','定制她名字的香水小样组合'],'有心意（100-300）':['手账文具大礼包','一条百搭精致项链或耳环','她爱的咖啡店储值+陪你喝'],'够意思（300-800）':['她盯了好久的轻奢香水','一整套护肤好物(先问清肤质)','手工珠宝/潘多拉手链'],'大件（800以上）':['一台她想要的面包机/美容仪/相机','一张音乐会或她偶像演唱会票','一次说走就走的双人旅行礼物']}},
+'妈妈':{tone:'送健康与陪伴，胜过一切堆砌',map:{'小意思（100以内）':['一张暖手艾灸贴+护腰垫','一盒好的枸杞原浆/坚果礼盒','亲手拍的“全家福”相框'],'有心意（100-300）':['颈部按摩仪/发热眼罩','有降噪的电话手表方便视频','一双软底好走路的健步鞋'],'够意思（300-800）':['泡脚桶/足浴盆带按摩','一台好用的扫地/吸尘神器','带妈妈做体检并入手的检查套餐'],'大件（800以上）':['按摩椅垫或轻体护理','一部新手机把她从卡顿里解放','陪妈妈去旅行并主动当“全陪”']}},
+'爸爸':{tone:'实用、省心、不让他觉得贵是更贴心',map:{'小意思（100以内）':['一把好用的剃须刀','他爱喝的茶/酒的一盒装','一套耐用的零钱/钥匙套装'],'有心意（100-300）':['好点的电动牙刷+牙膏礼盒','一顶遮阳帽+防晒伞(常户外修东西)','他喜欢的保健酒/茶叶中档礼盒'],'够意思（300-800）':['一款挂脖按摩/泡脚养生','一副老花镜+太阳镜两用','带他换一面好点的电动剃须刀'],'大件（800以上）':['一台电动升降渔具/钓鱼椅(若他爱钓)','好点的按摩仪','一次带爸爸短途游当司机+买单']}},
+'闺蜜/好朋友':{tone:'懂她，才有梗；陪着一起用才是精髓',map:{'小意思（100以内）':['她追的剧/游戏联名盲盒','一杯“我们的暗号”DIY材料包','一件可可爱爱的家居袜'],'有心意（100-300）':['同款不同色的姐妹首饰','她种草的国货彩妆/香氛','一本我们通宵聊出来的相册'],'够意思（300-800）':['一场双人下午茶+密室/剧本杀安排','她喜欢的演唱会周边正货','半日一同做陶艺/烘培体验'],'大件（800以上）':['一场“毕业旅行”二人份门票酒店','同款相机拍立得互拍','一张给她的成长/跨年惊喜']}},
+'老师':{tone:'克制而有敬意，重在心意而非价钱',map:{'小意思（100以内）':['一张用心的手写贺卡+润喉糖','办公室护颈/护腰靠垫','一份心意的小绿植或香薰'],'有心意（100-300）':['一盒好点的茶叶/保温杯','一束合适的鲜花+感谢卡','一本老师提过的书并签名'],'够意思（300-800）':['一台护眼台灯','预算内的高品质茶具','一次“谢师宴”的心意安排'],'大件（800以上）':['教师节感恩周随大类预算安排，建议附卡片表达感激','高端文创礼盒更显尊重','若非贵重需求建议走“心意类+学习实用”']}},
+'刚毕业的朋友':{tone:'帮助他过渡、实用又有新生活的仪式感',map:{'小意思（100以内）':['入职地铁卡套+挂绳','一只好用的保温随行杯','开工仪式感的工位小香薰'],'有心意（100-300）':['通勤双肩/托特包','机械键盘/外接显示屏托架','一套职场人小家电(颈脖风扇+保温)'],'够意思（300-800）':['一台咖啡机或早餐小家电','好点的抗疲劳坐垫或升降脚垫','一张“毕业旅行补助金”红包'],'大件（800以上）':['一台办公平板/显示器(看预算)','高质的通勤西装/大衣一套','入职第一年“加油基金”']}},
+'领导/同事':{tone:'得体不逾矩，讲究分寸感',map:{'小意思（100以内）':['一盒好茶或好咖啡','有质感的文件/名片夹','一次下午茶请大家喝（更安全）'],'有心意（100-300）':['一支好写的钢笔或保温杯','一台办公护眼屏幕灯','一份应季水果/点心礼盒'],'够意思（300-800）':['高端茶具套装','顶级办公椅垫/人体工学配件','藏书风格的商务礼品'],'大件（800以上）':['原则上送礼给领导建议低调克制','高质感商务礼品/礼券更稳妥','最好走“集体/公司感谢”名义更得体']}}
+};
+function pick(a){return a[Math.floor(Math.random()*a.length)];}
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI送礼灵感攻略 | AgentGongju.com'))return;
+const to=document.getElementById('to').value;
+const bg=document.getElementById('budget').value;
+const hint=document.getElementById('hint').value.trim();
+const rec=REC[to];
+const list=rec.map[bg];
+let r='【送'+to+' · 预算'+bg+'】\n\n';
+r+='心法：'+rec.tone+'\n\n';
+r+='━━ 推荐清单 ━━\n';
+const three=pick3(list);
+three.forEach((g,i)=>{r+='▪ '+(i+1)+'. '+g+'\n';});
+r+='\n━━ 这样附赠更动人 ━━\n';
+r+=card(line())+'\n';
+r+='· 礼轻情意重：附一张手写卡片，写为什么选它（用它联想到的对方的小事），命中率翻倍；\n';
+r+='· 尽量避开：内衣、香水（不了解就不送）、明显超过对方消费档的大牌（反让人有压力）、以及对方说过不需要的类目。\n';
+r+=hint?('\n（读到你的线索「'+hint+'」：已把此类实用的“结合体”放进精选优先，下单前再看下对方是否真的喜欢。）\n'):'';
+r+='\n挑选金句：送「对方常用得到的」永远比「你觉得好的」更准。';
+document.getElementById('pill').innerText='预算 '+bg+' · 送'+to;
+document.getElementById('outputBox').innerText=r;
+document.getElementById('resultArea').classList.add('active');
+});
+function card(x){return '· 一句话_送礼心意的包装写法：\n   “这份小礼物是因为想起你常…（关联）”，比写“祝你快乐”走心得多。';}
+function line(){return 0;}
+function pick3(ar){const c=[...ar];const out=[];while(c.length&&out.length<3){const i=Math.floor(Math.random()*c.length);out.push(c.splice(i,1)[0]);}return out;}
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 方案已复制！'))}
+</script>
+</body>
+</html>

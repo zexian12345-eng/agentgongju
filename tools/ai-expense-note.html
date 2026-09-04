@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI报销事由一句话生成 | AgentGongju.com</title>
+<meta name="description" content="坐高铁谈客户、打车见房东、买素材版权……发票备注和报销事由不会写？输入场景，AI生成一句话规范事由，附凭证要点提示，让财务秒过。">
+<meta name="keywords" content="报销事由,发票备注,报销单怎么写,差旅报销,财务报销,发票说明">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+input[type=text],select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input[type=text]:focus,select:focus{border-color:#6366f1}
+.param-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s;margin-top:6px}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:1rem;margin-bottom:12px}
+.tag{display:inline-block;padding:2px 10px;border-radius:6px;font-size:.75rem;margin-bottom:8px;background:rgba(99,102,241,0.15);color:#a5b4fc}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-grid{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🧾 AI报销事由一句话生成</h1><p>写清楚、写得快，财务打款不卡壳</p></div>
+
+<div class="card">
+<div class="param-grid">
+<div><label>🚕 报销类型</label>
+<select id="kind"><option selected>差旅交通</option><option>业务招待/餐饮</option><option>办公采购</option><option>软件/版权/订阅</option><option>客户拜访</option><option>快递/打印/杂费</option><option>培训学习</option></select></div>
+<div><label>💰 金额范围（辅助措辞）</label>
+<select id="amt"><option>小额（如几十元）</option selected>中额（几百元）</option><option>大额（千元以上）</option></select></div>
+</div>
+<div><label>📝 你实际做了什么（时间/地点/事情，越具体越好）</label>
+<input type="text" id="what" placeholder="例如：3月2日去杭州出差面见客户A公司 洽谈年度合作"></div>
+<button class="btn-gen" id="genBtn">🧾 生成规范事由</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:10px">🧾 报销事由</div>
+<span class="tag" id="tag"></span>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制事由</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const NOTE={
+'差旅交通':['· 需附行程或车票订单截图，注明出发地-到达地与时间；','· 若超标请提前报备或说明原因；','· 打车发票记得要电子发票抬头填公司全称。'],
+'业务招待/餐饮':['· 需附客户姓名/单位及招待性质备注，聚餐类控制在合理人均内；','· 附带菜单明细或POS小票更稳妥；','· 涉及客户的需留一句“与哪项业务相关”。'],
+'办公采购':['· 需附采购清单+收货/使用去向，资产类的要登记；','· 单价超公司阈值的大件建议先走预算/审批；','· 保留快递单与验收记录。'],
+'软件/版权/订阅':['· 需说明采购用途与订阅周期（起止日期）；','· 关联账号归属清晰，方便后续交接；','· 版权/字体类请确认用途合规再报销。'],
+'客户拜访':['· 写明拜访对象+洽谈事项，容易核对应酬目的；','· 带伴手礼最好单列说明与金额；','· 差旅与招待分开开票会更清晰。'],
+'快递/打印/杂费':['· 金额小也要保留支付记录与用途；','· 快递标注收寄双方；','· 打印/制作类注明制作内容与份数。'],
+'培训学习':['· 注明课程名称/日期/是否与岗位相关；','· 附报名通知或证书、签到记录；','· 说明学习后如何复用到工作。']
+};
+const VERB={
+'差旅交通':['前往【地点】出差，处理【主题】，发生交通费'],
+'业务招待/餐饮':['接待【客户方】洽谈【事项】，产生用餐/招待费用'],
+'办公采购':['为【部门/项目】采购【物品】，用于日常办公需求'],
+'软件/版权/订阅':['采购【软件/素材/权限】，用于【用途】，订阅周期自【日期】'],
+'客户拜访':['拜访【客户】，沟通【事项】，产生差旅/拜访相关费用'],
+'快递/打印/杂费':['【用于事项】产生邮寄/制作等日常杂项支出'],
+'培训学习':['参加【课程】培训，用于提升【相关能力】，发生学习费用']
+};
+function pick(a){return a[Math.floor(Math.random()*a.length)];}
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI报销事由一句话生成 | AgentGongju.com'))return;
+const kind=document.getElementById('kind').value;
+const what=document.getElementById('what').value.trim();
+if(!what){alert('请描述一下你实际做了什么');return;}
+const note=NOTE[kind];
+let r='『一句话事由 | '+kind+'』\n\n';
+r+='【规范写法】\n';
+r+= makeReason(kind,what)+'\n\n';
+r+='【更长/可放备注栏的版本】\n';
+r+= makeLong(kind,what)+'\n\n';
+r+='─── 凭证提示 ───\n'+note.join('\n');
+r+='\n\n(金额请按实际发票如实填写，涉及个人消费请勿混入报销)';
+document.getElementById('tag').innerText='推荐直接用于报销说明/发票备注';
+document.getElementById('outputBox').innerText=r;
+document.getElementById('resultArea').classList.add('active');
+});
+function makeReason(k,w){
+  // 去掉可能重复的时间词if already
+  const tm=/(\d{1,2}月\d{1,2}日|\d{4}年)?/.exec(w);
+  return w+'所产生的'+kind.trim()+'费用，特此申请报销（一笔用于'+purpose(kind)+'的业务支出）。';
+}
+function purpose(k){return {'差旅交通':'出差办公','业务招待/餐饮':'业务接待','办公采购':'日常办公','软件/版权/订阅':'工作软硬资源','客户拜访':'客户沟通','快递/打印/杂费':'日常事务','培训学习':'岗位技能学习'}[k];}
+function makeLong(k,w){
+  const t=/(\d{1,2}月\d{1,2}日|\d+年\d+月\d+日)/.exec(w);
+  return (t?(t[1]+'，'):'')+'因'+w+'，产生'+kind.trim()+'类支出，属合理业务费用，凭发票及相关凭证申请报销（对应上述事项）。';
+}
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 事由已复制！'))}
+</script>
+</body>
+</html>

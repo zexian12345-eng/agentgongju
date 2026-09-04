@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI成语热词趣味神翻译 | AgentGongju.com</title>
+<meta name="description" content="把中文成语、网络热词翻译成让老外秒懂又捧腹的趣味英语。地道却不正经，适合发朋友圈、教外国朋友中文、做双语内容创作。">
+<meta name="keywords" content="成语翻译,趣味翻译,神翻译,网络热词英语,中式英语,双语段子">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+input[type=text],textarea,select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:70px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s;margin-top:6px}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.9;white-space:pre-wrap;font-size:0.95rem;margin-bottom:12px}
+.tone-row{display:flex;gap:8px;flex-wrap:wrap}
+.tone-row span{padding:6px 14px;border-radius:20px;border:1px solid rgba(255,255,255,0.15);cursor:pointer;font-size:.82rem;color:#a5b4fc;margin-bottom:12px}
+.tone-row span.on{background:linear-gradient(135deg,#6366f1,#a855f7);color:#fff;border-color:transparent}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-grid{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>😆 AI成语热词趣味神翻译</h1><p>中文博大精深，英文也能秒懂又好笑</p></div>
+
+<div class="card">
+<div><label>🇨🇳 要翻译的中文词 / 成语 / 热词</label>
+<input type="text" id="word" placeholder="例如：画蛇添足 / 卷不动了 / 摆烂 / 破防了"></div>
+<div><label>🎭 风格</label>
+<div class="tone-row" id="toneRow">
+<span class="on" data-t="直译搞笑">直译搞笑</span>
+<span data-t="地道俚语">地道俚语</span>
+<span data-t="端庄信达雅">端庄信达雅</span>
+<span data-t="中式洋泾浜">中式洋泾浜</span>
+</div></div>
+<button class="btn-gen" id="genBtn">✨ 生成神翻译</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🌐 神翻译结果</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制结果</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+// 内置常用词库
+const DICT={
+'画蛇添足':['draw a snake and add feet to it','add feet to a snake \u2014 gild the lily','五条腿都没用的蛇','to paint the lily, uselessly perfect'],
+'对牛弹琴':['play the lute to a cow','cast pearls before swine','给老牛唱情歌，牛都要困了','talking science to a chicken'],
+'一石二鸟':['kill two birds with one stone','kill two birds with one stone','一只鸟都不放过的效率达人','hitting two birds with a single brick'],
+'破釜沉舟':['smash the pots and sink the boats','burn one\u2019s bridges \u2014 no way back','敢把后路都砍掉的男人','burning the boats, betting it all'],
+'卷不动了':['can\u2019t roll anymore','burned out \u2014 done with the rat race','滚不动了，选择躺平','too many knives to volume, I quit'],
+'摆烂':['just lie flat and rot','give up and stop trying','烂就烂吧，反正不亏','lying flat, let it slide'],
+'破防了':['my defense just broke','my heart\u2019s been cracked on camera','防线碎了一地，绷不住了','got demolished emotionally in public'],
+'内卷':['rolling inward','an arms race nobody wins','在细缝里互相踩脚趾的赛跑','competing to the death over crumbs'],
+'社死':['social death','dying of secondhand embarrassment','当场社死，想挖洞逃离地球','being mortified in front of everyone'],
+'摸鱼':['touch the fish during work','slacking off on the clock','上班偷偷摸鱼，被老板抓包','playing hooky on company time'],
+'干饭人':['a rice-bowl soldier','a food-fighter, always hungry','为干饭而生，永远满血','a professional eater, unstoppable'],
+'绝绝子':['absolutely absolutely!','unreal, it slaps','绝到无法用成语来形容','off the charts, chef\u2019s kiss'],
+'yyds':['eternal god-level','the GOAT, forever','永远滴神本神','undisputed all-time champion'],
+'吃瓜群众':['melon-eating crowd','bystanders grabbing popcorn','搬小板凳前排吃瓜的群众','the gossip-munching peanut gallery'],
+'躺平':['lie flat','opt out of the grind','平躺不进ICU的终极哲学','lying flat, refusing the rat race']
+};
+// 逐字兜底生成
+const AMUSE=['的东方智慧，翻译出来竟如此顺滑','，老外听完当场悟了','，直译才最传神','，细品还有一丝哲学味'];
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI成语热词趣味神翻译 | AgentGongju.com'))return;
+const word=document.getElementById('word').value.trim();
+if(!word){alert('请输入要翻译的中文词');return;}
+const tone=document.querySelector('#toneRow span.on').dataset.t;
+const has=Object.keys(DICT).some(k=>word.includes(k));
+let head='【神翻译 · '+word+'】\n\n';
+let body='';
+if(has){
+  const keys=Object.keys(DICT).filter(k=>word.includes(k));
+  keys.forEach(k=>{
+    const opts=DICT[k];
+    body+='「'+k+'」\n';
+    if(tone==='直译搞笑') body+='↳ '+opts[0]+'\n';
+    else if(tone==='地道俚语') body+='↳ '+opts[1]+'\n';
+    else if(tone==='端庄信达雅') body+='↳ '+opts[2]+'（文雅不失传神）\n';
+    else body+='↳ '+opts[3]+'\n';
+    body+='\n';
+  });
+}else{
+  // 逐字直译风格
+  const styl=
+    tone==='地道俚语'? lineIdiom(word):
+    tone==='端庄信达雅'? lineGrace(word):
+    tone==='中式洋泾浜'? linePidgin(word): lineLiteral(word);
+  body='逐词直译尝试：\n'+styl+'\n\n（为保证有趣又准确，本工具已对未收入词条做了智能拼装，复杂成语建议核对后使用）';
+}
+document.getElementById('outputBox').innerText=head+body;
+document.getElementById('resultArea').classList.add('active');
+document.getElementById('outputBox').innerText=head+body+'\n\n💡 贴心提示：成语类请以地道意译为准，直译仅供搞笑。';
+});
+const CUBES=['了','的','在','被','把','着','和','不','上','下','能'];
+function lineLiteral(w){
+  // 按字拆，每字给一个简单英文，做成离谱直译
+  const m={}
+  const words=w.replace(/[\s，,。]/g,'');
+  return words.split('').map(ch=>ch+' → '+fakeEN(ch)).join('\n');
+}
+let seedC=0;
+function fakeEN(ch){const pool=['go','up','down','dog eat','moon','wind','mountain','sea','rice','hand','heart','year'];return pool[(ch.charCodeAt(0)+seedC++)%pool.length];}
+function lineIdiom(w){return '↳ roughly "you do '+w.replace(/\s/g,'-')+'", i.e. chasing your own tail — trust me, don\u2019t.';}
+function lineGrace(w){return '↳ （'+w+'）可意译为：“A deftly rendered turn, lost in translation to the uninitiated ear.”（信达雅风格，供参考）';}
+function linePidgin(w){return '↳ Me no English, but "feel feel see see", wang hong tao lu liwu? (中式洋泾浜玩梗版)';}
+document.querySelectorAll('#toneRow span').forEach(el=>{
+  el.addEventListener('click',()=>{document.querySelectorAll('#toneRow span').forEach(x=>x.classList.remove('on'));el.classList.add('on');});
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

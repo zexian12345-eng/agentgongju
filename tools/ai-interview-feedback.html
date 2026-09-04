@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI面试复盘与答题拆解 | AgentGongju.com</title>
+<meta name="description" content="刚面完试想复盘？输入你被问到的问题和当时的答法，AI帮拆面试官真实意图、你答得如何，以及同题的更优答题框架，越面越稳。">
+<meta name="keywords" content="面试复盘,面试技巧,面试答题框架,面试自我介绍,求职辅导,bug复盘">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:840px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+input[type=text],textarea,select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:80px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s;margin-top:6px}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.95;white-space:pre-wrap;font-size:0.95rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.output-box{font-size:.9rem}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📋 AI面试复盘与答题拆解</h1><p>把每次面试，都变成下次的offer敲门砖</p></div>
+
+<div class="card">
+<div class="param-grid">
+<div><label>👔 应聘岗位方向</label>
+<select id="role"><option selected>产品/运营</option><option>技术研发</option><option>市场销售</option><option>人事行政/管理</option><option>设计/内容</option><option>应届毕业生通用</option></select></div>
+<div><label>🕐 面试轮次</label>
+<select id="round"><option selected>初面/HR面</option><option>业务一面</option><option>业务二面</option><option>终面/老板面</option></select></div>
+</div>
+<div><label>🤔 面试官问的那个问题</label>
+<input type="text" id="q" placeholder="例如：你为什么离开上一家公司 / 说一个你最有成就感的项目"></div>
+<div><label>🗣 你当时大概是怎么答的</label>
+<textarea id="a" placeholder="写下你当时的回答要点（两三句即可），方便对比差距"></textarea></div>
+<button class="btn-gen" id="genBtn">🧠 复盘这题</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🧠 本题复盘</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制复盘结果</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const GENRE=[
+{match:['项目','成就感','经历','做过','负责','成果'],what:'👀 他想看的是「你有没有把一件事做成,以及你的贡献边界在哪」,而不是听你背简历。',frame:'STAR框架：S情境→T任务→A你的行动(多用“我”而非“我们”)→R结果(可量化数字)。收尾落一句“沉淀了什么方法”。'},
+{match:['离职','为什么走','离开','辞职'],what:'👀 他在评估你的稳定性、职业规划与情商,负面的情绪化表达是最大雷区。',frame:'黄金作答=客观陈述事实(点到为止)+一句正向成长诉求(想找更能发挥XX的平台)+不谈旧东家坏话。'},
+{match:['缺点','不足','短板'],what:'👀 不是看你真有多差,而是看你有没有自我认知和改正动作。',frame:'挑一个“已意识到+正在改+已有可验证改法”的缺点,千万别答“我太完美/太拼”(这在HR眼里=不诚实)。'},
+{match:['怎么看待加班','加班','强度'],what:'👀 判断你与岗位节奏匹配度,想听具体可接受度而不只是嘴上说“能加”。',frame:'先问清加班性质(高峰期/常态化),再给“阶段性能接受+能提升效率减少无效加班+关注劳逸平衡”的组合拳。'},
+{match:['期望薪资','多少','待遇'],what:'👀 看你对自身价值的认知与是否超预算区间。',frame:'给区间而非单点,区间下限是你可接受底线;先谈“我更看重成长与匹配”再谈数字,显得自然。'},
+{match:['还有什么想问','问题要问','有什么想问'],what:'👀 考察你的兴趣、思考深度与对岗位的预期管理。',frame:'问“这个岗位未来6个月最关键的目标是什么/团队如何分工/我入职后前30天最该做到什么”这类有含金量的题。'},
+{match:['自我介绍','介绍下自己'],what:'👀 看你能否用90秒把“经历→能力→与岗位契合”讲成一条主线。',frame:'公式=当下定位(1句)+最匹配的1-2段经历(数据支撑)+为何胜任+求职意向收束,切忌把简历朗读一遍。'}
+];
+function pick(a){return a[Math.floor(Math.random()*a.length)];}
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI面试复盘与答题拆解 | AgentGongju.com'))return;
+const q=document.getElementById('q').value.trim();
+const a=document.getElementById('a').value.trim();
+if(!q){alert('请填一下面试官问的问题');return;}
+const g=GENRE.find(x=>x.match.some(k=>q.includes(k)))||pick(GENRE);
+const qshort=q.length>22?q.slice(0,22)+'…':q;
+let r='【复盘题目】'+q+'\n\n';
+r+='━━━ 面试官在问什么 ━━━\n'+g.what+'\n\n';
+r+=(a? '━━━ 你的回答&差距 ━━━\n· 你答的：「'+(a.length>46?a.slice(0,46)+'…':a)+'」\n· 常见失分点：太过笼统(没数字/没主语)、绕圈回避、负面抱怨、篇幅失衡(铺垫过长或太短)。\n\n':'');
+r+='━━━ 更优答题框架 ━━━\n'+g.frame+'\n\n';
+r+='━━━ 给你的一句话升级建议 ━━━\n';
+r+='· 把“我觉得/应该”换成“我做过/数据显示”这类有实感的动词；\n· 回答控制在60~90秒,留意面试官是否追问,追问处往往是兴趣点；\n· 面试是对话不是答题,适当反问“您更关注我这边的哪一点”会让节奏更赞。\n\n';
+r+='(你的岗位方向已纳入语境参考；复试侧重深挖,答法可比初面更实、更少包装。)';
+document.getElementById('outputBox').innerText=r;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 复盘已复制！'))}
+</script>
+</body>
+</html>

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI分镜动态海报提示词 | AgentGongju.com</title>
+<meta name="description" content="想要电影感动态海报/短视频分镜？输入画面构思，AI逐镜头生成可用的绘图与视频提示词，适合短视频创作者、AI绘画玩家与广告设计。">
+<meta name="keywords" content="分镜脚本,动态海报,AI视频提示词,运镜,短视频分镜,AI生成画面">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+input[type=text],textarea,select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:80px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s;margin-top:6px}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.9;white-space:pre-wrap;font-size:0.95rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-grid{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🎬 AI分镜动态海报提示词</h1><p>一段构思 → 电影感分镜画面提示词</p></div>
+
+<div class="card">
+<div><label>🎞 画面主题构思</label>
+<input type="text" id="idea" placeholder="例如：少女在雨夜霓虹街回头 / 机器人苏醒望向朝阳城市"></div>
+<div class="param-grid">
+<div><label>🖼 用途</label>
+<select id="use"><option selected>动态海报/封面</option><option>短视频分镜</option><option>产品宣传片</option><option>个人Vlog预告</option><option>直播预告视觉</option></select></div>
+<div><label>🌅 镜头情绪调性</label>
+<select id="feel"><option selected>悬疑张力</option><option>治愈清新</option><option>燃动热血</option><option>科幻未来</option><option>国风古意</option><option>都市温度</option></select></div>
+</div>
+<div><label>📝 补充要求</label>
+<textarea id="note" placeholder="可选：主角服装、色彩基调、是否有文字排版、时长秒数等"></textarea></div>
+<button class="btn-gen" id="genBtn">✨ 生成分镜画面</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🎬 分镜画面与提示词</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制全部</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const CAM=['大远景固定机位延时推近','低机位仰拍缓慢环绕','由极近特写拉远成大远景，景别开合','手持轻微晃动的跟拍特写','上帝视角俯瞰慢慢旋转降落','沿滑轨横向移动过主体'];
+const MOVEMENT={
+'悬疑张力':['逆光剪影缓缓逼近镜头','阴影中只露出半张脸与一片霓虹光','雨滴落在镜头的微距特写','主体回眸，发丝被风与光定格'],
+'治愈清新':['一缕晨光斜照在窗台与绿植','主角抬头望天的柔和逆光','花瓣随风轻旋贴着镜头漂过','海风拂过发梢的慢动作侧写'],
+'燃动热血':['镜头快速由慢到快地冲刺加速','火花与尘埃在逆光中飞扬','仰角极致构图、主体压低重心蓄力','冲破画面的高速运动轨迹'],
+'科幻未来':['全息数据在空间中流动环绕','飞船划过天际线的低空掠影','机械臂细节与轨道光在暗处延伸','巨大城市倒影悬浮于超现实水面'],
+'国风古意':['水墨山峦之间一叶孤舟缓行','衣袂与灯笼的火光共舞','雨打芭蕉的屋檐特写','青烟缭绕中伊人款款而至'],
+'都市温度':['地铁车窗倒影交叠的城市夜','转角路灯下两人相遇的一瞬','写字楼落地窗前的一杯热咖啡','夜色霓虹中单车压过积水']
+};
+const VIBE_DESC={
+'悬疑张力':'低饱和冷调+高对比霓虹，颗粒噪点，J-cut硬切节奏',
+'治愈清新':'高明度奶油色系，柔和自然光，呼吸感留白',
+'燃动热血':'高饱和橙红对撞，强体积光影，节奏踩点收紧',
+'科幻未来':'克莱因蓝紫未来色，全息光效，机械科技细节',
+'国风古意':'绢本宣纸质感，朱砂与黛青点缀，气韵留白',
+'都市温度':'胶片暖调，自然混合光源，生活化真实颗粒'
+};
+const TIME=['0-3s 开场建立氛围','3-6s 情绪推进','6-9s 转折与高潮反拍','9-12s 定格收尾出正文'];
+function pick(a){return a[Math.floor(Math.random()*a.length)];}
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI分镜动态海报提示词 | AgentGongju.com'))return;
+const idea=document.getElementById('idea').value.trim();
+if(!idea){alert('请先输入画面主题构思');return;}
+const use=document.getElementById('use').value;
+const feel=document.getElementById('feel').value;
+const note=document.getElementById('note').value.trim();
+const cards=MOVEMENT[feel];
+let r='【'+use+' · '+feel+'情绪】\n主题：'+idea+'\n\n';
+// 生成3组镜头
+const chosen=['极近','远景','中景'];// 用数量
+let shots=[];
+// 打乱卡片取3张做主体动作
+const used=shuffle([...cards]).slice(0,3);
+let i=0;
+r+='——— 逐镜头生成 ———\n';
+for(const cam of pickCameras(used.length)){
+  const act=used[i%used.length];
+  r+='\n■ '+TIME[i%TIME.length]+'\n';
+  r+='[机位运镜] '+cam+'\n';
+  r+='[画面内容] '+idea+'；'+act+'\n';
+  r+='[色调氛围] '+VIBE_DESC[feel]+'\n';
+  r+=note?('[补充] '+note+'\n'):'';
+  r+='[AI绘图提示词] Cinematic still, '+act+' '+idea+', '+feel+' mood, '+VIBE_DESC[feel]+', '+cam.slice(0,cam.indexOf(' ')+6)+' shot, 4k, masterpiece --ar 16:9\n';
+  i++;
+}
+function shuffle(ar){for(let x=ar.length-1;x>0;x--){const y=Math.floor(Math.random()*(x+1));[ar[x],ar[y]]=[ar[y],ar[x]];}return ar;}
+function pickCameras(n){const c=shuffle([...CAM]).slice(0,3);return c;}
+r+='\n——— 后期建议 ———\n';
+r+='· 叠加轻微胶片颗粒与暗角增强电影感；\n· 首尾镜头衔接处做一帧色彩闪白衔接；\n· 正文/标题建议在第3镜高潮定格后弹出。';
+document.getElementById('outputBox').innerText=r;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

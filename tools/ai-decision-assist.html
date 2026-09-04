@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI两难选择决策助手 | AgentGongju.com</title>
+<meta name="description" content="两个offer选哪个、辞职还是坚持、要不要告白、买房还是租房？把纠结说清楚，AI用简易决策矩阵帮你把模糊的顾虑摊开，找到最不后悔的那个选项。">
+<meta name="keywords" content="选择困难,决策工具,两难选择,offer选择,人生决策,风险权衡">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+input[type=text],textarea,select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:70px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s;margin-top:6px}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.95;white-space:pre-wrap;font-size:0.95rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.output-box{font-size:.9rem}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>⚖️ AI两难选择决策助手</h1><p>把纠结说出来，答案自然浮出水面</p></div>
+
+<div class="card">
+<div class="param-grid">
+<div><label>🧩 纠结的类型</label>
+<select id="cat"><option selected>换工作/接offer</option><option>辞职还是坚持</option><option>表不表白/要不要分手</option><option>要不要买房/换房</option><option>继续深造还是就业</option><option>要不要生娃/结婚</option><option>金钱/投入值不值</option><option>其他人生选择</option></select></div>
+<div><label>🧠 你最看重的底线（可多选参考）</label>
+<select id="value"><option selected>稳定与安全感</option><option>成长与发展空间</option><option>收入与金钱回报</option><option>自由与生活方式</option><option>家庭与陪伴</option><option>兴趣热爱</option></select></div>
+</div>
+<div><label>📝 把你纠结的两边与担忧写清楚</label>
+<textarea id="dilemma" placeholder="例如：A公司钱多但离得远加班多；B钱少点但离家近能兼顾带娃……我主要怕A撑不住身体。"></textarea></div>
+<button class="btn-gen" id="genBtn">⚖️ 帮我理一理</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:10px">⚖️ 决策梳理</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制梳理结果</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const CRT=['财务回报','职业/人生成长','稳定性/风险','时间成本','情绪与身体','长期可逆性'];
+function w(v){return v==='稳定与安全感'?3:v==='成长与发展空间'?3:v==='收入与金钱回报'?3:v==='家庭与陪伴'?3:(v==='自由与生活方式'?2:Math.random()>0.5?3:2);}
+const ADV={'换工作/接offer':'决策关键在于想清楚是要“短期现金”还是“长期轨道”，钱和能力很难一次都要全。','辞职还是坚持':'先分清是“阶段性压力”还是“系统性问题”：前者撑一撑可拆解，后者拖越久越伤。','表不表白/要不要分手':'感情问题没有标准答案，但错在“不甘心”而非“不满意”时，通常答案已经在前一句里。','要不要买房/换房':'大额刚性决策请把流动性、负债率和急用钱兜底三条先立住，再看爱不爱这房子。','继续深造还是就业':'若目标行业重学历就去读，若重经验能力就先进场，别让“逃避就业”伪装成“追梦”。','要不要生娃/结婚':'把“对方、经济、身体、想清楚为何要”四条和盘托出，自己只对最后一条负责。','金钱/投入值不值':'把沉没成本划掉，只看“今天起再做与否”的未来期望差，别为已花的多纠结一次。','其他人生选择':'落地时把选项各自写上三条“最坏情况”和三条“最佳情况”，看哪边让你更能睡得着。'}
+const FALLBACK=['保持知情是最好的行动：给自己设一个调查截止日','想象10年后回看今天，你更怕“没选A的遗憾”还是“选了B的代价”','睡前把每个选项各睡一觉，让身体替你预演一次'];
+function pick(a){return a[Math.floor(Math.random()*a.length)];}
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI两难选择决策助手 | AgentGongju.com'))return;
+const cat=document.getElementById('cat').value;
+const value=document.getElementById('value').value;
+const d=document.getElementById('dilemma').value.trim();
+if(!d){alert('把得失和担心写两句最好');return;}
+const wv=w(value);
+let r='【'+cat+' · 你的最看重：'+value+'】\n\n';
+r+='你在纠结的话：\n“'+d+'”\n\n';
+r+='━━ 把它摊开成一目了然的表 ━━\n';
+r+='考量项       A方（现状/甲）   B方（另一头）\n';
+const rows=[
+ ['💰 财务（权重高）','看你的具体数字','看你的具体数字'],
+ ['🚀 成长与未来','短期/长期(需衡量)','短期/长期(需衡量)'],
+ ['🛡 稳定性/风险','取决于是否可逆','取决于是否可逆'],
+ ['⏳ 时间与身体成本','是否可持续','是否可持续'],
+ ['❤️ 情绪 & 陪伴','主动记录一周再评','主动记录一周再评']
+];
+rows.forEach(x=>{r+=x[0]+' | '+(d.includes?judge(x[0],d):'待据实填写')+'\n';});
+function judge(h,d){if(h.indexOf('财务')>-1)return d.search(/钱|薪资|收入/)>-1?'(据你描述打分)':'请填具体'; if(h.indexOf('时间')>-1|h.indexOf('身体')>-1)return d.search(/加班|累|通勤|身体/)>-1?'(据你描述有相关线索)':'请填具体'; if(h.indexOf('情绪')>-1)return '(请用两周心情记录打分)'; return '(可先拿3打分)';}
+r+='\n━━ 决策教练提醒 ━━\n'+ADV[cat]+'\n';
+r+='\n· 把上面“数据待填”的格子补齐，总分自动浮现——多数犹豫是没把关键权重列出来；\n· 给这个选择设一个 48 小时的“冷静观察期”，先不加结论睡两晚再回头读一遍（对缓解冲动极其有效）；\n· If 最坏情况你都能兜底 → 放心选你更“想要”的那边；若兜不住 → 选可逆性高的先走一步再见招拆招。\n\n';
+r+=pick(FALLBACK);
+document.getElementById('outputBox').innerText=r;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

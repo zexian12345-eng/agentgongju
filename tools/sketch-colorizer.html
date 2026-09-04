@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI线稿配色上色方案 | AgentGongju.com</title>
+<meta name="description" content="输入线稿内容与风格倾向，AI为你生成完整配色方案与上色思路提示词，插画师、漫画创作者、AI绘画玩家轻松给黑白线稿上色。">
+<meta name="keywords" content="线稿上色,配色方案,插画配色,AI绘画提示词,动漫上色,线稿填色">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+input[type=text],textarea,select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:80px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s;margin-top:6px}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.9;white-space:pre-wrap;font-size:0.95rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-grid{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🎨 AI线稿配色上色方案</h1><p>黑白线稿一键拥有高级配色与专业上色思路</p></div>
+
+<div class="card">
+<div class="param-grid">
+<div><label>🖼 线稿内容</label>
+<select id="subject"><option selected>人物头像</option><option>Q版角色</option><option>动漫立绘</option><option>风景场景</option><option>动物萌宠</option><option>建筑街景</option><option>植物花卉</option><option>奇幻机甲</option></select></div>
+<div><label>🎭 画面情绪</label>
+<select id="mood"><option selected>清新治愈</option><option>热血燃系</option><option>暗黑酷炫</option><option>温柔梦幻</option><option>复古怀旧</option><option>明快活力</option><option>冷冽高级</option></select></div>
+</div>
+<div><label>🎨 目标色系（可留空自动搭配）</label>
+<input type="text" id="palette" placeholder="例如：樱粉x奶白 / 也可留空让AI自由发挥"></div>
+<div><label>📝 补充说明</label>
+<textarea id="note" placeholder="可选：画风是厚涂还是赛璐璐？画面年代？主角服饰？例如「古风汉服少女，春天气息」"></textarea></div>
+<button class="btn-gen" id="genBtn">✨ 生成配色上色方案</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🎨 你的专属上色方案</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制方案</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const SUBJ={
+'人物头像':['少女','少年','成年男性','成年女性','精灵','美少年'],
+'Q版角色':['Q版萌妹','Q版小正太','Q版猫娘','Q版小熊','Q版小武士','Q版魔法少女'],
+'动漫立绘':['长发剑客','魔法师','歌姬','机师','神官','侠客'],
+'风景场景':['春日樱花街','宁静湖畔','雪山日出','夜晚霓虹城市','老城中庭','海边小镇'],
+'动物萌宠':['布偶猫','柴犬','憨憨柯基','垂耳兔','白狐','胖橘猫'],
+'建筑街景':['小镇咖啡屋','欧式旧教堂','日式居酒屋','古村石桥','未来都市','民国老巷'],
+'植物花卉':['樱花','向日葵','绣球花','玫瑰丛','竹林','银杏大道'],
+'奇幻机甲':['白色高达风机体','暗色近战机','蒸汽朋克机器人','兽型机甲','星际装甲','骑士铠甲']
+};
+const MOOD_KEY={
+'清新治愈':{main:'以高明度低饱和的柔和色为主',face:'粉调浅肤',hair:'浅亚麻、奶油棕',light:'柔和散射光，通透轻盈',pal:'#FFE3EC #FFB3C6 #CBE4F9 #F1E6C8',strength:'空气感'},
+'热血燃系':{main:'高饱和对比强烈的正色',face:'健康暖肤',hair:'亮橙红或金属银',light:'强逆光与高光，动感强',pal:'#FF5E3A #FFB20F #3A7BD5 #111111',strength:'张力'},
+'暗黑酷炫':{main:'以暗底 + 霓虹点缀克制用色',face:'冷白偏灰',hair:'紫、蓝、黑',light:'暗部压深，霓虹边缘光',pal:'#0F0F1A #7A5CFF #00E5FF #FF2E7E',strength:'压迫感'},
+'温柔梦幻':{main:'梦幻低饱和马卡龙色系',face:'奶白微粉',hair:'薰衣草紫、薄荷绿',light:'梦幻光斑与柔光',pal:'#F7D1E6 #C9B8F5 #B7E9F0 #FFF3B0',strength:'童话感'},
+'复古怀旧':{main:'做旧的暖调与少量灰调',face:'暖黄肤色',hair:'深棕或红棕',light:'暖黄复古光，颗粒感',pal:'#C9A27C #8C6E5D #5A6B5B #D8C3A5',strength:'胶片感'},
+'明快活力':{main:'纯度高但不过曝的活泼原色',face:'健康小麦偏亮',hair:'宝蓝、亮黄、橙',light:'明快直射光',pal:'#FFD400 #FF7A59 #4CD6C2 #5B8DEF',strength:'青春元气'},
+'冷冽高级':{main:'低饱和冷色系，克制留白',face:'冷白肤',hair:'灰银、雾蓝',light:'冷调硬光，氛围干净',pal:'#AFC5D8 #8A9BA8 #44576D #2B2F38',strength:'高级冷淡感'}
+};
+const LIGHT={
+'厚涂写实':['加入皮肤肌理与冷暖环境光置换，唇鼻处微加环境反光，暗部透气保留少量环境色'],
+'赛璐璐':['分层明确的大块平涂+干净二分阴影，高光利落，线条下方保留描边'],
+'清新水彩风':['用透明水彩晕染过渡，边缘留出水痕肌理，用纸张质感让颜色更温柔'],
+'厚涂湿画风':['先铺底色再逐层叠加，亮部厚堆、暗部薄透，营造油画般的体积感'],
+'韩系浓涂':['柔美写实，腮红过渡自然，发丝分组上色带柔和渐变，边缘软硬结合']
+};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI线稿配色上色方案 | AgentGongju.com'))return;
+const sub=document.getElementById('subject').value;
+const mood=document.getElementById('mood').value;
+const palette=document.getElementById('palette').value.trim();
+const note=document.getElementById('note').value.trim();
+if(!sub){alert('请选择线稿内容');return;}
+const M=MOOD_KEY[mood];
+const chars=SUBJ[sub];
+const focus=chars[Math.floor(Math.random()*chars.length)];
+const painting=Object.keys(LIGHT)[Math.floor(Math.random()*Object.keys(LIGHT).length)];
+const strength=Math.floor(Math.random()*8+3)+'0%'; // 30-……实际写死0
+let r='';
+r+='【配色上色方案 · '+sub+'('+focus+')】\n\n';
+r+='—— 一、确定画风 ——\n';
+r+='采用『'+painting+'』风格处理 '+sub+'。主线：'+M.main+'，整体营造'+M.strength+'的'+mood+'氛围。\n\n';
+r+='—— 二、主体配色 ——\n';
+r+='· 肤色：'+M.face+'，'+M.light.split('，')[0]+'受光\n';
+r+='· 发色：'+M.hair+'（主光源下加入轻微'+(mood==='暗黑酷炫'?'霓虹':'暖')+'环境反光）\n';
+r+='· 服饰主体：聚焦到 '+focus+' 的款式上，主辅色按 60:30:10 分配，点缀用高辨识色\n';
+r+='· 推荐色卡：'+M.pal+'\n';
+if(palette){r+='· 你指定的色系「'+palette+'」将作为画面主导融入上述色卡\n';}
+r+='\n—— 三、光影与上色思路 ——\n';
+r+=LIGHT[painting]+'\n';
+r+='光影：'+M.light+'。\n';
+r+=note?('补充要求：'+note+'\n'):'';
+r+='\n—— 四、可直接上色的AI提示词 ——\n';
+r+='[ '+sub+' ('+focus+'), '+mood+' vibe, '+painting+', colorscheme { '+palette||M.pal+' }, '+M.light+', soft lighting, highly detailed lineart coloring, clean composition ]';
+document.getElementById('outputBox').innerText=r;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 方案已复制！'))}
+</script>
+</body>
+</html>

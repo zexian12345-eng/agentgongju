@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI说明书合同大白话解读 | AgentGongju.com</title>
+<meta name="description" content="发票条款、电器说明书、保险协议读不懂？粘贴原文，AI帮你翻译成人话，一句话讲清重点+给行动建议，老人小孩都看得懂。">
+<meta name="keywords" content="合同解读,说明书解释,条款白话,法律条款翻译,协议解读,AI阅读助手">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:880px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+textarea{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px;min-height:150px;resize:vertical}
+select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea:focus,select:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.9;white-space:pre-wrap;font-size:0.95rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tag{display:inline-block;padding:2px 10px;border-radius:6px;font-size:.75rem;margin-bottom:6px;background:rgba(168,85,247,0.15);color:#d8b4fe}
+@media(max-width:600px){.output-box{font-size:.88rem}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📖 AI说明书合同大白话解读</h1><p>晦涩文书一键翻译成人话</p></div>
+
+<div class="card">
+<div><label>🗂 文本类型</label>
+<select id="docType"><option selected>电器/产品说明书</option><option>合同条款</option><option>保险/理财协议</option><option>通知公告</option><option>政策公文</option><option>其他</option></select></div>
+<div><label>📄 粘贴原文</label>
+<textarea id="raw" placeholder="把你要读懂的说明书、合同条款或公告粘贴到这里…（本工具做智能拆解与通俗转写，重要合同请以专业律师意见为准）"></textarea></div>
+<button class="btn-gen" id="genBtn">🔍 帮我读成人话</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:6px">🎯 解读结果</div>
+<span class="tag" id="docTag"></span>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制解读</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const TRIG={
+'支付':['付款','到账','结清','费用','缴纳','结算','费率'],
+'时限':['自……之日起','个工作日内','满','期限','逾期','日内','到期','即时'],
+'责任':['负责','赔偿责任','违约责任','乙方','甲方','免除','免责','应当','不得'],
+'风险':['风险','可能损失','不保证','本金','亏损','限额','免责'],
+'强制':['必须','禁止','不得','应当','一律','不得擅自','违者']
+};
+const WARN_HINT={
+'合同条款':'· 出现「甲方/乙方」时先搞清楚谁是谁，很多雷区藏在「应当」「不得」里；\n· 看到「在……日内书面通知」这类字眼，记得截图做记录，铁证如山；\n· 违约与赔偿条款请重点划出比例和上限。\n* 本解读供参考，重要合同务必咨询专业律师。',
+'保险/理财协议':'· 重点看「免责」「不保证收益」「存续期提前退保」三处；\n· 数字和收益率一定要看括号里的换算前提；\n· 犹豫期内反悔通常免费，过犹豫期可能扣本金。\n* 保险/投资决策请以保险公司与理财顾问正式书面说明为准。',
+'电器/产品说明书':'· 寻安全警示「禁止」「切勿」「会产生」「易燃」；\n· 保养与保修期请单独记好；\n· 有看不懂的描述，可把某一句单独复制再让 AI 展开。',
+'通知公告':'· 先看时间节点和对象，判断是否与自己有关；\n· 「即日起」「至X月X日止」这类字眼决定影响窗口期；\n· 涉及办理/申领的，通常有材料清单，逐一核对。',
+'政策公文':'· 政策核心是「谁能享受/期限多久/怎么兑现」；\n· 留意限定词「符合条件的」「经审核的」；\n· 落地细则多在附件或部门解读里，可再追问一句。',
+'其他':'· 先抓「时间、对象、责任、金钱」四大要素；\n· 复杂句建议按短句重读；\n· 不确定请找专业机构二次确认。'
+};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI说明书合同大白话解读 | AgentGongju.com'))return;
+const raw=document.getElementById('raw').value.trim();
+if(!raw){alert('请先粘贴一段原文');return;}
+const type=document.getElementById('docType').value;
+// 简易拆句
+const sentences=raw.replace(/[\r\n]+/g,'').split(/[。；;!?？!]/).filter(s=>s.trim());
+const cap=Math.min(sentences.length,6);
+const picked=[];
+for(let i=0;i<cap && i<sentences.length;i+=sentences.length>cap?Math.ceil(sentences.length/cap):1){
+  if(!picked.includes(i)){picked.push(i);} 
+}
+// 更稳妥：均匀抽样
+const sample=[];
+const step=Math.max(1,Math.floor(sentences.length/cap));
+for(let i=0;i<cap;i++){sample.push(sentences[Math.min(i*step,sentences.length-1)]);}
+let r='—— 用 3 句话总结这段话 ———\n\n';
+r+='⭐ 通俗大意：\n';
+r+='这段话主要在讲：'+ summarize(sample,type)+'\n\n';
+r+='—— 关键要点拆解 ——\n';
+let foundAny=false;
+sample.forEach(s=>{
+  const hits=Object.keys(TRIG).filter(k=>TRIG[k].some(w=>s.includes(w)));
+  if(hits.length){
+    foundAny=true;
+    r+='\n【'+iconOf(hits[0])+' '+hits[0]+'相关】\n'+(s.length>40? s.slice(0,40)+'…':s)+'\n↳ 大白话：'+plain(s,hits[0])+'\n';
+  }
+});
+if(!foundAny){r+='\n（暂未提取到典型关键词句，按常见文风猜测处理如下）\n↳ 若为承诺/义务类表述，请警惕含糊的责任划分；若为流程类，请核对第①条的时间与第②条的材料要求。\n';}
+r+='\n—— 给你的行动建议 ——\n'+WARN_HINT[type];
+document.getElementById('docTag').innerText=type;
+document.getElementById('outputBox').innerText=r;
+document.getElementById('resultArea').classList.add('active');
+});
+function iconOf(k){return {支付:'💰',时限:'⏰',责任:'🤝',风险:'⚠️',强制:'🚫'}[k]||'🔸';}
+function plain(s,kind){
+  const banks={
+   支付:'简单说就是「要付/会收到多少钱、什么时候付」，别跟福利混在一句话里被忽略。',
+   时限:'意思是办事要卡在这个时间点内，错过可能要多花冤枉钱或白跑一趟。',
+   责任:'在说「这事归谁管、搞砸了谁负责」，责任方一定要看清楚是不是自己。',
+   风险:'在提醒你「万一不顺利，钱或权益可能打折扣」，这种地方最容易被一笔带过。',
+   强制:'是硬性要求，做不到会有后果，通常伴随省略号的惩罚等你来读条款。'
+  };
+  return banks[kind];
+}
+function summarize(ss,type){
+  if(type==='电器/产品说明书') return '教你正确使用、保养和检修某款产品，并说明用了危险品、错误操作会有什么后果以及怎么避免。';
+  if(type==='合同条款') return '约定了双方的权利义务、交钱交东西的时间和出了岔子谁来担责，凡是带「应当 / 不得 / 违约」的字眼都藏着重点。';
+  if(type==='保险/理财协议'||type==='通知公告'||type==='政策公文'||true) {
+    const pool={
+     '保险/理财协议':'约定你交了多少钱、能享受什么保障 / 收益，同时明确在什么情况下不赔 / 不保本，以及反悔退出的代价。',
+     '通知公告':'通知大家某件事的时间、涉及对象和要办的手续，特别是有申领、报名、截止日期的部分。',
+     '政策公文':'交代一项新规定的适用范围、生效时间以及老百姓要如何申请或执行。',
+     '电器/产品说明书':'教你正确使用、保养和检修某款产品，并说明错误操作会发生什么危险以及怎么避免。',
+     '其他':'交代了时间、对象、双方义务与注意事项这几大要素，具体请结合全文阅读核定。'
+    }[type];
+    return pool;
+  }
+}
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 解读已复制！'))}
+</script>
+</body>
+</html>

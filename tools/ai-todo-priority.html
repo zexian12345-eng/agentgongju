@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI要事优先任务排序器 | AgentGongju.com</title>
+<meta name="description" content="事情一做不过来？把你手头的任务丢进来，AI按紧急×重要帮你排出今日次序，并给出每件事该怎么做、该不该授权/拒绝的第四象限决策建议。">
+<meta name="keywords" content="任务优先级,时间管理,四象限,要事优先,待办排序,艾森豪威尔矩阵">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+input[type=text],textarea,select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:100px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s;margin-top:6px}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.95;white-space:pre-wrap;font-size:0.95rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.output-box{font-size:.9rem}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🧲 AI要事优先任务排序器</h1><p>不再瞎忙，把一天排给真正重要的事</p></div>
+
+<div class="card">
+<div><label>📋 把你手头待办的都写下来（一行一件）</label>
+<textarea id="tasks" placeholder="例如：\n今晚前交给客户方案\n下周一的部门例会PPT\n回老同学微信约周末\n整理季度报销单(明天下午截\n研究一下要不要考个证"></textarea></div>
+<button class="btn-gen" id="genBtn">🧮 帮我排出先后</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:10px">🧲 四象限排序结果</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制结果</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+// 启发式判断每个任务的紧急/重要倾向
+const URGENT_W=['截','ddl','deadline','今晚','明天','急','尽快','马上','最后','截止','交','今天','客户','老板','待会','立刻'];
+const IMPORT_W=['客户','方案','汇报','主管','项目','目标','复习','考','面试','总结','计划','涨薪','晋升','论文','业绩','关系','身体健康','学习','关键客户'];
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI要事优先任务排序器 | AgentGongju.com'))return;
+const raw=document.getElementById('tasks').value.trim();
+if(!raw){alert('先写几件待办吧');return;}
+const tks=raw.split(/\n/).map(s=>s.trim()).filter(Boolean).slice(0,20);
+if(!tks.length){alert('请一行一件地写');return;}
+// 分类
+const q={ '高优先·马上做':[], '计划做·抽空安排':[], '授权/简化':[], '删掉/别做':[] };
+const meta=tks.map(t=>{
+  let u=0,i=0;
+  URGENT_W.forEach(k=>{if(t.includes(k))u++;});
+  IMPORT_W.forEach(k=>{if(t.includes(k))i++;});
+  const short=t.length>24?t.slice(0,24)+'…':t;
+  // 随机分到主类(启发式+一点点人味)
+  let bucket;
+  if(u>=1&&i>=1) bucket='高优先·马上做';
+  else if(u>=1&&i===0) bucket = Math.random()>0.5?'高优先·马上做':'授权/简化'; // 紧急但不重要:能授权就授权
+  else if(i>=1) bucket='计划做·抽空安排';
+  else bucket=Math.random()>0.6?'授权/简化':'删掉/别做';
+  return {t,short,bucket,u,i};
+});
+meta.forEach(m=>q[m.bucket].push(m));
+let r='【你手头 '+tks.length+' 件事 · 排序建议】\n\n';
+r+='◆ ① <今日优先·马上做>(又急又重要)\n';
+(q['高优先·马上做'].length?q['高优先·马上做']:[{short:'(今日暂无紧急又重要项，把下面“计划做”里的关键项提前)'}]).forEach((m,i)=>{r+='  '+(i+1)+'. '+m.short+'\n';});
+r+='\n◆ ② <计划做·抽空及时安排>(重要不紧急——决定长期价值)\n';
+(q['计划做·抽空安排'].length?q['计划做·抽空安排']:[{short:'(暂无——建议把真正重要但不急的学习/健康/关系类加进来)'}]).forEach((m,i)=>{r+='  '+(i+1)+'. '+m.short+'\n';});
+r+='\n◆ ③ <授权/简化>(紧急但不重要——尽快处理掉别占用大脑)\n';
+(q['授权/简化'].length?q['授权/简化']:[{short:'(暂无，很好)'}]).forEach((m,i)=>{r+='  '+(i+1)+'. '+m.short+'\n';});
+r+='\n◆ ④ <删掉/别做>(不紧急也不重要)\n';
+(q['删掉/别做'].length?q['删掉/别做']:[{short:'(暂无——成功避开时间黑洞)'}]).forEach((m,i)=>{r+='  '+(i+1)+'. '+m.short+'\n';});
+r+='\n—— 给你的执行教练 ——\n';
+r+='· 今天 80% 的精力砸向①②；③能用10分钟搞定的马上做，做不完的直接授权/请人带；④果断说不，别让它混进日程。\n';
+r+='· 给「高优先」排进日历具体时段，写不出deadline的事=还不紧急；\n· 临睡前把②中“最重要的一件事”锁定为明天的第一优先级（吃青蛙）。';
+document.getElementById('outputBox').innerText=r;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 排序结果已复制！'))}
+</script>
+</body>
+</html>

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI群聊长文精华摘要提取 | AgentGongju.com</title>
+<meta name="description" content="工作群刷了几百条、长文档看得头晕？粘贴聊天记录或长文片段，AI帮你去噪提髓，给出一句话结论、关键事项与要跟进的行动项，不再怕信息轰炸。">
+<meta name="keywords" content="聊天记录摘要,长文总结,群聊精华,信息提炼,会议总结,要点提取">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:860px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+textarea{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px;min-height:160px;resize:vertical}
+select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea:focus,select:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.9;white-space:pre-wrap;font-size:0.95rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.output-box{font-size:.9rem}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🔍 AI群聊长文精华摘要提取</h1><p>信息再多，也一眼抓得住重点</p></div>
+
+<div class="card">
+<div><label>📥 文本来源</label>
+<select id="src"><option selected>工作群聊天记录</option><option>长文档/通知/方案</option><option>朋友圈/公众号长文</option><option>群公告+讨论混杂</option></select></div>
+<div><label>📄 粘贴原文（聊天记录 / 文档均可）</label>
+<textarea id="raw" placeholder="把几百条群聊或整段长文直接贴进来，按人/按话题分段会更好…（本工具为本地智能拆解：提取结论要点与行动项，供你核对原意后用）"></textarea></div>
+<button class="btn-gen" id="genBtn">✨ 提炼精华</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🔍 提炼结果</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制摘要</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+// 关键词打点
+const K={
+  确认:['确认','ok','收到','没问题','可以','+1','同意见'],
+  时间:['今天','明天','下周','月底','截止','deadline','X点','周一','周五','ddl','最晚'],
+  待办:['麻烦','请','跟进','汇总','统计','整理','做一下','尽快','帮我把','记得'],
+  风险:['出问题','挂了','延期','超支','故障','bug','紧急','报错','卡住'],
+  决策:['决定','定了','就用','pass','采纳','拍板','通过','否了']
+};
+const MARK=['【有人】','【具体项】','【需注意】','【待确认】'];
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI群聊长文精华摘要提取 | AgentGongju.com'))return;
+const raw=document.getElementById('raw').value.trim();
+if(!raw){alert('请先粘贴一段原文');return;}
+const lines=raw.replace(/\r/g,'').split(/[\n]{1,}/).filter(x=>x.trim());
+const flat=raw;
+// 打点关键词行
+let need=lines.filter(l=>{const t=l.trim();return t.length>2;});
+const hits=[]
+lines.forEach(l=>{
+  const found={};
+  Object.keys(K).forEach(k=>{ if(K[k].some(w=>l.includes(w))) found[k]=(found[k]||0)+1; });
+  if(Object.keys(found).length)hits.push({l,found});
+});
+// 构造结果
+let r='—— 一句话结论 ——\n';
+r+=oneLine(flat)+'\n\n';
+r+='—— 关键信息 / 已敲定事项 ——\n';
+const dec=hits.filter(h=>h.found['决策']||h.found['确认']).slice(0,3);
+if(dec.length){dec.forEach((h,i)=>{r+=(i+1)+'. '+shorten(h.l,26)+'\n';});} else {r+='· 本期对话以同步/讨论为主，暂未见明确拍板，建议主动@确认结论。\n';}
+r+='\n—— 由你/团队要跟进的行动项 ——\n';
+const todo=hits.filter(h=>h.found['待办']||h.found['时间']).slice(0,3);
+if(todo.length){todo.forEach((h,i)=>{r+='☐ '+shorten(h.l,26)+' \u2192 补上责任人与deadline后回填\n';});} else {r+='· 原文暂未出现明确“@某人做某事”，可顺手把上一段“一句话结论”里的待定项设为下一步。\n';}
+r+='\n—— 重点关注 / 风险预告 ——\n';
+const risk=hits.filter(h=>h.found['风险']).slice(0,2);
+if(risk.length){risk.forEach(h=>{r+='⚠ '+shorten(h.l,26)+'\n';});} else {r+='· 未识别到明显风险/故障字眼，若有图片文件请复查。\n';}
+r+='\n—— 建议的下一条动作 ——\n· 若有歧义，@关键人把上面“行动项”敲定成1条带时间的一句话；\n· 把这段摘要回贴群内，大家纠正后再执行最省事。\n';
+r+='\n(智能提炼仅按关键词与结构推断，重要商务信息请以群内原文与负责人确认为准)';
+document.getElementById('outputBox').innerText=r;
+document.getElementById('resultArea').classList.add('active');
+});
+function shorten(s,n){s=s.trim();return s.length>n?(s.slice(0,n)+'…'):s;}
+function oneLine(flat){
+  // 提取最像“结论”的一句
+  const lines=flat.replace(/\s+/g,'').split(/[。！？]/).filter(Boolean);
+  const seld=lines.find(x=>x.includes('决定')||x.includes('就这样')||x.includes('ok')||x.includes('定了')||x.includes('通过'));
+  return seld?('本次对话主要围绕「'+shorten(seld,20)+'」展开，核心是把这件事定下来/推进下去。'):'本篇记录了某项工作的讨论与分工，核心诉求是“把某人负责的某事在某个时间点前办妥”。具体请结合下方要点核对。';
+}
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 摘要已复制！'))}
+</script>
+</body>
+</html>

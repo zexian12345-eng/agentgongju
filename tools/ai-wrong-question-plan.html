@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI错题复盘错因分析器 | AgentGongju.com</title>
+<meta name="description" content="考试/作业错题不再抄一遍就完事。输入错题描述与错误答案，AI帮你这道错导致错的知识点、错因归类与下次防错口诀，量身定制错题本模板。">
+<meta name="keywords" content="错题本,错因分析,复盘模板,考试成绩提升,学习错题,防错口诀">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+input[type=text],textarea,select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:90px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s;margin-top:6px}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.95;white-space:pre-wrap;font-size:0.95rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.output-box{font-size:.9rem}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📓 AI错题复盘错因分析器</h1><p>让每一道错题，都成为提分的跳板</p></div>
+
+<div class="card">
+<div><label>📝 这道题的题干（或简述）</label>
+<textarea id="q" placeholder="把题目哪怕删掉数字简述也行，例如：求二次函数顶点坐标，我把x代反了……"></textarea></div>
+<div class="param-grid">
+<div><label>📚 学科</label>
+<select id="sub"><option selected>数学</option><option>物理</option><option>化学</option><option>生物</option><option>语文</option><option>英语</option><option>历史地理</option><option>政治</option><option>其他/偏科通用</option></select></div>
+<div><label>🥇 失分形态</label>
+<select id="miss"><option selected>算错/代错数</option><option>公式记错用错</option><option>审题漏条件</option><option>概念不懂</option><option>会做但粗心</option><option>想不到方法</option><option>题都没读懂</option></select></div>
+</div>
+<div><label>🎯 目标档位（可选）</label>
+<select id="level"><option selected>及格线冲刺</option><option>中等提优</option><option>冲刺高分学霸</option><option>不限，只求把同类题做对</option></select></div>
+<button class="btn-gen" id="genBtn">🔍 复盘这道题</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">📓 错题复盘卡</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制复盘卡</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const SUB_KEY={
+'数学':['函数图像与变量关系','公式定理','计算与单位','几何直观','符号含义'],
+'物理':['受力与运动关系','单位换算','公式适用条件','过程分步','图象读法'],
+'化学':['化学式与方程','反应条件','物质性质','配平守恒','实验操作'],
+'生物':['概念术语','代谢流程','图表数据','实验设计','遗传计算'],
+'语文':['审题立意','文言字词','答题结构','标点病句','文本理解'],
+'英语':['词汇搭配','时态语态','从句成分','阅读理解','作文结构'],
+'历史地理':['时间事件','区域特征','地图信息','因果逻辑','材料解读'],
+'政治':['原理定位','材料对应','术语表达','时政结合','答题角度'],
+'其他/偏科通用':['概念理解','过程规范','审题','计算','方法套路']
+};
+const MISS={
+'算错/代错数':{cause:'多为载错对象/抄错符号/乘除优先级——本质是「过程没留痕」而非能力不足',fix:['第一步就写下「已知、求、解」骨架，杜绝跳步','复杂计算写两遍交叉核对，尤其符号和幂次','检查时用「代入回验」替代重算一遍的思路']},
+'公式记错用错':{cause:'记忆不精确，混淆了使用条件（如只记形不记前提）',fix:['做公式卡：每个公式配—个确定能触发它的例题','分清「总公式/变形/缺条件公式」三层','考前默写公式，并脑内自问「这题凭什么用它？」']},
+'审题漏条件':{cause:'赶时间答题、先入为主按“题感”走',fix:['读题拿笔圈关键数据与限定词（至少、最大、不放回）','前3秒只读题不写，逼自己抓全条件再下笔','对“藏着的条件”训练敏感度（隐含单位/默认点）']},
+'概念不懂':{cause:'对定义理解停留在表面，换成说法就认不出来',fix:['用「一句话+一个生活例子」复述概念本质','对照课本插图/图示再认一遍直观理解','每章做1页“概念自问自答”考自己定义能否说清']},
+'会做但粗心':{cause:'多在“我以为我懂了”与“实际跳步”的落差，也和心态急躁有关',fix:['建立检查清单，做完全部先复查这几类：符号/数位/题号错位','划掉已用条件防漏','平时就练“做完必须口头重述一遍过程”的仪式感']},
+'想不到方法':{cause:'同类题的“套路库”没建立，或对考向不敏感',fix:['错题本按“题型标签”归类，标注出这一型的“入口动作”','总结从“读到的特征”到“该用的方法”的触发器','刷同类3题巩固“条件-方法”对应']},
+'题都没读懂':{cause:'题干信息密度大，阅读时丢了结构；或术语生疏',fix:['把长题干拆成“背景—条件—问题”三段再动手','先译成人话（尤其题干里的名词）再动笔','平时训练限时读题并复述核心，提升提取力']}
+};
+const GOAL={
+'及格线冲刺':['目标定位：先把中低档送分题吃稳，压轴不恋战','优先搂清「概念+公式+基本计算」三大地基'],
+'中等提优':['目标定位：基础全对+中档不丢','重点排查「审题关键词」与「过程完整性」'],
+'冲刺高分学霸':['目标定位：压轴不失手，陷阱题零中招','多练「一题多解/特殊值检验」防唯一路径依赖'],
+'不限，只求把同类题做对':['目标定位：把这一道变一类，错一次不复错','建立自己的“同类题错题对照表”']
+};
+function pick(a){return a[Math.floor(Math.random()*a.length)];}
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI错题复盘错因分析器 | AgentGongju.com'))return;
+const q=document.getElementById('q').value.trim();
+if(!q){alert('请先简述一下这道错题');return;}
+const sub=document.getElementById('sub').value;
+const miss=document.getElementById('miss').value;
+const g=document.getElementById('goalT')?null:null;
+const level=document.getElementById('level').value;
+const M=MISS[miss];
+const keyPts=SUB_KEY[sub];
+const kp=pick(keyPts);
+let r='【错题复盘卡 · '+sub+'】\n';
+r+='题目回顾（节选）：'+ (q.length>30? q.slice(0,30)+'…':q) +'\n\n';
+r+='—— ① 可能错在哪一步 ——\n';
+r+='· 失分形态判定：'+miss+'\n';
+r+='· 对应原因：「'+M.cause+'」\n\n';
+r+='—— ② 关联薄弱知识点猜测 ——\n';
+r+='多半落在「'+kp+'」附近，常见卡点形态与解法类似，值得专门补一遍。\n\n';
+r+='—— ③ 这次的防错清单 ——\n';
+(Array.isArray(M.fix)?M.fix:[]).forEach((f,i)=>{r+=(i+1)+'. '+f+'\n';});
+r+='\n—— ④目标阶段指引 ('+level+') ——\n';
+GOAL[level].forEach(x=>{r+='· '+x+'\n';});
+r+='\n—— ⑤ 回访安排 ——\n';
+r+='· 今天睡前列出本题考点一句话\n· 3天后不看答案重做一次并计时\n· 7天后做一道同考点新题验证“触发器”是否已长在肌肉里';
+document.getElementById('outputBox').innerText=r;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 复盘卡已复制！'))}
+</script>
+</body>
+</html>

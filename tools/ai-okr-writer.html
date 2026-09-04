@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI OKR绩效目标撰写助手 | AgentGongju.com</title>
+<meta name="description" content="季度/年度KPI不知道怎么写？输入你的岗位职责或痛点，AI帮你写出合格的目标(O)与可衡量的关键结果(KR)，附带行动计划建议。职场人绩效管理的实用帮手。">
+<meta name="keywords" content="OKR,绩效目标,季度目标,KPI写作,目标管理,职场技能">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+input[type=text],textarea,select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:80px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s;margin-top:6px}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.95;white-space:pre-wrap;font-size:0.95rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.output-box{font-size:.9rem}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🎯 AI OKR绩效目标撰写助手</h1><p>把说不清的目标，写成老板点头的OKR</p></div>
+
+<div class="card">
+<div class="param-grid">
+<div><label>👔 岗位 / 你的职责</label>
+<select id="role"><option selected>市场/增长</option><option>产品经理</option><option>运营</option><option>技术研发</option><option>销售</option><option>HR/人事</option><option>财务</option><option>设计/内容</option><option>管理者/团队负责人</option><option>个人成长(非工作)</option></select></div>
+<div><label>🗓 目标周期</label>
+<select id="period"><option selected>季度</option><option>半年</option><option>年度</option><option>月度</option></select></div>
+</div>
+<div><label>🎯 这一年/这一期最想突破的方向（或用一句话描述现状痛点）</label>
+<textarea id="goal" placeholder="例如：新用户增长遇到瓶颈，想提升获客效率 / 团队协作混乱想推动标准化…（本工具按最有用的OKR写法给框架+落地KR示例）"></textarea></div>
+<button class="btn-gen" id="genBtn">✨ 生成OKR草稿</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🎯 你的OKR草稿</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制OKR</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const ROLE_LIB={
+'市场/增长':{goal:'提升[tgt]渠道的获客规模与转化质量',kr:['新增有效线索量环比提升 XX%','重点渠道获客成本(CAC)下降 XX%','季度有效线索转商机率提升到 XX%']},
+'产品经理':{goal:'打磨[核心功能]体验，驱动关键指标提升',kr:['核心功能次周留存提升至 XX%','关键流程转化率提升 XX%','完成 XX 次用户访谈并落地 XX 个改进点']},
+'运营':{goal:'驱动[核心业务]活跃与留存双增长',kr:['DAU / 周活环比提升 XX%','30日留存率提升至 XX%','建立并跑通 XX 个日常运营SOP']},
+'技术研发':{goal:'提升[系统的]稳定性与交付效率',kr:['线上可用性达到 XX%（如99.9%）','核心接口P99耗时压到 XXms','关键项目按期/按质量上线并通过 XX 轮压测']},
+'销售':{goal:'扩大[区域/行业]签约规模',kr:['季度签约额达成 XX','新增签约客户数达到 XX 家','重点客户续约率提升至 XX%']},
+'HR/人事':{goal:'提升关键岗位交付与组织健康度',kr:['关键岗位到岗周期缩短至 XX 天','季度招聘完成率达到 XX%','落地 XX 场员工关怀/培训并回收满意度']},
+'财务':{goal:'提升预算与资金管理精细化',kr:['预算执行偏差率控制在 XX% 内','月度经营分析按时出具并转化 XX 项建议','坏账/逾期应收控制在目标线以内']},
+'设计/内容':{goal:'打造更具感染力与转化力的[品牌]表达',kr:['核心物料完稿量达到 XX 套','高传播(转发/爆款)内容产出 XX 条','关键内容带来的转化/询盘提升 XX%']},
+'管理者/团队负责人':{goal:'建设一支高执行高凝聚的团队',kr:['关键项目按期交付率达到 XX%','团队季度流失率控制在 XX% 以下','人均产出 / 人效环比提升 XX%']},
+'个人成长(非工作)':{goal:'系统性提升[某方面]能力',kr:['每周投入 XX 小时专项学习/训练','完成 XX 项可交付成果(作品/证书/复盘)','建立可复用的方法/模板沉淀 XX 份']}
+};
+const OPEN={
+'新用户增长遇到瓶颈':['通过内容+活动组合，把冷启动获客做成可持续引擎','在重点渠道建立可复制的高转化漏斗','用数据回传驱动投放优化，降低无效预算'],
+'团队协作混乱':['先把协作的“约定俗成”固化进文档与流程','核心机制拆成可量化KPI并每周看板复盘','推动一次流程文档化，减少反复口头拉扯'],
+'效率怎么提都上不去':['找出最耗时的一类重复工作并工具/模板化','把排期改成可视化并设站点检查，防拖尾','通过每日站会收拢信息，砍掉无效会议'],
+'转化率低':['找出流失率最高的环节做专项优化','用AB测试验证其中一个改动点再放量','把高转化话术/素材沉淀成标准化弹药库'],
+'缺人手/留不住人':['梳理关键岗位画像并优化招聘/留存机制','为新人和骨干设计清晰成长路径','以离职面谈数据反推组织问题并落地改善']
+};
+const KR_TAIL=['（“XX”为占位，请按你司真实基数与合理增幅填写，SMART是底线：具体、可衡量、可达、相关、有时限）','（示例中的占比/数值均为示范，务必替换成可核对的真实目标）','（写KR请避开“尽量/争取”，数量与比率越硬越好）'];
+function pick(a){return a[Math.floor(Math.random()*a.length)];}
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI OKR绩效目标撰写助手 | AgentGongju.com'))return;
+const role=document.getElementById('role').value;
+const period=document.getElementById('period').value;
+const txt=document.getElementById('goal').value.trim();
+const lib=ROLE_LIB[role];
+// 判断是否命中内置痛点在OPEN
+const hit=OPEN[txt]||(txt?OPEN_LIKE(txt):null);
+let r='【'+role+' · '+period+'OKR草稿】\n';
+r+='(输入方向：'+(txt||'沿用岗位典型方向')+')\n\n';
+r+='■ Objective（目标）——鼓舞人心、可达成的一句话：\n';
+r+='“'+(hit?hit[0]:lib.goal)+'”\n\n';
+r+='■ Key Results（关键结果）——3~4条可量化KR：\n';
+const krs=hit?[hit[1],hit[2],'（补充）围绕'+txt+'，把最痛的那件事再拆成1条有deadline的KR']:lib.kr;
+krs.forEach((k,i)=>{r+='KR'+(i+1)+'：'+k+'\n';});
+r+='\n■ 落地行动建议（本阶段可先做这三件）：\n';
+r+='· 目标对齐：先跟直属上级对齐“最重要的1件事”，避免KR发散；\n';
+r+='· 数据先行：给每条KR配上你现有的埋点/报表口径，做不到“可衡量”的KR先补数据源；\n';
+r+='· 节奏检查：'+period+'内建议设1次中期对表，KR达成率<50%要果断砍旧换新。\n\n';
+r+='────────\n'+pick(KR_TAIL);
+document.getElementById('outputBox').innerText=r;
+document.getElementById('resultArea').classList.add('active');
+});
+function OPEN_LIKE(t){
+  if(t.indexOf('增长')>-1||t.indexOf('获客')>-1)return OPEN['新用户增长遇到瓶颈'];
+  if(t.indexOf('协作')>-1||t.indexOf('流程')>-1||t.indexOf('标准化')>-1)return OPEN['团队协作混乱'];
+  return null;
+}
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ OKR草稿已复制！'))}
+</script>
+</body>
+</html>
