@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 暖心感谢信生成 | AgentGongju.com</title>
+<meta name="description" content="向领导、长辈、恩师或好友表达感谢，选择对象与具体事由一键生成走心感谢信">
+<meta name="keywords" content="感谢信,感谢领导,感谢老师,致谢模板,感谢信生成">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:70px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2.4;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>💌 AI 暖心感谢信</h1><p>对象与事由写清楚，剩下走心的表达交给我们</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>🙋 想感谢谁</label>
+<select id="who"><option value="领导">职场上司 / 领导</option><option value="老师">恩师 / 老师</option><option value="朋友">朋友 / 挚友</option><option value="家人">家人 / 长辈</option><option value="同事">同事 / 合作方</option></select></div>
+<div><label>📮 致谢方式</label>
+<select id="chan"><option value="formal">正式书信</option><option value="wechat">微信/短信</option><option value="card">贺卡短句</option></select></div>
+</div>
+<label>🏷 对方称呼（如：张总、李老师）</label>
+<input type="text" id="honor" placeholder="例:王经理 / 周老师 / 老爸">
+<label>💬 具体感谢的时刻/事由</label>
+<textarea id="reason" placeholder="例：上次项目延期你陪我加班到凌晨还帮我顶住压力 / 高三那年你总在放学后给我补课">
+<button class="btn-gen" id="genBtn">✨ 生成感谢信</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 感谢信已写好</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制感谢信</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const titleMap={'领导':'尊敬的','老师':'敬爱的','朋友':'亲爱的','家人':'','同事':'亲爱的'};
+const endingMap={'领导':'此致\n敬礼！\n\n你的下属','老师':'此致\n敬礼！\n\n您的学生','朋友':'愿我们友谊长存！\n\n你的朋友','家人':'永远爱您！\n\n(你的名字)','同事':'期待继续携手同行！\n\n你的伙伴'};
+const midMap={
+领导:'那次你力排众议给我机会，在我最不自信时只说了一句"我相信你能扛下来"，于我而言如同一束光。你不仅教会我怎么做事，更教会我如何沉稳地面对不确定性。',
+老师:'那几页写满红批注的作业本我一直留着。你总说"再试一次，你可以的"，让当时差点放弃的自己又咬牙走完了最后一程。师恩如山，不敢言谢，唯有把这份耐心传下去。',
+朋友:'每当我深夜emo、你二话不说发来语音陪我聊到电池见红，我就觉得这世界温柔得不像话。谢谢你总在我最down的时刻伸出手，没让我一个人在黑暗里硬扛。',
+家人:'这些年你为我操了多少心、熬了多少夜，嘴上却总说"没事的"。如今我也渐渐明白，那些被我当成唠叨的话语里，全是你用力藏起来的牵挂。',
+同事:'一起熬过的那些deadline、一起掉过的头发、还有互相兜底的那股默契，比什么团建都牢靠。谢谢你把后背交给我，也谢谢这段并肩作战的时光。'};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 暖心感谢信生成 | AgentGongju.com'))return;
+const who=document.getElementById('who').value;
+const chan=document.getElementById('chan').value;
+const honor=document.getElementById('honor').value.trim()||(who==='领导'?'领导':who==='老师'?'老师':who==='朋友'?'朋友':who==='家人'?'家人':'伙伴');
+const reason=document.getElementById('reason').value.trim();
+const T=titleMap[who]+honor+'：';
+const body=reason?('特别想跟你说声谢谢——'+reason+'。那一幕我始终记在心里。'):midMap[who];
+let letter;
+if(chan==='wechat'){
+letter=T+'\n\r好久不见，本想当面说谢却总被推着走。感谢你'+ (reason?('在我提过的那件事上给我的帮助'):'一直以来的关照')+ '。'+(reason?'你那次做的事我记到今天，真的非常感谢。':midMap[who].replace(/\n/g,' '))+'聊表心意，改天请你吃饭！';
+}else if(chan==='card'){
+letter='「致'+honor+'」\n\n'+(reason?('谢谢那次你'+reason.split('，')[0]):'谢谢你每一次无声的关照')+'。\n有些谢意，写出来才显郑重。\n愿你的付出，都被世界温柔以待。';
+}else{
+letter=T+'\n\n　　提笔之时，很多感谢反而不知从何说起。'+body+'\n\n　　这份情谊对我来说弥足珍贵。未来的日子里，我希望能以同样的温度回馈于你，也把你的善意传递下去。\n\n'+endingMap[who];}
+document.getElementById('outputBox').innerText=letter;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 感谢信已复制！'))}
+</script>
+</body>
+</html>

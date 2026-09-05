@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 营养餐盘搭配合成 | AgentGongju.com</title>
+<meta name="description" content="按中国居民膳食指南帮你把一顿饭搭成"半盘蔬果+一掌肉+一拳主食"的平衡餐盘，附热量与替换建议">
+<meta name="keywords" content="营养餐盘,健康搭配,均衡饮食,饮食指南,减脂餐">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2.1;white-space:pre-wrap;font-size:.9rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🍽 AI 营养餐盘搭配师</h1><p>不限"这不能吃那不能吃"，教你做一份"半蔬一拳肉一手主食"的平衡盘</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>⚖️ 我的目标</label><select id="goal"><option value="均衡">日常均衡</option><option value="减脂">🥗 减脂管理</option><option value="增肌">💪 增肌训练</option><option value="控糖">🩺 控糖/三高人群参考</option></select></div>
+<div><label>🕛 这是哪一餐</label><select id="meal"><option value="breakfast">🌄 早餐</option><option value="lunch">☀️ 午餐</option><option value="dinner">🌙 晚餐</option></select></div>
+</div>
+<div class="param-row">
+<div><label>👤 我的食量画像</label>
+<select id="size"><option value="小">小胃口（女生为主/胃口小）</option><option value="中">中等胃口</option><option value="大">大胃口/体力工作者</option></select></div>
+<div><label>🧂 忌口与偏好（可多选写文字）</label><input type="text" id="avoid" placeholder="例：不吃香菜,少油,海鲜过敏"></div>
+</div>
+<button class="btn-gen" id="genBtn" style="margin-top:8px">🍚 给我配一餐</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 你的平衡餐盘已配好（参考性质）</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制餐盘方案</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const vegPool=[['清炒时蔬','蒜蓉西兰花','凉拌木耳菠菜','上汤娃娃菜'],['白灼秋葵','凉拌黄瓜豆腐丝','西红柿炖白菜','地三鲜(少油版)']];
+const staplePool=[['杂粮饭(大半碗)','蒸紫薯+玉米段','荞麦面'],['糙米饭','山药/南瓜','全麦软欧(一小片)']];
+const protPool=[['清蒸鲈鱼/鸡胸','卤牛肉片(手掌大)','白灼虾仁'],['煎豆腐+一个蛋','瘦肉丝','去皮鸡腿(一掌)']];
+const avoidString=['香菜','海鲜','鱼','牛肉','豆腐','蛋'];
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 营养餐盘搭配师 | AgentGongju.com'))return;
+const goal=document.getElementById('goal').value;
+const meal=document.getElementById('meal').value;
+const size=document.getElementById('size').value;
+const avoid=document.getElementById('avoid').value.trim();
+const avoidArr=avoid.split(/[,，、\s]+/).filter(b=>avoidString.some(aw=>b.includes(aw)||avoid.includes(aw)));
+let veg=vegPool[0].slice(),sta=staplePool[0].slice(),pro=protPool[0].slice();
+veg=veg.concat(vegPool[1]);sta=sta.concat(staplePool[1]);pro=pro.concat(protPool[1]);
+if(avoidArr.length){const rm=(x,arr)=>arr.filter(i=>!avoidArr.some(a=>i.includes(a)));veg=rm(veg);sta=rm(sta);pro=rm(pro);}
+const d=Math.floor(Math.random()*999)%veg.length;
+const pick=Math.abs(Math.floor((Date.now()/500))%veg.length);
+const v=veg[pick%veg.length],s=sta[pick%sta.length],p=pro[pick%pro.length];
+const isBreakfast=meal==='breakfast';
+let out='🍽 【平衡餐盘 · '+( meal==='breakfast'?'早餐':meal==='lunch'?'午餐':'晚餐')+' · '+goal+({均衡:'均衡',减脂:'减脂',增肌:'增肌',控糖:'控糖参考'}[goal])+'】\n';
+out+='食量档位：'+(size==='小'?'小胃口':size==='大'?'大胃口':'中等')+'　忌口备注：'+(avoid||'无')+'\n';
+out+='━━━━━━━━━━━━━━━━\n';
+if(isBreakfast){out+='🥛 一杯：无糖豆浆/纯奶(250ml)\n🥚 蛋白1份：水煮蛋1个\n🌾 主食1拳：'+(sta[0]||'燕麦'||'杂粮馒头')+'\n🥬 蔬果1把：'+(veg[0]||'小番茄黄瓜'||'焯水菠菜')+'\n\n☕ 上午加餐可补一小把坚果(约10g)。';}
+else{
+out+='按膳食指南配比助手给出:\n\n';
+out+='🌱 蔬菜占半盘　→ 建议：'+v+'\n';
+out+='🍤 蛋白一掌	　→ 建议：'+p+'（优先清淡烹调：蒸/煮/白灼）\n';
+out+='🌾 主食一拳　 → 建议：'+(sta[pick%sta.length]||'杂粮饭')+ (goal==='减脂'?'（减脂期可附粗粮替换提示）':'')
+ +'\n\n';
+out+=(goal==='减脂'?'🎯 减脂加餐/替换：\n　· 油用控量小勺，蔬菜先吃半盘垫底再吃蛋白与主食\n　· 把一半白米饭换成杂粮，饱腹感提升、餐后血糖更平缓\n':'')
++ (goal==='增肌'?'🎯 增肌放大招：\n　· 蛋白两选一可加至一掌+半掌，睡前一小时补一杯酸奶\n　· 训练后这餐比平时再多半份主食，助恢复\n':'')
++ (goal==='控糖'?'🎯 控糖/三高参考：\n　· 主食选升糖缓的杂粮，意面/山药优先；菜多蒸煮少油盐\n　· 水果放两餐之间，别当"餐后甜品"一勺蜂蜜般纠结\n' :'')
++(goal==='均衡'?'🎯 均衡加固：饭后散步10分钟，若有需要晚间不再加餐甜点。\n':'');}
+out+='\n📌 提示：本餐盘为通用搭配参考，非医疗建议。有明确疾病/过敏请遵医嘱调整。';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 餐盘方案已复制！'))}
+</script>
+</body>
+</html>

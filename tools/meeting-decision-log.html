@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 会议决策台账生成 | AgentGongju.com</title>
+<meta name="description" content="把混乱的会议记录整理成「决策+待办+负责人+截止日」的清晰台账，秒变会后的执行清单">
+<meta name="keywords" content="会议决策,会议待办,行动项,决策台账,会议纪要">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:90px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.9rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📋 AI 会议决策台账</h1><p>会开完了更要"盯得住"——一键生成责任到人的执行决策表</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>📌 会议主题</label><input type="text" id="mtitle" placeholder="例：Q3新品发布筹备会"></div>
+<div><label>📅 会议日期</label><input type="date" id="mdate"></div>
+</div>
+<label>📝 会议记录原文（可多行粘贴）</label>
+<textarea id="notes" placeholder="尽量分句/分条粘贴，例：定在10月18日上线；设计周五出图；运营罗思准备双微预热文案;预算超了要砍渠道…"></textarea>
+<div class="param-row">
+<div><label>👥 与会成员</label><input type="text" id="people" placeholder="例：李明、张华、陈晓"></div>
+<div><label>📊 会议类型</label><select id="ktype"><option value="project">项目复盘/例会</option><option value="deploy">方案敲定会</option><option value="standup">每日站会</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">📌 生成决策台账</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 决策台账已整理好，可直接同步到群里</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制台账</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+//把一句话拆成（行动项,负责人,ddl）——本地演示用关键词规则
+const verbHints={李明:['出图','设计','海报','物料'],张华:['写','文案','预热','策略'],陈晓:['预算','砍','渠道','投放'],王强:['跟进','排期','研发','联调'],刘洋:['测试','验收','上线','QA']};
+function assign(unit,people){
+ for(const p of people){const hs=verbHints[p]||[];if(hs.some(h=>unit.includes(h)))return p;}
+ return people[0]||'待分配';
+}
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 会议决策台账生成 | AgentGongju.com'))return;
+const mtitle=document.getElementById('mtitle').value.trim()||'本周例会';
+const mdate=document.getElementById('mdate').value||new Date().toISOString().slice(0,10);
+const notes=document.getElementById('notes').value.trim();
+const people=document.getElementById('people').value.split(/[、,，\s]+/).filter(Boolean);
+const ktype=document.getElementById('ktype').value;
+if(!notes){alert('请粘贴一段会议记录');return;}
+const units=notes.split(/[\n;；。]/).map(s=>s.trim()).filter(s=>s.length>2&&!/^\s*$/.test(s)).slice(0,8);
+let out='📋 【决策执行台账 · '+mtitle+'】\n';
+out+='日期：'+mdate+'　类型：'+(ktype==='project'?'例会/复盘':ktype==='deploy'?'方案敲定':'站会')+(people.length?'　　与会：'+people.join('、'):'')+'\n';
+out+='━━━━━━━━━━━━━━━━━━━━━━━\n';
+out+='一、主要决策\n';
+const decided=units.filter(u=>/定|决定|敲定|同意|通过|选|采用/.test(u));
+if(decided.length){decided.slice(0,3).forEach(u=>out+='　✔ '+u.split(/[,,，]/)[0]+'\n');}
+else{out+='　✔ 就会议主题达成阶段性共识，详情见下方行动列表。\n'}
+out+='\n二、行动项（Action Items）\n';
+out+='　┌─ 待办事项 ─────────── 负责人 ── 截止 ┐\n';
+const days=(ktype==='standup')?2:5;
+units.slice(0,6).forEach((u,idx)=>{
+ const owner=assign(u,people);
+ const ddl=new Date(); ddl.setDate(ddl.getDate()+ (idx%2===0?days:idx%2===1?10:days+3));
+ const ds=ddl.toISOString().slice(5,10).replace('-','/');
+ let act=u.length>26?u.slice(0,26)+'…':u;
+ out+='　│ '+String(idx+1).padStart(2,'0')+'. '+act.padEnd(28,'　')+' '+(owner.padEnd(4,'　'))+' '+ds+' │\n';
+});
+out+='　└───────────────────────────────────┘\n';
+out+='\n三、备注\n';
+out+=(ktype==='standup'?'　· 明日站会继续同步阻塞项，如有风险提前@负责人。':ktype==='deploy'?'　· 各负责人如有范围变更，请于会后24h内在群内@全员确认。':'　· 请各负责人将事项录入本团队看板，下周三例会统一对进度拉通。');
+if(units.length>out.includes('✔')){}
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 决策台账已复制，可粘贴到群里！'))}
+</script>
+</body>
+</html>

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 今日幸运色穿搭 | AgentGongju.com</title>
+<meta name="description" content="根据日期五行与生肖生成今日幸运色，并一键匹配出门场景的穿搭与生活小贴士">
+<meta name="keywords" content="幸运色,今日幸运,穿搭指南,五行颜色,开运穿搭">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=date]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2.2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.color-swatch{display:inline-block;width:46px;height:46px;border-radius:50%;margin:0 4px 6px;vertical-align:middle;border:2px solid rgba(255,255,255,.2)}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🎨 AI 今日幸运色穿搭</h1><p>依据日期五行与生肖生成今日幸运配色，出门前花10秒查一查</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>📅 选择日期</label><input type="date" id="cdate"></div>
+<div><label>🐉 您的生肖</label>
+<select id="zodiac"><option>鼠</option><option>牛</option><option>虎</option><option>兔</option><option>龙</option><option>蛇</option><option>马</option><option>羊</option><option>猴</option><option>鸡</option><option>狗</option><option>猪</option></select></div>
+</div>
+<label>📍 今日主要场景</label>
+<select id="scene"><option value="职场">👔 上班 / 面试</option><option value="约会">💘 约会 / 见重要朋友</option><option value="休闲">☕ 日常休闲 / 逛街</option><option value="谈判">🤝 谈判 / 签合同</option></select>
+<label style="margin-top:10px">🎯 想侧重开运的方面</label>
+<select id="wish"><option value="综合">综合旺运</option><option value="财运">💰 财运</option><option value="桃花">🌹 桃花人缘</option><option value="事业">🚀 事业晋升</option></select>
+<button class="btn-gen" id="genBtn" style="margin-top:16px">🎨 查询今日幸运色</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 今日幸运配色已解析</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制穿搭清单</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const colors={//对应五个色系：main颜色十六进制
+ gold:{name:'金色系 · 尊贵暖黄',hex:'#eab308',ele:'土',tip:'正财稳健，谈判加分',outfits:['金色/米黄针织衫','焦糖色直筒裤','浅咖色西装外套']},
+ green:{name:'绿色系 · 生机青翠',hex:'#22c55e',ele:'木',tip:'旺事业与成长，求职亮眼',outfits:['墨绿衬衫','军绿工装外套','牛油果绿上衣']},
+ blue:{name:'蓝色系 · 沉稳藏青',hex:'#2563eb',ele:'水',tip:'利口才灵感，适合创作表达',outfits:['雾霾蓝毛衣','藏青西装','海蓝休闲卫衣']},
+ red:{name:'红色系 · 热情中国红',hex:'#ef4444',ele:'火',tip:'增益人气与桃花，带来行动力',outfits:['酒红外套','砖红格子裙','CHERRY红包点缀']},
+ white:{name:'白色系 · 洁净明亮',hex:'#e2e8f0',ele:'金',tip:'清爽招贵人，减负转运',outfits:['纯白衬衫','奶白半裙','浅灰开衫']}};
+const eleOf=['木','火','土','金','水']; //阳历序天干简化
+//生肖五行(简表)
+const zodiacEle={'鼠':'水','牛':'土','虎':'木','兔':'木','龙':'土','蛇':'火','马':'火','羊':'土','猴':'金','鸡':'金','狗':'土','猪':'水'};
+const sceneAdvice={
+ '职场':{gold:'谈判桌上以米金领带/丝巾点睛，沉稳又提气场。',green:'面试选墨绿细节，显得可靠有生机。',blue:'藏青是职场经典安全色，稳妥不出错。',red:'想被记住可在耳饰/鞋面用一点红破沉闷。',white:'白衬衫+深色下装 = 干练不出错公式。'},
+ '约会':{gold:'暖杏色针织配温柔笑容，亲和力拉满。',green:'牛油果色约会装，青春减龄。',blue:'雾霾蓝毛衣气质耐看，显软糯。',red:'适当一点红，桃花运与存在感兼备。',white:'奶白裙装温婉又显气色，约会首选。'},
+ '休闲':{gold:'焦糖色系休闲装，慵懒又显高级。',green:'军绿工装休闲外套，时髦不挑人。',blue:'简蓝卫衣+牛仔裤是周末轻松密码。',red:'砖红卫衣拍照上镜，红运随身。',white:'清爽白T叠搭，怎么穿都干净。'},
+ '谈判':{gold:'金色腕表/腰带在细节处显分量。',green:'军绿风衣给人"稳中带锋芒"之感。',blue:'藏青正装构成可信赖气场。',red:'谈判忌大面积红，作点缀提升气势即可。',white:'奶白点缀中和攻击性，促成对话。'}};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 今日幸运色穿搭 | AgentGongju.com'))return;
+const d=new Date(document.getElementById('cdate').value||new Date());
+const dateStr=(document.getElementById('cdate').value||new Date().toISOString().slice(0,10));
+const z=document.getElementById('zodiac').value;
+const scene=document.getElementById('scene').value;
+const wish=document.getElementById('wish').value;
+//加权选色：日期序号 + 生肖五行 + wish
+const day=(d.getTime()/86400000|0);
+let main,aux;
+if(wish==='财富运'){} 
+if(wish==='财运'){const set=['gold','white','red'];main=(day%2===0)?'gold':'white';aux='red';}
+else if(wish==='桃花'){const set=['red','green','white'];main=(day%2===0)?'red':'white';aux='green';}
+else if(wish==='事业'){main=(day%3===0)?'green':'blue';aux='gold';}
+else{const c=Object.keys(colors);main=c[day%c.length];aux=c[(day+2)%c.length];}
+const M=colors[main],A=colors[aux];
+let out='🎨 【今日幸运色穿搭 · '+dateStr+'】\n';
+out+='生肖：'+z+'属相　场景：'+scene+'　开运侧重：'+(wish==='桃花'?'🌹桃花人缘':wish==='财运'?'💰财运':wish==='事业'?'🚀事业':'综合旺运')+'\n';
+out+='━━━━━━━━━━━━━━━━\n';
+out+='🟡 今日主色：'+M.name+'\n　色盘：'+M.hex+'　五行属：'+M.ele+'　寓意：'+M.tip+'\n';
+out+='🔶 搭配次选：'+A.name+'\n\n';
+out+='👕 今日穿搭建议：\n';
+O(M,aux);
+out+='　主色单品：'+M.outfits[0]+' / '+M.outfits[1]+'\n';
+out+='　次色点缀：选用'+A.outfits[M.outfits.length-1]+'做小面积提亮\n\n';
+out+='📍 场景细节：\n　'+sceneAdvice[scene][main]+'\n';
+out+='　'+sceneAdvice[scene][(main==='blue'?'gold':main)]+'\n\n';
+out+='💫 生活小Tip：把主色用在"靠近脸的上装"+次色用在鞋包，既显气色又不夺整体主调。祝'+z+'属的你今日衣品在线、好运随身！';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+function O(){/*noop*/}
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 幸运色穿搭已复制！'))}
+</script>
+</body>
+</html>

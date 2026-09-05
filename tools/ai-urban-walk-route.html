@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Citywalk 漫步路线 | AgentGongju.com</title>
+<meta name="description" content="输入城市与时长，一键生成好吃好逛的Citywalk漫游路线，含打卡点建议与咖啡馆歇脚参考">
+<meta name="keywords" content="Citywalk,城市漫步,citywalk路线,周末citywalk,城市漫游">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2.1;white-space:pre-wrap;font-size:.9rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🚶 AI Citywalk 漫步路线</h1><p>不想做攻略？告诉我城市和想走的时长，把好吃好逛串起来慢慢走</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>🏙 所在城市</label>
+<input type="text" id="city" placeholder="例：上海 / 成都 / 杭州 / 南京">
+<div><label>⏳ 想漫步多久</label><select id="dur"><option value="短">约2小时轻量</option><option value="中">约半天(4-5h)</option><option value="长">一整天漫游</option></select></div>
+</div>
+<div class="param-row">
+<div><label>💖 最想逛的</label><select id="pref"><option value="逛吃">🍜 逛吃(小吃+老街)</option><option value="文艺">🎨 文艺(书店/展/咖啡馆)</option><option value="绿荫">🌳 绿荫公园/河岸</option><option value="建筑">🏛 老建筑/人文</option></select></div>
+<div><label>🚦 交通方式</label><select id="mode"><option>全程步行</option><option>步行+偶尔地铁接驳</option><option>可骑行段</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn" style="margin-top:8px">🗺 帮我串条路线</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ Citywalk路线已生成，祝你走出一整天好心情</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制路线卡</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+// 本地启发式路线骨架（实际可换地图)
+const anchorPool={
+逛吃:['🚶钻进老城区早市/菜场旁的小吃街','老字号点心铺捎一份现做的油墩子/锅贴','油亮的卤味/糖水铺歇脚','转角巷子里的苍蝇馆子来个招牌'],
+文艺:['书店/独立书店翻翻新上架的闲书','小型黑白影像或插画展驻足','咖啡馆做一杯手冲发呆半小时','收集一家黑胶店/杂货铺的宝藏'],
+绿荫:['沿江/沿河的步道吸氧','环一座老公园(NOT地图上)慢走一圈','法桐/银杏林荫道追光拍照','湖边长椅看大爷下棋打发时间'],
+建筑:['民国/老建筑群外墙拍一圈','老街区的墙绘与斑驳木门','教堂/寺庙/里弄走走停停','在老洋房咖啡院里坐回老时光']};
+const cafeBy={'逛吃':'累了随手进一家本地老茶馆/冰室','文艺':'中途找一家开在老楼里的咖啡馆（记得带本书）','绿荫':'在公园长椅或沿河石凳席地小憩','建筑':'找家临街二楼的小窗喝饮料俯瞰街景'};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI Citywalk 漫步路线 | AgentGongju.com'))return;
+const city=document.getElementById('city').value.trim()||'你所在的城市';
+const dur=document.getElementById('dur').value;
+const pref=document.getElementById('pref').value;
+const mode=document.getElementById('mode').value;
+const base=anchorPool[pref];
+const n=dur==='短'?3:(dur==='中'?5:7);
+let spots=base.slice(0,n);
+let out='🚶 【'+city+' · '+({短:'轻量2h',中:'半日',长:'全天漫游'}[dur])+' Citywalk 建议路线】\n';
+out+='偏好:'+({逛吃:'逛吃',文艺:'文艺',绿荫:'绿荫',建筑:'建筑'}[pref])+'　交通：'+mode+'\n';
+out+='━━━━━━━━━━━━━━━━\n';
+spots.forEach((s,i)=>{
+ const tip=[('',''),("　▶ 顺路可以…"),("　▶ 想在某某点亮相记得提前查开放时间。")][i%3]||'';
+ out+=(i+1)+') '+s+'\n';
+ if(i===1)out+='　🌞 建议出发：上午/午后退避人峰\n';
+});
+out+='\n☕ 途中歇脚：'+cafeBy[pref]+'\n';
+// add location hints by city if known rough
+if(city.includes('上海'))out+='　（上海风格参考：武康路-安福路-五原路一带适合文艺，城隍庙-豫园-甜爱路适合逛吃）\n';
+else if(city.includes('成都'))out+='　（成都风格参考：宽窄巷子片区串起奎星楼街，玉林西路适合下午茶+文创）\n';
+else if(city.includes('杭州'))out+='　（杭州风格参考：小河直街-运河畔适合文艺，西湖杨公堤绕一圈适合绿荫）\n';
+else if(city.includes('南京'))out+='　（南京风格参考：颐和路民国公馆区适合建筑人文，夫子庙-老门东吃小吃）\n';
+out+='\n🧳 装备小抄：一双好走的鞋 + 满格电的手机 + 空一点的胃 / 相机。Citywalk不需要攻略得太满，把"迷路"也当成一种彩蛋，走就对了。';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ Citywalk路线已复制！'))}
+</script>
+</body>
+</html>

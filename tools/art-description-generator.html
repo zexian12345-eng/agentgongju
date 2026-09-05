@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 画作内容描述生成 | AgentGongju.com</title>
+<meta name="description" content="上传/输入画作主题，自动生成作品解析、画面细节描述与配文，适合展览、小红书分享与作品集说明">
+<meta name="keywords" content="画作描述,作品解析,绘画配文,艺术解读,展览介绍">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:80px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2.2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🖼 AI 画作描述生成器</h1><p>一件作品一句话，帮你写出画面细节、情感解读与发布文案</p></div>
+
+<div class="card">
+<label>🎨 画作主题 / 画面内容</label>
+<textarea id="art" placeholder="例：暮色里撑着油纸伞走过青石巷的女子，江南雨巷、暖黄路灯、倒影"></textarea>
+<div class="param-row">
+<div><label>🖍 画作类型</label>
+<select id="type"><option>国画/水墨</option><option>油画</option><option>水彩</option><option>数码插画</option><option>摄影作品</option><option>素描</option></select></div>
+<div><label>✍️ 内容用途</label>
+<select id="use"><option value="xhs">小红书配文</option><option value="exhibit">展览/讲解</option><option value="portfolio">作品集说明</option><option value="brief">给AI绘画当提示词</option></select></div>
+</div>
+<label>🎯 情感基调（可选）</label>
+<select id="mood"><option value="auto">自动贴合</option><option value="治愈">治愈温暖</option><option value="怀旧">怀旧文艺</option><option value="宏大">宏大叙事</option></select>
+<button class="btn-gen" id="genBtn" style="margin-top:8px">✨ 生成画面描述</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 描述已生成（结果仅作本地智能示例）</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制文字</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const lightWords=['暖光','暮色','余晖','雾霭','薄纱般的光','氤氲水汽'];
+const detailWords=['勾勒出','晕染开','明暗交界','留白处','笔触细腻地'];
+const traitByType={}; 
+function seg(text){const tr=text.slice(0,60);}
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 画作描述生成器 | AgentGongju.com'))return;
+const art=document.getElementById('art').value.trim();
+const type=document.getElementById('type').value;
+const use=document.getElementById('use').value;
+const mood=document.getElementById('mood').value;
+if(!art){alert('请先填写画作主题或画面内容');return;}
+const sub=art.length>45?art.slice(0,45)+'…':art;
+//关键词提取以组织画面描述
+const hasWoman=/女子|woman|女孩|少女/.test(art)?'一位女子':'主体人物';
+const hasScene=(art.includes('雨')||art.includes('巷')||art.includes('街')||art.includes('古镇'))?'青石板与街巷之间的空间感':(art.includes('海')||art.includes('江'))?'开阔水面带来呼吸感':'构图上的纵深层次';
+const light=lightWords[art.length%lightWords.length];
+let para;
+para='画面以'+type+'独有的语言铺展开来：'+hasScene+'，'+detailWords[art.length%4]+'主体轮廓，'+light+'自画面上方洒落，在'+sub+'周围形成一圈柔和的轮廓光，让观者的视线不自觉地被引向画面的情感中心。低饱和度的底色与'+(mood==='治愈'?'奶油般':'苍劲').replace('奶油般','奶油般的')+'色泽相互抵消，营造出既克制又绵长的氛围。';
+if(use==='xhs'){let w;
+ if(mood==='治愈')w='像是把一整天的疲惫都收进一幅画里，看完心都静了。';
+ else if(mood==='怀旧')w='像旧时光被谁悄悄定格，每条纹路都是故事。';
+ else if(mood==='宏大')w='像一场沉默的史诗，铺开在方寸之间。';
+ else w='画面静止，风却好像还在吹。你被哪一处触动了？';
+ let cap='《'+sub.split('，')[0]+'》';
+ out=['【小红书 · 发布会文案】','「'+cap+'」','',''+para+'','','✨ 创作手记：'+w,'','#油画 #插画 #艺术 #治愈系 #我的画画日常'.replace('#油画','# '+mapHashtag(type))].join('\n');
+}
+else if(use==='exhibit'){out='【展签/讲解词】\n作品名称：'+art.split('，')[0]+'\n材质：'+type+'\n尺寸/年代：(请补充)\n\n'+para+'\n\n作者通过'+light+'的调度与'+hasScene.split('，')[1]||'虚实的层次'+'，把日常瞬间提升为值得凝视的诗意。建议观者放缓脚步，先远观整体气韵，再近看笔触肌理中隐藏的细节。';}
+else if(use==='portfolio'){out='【作品集 · 创作说明】\n作品标题：'+art.split('，')[0]+'（'+type+'）\n\n创作概述：\n本作围绕「'+art.slice(0,30)+'」展开，我将'+parseElem(art)+'作为表达核心，尝试用'+type+'特有的质感去转译记忆中微光闪烁的瞬间。'+para+'\n\n表现方式：\n以'+light+'统筹主光区，弱化边缘信息以突出画面主体，希望通过克制的用色让情感自我显影。';}
+else{out='【AI绘画 · 提示词范本】\n'+advancedPrompt(art,type);}
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function mapHashtag(t){const m={'国画/水墨':'国画#水墨','油画':'油画','水彩':'水彩','数码插画':'插画','摄影作品':'摄影','素描':'素描'};return m[t]||'艺术';}
+function parseElem(s){if(s.includes('雨'))return '氤氲雨气';if(s.includes('巷'))return '青石巷的空寂';if(s.includes('海')||s.includes('江'))return '水的流动与渺远';return '光影与情绪的交织';}
+function advancedPrompt(art,type){
+ const styleMap={'国画/水墨':['Chinese ink wash painting, xieyi style, rich negative space','宣纸纹理, 水墨晕染, 青绿设色'],
+ '油画':['Impressionist oil painting, visible brushstrokes, warm palette','厚涂肌理'],
+ '水彩':['soft watercolor wash, translucent layers, granulation','水彩晕染层次'],
+ '数码插画':['digital illustration, studio Ghibli aesthetic, soft lighting','精致线条插画'],
+ '摄影作品':['35mm film photography, golden hour, shallow depth of field','徕卡胶片质感, 浅景深'],
+ '素描':['graphite sketch, chiaroscuro, fine hatching','炭笔素描, 明暗对比']};
+ const eng=styleMap[type]?styleMap[type][0]:'';
+ const cn=styleMap[type]?styleMap[type][1]:'';
+ return '【中文提示词】\n'+cn+'，‘'+art.split('，')[0]+'’，暮色氛围，主体居中偏右，柔光，突出情绪与氛围，电影感构图，高清细节，4K\n\n【English Prompt】\n'+art+', '+eng+', dusk ambience, cinematic composition, soft rim light, high detail, 4k —negative prompt: blurry, deformed, oversaturated, watermark';
+}
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 描述文字已复制！'))}
+</script>
+</body>
+</html>

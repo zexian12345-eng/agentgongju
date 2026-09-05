@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 生肖配对测算 | AgentGongju.com</title>
+<meta name="description" content="输入双方生肖与关系场景，AI测算合婚/合伙人/组队默契指数并解读合盘亮点与相处建议">
+<meta name="keywords" content="生肖配对,属相匹配,合婚,婚配指数,生肖合盘">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2.2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.score{display:inline-block;padding:4px 16px;border-radius:20px;font-weight:800;font-size:1.4rem;margin:6px 0;background:linear-gradient(135deg,#6366f1,#a855f7);color:#fff}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🐉 AI 生肖配对测算</h1><p>从生肖合盘看恋人、合伙人、队友的默契度（仅供娱乐参考）</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>🐭 我方生肖</label><select id="a"><option>鼠</option><option>牛</option><option>虎</option><option>兔</option><option>龙</option><option>蛇</option><option>马</option><option>羊</option><option>猴</option><option>鸡</option><option>狗</option><option>猪</option></select></div>
+<div><label>🐮 对方生肖</label><select id="b"><option>牛</option><option>鼠</option><option>虎</option><option>兔</option><option>龙</option><option>蛇</option><option>马</option><option>羊</option><option>猴</option><option>鸡</option><option>狗</option><option>猪</option></select></div>
+</div>
+<div><label>🧩 你们的关系场景</label>
+<select id="rela"><option value="恋人">💕 恋人 / 谈婚论嫁</option><option value="合伙人">🤝 创业合伙人 / 同事搭档</option><option value="朋友">👬 好朋友 / 室友</option><option value="亲子">👨‍👩‍👧 亲子关系</option></select></div>
+<label>🎯 想知道合盘哪个面向</label>
+<select id="dim"><option value="综合">综合默契度</option><option value="磨合">磨合克点与化解</option><option value="财运">合作财气</option></select>
+<button class="btn-gen" id="genBtn" style="margin-top:8px">🃏 开始测算配对</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 配对测算结果</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制报告</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const order=['鼠','牛','虎','兔','龙','蛇','马','羊','猴','鸡','狗','猪'];
+//六合顺配（吉）对
+const liuhe={'鼠':'牛','牛':'鼠','虎':'猪','猪':'虎','兔':'狗','狗':'兔','龙':'鸡','鸡':'龙','蛇':'猴','猴':'蛇','马':'羊','羊':'马'};
+const sanhe={ '鼠':['猴','龙'],'牛':['蛇','鸡'],'虎':['马','狗'],'兔':['羊','猪'],'龙':['鼠','猴'],'蛇':['牛','鸡'],'马':['虎','狗'],'羊':['兔','猪'],'猴':['鼠','龙'],'鸡':['蛇','牛'],'狗':['虎','马'],'猪':['兔','羊']};
+//相冲/相刑克(简化相冲)
+const chong={'鼠':'马','马':'鼠','牛':'羊','羊':'牛','虎':'猴','猴':'虎','兔':'鸡','鸡':'兔','龙':'狗','狗':'龙','蛇':'猪','猪':'蛇'};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 生肖配对测算 | AgentGongju.com'))return;
+const a=document.getElementById('a').value,b=document.getElementById('b').value;
+const rela=document.getElementById('rela').value;
+const dim=document.getElementById('dim').value;
+let grade,why,scoreBase;
+if(liuhe[a]===b){grade='六合上等配',why='互为六合贵人,天生投缘。';scoreBase=92;}
+else if(sanhe[a].includes(b)){grade='三合吉配',why='三合相助,取长补短,相处顺畅。';scoreBase=86;}
+else if(chong[a]===b){grade='相冲需磨合',why='六冲格局,性格碰撞大,易起争执。';scoreBase=52;}
+else if(Math.abs(order.indexOf(a)-order.indexOf(b))===6){grade='六害需包容',why='虽不冲但常年小别捏,日常琐碎意见多。';scoreBase=66;}
+else{const dd=(Math.abs(order.indexOf(a)-order.indexOf(b))%7);grade=dd===2||dd===4?'偏缘·互补型':'普通合缘',why='非上上配但也互不克制,用心经营可处长久。';scoreBase=dd===2||dd===4?74:78;}
+let extra=[];
+if(rela==='恋人'){extra.push(dim==='磨合'?'相处雷区:节奏感与表达方式易错拍。化解:重要决定前写下来同步,避免互相猜。':dim==='财运'?'婚后财帛建议共同记账、大额同议,忌讳各自藏小金库。':'恋爱黄金法则:给彼此留出独处时间,占有欲适度收敛更长久。');}
+else if(rela==='合伙人'){extra.push(dim==='磨合'?'角色分工要清晰,一人主外一人主内,忌权力不分。':dim==='财运'?'财气关键在于先小人后君子——股权分红写清楚再开工,合财更稳。':'事业搭子默契:'+grade.split(' ')[0]+'格局利于各自补短板(主攻手+守成者各司其职)。');}
+else if(rela==='朋友'){extra.push('友情要义气也要分寸,别把对方当情绪垃圾桶,好朋友也要留白。');}
+else{extra.push('亲子配彼此:'+why.split('，')[0]+'。育人宜多鼓励少硬碰,'+ (scoreBase<70?'家长可多些柔与慢,避免高压对抗。':'可多放手给孩子试错,孩子会更信任你。'));}
+let score=scoreBase+((dim==='财运'&&rela==='合伙人'||dim==='财运'&&rela==='恋人')?-2:0);
+if(dim==='磨合')score=Math.min(96,Math.max(48,scoreBase- (chong[a]===b?8:liuhe[a]===b?2:3)));
+let out='🐉 【生肖配对 · '+a+' × '+b+'】\n';
+out+='场景：'+({恋人:'谈婚论嫁',合伙人:'搭档合作',朋友:'好友相处',亲子:'亲子'}[rela])+'　测算维度:'+({磨合:'磨合克点',财运:'合作财气',综合:'综合默契'}[dim])+'\n';
+out+='━━━━━━━━━━━━━━━━\n';
+out+='评分：'+Math.round(score)+' / 100（'+(score>=85?'上上之缘':score>=70?'良好合缘':score>=60?'中性缘':'需用心经营')+'）\n';
+out+='合局类型：'+grade+'\n';
+out+=why+'\n\n';
+out+='💞 合盘亮点：\n'+(chong[a]===b||Math.abs(order.indexOf(a)-order.indexOf(b))===6
+ ?'你们之间有一种"越吵越熟"的化学反应,激情点多,就看谁先服软。真正合的不是天生默契,而是愿意为对方低头的次数。'
+ :'你们的缘分像老火慢炖——不急不躁,却越处越有温度与底气。表面平平无奇,关键时刻彼此都是对方最稳的后盾。')+'\n\n';
+out+='🛠 '+ (dim==='磨合'?'化解锦囊':'相处建议')+`：\n　• ${extra[0]}\n　• 沟通时多用"我建议"代替"你不对",把分歧谈成方案。\n`;
+out+='\n📌 测算仅供娱乐参考。真正的缘分与默契，永远生长在彼此用心经营的日常里。';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 配对报告已复制！'))}
+</script>
+</body>
+</html>

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 出生时辰性格分析 | AgentGongju.com</title>
+<meta name="description" content="输入出生日期时辰，结合传统时辰文化与现代心理学，生成专属性格特质报告">
+<meta name="keywords" content="出生时辰,性格分析,生辰八字,时辰性格,自我认知">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=date]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2.2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🌅 AI 出生时辰性格分析</h1><p>结合传统十二时辰文化与行为心理学，生成专属性格画报</p></div>
+
+<div class="card">
+<label>📅 出生日期</label>
+<input type="date" id="bdate" value="1995-01-01">
+<div class="param-row">
+<div><label>⏰ 出生时段</label>
+<select id="btime">
+<option value="早子时">子时 23:00-01:00</option>
+<option value="丑时">丑时 01:00-03:00</option>
+<option value="寅时">寅时 03:00-05:00</option>
+<option value="卯时">卯时 05:00-07:00</option>
+<option value="辰时">辰时 07:00-09:00</option>
+<option value="巳时">巳时 09:00-11:00</option>
+<option value="午时">午时 11:00-13:00</option>
+<option value="未时">未时 13:00-15:00</option>
+<option value="申时">申时 15:00-17:00</option>
+<option value="酉时">酉时 17:00-19:00</option>
+<option value="戌时">戌时 19:00-21:00</option>
+<option value="亥时">亥时 21:00-23:00</option>
+</select></div>
+<div><label>🎯 分析侧重</label>
+<select id="focus"><option value="综合">综合解读</option><option value="事业">事业能量</option><option value="人际">人际与情感</option></select></div>
+</div>
+<label>✏️ 昵称（可选）</label>
+<input type="text" id="name" placeholder="怎么称呼您？">
+<button class="btn-gen" id="genBtn">🔮 生成我的时辰分析</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 您的专属时辰报告已生成</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制报告</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const lib={
+'子时':['墨守成规中带锋芒','夜猫型内核，独处充电','直觉敏锐，第六感强','适合策划、科研、创意岗'],
+'丑时':['沉稳内敛，深思熟虑','越挫越勇，抗压极强','重情重义，值得托付','适合管理、金融、土木岗'],
+'寅时':['敢想敢干，行动派先锋','精力旺盛，开拓精神足','脾气大但走得快','适合创业、销售、体育'],
+'卯时':['温和谦逊，人缘极好','作息自律，像晨光一样干净','善解人意，倾听者','适合教育、公关、客服'],
+'辰时':['自信开朗，自带光环','条理清晰，天生领导者','略爱面子，要强','适合管理、主持、公务员'],
+'巳时':['聪明灵活，点子多','能言善辩，感染力强','心思活络，易三分钟热度','适合传媒、设计、营销'],
+'午时':['热情如火，正气凛然','行动速度快，直来直往','太阳性格，藏不住情绪','适合警察、医生、运动员'],
+'未时':['温厚包容，慢热但长情','讲究生活品质','看似慵懒实则靠谱','适合文艺、养生、服务'],
+'申时':['头脑转得快，机灵鬼','社交破冰高手','自尊心强，爱比较','适合IT、跑业务、法律'],
+'酉时':['爱美重形象，审美在线','务实精明，过日子好手','外冷内热，慢热','适合美容、时尚、财会'],
+'戌时':['忠诚可靠，守成稳重','责任心爆棚','略保守恋旧','适合后勤、社区、兽医'],
+'亥时':['想象力天马行空','轻松随缘，不拧巴','夜猫达人、灵感夜发','适合写作、音乐、电商']};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 出生时辰性格分析 | AgentGongju.com'))return;
+const date=document.getElementById('bdate').value;
+const raw=document.getElementById('btime').value;
+const seg=raw.replace('时段','');
+const zi=raw.startsWith('早')?seg:seg;
+const focus=document.getElementById('focus').value;
+const key=Object.keys(lib).find(k=>raw.includes(k))||'子时';
+const d=lib[key];
+const who=document.getElementById('name').value.trim()?('亲爱的'+document.getElementById('name').value.trim()):'你';
+let out='🌅 【'+who+' · 时辰性格报告】\n';
+out+='出生：'+date+'　时段：'+raw+'\n';
+out+='━━━━━━━━━━━━━━━━\n';
+out+='✨ 时辰气质：'+seg+'属于【'+key+'】。'+d[0]+'，'+d[1]+'，'+d[2]+'。\n\n';
+out+='💼 事业能量（基于你'+raw+'出生的能量场映射）：\n'+'  天赋对应岗位方向：'+d[3]+'。\n  建议：把精力放在需要稳定输出的板块，避免被临时琐事打散节奏。\n\n';
+out+='🤝 人际与情感：\n  你在亲密关系里属于'+d[2].split('，')[0]+'型，靠近你的人往往觉得安全踏实；社交上宜少而精，不必勉强自己成为人群焦点。\n\n';
+out+='🌙 深夜提醒（'+(focus==='事业'?'事业向':'综合向')+'）：\n  时辰特质只是底色，真正塑造你的永远是后天的每一次选择与坚持。愿你把自己的时辰过成最动人的时区。';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 报告已复制！'))}
+</script>
+</body>
+</html>

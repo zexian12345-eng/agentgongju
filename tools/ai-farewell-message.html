@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 告别文案生成 | AgentGongju.com</title>
+<meta name="description" content="离职群公告、毕业朋友圈、离别老友短句……选对场合，把告别写得体面又走心">
+<meta name="keywords" content="告别文案,离职感言,毕业文案,告别朋友圈,伤感短句">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:70px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2.3;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🌙 AI 告别文案生成</h1><p>辞职、毕业、离开一座城……把想说又不好意思说的告别，写得体面</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>🎬 告别场合</label>
+<select id="scene"><option value="resign">💼 离职告别</option><option value="graduate">🎓 毕业告别</option><option value="friend">👋 与老友分别</option><option value="city">🏙 离开一座城市</option></select></div>
+<div><label>📄 发布形式</label>
+<select id="chan"><option value="group">公司群/班级群</option><option value="pyq">朋友圈/社交媒体</option><option value="short">简短一句话</option></select></div>
+</div>
+<label>📝 想融入的内容（可选）</label>
+<textarea id="detail" placeholder="例：感谢陈哥带我入行 / 一起吃了三年食堂 / 难忘隔壁工位的老王"></textarea>
+<div class="param-row">
+<div><label>😌 情绪基调</label><select id="mood"><option value="温存">温存走心</option><option value="洒脱">洒脱不煽情</option><option value="幽默">带点幽默</option></select></div>
+<div><label>✏️ 署名</label><input type="text" id="sign" placeholder="例：小陈 / (不填则匿名)"></div>
+</div>
+<button class="btn-gen" id="genBtn">🕯 生成告别文案</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 告别文案已写好，愿再见时都更好</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制文案</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const openWin={'resign':'感谢这趟旅程','graduate':'好像昨天才入学','friend':'有些人,光是遇见就很值得','city':'一座城，一段故事'};
+const coreTag={resign:['一路以来，感谢老板的信任、前辈们的倾囊相授,\r以及彼此头顶一起掉过的头发。','江湖再见时，咱们都当了更好的自己。'],
+graduate:['还记得图书馆占座、期末一起熬的夜、还有那次说走就走的旅行。','愿我们跃入人海，各有风雨灿烂。'],
+friend:['那些一起笑过闹过的深夜，我会存在心里最亮的抽屉里。','聚散有时，情谊无期，等你归来。'],
+city:['清晨的早高峰、深夜的霓虹、街角那家常去的面馆，都成了记忆的坐标。','带着这里教会我的勇敢，去下一站继续生长。']};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 告别文案生成 | AgentGongju.com'))return;
+const scene=document.getElementById('scene').value;
+const chan=document.getElementById('chan').value;
+const detail=document.getElementById('detail').value.trim();
+const mood=document.getElementById('mood').value;
+const sign=document.getElementById('sign').value.trim();
+const [a,b]=coreTag[scene];
+const hasDetail=detail?('\n'+detail+'\n'): '\n';
+let out='';
+if(chan==='short'){
+const moodLine=mood==='洒脱'?'再见,山高水长。':mood==='幽默'?'先走一步去更新人生进度条啦,回见!':'山水一程,三生有幸。珍重!';
+out='「'+openWin[scene]+'」\n'+(detail?detail+'。\n':'')+(mood==='幽默'?moodLine.replace('再见,','再见，'):'\n'+moodLine)+' '+(sign?'-- '+sign:'');
+}else{
+out='📄 '+({resign:'离职告别',graduate:'毕业告别',friend:'告别老友',city:'告别城市'}[scene])+'文案\n';
+out+='━━━━━━━━━━━━━━━━\n';
+out+='【'+openWin[scene]+'】\n\n';
+out+='　　亲爱的伙伴们：\n\n　　当写下这些字时，我知道是时候告别啦。'+(scene==='resign'?'能和大家共事这一段，是我很幸运的际遇。':scene==='graduate'?'四年的青春都装进了这间教室与这条林荫道。':scene==='friend'?'认识你的这些年，我好像慢慢变成了更好的人。':'在这里生活的每一天，都成了我行囊里最暖的片段。')+hasDetail;
+if(mood==='洒脱'){out+='\n　　不说太多煽情的话，江湖有缘必会再见。\n';}
+else if(mood==='幽默'){out+='\n　　煽情到此为止，记得常联系，不然小心我杀回来蹭饭。\n';}
+else{out+='\n　　说不出口的谢谢和舍不得，都藏在这寥寥几行里。天涯路远，惟愿我们各自珍重，来日方长。\n';}
+out+='\n　　'+b+'\n'+(sign?'　　　　　　　　　　　　——　'+sign:'');
+}
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 告别文案已复制！'))}
+</script>
+</body>
+</html>

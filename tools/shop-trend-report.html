@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 网店运营体检 | AgentGongju.com</title>
+<meta name="description" content="免费给淘宝/拼多多/小店做一次运营自检：诊断标题、SKU、详情与售后，输出优化清单">
+<meta name="keywords" content="网店运营,淘宝优化,店铺诊断,电商运营,运营自检">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:70px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2.1;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📊 AI 网店运营体检</h1><p>把店铺信息填一填，AI帮你从流量、转化到售后做一轮快检</p></div>
+
+<div class="card">
+<label>🆔 店铺/商品名字（或链接关键词）</label>
+<input type="text" id="shop" placeholder="例：XX零食旗舰店 / 我的小店卖保温杯">
+<div class="param-row">
+<div><label>🏪 开店平台</label><select id="plat"><option>淘宝/天猫</option><option>拼多多</option><option>抖音小店</option><option>微信小店/视频号</option><option>闲鱼/二手</option></select></div>
+<div><label>📈 目前遇到的问题（可多选）</label><select id="prob"><option value="no流量">没流量/没人逛</option><option value="no转化">有流量没订单</option><option value="售后">售后差评多</option><option value="全绿">想系统优化</option></select></div>
+</div>
+<label>📝 简单补充现状（日均浏览/客单价/差评情况等，可选）</label>
+<textarea id="extra" placeholder="例：访客100但转化不到1%，评价里有人嫌包装简陋"></textarea>
+<button class="btn-gen" id="genBtn" style="margin-top:8px">🩺 开始店铺体检</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 运营体检报告已生成（本地启发式建议）</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制体检报告</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const titleWords=['卷','高品质','官方','正品','限时','新款','加厚','ins风','同款','超值','秒杀','包邮'];
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 网店运营体检 | AgentGongju.com'))return;
+const shop=document.getElementById('shop').value.trim()||'本店';
+const plat=document.getElementById('plat').value;
+const prob=document.getElementById('prob').value;
+const extra=document.getElementById('extra').value.trim();
+let out='📊 【'+shop+' · 运营体检 · '+plat+'】\n'+(extra?('补充情况：'+extra+'\n'):'')+'━━━━━━━━━━━━━━━━\n';
+//流量
+out+='🌊 一、流量(曝光量)体检\n';
+if(prob==='no流量'){
+out+='　✖ 主图/标题是门面,目前可能缺少"搜索词"或差异化卖点。\n';
+out+='　　→ 建议:标题重写套路=[核心词+属性词+场景词+卖点]各1个,<30字为宜;\n　　→ 主图前1屏放最大的卖点(价格差/功效/礼盒),背景干净无杂字;\n　　→ 详情可加一张"与竞品的对比表格"增加停留。\n';
+}else{out+='　✔ 流量侧无硬伤提示,重点放转化。\n';}
+//转化
+out+='\n🎯 二、转化率体检\n';
+if(prob==='no转化'||(extra&&/访客|转化|浏览/.test(extra))){
+out+='　✖ 有流量没转化,往往是"信任&价格"关卡:中差评露脸、SKU不清晰、无实拍。\n　　→ 解决:把3条带图好评置顶;主图文案改得更"省心"(免运费/七天无理由/质保期);\n　　→ 若客单价偏高,加一个"入门引流款",降低决策门槛再关联高价款。\n';
+}else{out+='　✔ 转化路径暂无明显卡点(未提供更多数据)。\n';}
+//售后
+out+='\n🤝 三、售后与口碑体检\n';
+if(prob==='售后'||(extra&&/差评|包装/.test(extra))){
+out+='　✖ 差评多集中在包装/时效等可快速改进项。\n　　→ 建议:加强缓冲防护+随单附感谢卡提升开箱好感;\n　　→ 中差评1小时内主动联系,先给方案(补发/退差)再讲道理,9成可挽回。\n';
+}else{out+='　✔ 售后暂无突出投诉点,可常态坚持"好评返小礼"降低差评率(注意平台规则)。\n';}
+out+='\n🔍 四、可立马上手的清单\n';
+const items=['把商品主图做得"一屏说清:我是谁+凭什么买"','标题加入2-3个长尾词吸引精准小流量','详情首屏放实拍+细节图,第三屏放尺码/参数','设置一个9.9/低客单引流SKU拉动整店动销','每周回评并挑3条优质评价做内容素材'];
+out+=items.slice(0,5).map(x=>'　'+(x[0])+'. '+x).join('\n')+'\n';
+out+='\n⏳ 建议节奏:先集中1周改标题+主图,再1周运营售后,第3周做一轮小推广,看数据再看下一步。本工具输出为通用启发建议,不构成投资/经营承诺,请结合平台规则自查。';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 体检报告已复制！'))}
+</script>
+</body>
+</html>

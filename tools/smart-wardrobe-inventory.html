@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 衣橱智能盘点 | AgentGongju.com</title>
+<meta name="description" content="录入你的衣服，AI帮你做衣橱断舍离、风格诊断与"一衣多穿"胶囊衣橱搭配建议">
+<meta name="keywords" content="衣橱整理,胶囊衣橱,穿搭诊断,断舍离,衣物盘点">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:80px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2.2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>👚 AI 衣橱智能盘点</h1><p>每年换季想"全扔"又舍不得？让AI帮你看清衣橱里到底有什么、缺什么</p></div>
+
+<div class="card">
+<label>📦 把衣橱里的衣服大致列一列（类别+件数，一行一类）</label>
+<textarea id="closet" placeholder="例：白T恤6件 / 牛仔裤5条 / 卫衣4 / 连衣裙2 / 西装1 / 有很多但总是穿这几件"></textarea>
+<div class="param-row">
+<div><label>🚻 我的穿衣风格倾向</label><select id="style"><option value="休闲">休闲舒适</option><option value="通勤">通勤极简</option><option value="甜美">温柔甜系</option><option value="街头">街头潮酷</option><option value="不想选">不太确定/在探索</option></select></div>
+<div><label>🎯 本次想解决的问题</label><select id="focus"><option value="断舍离">该扔哪些：断舍离清单</option><option value="搭配">没衣服穿：一衣多穿搭配</option><option value="风格">风格诊断：找到我的定位</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn" style="margin-top:8px">🧺 开始盘点衣橱</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 衣橱盘点报告已生成</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制报告</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const danger=['白T','白T恤','牛仔裤','卫衣','基本款'];
+const capsuled={'休闲':['白T×2 + 牛仔裤 + 卫衣 + 工装外套 = 日常出门万能公式','白T塞进高腰裤+挽裤脚+帆布鞋,通勤约会两相宜'],'通勤':['一件可穿三季的西装外套,搭T恤变休闲、搭衬衫变正式','蓝衬衫+开衩半裙+乐福鞋,周三开会亮眼满分'],'甜美':['泡泡袖针织+百褶裙,约会自带柔光效果','一条奶油白连衣裙配小开衫,见长辈约会都讨喜'],'街头':['oversize卫衣+工装裤+棒球帽,一套看秀走起','破洞牛仔+廓形外套,叠穿更有层次']};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 衣橱智能盘点 | AgentGongju.com'))return;
+const closet=document.getElementById('closet').value.trim();
+const style=document.getElementById('style').value;
+const focus=document.getElementById('focus').value;
+if(!closet){alert('先大致告诉小编你衣橱里有什么吧');return;}
+const lines=closet.split(/[\n;；]/).map(x=>x.trim()).filter(Boolean);
+let out='👚 【衣橱盘点 · 诊断报告】\n录入内容：\n'+lines.slice(0,8).map(l=>'　· '+l).join('\n')+'\n';
+out+='━━━━━━━━━━━━━━━━\n';
+if(focus==='断舍离'){
+out+='🧹 断舍离清单（本地启发）：\n　✔ 至少半年没穿且不会再穿的——可以送人/转卖/捐赠\n　✔ 同一功能重复超过3件的,保留最合身的1-2件\n　✔ 变形起球、褪色、拉链坏的"将就着穿"款,果断处理\n\n';
+out+= lines.some(l=>/丢|扔|太多|不穿/.test(l))?'　你提到有堆积感,建议分批(每周一批)处理,别一次清空衣柜引发焦虑。\n':'　给"没那么合适"的衣服设置30天冷静期,到期仍没穿就放手,衣橱会呼吸。\n';
+out+='　⚠️ 注意:别为了"省钱"留下根本不穿的"通勤备胎",它们只是占地方。';
+}
+else if(focus==='搭配'){
+out+='👗 一衣多穿灵感（结合你录入的单品）：\n';
+if(lines.some(l=>/白T/.test(l)))out+='　・那件白T恤:搭牛仔裤=休闲;塞进西装裤+丝巾=轻通勤;扎进吊带裙当内搭可减龄\n';
+if(lines.some(l=>/牛仔/.test(l)))out+='　・那条牛仔裤:配卫衣=周末;搭衬衫+乐福鞋=半正式;卷脚踩小皮鞋更显腿长\n';
+if(lines.some(l=>/卫衣/.test(l)))out+='　・那件卫衣:直接穿+半身裙=慵懒淑女;叠穿大衣露领=学院风\n';
+out+='\n🧠 核心逻辑:基本款负责"打底",配饰决定风格。同一条裤,换鞋/换包/换外套就是一个新造型。\n';
+}
+else{
+const st=style==='不想选'?'休闲':style;
+out+='🎯 找到你的风格关键词「'+st+'」\n';
+out+='　你衣橱里基础款偏多,本就走"干净耐看"路线是聪明的。给你的'+(st)+'穿搭公式:\n';
+(capsuled[st]||capsuled['休闲']).forEach(c=>out+='　・'+c+'\n');
+out+='\n🛒 如果非要添购,优先补":一件质感外套 / 一条合身的西装裤 / 一双好走的鞋 —— 它们能瞬间拉高所有基础款的质感。';
+}
+out+='\n\n📌 温柔提醒:衣橱诊断无分对错,你喜欢且常穿、穿着舒服的,就是最适合你的那一类。';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 衣橱盘点报告已复制！'))}
+</script>
+</body>
+</html>

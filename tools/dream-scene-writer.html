@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 梦境日记还原师 | AgentGongju.com</title>
+<meta name="description" content="把零散梦境片段扩写成带有画面感、情绪的梦境日记，也可一键解析其中的隐喻与心绪提示">
+<meta name="keywords" content="梦境日记,梦境记录,解梦,梦境解析,睡眠心理">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:90px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2.3;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🌠 AI 梦境日记还原师</h1><p>把睡醒后还记得的碎片,还原成一篇有画面有情绪的梦境手记</p></div>
+
+<div class="card">
+<label>🌙 记得的梦境片段（写得越细越好）</label>
+<textarea id="dream" placeholder="例：我一直在跑,后面有东西追,路过一条金色的河,河边站着小时候的自己……"></textarea>
+<div class="param-row">
+<div><label>🎨 还原风格</label>
+<select id="style"><option value="literary">文青电影感</option><option value="plain">简单记实</option><option value="story">小故事体</option></select></div>
+<div><label>🔧 输出内容</label>
+<select id="mode"><option value="both">还原+心理解析</option><option value="restore">仅文字还原</option><option value="analyze">仅隐喻解析</option></select></div>
+</div>
+<label>😴 最近睡眠质量自评（辅助解析）</label>
+<select id="sleep"><option value="ok">不错,倒头就睡</option><option value="mid">一般,会醒一两次</option><option value="bad">偏浅/多梦/睡不够</option></select>
+<button class="btn-gen" id="genBtn" style="margin-top:8px">✍️ 帮我还原这晚的梦</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 梦境手记已还原（仅供自我关照参考）</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制梦境手记</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+//梦境符号->心理解析词库(通用意象)
+const sym={
+ '追':['被追赶常映射现实中的压力源,可能是临近的deadline或想逃避的难题。','那个"追着你的东西"往往不是他人,而是没有安放的焦虑。'],
+ '河':['河流象征情绪的分界与生命流动;金色河多为心境转好的信号。','"河"也可能暗示你在处理一段情绪上的跨越,或正在过渡期。'],
+ '飞':['飞翔多与掌控感/向往自由相关,梦里能飞通常反映近期状态不错。'],
+ '掉/坠':['跌落常对应安全感不足,或对某件事失去把控的担忧。'],
+ '回/小时候':['回到童年场景,多是一个内在小孩在求关注,近期或许忽略了自我照顾。'],
+ '考试':['考试梦常在压力期出现,与"被评判"的焦虑关联。'],
+ '蛇':['蛇意象复杂:可代表恐惧,也可代表潜能或转化,尤其结合颜色看情绪。'],
+ '水':['水多与情绪有关;水清则心境清,水浑则近期情绪略杂。']};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 梦境日记还原师 | AgentGongju.com'))return;
+const dream=document.getElementById('dream').value.trim();
+const style=document.getElementById('style').value;
+const mode=document.getElementById('mode').value;
+const sleep=document.getElementById('sleep').value;
+if(!dream){alert('先把记得的梦境片段写下来吧');return;}
+//找出命中的意象
+const hits=[]
+for(const k in sym){if(dream.includes(k))hits.push(k);}
+if(hits.length===0)hits.push('水'); 
+let out='';
+const first=dream.split(/[，。,]/)[0]||dream.slice(0,14);
+if(mode!=='analyze'){
+if(style==='plain'){
+out='【梦境手记 · 记实版】\n夜里,我梦见——\n　'+(dream.slice(0,140))+'\n醒来时画面还清晰,便趁记得写下来。这晚的心境,大概'+(sleep==='bad'?'有些浅,梦比平时更真切。':sleep==='mid'?'睡了又醒,梦夹在半夜里。':'睡得挺沉,这梦像是深眠馈赠的小剧场。')+'\n';
+}else if(style==='story'){
+out='【梦境手记 · 故事体】\n那天夜里,一个'+(first.includes('跑')||dream.includes('追')?'奔逃的梦':'安静的梦')+'把我轻轻叫醒。梦里,'+dream.slice(0,120)+'。……等我睁开眼,窗外的晨光正好落进来,一切又回到了清醒的世界。愿此后长夜皆有好梦相伴。';
+}else{
+out='【梦境手记 · 电影感】\n\n　　那晚的梦质地柔软得像褪色的胶片。'+(genre(dream,'梦见'))+'\n\n　　画面最后'+(hits[0]==='河'?'定格在一条泛着微光的河':'停在'+(hits[0]||'水')+'意象的余温里')+'。醒来时,'+(sleep==='bad'?'天还没亮,胸口留着梦里的余绪,索性记下。':'阳光已爬上窗台,我恍惚有好一会儿,分不清方才是在梦里还是心里。')+'\n';
+}}
+if(mode==='both'||mode==='analyze'){
+out+='\n\n──────── 心理解析(共情参考) ────────\n';
+hits.slice(0,3).forEach((k,i)=>{out+=(i+1)+". 『"+k+"』: "+sym[k][0]+'\n　 '+sym[k][1]+'\n';});
+out+= (sleep==='bad'?'\n📌 你最近睡得偏浅,多梦常是压力在夜间播放"回放片"。建议睡前一小时远离手机蓝光、做几次深呼吸,给大脑按下暂停键。':'\n📌 梦境是潜意识的来信,不必过分解读。把它当作一面镜子,温柔地照见最近的自己即可。祝夜夜好眠~');
+}
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+function genre(s){const m={'跑':'奔涌','河':'泛金','小时候':'旧时光','飞':'自由','追':'逐光'};for(const k in m)if(s.includes(k))return '在一阵'+m[k]+'的涌动里,';return '在虚实交错的朦胧里,';}
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 梦境手记已复制！'))}
+</script>
+</body>
+</html>

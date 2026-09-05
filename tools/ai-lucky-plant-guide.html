@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 办公室绿植风水指南 | AgentGongju.com</title>
+<meta name="description" content="根据办公位方位与五行喜忌，推荐招财、旺文昌、护健康的办公室桌面绿植组合与摆放忌讳">
+<meta name="keywords" content="办公室绿植,风水植物,招财植物,桌面盆栽,座位风水">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2.2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🪴 AI 办公桌绿植风水指南</h1><p>按座位方位配「招财/护文昌/净空气」绿植，桌角放对了气场就顺了</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>🧭 办公位朝向</label>
+<select id="dir"><option value="东">面东</option><option value="南">面南</option><option value="西">面西</option><option value="北">面北</option><option value="中">居中/无窗工位</option></select></div>
+<div><label>🙋 我的生肖属</label>
+<select id="z"><option value="火">鼠、蛇、马</option><option value="水">牛、龙、猪</option><option value="木">虎、兔、鸡、猴</option><option value="土">羊、狗、牛</option></select></div>
+</div>
+<label>🎯 我最想改善</label>
+<select id="wish">
+<option value="财">💰 招财/业绩</option>
+<option value="文昌">📚 文昌/专注考证</option>
+<option value="人际">🤝 人缘/同事关系</option>
+<option value="健康">🍃 净化/缓解疲惫</option>
+</select>
+<label>🪟 办公位光线</label>
+<select id="light"><option value="亮">靠窗有自然光</option><option value="中">室内灯光为主+偶尔见光</option><option value="暗">无窗全灯光工位</option></select>
+<button class="btn-gen" id="genBtn" style="margin-top:8px">🪴 查看我的绿植方案</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 专属绿植方案已生成</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制绿植清单</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const dirOf={'东':['木','绿/青'],'南':['火','红/紫'],'西':['金','白/金'],'北':['水','黑/蓝'],'中':['土','黄/棕']};
+const wishGain={
+财:{master:'发财树 / 黄金葛',sub:'小叶招财竹,富贵竹',pos:['摆放在桌面左前方(青龙位)最佳','忌放正前方挡视线']},
+文昌:{master:'文竹 / 富贵竹(单数枝)',sub:'铜钱草,芦荟',pos:['放办公位左/后方文昌位','高5-10cm小盆栽即可']},
+人际:{master:'绿萝(柔化墙角) / 合果芋',sub:'薄荷,长寿花',pos:['放在右手边白虎位要低于桌面或放窗台柔角','促进沟通、挡门冲']},
+健康:{master:'虎皮兰 / 绿萝(净化)',sub:'吊兰,常春藤',pos:['放电脑旁增氧减辐射疲劳','若有打印机旁可放虎皮兰吸附']}};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 办公桌绿植风水指南 | AgentGongju.com'))return;
+const dir=document.getElementById('dir').value;
+const wish=document.getElementById('wish').value;
+const li=document.getElementById('light').value;
+const dm=dirOf[({东:'东',南:'南',西:'西',北:'北','中':'中'})[dir]];
+const g=wishGain[wish];
+const darkTip=li==='暗'?','+ ({财:'改养虎尾兰或绿萝更耐阴',文昌:'文竹怕闷热建议每周喷水',健康:'吊兰极耐阴是首选',人际:'绿萝光照要求低很给力'}[wish]):' ';
+let out='🪴 【你的办公桌绿植 · 定制方案】\n座位面'+dir+'　生肖五行参考：'+(dm[0])+'　目标：'+ ({财:'招财/业绩',文昌:'文昌专注',人际:'人缘',健康:'净化缓疲'}[wish])+'\n';
+out+=('光线条件：'+(li==='亮'?'充足自然光':li==='中'?'混合光':'全灯光'))+'\n';
+out+='━━━━━━━━━━━━━━━━\n';
+out+='✅ 首选主植物：'+g.master+'\n　♪ 搭配点缀：'+g.sub+'\n';
+out+=(li==='暗'?('　→ '+(({财:'“虎尾兰”耐阴又聚气',文昌:'“文竹”喜半荫正合适',健康:'“吊兰”+“绿萝”都超耐阴',人际:'“绿萝”光弱也活得很好'})[wish]))+'，可放心摆放。\n':'　→ 光线OK，照常养护即可，注意不要放空调出风口直吹叶片。\n');
+out+='\n📍 方位摆放建议：\n　'+g.pos[0]+'；'+g.pos[1]+'。\n';
+out+='\n🚫 忌讳提醒：\n　• 桌面不宜放大刺植物（仙人掌大刺）靠近正位，易引口舌；建议放远角挡冲。\n　• 不要摆“带刺+枯萎”的植物在右手边，象征人际关系有棱角。\n　• 枯叶黄叶及时剪，保持叶片翠绿光泽最利风水“生气”。\n';
+out+='\n💦 浇水小抄：\n　'+(wish==='健康'?'绿萝/虎皮兰宁干勿湿，见干见湿最省心':'发财树粗壮树干少浇多喷叶尤佳，文竹保持盆土微湿即可')+'。\n\n愿你桌角的这一抹绿，替你守住一整年的好心情与好气场 🌿';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 绿植方案已复制！'))}
+</script>
+</body>
+</html>

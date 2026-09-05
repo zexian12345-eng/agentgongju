@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 懒人周末计划 | AgentGongju.com</title>
+<meta name="description" content="不想浪费周末又懒得动脑筋？输入想做的事，生成一份"能躺也能嗨"的低能耗周末安排表">
+<meta name="keywords" content="周末计划,周末安排,周末怎么过,懒人计划,休息计划">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:60px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2.1;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.weekendDay{color:#a5b4fc;font-weight:700;margin-top:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🛋 AI 懒人周末计划</h1><p>周末就该"充电不内耗"——替你排个张弛有度的低调行程</p></div>
+
+<div class="card">
+<label>🌿 这个周末我真正想要的（可多写）</label>
+<textarea id="wish" placeholder="例：好好补觉 / 出门晒晒太阳吃顿好的 / 把房间收拾干净 / 见朋友但不想跑太远"></textarea>
+<div class="param-row">
+<div><label>⚡ 本周能量池</label>
+<select id="energy"><option value="低">🔋 很低,只想瘫着</option><option value="中">一般,可安排半天活动</option><option value="高">状态不错,想出门玩</option></select></div>
+<div><label>💸 预算(两日)</label><select id="budget"><option value="省">省钱为主(100内)</option><option value="中">中等(300左右)</option><option value="嗨">随性一点(不设限)</option></select></div>
+</div>
+<label>❌ 绝对不想做</label>
+<input type="text" id="avoid" placeholder="例：不想挤景区 / 不想见亲戚">
+<button class="btn-gen" id="genBtn" style="margin-top:8px">🗓 排一个我的周末</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 周末日程已排好</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制周末日程</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function out2(day){return day<10?'0'+day:''+day;}
+function dayName(){const d=new Date();const dow=d.getDay();const off={0:2,6:1}.hasOwnProperty(dow)?(dow===6?1:2):(6-dow+1); // 找本周六
+const base=new Date(d); base.setDate(base.getDate()+((6-dow+7)%7)); return base;}
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 懒人周末计划 | AgentGongju.com'))return;
+const wish=document.getElementById('wish').value.trim();
+const energy=document.getElementById('energy').value;
+const budget=document.getElementById('budget').value;
+const avoid=document.getElementById('avoid').value.trim();
+if(!wish){alert('写一点周末想要的，哪怕只是"躺平"，我才好安排呀');return;}
+const hasSleep=/睡|觉|瘫|懒|躺/.test(wish);
+const hasOut=/出门|晒|逛|走|玩|朋友|吃/.test(wish);
+const hasClean=/收拾|打扫|房间|衣柜|整理/.test(wish);
+const sat=dayName();
+const sun=new Date(sat); sun.setDate(sat.getDate()+1);
+const md=(d)=>(d.getMonth()+1)+'月'+d.getDate()+'日 周'+(d.getDay()===6?'六':'日');
+let out='🛋 【懒人周末 · 低内耗计划】\n';
+out+='　此周末你想:'+(wish.length>40?wish.slice(0,40)+'…':''+(wish))+'\n';
+out+='　能量档：'+(energy==='低'?'低电(留白为主)':energy==='中'?'中电(插一活动)':'高电(可出门)')+'　预算：'+(budget==='省'?'省钱':budget==='中'?'中等':'随性')+(avoid?'　│ 不做：'+avoid:'')+'\n';
+out+='━━━━━━━━━━━━━━━━\n';
+out+=(energy==='低'?'　懒人法则①:能取消的社交就取消,除非特别想见。\n　懒人法则②:不必看完就"计划落地",学会把安排的松弛感也当成周末的一部分。\n\n':'');
+out+='📅 '+md(sat)+'（周六）\n';
+out+='　08:30-09:30 自然醒,赖床可接受——别设闹钟,给身体一个"我不赶"的信号\n';
+if(hasSleep||energy==='低')out+='　09:30-11:00 慢慢吃一顿好吃的早餐(允许外卖增加幸福感)\n　11:00-12:30 瘫在沙发/床上刷点轻松的剧或播客,光发呆也行\n　12:30-13:30 午饭\n';
+else out+='　09:30 出门前:洗漱后先喝杯温水,简单收拾一下\n';
+if(hasOut||energy==='高'){
+ out+='　14:00-17:00 '+(energy==='高'?'出门走走:选一个离家1-2站、人少点的地方散步/逛一圈\n':'午后出门晒一会儿太阳再回来也好');	
+ if(budget!=='省')out+='　17:00-19:00 找一家安静的店吃顿好的(预算内可选:热乎乎的汤面/小馆)\n';else out+='　17:00 回来路上去买杯奶茶/一支烤肠犒劳自己(控制在预算内)\n';
+}else{
+ out+='　14:00-16:00 若无出门意愿,可进行"电子断舍离"：把下周要用的周计划顺手排一拍\n';
+ if(hasClean){out+='　16:00-17:30 你提到想收拾房间,把这个放松的整理时段安排在这里\n';}
+}
+out+='　18:30-20:00 晚饭+追剧/看一部收藏夹里心心念念的电影\n　21:30 洗个热水澡,早点睡(给周日留点元气)\n\n';
+out+='📅 '+md(sun)+'（周日）\n';
+out+='　自然醒后:别急着开工,先喝杯水、看看窗外\n';
+out+=(hasClean||energy!=='高'?'　上午:轻量整理(房间/下周衣橱任选一处,限时40分钟即可收手)\n':'　上午:可约想见的朋友喝杯咖啡叙叙旧,人少不赶\n');
+out+='　中午:好好吃顿家常/舒服的,不约特别大的局\n';
+out+=(budget==='省'?'　下午:在家午休+阅读/做点小爱好,傍晚楼下走一圈就收\n':'　下午:若想出去有一两个充分选项(展览/超市囤货/公园),挑一样满足即可,别贪多\n');
+out+='　18:00  晚饭后简单准备下周(列本周3件要事)就收工\n';
+out+='　21:00  睡前30分钟远离屏幕,缓缓呼吸,带着"这周末不错"的心情入睡\n\n';
+out+='🌀 让你做到"不硬撑"的小心法:\n　· 预设"只完成70%也 OK",完成的都是惊喜;\n　· 把"想做却不必做"的话,写进下周清单释放压力;\n　· 周末最好的规划,是允许自己不用太有效率。';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 周末计划已复制！'))}
+</script>
+</body>
+</html>

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 学习小组起名器 | AgentGongju.com</title>
+<meta name="description" content="给自习群、考研群、背单词群、班级群起个又燃又好记的名字，中英皆可选，带群公告灵感">
+<meta name="keywords" content="群名生成,学习群名,小组群名,考研群名,自习室群名">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2.1;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@keyframes pop{from{opacity:0;transform:scale(.9)}to{opacity:1}}
+.namepiece{background:rgba(99,102,241,.06);border-radius:10px;padding:10px 14px;margin-bottom:10px;animation:pop .4s ease}
+.badge{display:inline-block;background:linear-gradient(135deg,#6366f1,#a855f7);color:#fff;border-radius:8px;padding:1px 8px;font-size:.72rem;margin-right:6px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>👩‍🎓 AI 学习小组起名器</h1><p>自习、考研、打卡、班级……起个全员都想炫耀的群名</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>🎯 小组类型</label>
+<select id="gtype"><option value="自习">📚 自习/打卡群</option><option value="考研">🚀 考研上岸群</option><option value="班级">🏫 班级/宿舍群</option><option value="单词">🔤 背单词打卡</option><option value="读书">📖 读书会</option></select></div>
+<div><label>🌐 风格倾向</label>
+<select id="tone"><option value="燃">🔥 热血中二</option><option value="可爱">🐰 可爱温暖</option><option value="文艺">🍃 文艺清新</option><option value="沙雕">😂 沙雕有趣</option></select></div>
+</div>
+<label>✏️ 关键词/成员名（可选，用于融入）</label>
+<input type="text" id="kw" placeholder="例：冲刺逆袭 / 全员研究生 / 减肥学习两不误">
+<label>🔢 需要个数的群名</label>
+<select id="cnt"><option value="5">5 个</option><option value="8">8 个</option></select>
+<button class="btn-gen" id="genBtn" style="margin-top:8px">🎲 帮我起名</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 群名灵感已生成</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制灵感库</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const bank={
+自习:{燃:['今晚图书馆不关灯','卷王民政局','自习室常驻人口','把作业干掉的我们','目标在前方🏃'],
+可爱:['今天也在认真营业','小书虫的窝','拖延症康复中心(渐进)','抱团取暖加油区','写完它就去吃好吃的'],
+文艺:['挑灯夜读的日子','墨香与少年','把笔尖磨成星光','窗边那排自习位'],
+沙雕:['作业！受死吧','在挂科边缘试探','学习五分钟自拍两小时','我们到底在学啥','别卷了别卷了(先跑为敬)']},
+考研:{燃:['上岸研究所','一战成硕','研途山顶见','400+,我可以','拟录取预备队'],
+可爱:['考研猫咪冲刺班','上岸小分队','上岸给我冲鸭','红牛续命考研组','明天一定不赖床'],
+文艺:['研途漫漫亦灿灿','西窗烛下赶路人','把书读进心里','等风也等你上岸'],
+沙雕:['今天也是被数学支配的一天','研一预备役萌新','掉头发却不掉队','英语阅读别再看不懂了']},
+班级:{燃:['一班不一般','全班上岸特种兵','所向披靡X班','冲！我们是最强班级'],
+可爱:['一班小可爱基地','快乐星球X班','全班的小太阳','摸鱼组(不是)','相亲相爱X班人'],
+文艺:['恰同学少年时','我们班的诗与远方','青春主场X班'],
+沙雕:['班主任看不到的群','睡觉第一学习第二(小声)','教室后排观察团','还有多久下课']},
+单词:{燃:['词汇量战士','背最狠的单词做最卷的人','四六级粉碎机','每天50个不解释'],
+可爱:['单词小纵队','abandon别放弃','今天也打卡了吗','小可爱背单词中'],
+文艺:['拾词成诗','在单词的海洋划水','词海拾贝','把字母种进日子里'],
+沙雕:['abandon一生之敌','背了就忘再忘了背','这词我好像认识','发音全靠猜小组']},
+读书:{燃:['读完这本算我输','书山小分队','卷不动读书总行吧','一年50本挑战'],
+可爱:['睡前翻两页','今日份阅读打卡','一起读书呀','书架整理委员'],
+文艺:['灯下读书人','把日子读成诗','见字如面读书会','翻开的都是好时光'],
+沙雕:['买了=读了？不行','kindle在吃灰中','翻开第3页就困了','纸质书抵抗联盟']}};
+const noticeOf={'自习':'每晚十点前完成今日打卡,周末可休,休息也是努力的一部分哟~','考研':'少水群多刷题,冲刺期请互相打气,群里禁焦虑,有难题大胆问!','班级':'消息免打扰,但@全体务必看。明天有事的课代表记得接龙报备哟~','单词':'每天0点前把打卡截图甩群里,连断7天自动申请退群重新入?不必,互相温柔提醒吧!','读书':'本月共读书目已置顶,读完记得发读书心得,随便聊聊都行。'};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 学习小组起名器 | AgentGongju.com'))return;
+const gt=document.getElementById('gtype').value;
+const tone=document.getElementById('tone').value;
+const kw=document.getElementById('kw').value.trim();
+const cnt=parseInt(document.getElementById('cnt').value);
+let src=bank[gt][tone]||bank[gt]['燃'];
+let seeded=src.slice();
+if(kw){seeded=seeded.map((s,i)=> i%2===0 ? kw+'·'+s : s+'+'+kw);}
+const names=seeded.slice(0,cnt);
+let out='🎓 【'+({自习:'自习打卡群',考研:'考研群',班级:'班级群',单词:'背单词群',读书:'读书群'}[gt]+' · '+tone+'风')+'】起名灵感\n';
+out+=(kw?'含关键词：'+kw+'\n':'');
+out+='━━━━━━━━━━━━━━━━\n';
+names.forEach((n,i)=>out+='　'+(i+1)+'. '+n+'\n');
+out+='\n💬 收藏度最高的Top加个括号秒懂主题:\n　例:「'+(names[0]||'好好学习').slice(0,10)+'」可是要一起走很远的关系~\n\n';
+out+='📢 附赠·群公告模板：\n　欢迎来到本群!这里是'+gt+'小分队。规则就一条:'+noticeOf[gt];
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 群名灵感已复制！'))}
+</script>
+</body>
+</html>

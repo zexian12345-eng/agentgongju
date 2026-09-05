@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 微习惯养成计划 | AgentGongju.com</title>
+<meta name="description" content="把想坚持的大目标拆成2分钟就能完成的微习惯，生成21天打卡挑战表与防放弃对策">
+<meta name="keywords" content="微习惯,习惯养成,21天打卡,自律,坚持计划">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2.1;white-space:pre-wrap;font-size:.9rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🌱 AI 微习惯养成计划</h1><p>想坚持却总半途而废？把目标拆成「2分钟就能赢」的微习惯，21天稳稳打卡</p></div>
+
+<div class="card">
+<label>🎯 我想养成的习惯（大目标）</label>
+<input type="text" id="goal" placeholder="例：每天读书 / 坚持跑步 / 戒掉熬夜 / 少刷手机">
+<label>🧩 拆分微习惯（可选预填，例如"睡前读1页书"）</label>
+<input type="text" id="micro" placeholder="想好的2分钟微动作，可不填让我自动拆">
+<div class="param-row">
+<div><label>⏰ 习惯挂钩的时间锚点</label><select id="anchor"><option value="起床后">☀️ 起床后</option><option value="刷牙后">🪥 刷牙后</option><option value="饭后">🍚 饭后</option><option value="睡前">🌙 睡前</option><option value="通勤">🚌 通勤/午休</option></select></div>
+<div><label>📅 打卡周期</label><select id="days"><option value="21">21天（养成惯性）</option><option value="14">14天（轻量起步）</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn" style="margin-top:8px">🌱 生成我的微习惯表</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 微习惯挑战已就绪，记得贴在床头</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制打卡表</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const autoMicro={'读书':'翻开书,读1页即可','跑步':'换好鞋,出门走/跑200米','熬夜':'睡前把手机放在客厅充电','手机':'把短视频app挪到第3屏并设30分钟提醒','英语':'背/看5个单词就行','写作':'在备忘录敲50字','喝水':'烧好水往杯里倒满即可'};
+const rewardPlan={'读书':'周末可以多读半小时自己喜欢的类型','跑步':'集满7天奖励一顿喜欢的轻食','熬夜':'坚持一周奖励一晚不带手机入睡但次日睡到自然醒','手机':'坚持5天给朋友发一条真实的近况语音','英语':'累计打卡可兑换一部原声电影','写作':'满两周末解锁一篇认真写350字的长文'};
+function backfire(g){
+ if(/熬夜|手机|刷/.test(g))return ['把目标从“戒/减少”调整为“今晚10:30把手机放到客厅”。','给手机App设定时锁&移出首屏，奖励机制放在白天。','如果没忍住熬夜，提前设好“明早仍要吃早餐”的红线，用晨间固定动作拉回节奏。'];
+ if(/跑|运动|健身/.test(g))return ["遇雨雪降温就换成在家做一组3分钟的拉伸或开合跳,保底不破功。","运动装前一晚放门口,降低早上启动阻力。"];
+ if(/读|背|学|英语/.test(g))return ['学不动时只做最轻那1页/5个词，质量不够先保数量不断链。','把“学到很累”降级成“每天都碰一下”，大脑会卸下防备。'];
+ return ['糟糕日子可以按最低标准执行(2分钟)，只要不断链就算赢。','给自己设“忘打卡补签”的窗口期，允许偶尔失误但立刻归队。'];
+}
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 微习惯养成计划 | AgentGongju.com'))return;
+const goal=document.getElementById('goal').value.trim();
+const micro=document.getElementById('micro').value.trim();
+const anchor=document.getElementById('anchor').value;
+const N=parseInt(document.getElementById('days').value);
+if(!goal){alert('先写下你最想做成的那个习惯吧');return;}
+let m=micro;
+if(!m){for(const k in autoMicro){if(goal.includes(k)){m=autoMicro[k];break;}}}
+if(!m)m=autoMicro['读书'];
+const hits=['读','书','paper','学']; //占位
+let out='🌱 【微习惯养成挑战卡】\n';
+out+='大目标：'+goal+'\n';
+out+='微动作(MVP)：'+m+'\n';
+out+='时间锚点：'+anchor+'（用已有动作带出新动作,零成本启动）\n';
+out+='打卡周期：'+N+'天\n';
+out+='━━━━━━━━━━━━━━━━\n';
+out+='📋 每日清单（'+(N===21?'第1天既0.1%':'第1天')+'也是赢）：\n';
+for(let i=1;i<=Math.min(N,21);i++){
+ out+='　'+(i<10?'0':'')+i
+  +(i<=3?' ★启动':(i%7===0?' \\★ 第'+i/7+'周里程碑':''));
+ if(i<=3||i%7===0)out+='　→　'+m;
+ else if(i%5===0)out+='　→　(轻量重复)';
+ out+='\n';
+}
+out+='\n💥 防放弃对策 / 危急预案：\n';
+backfire(goal).forEach(x=>out+='　· '+x+'\n');
+out+='\n🏆 阶段性奖励池：\n'+(rewardPlan[Object.keys(rewardPlan).find(k=>goal.includes(k))]||'坚持满'+N+'天给自己买一件一直想要的小礼物')+'\n';
+out+='\n📌 给想中途逃跑的你：\n　习惯不是比谁扛得久,而是比谁能一次次温柔地捡起来。今天只做2分钟,明天也会继续。第'+N+'天,你大概已经不太需要用"坚持"两个字了。';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 微习惯挑战卡已复制！'))}
+</script>
+</body>
+</html>

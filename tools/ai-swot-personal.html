@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 个人 SWOT 分析 | AgentGongju.com</title>
+<meta name="description" content="输入个人背景与目标，AI自动拆解优势(Strengths)、劣势(Weaknesses)、机会(Opportunities)与威胁(Threats)四维行动建议">
+<meta name="keywords" content="SWOT分析,个人分析,职业规划,优势劣势,成长策略">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:70px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2.2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tag-green{color:#22c55e;font-weight:700}
+.tag-red{color:#f87171;font-weight:700}
+.tag-blue{color:#60a5fa;font-weight:700}
+.tag-amber{color:#fbbf24;font-weight:700}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🧭 AI 个人 SWOT 分析</h1><p>从优势 / 劣势 / 机会 / 威胁四个维度看清自己，输出可执行的成长策略</p></div>
+
+<div class="card">
+<label>🎯 您想分析的目标</label>
+<input type="text" id="goal" placeholder="例：三年内成为AI产品经理 / 减重15斤 / 跳槽到外企">
+<label>📝 请简单描述现状（兴趣、经历、短板）</label>
+<textarea id="situation" placeholder="例：我有3年后端开发经验，自学过产品课，逻辑强但公开演讲紧张，公司裁员气氛重"></textarea>
+<div class="param-row">
+<div><label>👷 当前身份</label>
+<select id="role"><option>学生</option><option>职场新人(1-3年)</option><option>职场骨干(3-8年)</option><option>管理层</option><option>自由职业/创业者</option></select></div>
+<div><label>🧩 报告形式</label>
+<select id="fmt"><option value="full">完整报告</option><option value="short">精简速览</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">⚡ 生成 SWOT 分析</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ SWOT 报告已生成</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制报告</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const strengthPhrases=['目标拆解力强，能把大目标切成可执行的小步','动手落地快，学习曲线陡','具备跨领域信息整合潜力','自驱力稳定，不依赖外界催促'];
+const weakPhrases=['对外表达与自我推销偏弱','时间常被低优先级事务打散','对长远不确定因素准备不足','求助意识弱、容易独自硬扛'];
+const oppPhrases=['AI/数字化浪潮放大了个人产能杠杆','远程协作让跨地域机会涌现','垂直细分的副业形态更易起盘','行业转型期恰是跨界的窗口'];
+const threatPhrases=['企业组织结构调整带来岗位不确定性','同质化竞争者众多、可替代性强','外部环境变化快、信息噪音大','若不持续迭代技能，相对优势会收紧'];
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 个人 SWOT 分析 | AgentGongju.com'))return;
+const goal=document.getElementById('goal').value.trim()||'我的阶段目标';
+const sit=document.getElementById('situation').value.trim();
+const role=document.getElementById('role').value;
+const fmt=document.getElementById('fmt').value;
+const seed=(goal+sit+role).length%4;
+const S=[];S.push(sit?('你提到“'+fingerprint(sit)+'”，结合你'+role+'背景，这恰恰构成可放大的差异化起点。'):('以你'+role+'的身份启动“'+goal+'”，积累期相对有试错弹性和时间资本。'));S.push(strengthPhrases[(seed)%4],strengthPhrases[(seed+1)%4]);
+const W=[];W.push(weakPhrases[(seed+2)%4],weakPhrases[(seed+3)%4],'围绕“'+goal+'”最容易被忽略的是——缺乏里程碑校验，容易陷入“忙而不进”。');
+const O=[];
+O.push(oppPhrases[(seed)%4],oppPhrases[(seed+1)%4]);
+O.push(sit.includes('AI')||sit.includes('科技')||sit.includes('产品') ? '既然已沾边AI能力圈，正好卡点当下的机会风口。' : '结合你所处行业的真实需求，反而更容易找到差异化切入点。');
+const T=[];T.push(threatPhrases[(seed+1)%4],threatPhrases[(seed+2)%4]);
+let out='🧭 【SWOT 分析 · '+goal+'】\n';
+out+='对象身份：'+role+'\n现状简述：'+ (sit?sit:'（未填写）')+'\n';
+out+='━━━━━━━━━━━━━━━━\n';
+out+='🟢 ▶ 优势 Strengths\n'+S.map(x=>'  • '+x).join('\n')+'\n\n';
+out+='🔴 ▶ 劣势 Weaknesses\n'+W.map(x=>'  • '+x).join('\n')+'\n\n';
+out+='🔵 ▶ 机会 Opportunities\n'+O.filter(Boolean).map(x=>'  • '+x).join('\n')+'\n\n';
+out+='🟠 ▶ 威胁 Threats\n'+T.map(x=>'  • '+x).join('\n')+'\n\n';
+out+='━━━━━ 行动策略（SO/WO/ST/WT）━━━━━\n';
+out+='🅰 SO 增长打法：\n  用\xa0「1个代表作品」打头阵——把针对“'+goal+'”的一次小尝试打磨成可展示的案例，主动发到公开渠道换取反馈。\n';
+out+='🅱 WO 补短打法：\n  把“表达的短板”外包给结构：提前写好脚本、录一遍自己听，每次只改进1个点，用最小成本解开卡点。\n';
+out+='🅲 ST 避险打法：\n  为'+role+'设定清晰的“能力存款”指标（如每月新增1项可对外证明的成果），降低单一体系依赖。\n';
+out+='🅳 WT 底线打法：\n  每周留2小时“复盘缓冲”，专门审视目标偏差，避免被外部噪音拖着走。\n\n';
+if(fmt==='full'){out+='📌 一句话总结：\n  你最大的竞争壁垒不是“什么都懂”，而是在“'+goal+'”这条道上，用连续的小胜证明你有持续兑现结果的能力。从今天起定一个本周就能完成的第一个行动，就赢了大多数人。';}
+else{out+='📌 精简结论：把 SO 的代表作品 + WT 的每周复盘坚持6周，你会明显感受到目标轨道的变化。';}
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function fingerprint(s){const kw=['编程','开发','AI','设计','运营','销售','老师','学生','医疗','法律','金融','市场'];for(const k of kw){if(s.includes(k))return '在'+k+'方向有积累';}return '在目标方向上有一定行动基础';}
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ SWOT报告已复制！'))}
+</script>
+</body>
+</html>

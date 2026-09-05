@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 密室逃脱谜题 | AgentGongju.com</title>
+<meta name="description" content="一键生成主题密室逃脱谜题与线索链，支持推理、密码、机关三类谜题">
+<meta name="keywords" content="密室逃脱,谜题生成,密室剧本,推理游戏,团建游戏">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:80px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2.2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.mtitle{color:#a5b4fc;font-weight:700;margin:10px 0 4px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🔐 AI 密室逃脱谜题</h1><p>主题剧情 + 三种谜题 + 线索链，派对团建轻松开密室</p></div>
+
+<div class="card">
+<label>🎬 密室主题</label>
+<input type="text" id="theme" placeholder="如：废弃医院的午夜、古堡财宝失踪案">
+<label>🧩 谜题类型</label>
+<select id="ptype"><option value="mix">混合（推理+密码+机关）</option><option value="logic">🧠 逻辑推理</option><option value="code">🔑 数字/字母密码</option><option value="trap">⚙️ 机关操作</option></select>
+<div class="param-row">
+<div><label>👥 玩家人数</label><select id="players"><option>2-3人</option><option>4-6人</option><option>7人以上</option></select></div>
+<div><label>⏱ 建议时长</label><select id="dur"><option>30分钟</option><option>60分钟</option><option>90分钟</option></select></div>
+</div>
+<div><label>📖 剧情背景（可选补充）</label><textarea id="plot" placeholder="可补充剧情设定，留空则自动生成"></textarea></div>
+<button class="btn-gen" id="genBtn">🏃 开始生成密室</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 密室剧本已生成</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制剧本</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const logicPool=[
+ {t:'推理题',q:'墙上张贴着三张照片：一张拍于1999年、一张拍于2003年、一张拍于2022年，右下角分别写着 11月5日、11月8日、11月8日。墙角的日志说“那场大火在星期三夜里发生”。日历显示2003年11月8日是星期六。问：哪张照片对应当年那场大火？',a:'答：1999年那张——因为日志提到“星期三大火”，只有11月8日与当天星期吻合才成立，2003年11月8日是周六、2022年需再核验星期，锁定1999年11月8日为周三。'},
+ {t:'推理题',q:'抽屉里有一串钥匙共5把，标签被打乱。管家说“红色钥匙能开保险柜，但蓝色钥匙总放在绿色旁边”。若你在抽屉里见到顺序为 蓝-??-绿-黄-红，则??处是什么颜色的钥匙？',a:'答：红色左边的位置只能是剩余的“紫/白”之一；结合红不紧邻绿，可知??=紫色或白色均矛盾则由颜色计数推得??处为紫色钥匙。'},
+ {t:'推理题',q:'密室内有四个开关对应四个灯泡，你在隔壁房间看不到灯泡。只能去一次检查房间，如何判定各开关对应哪盏灯？',a:'答：先开1号开关几分钟后关闭，再开2号开关并进房间：亮着的对应2号；摸起来热的是1号；剩下两支冷灯泡中，打开过的标签再逐一排除即可判定3、4号。'}];
+const codePool=[
+ {t:'数字密码',q:'一扇密码门旁写着：“我的密码是——最初的三个质数之和=最孤独的偶数”。',a:'答：前三质数2+3+5=10，“最孤独的偶数”指质数2，故密码为 102。'},
+ {t:'数字密码',q:'地面刻着 1,1,2,3,5,8,13。空缺处应补什么数字才能打开第8格？',a:'答：这是斐波那契数列，第8个数字应为前两项 13+8=21，密码为 21。'},
+ {t:'字母密码',q:'桌椅下压着一张纸条写着 KM→13, QF→?, 规律是把英文转成字母序号求差。',a:'答：K(11)与M(13)相差2取绝对值得2×12作干扰，实际解码取Q(17)+F(6)=23即 W，故密码为 23W。'}];
+const trapPool=[
+ {t:'机关谜题',q:'地板上有一组圆形按钮，提示“从最大的水缸接水，来回两次可得3升”——若桶只有5升和3升，如何量出4升水？',a:'答：装满5升倒入3升（余2升）；倒空3升再把5升余下的2升倒入3升桶；再装满5升，用其向装有2升的3升桶补水只差1升，倒满后5升桶内恰余4升。'},
+ {t:'机关谜题',q:'墙上钟表时针停在3，分针停在9，指令写着“时针数字+分针差=房间号”。',a:'答：3与9的差为6，3+6=9，房间号即9。'},
+ {t:'机关谜题',q:'转盘密码由“九宫格上数字5的中文字有几笔？”组成。',a:'答：“五”共4画，转盘密码首位设为4；后续以“八”2画——“八”字2画填入，得密码 42。'}];
+const storyMap={
+ '废弃医院':'医院值班室烛台、CT片暗藏显影坐标、手术台下的旧钥匙',
+ '古堡财宝':'城堡地图碎片、骑士铠甲暗格、护城河水位机关',
+ '太空站':'失重储物格、星图坐标、逃生舱解锁序列',
+ '教室密室':'课桌涂鸦密码、粉笔暗号、试卷残页顺序',
+ '古墓探险':'壁画方位罗盘、石棺铭文、暗道夯土机关'};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 密室逃脱谜题 | AgentGongju.com'))return;
+const theme=document.getElementById('theme').value.trim()||'废弃医院';
+const ptype=document.getElementById('ptype').value;
+const players=document.getElementById('players').value;
+const dur=document.getElementById('dur').value;
+let picks=[];
+if(ptype==='mix'){picks.push(logicPool[0],codePool[0],trapPool[0]);}
+else if(ptype==='logic'){picks=[logicPool[0],logicPool[1],logicPool[2]];}
+else if(ptype==='code'){picks=[codePool[0],codePool[1],codePool[2]];}
+else{picks=[trapPool[0],trapPool[1],trapPool[2]];}
+const story=storyMap[Object.keys(storyMap).find(k=>theme.includes(k))]||storyMap['废弃医院'];
+let out='【密室主题：'+theme+'】\n';
+out+='👥 人数：'+players+'　⏱ 建议：'+dur+'\n';
+out+='━━━━━━━━━━━━━━━━\n📖 入室剧情：\n你们在一座"' + theme + '"中醒来，房间仅靠烛火照明。桌上放着一本破旧笔记本："' + story.split('、')[0] + '"。每解开一道谜题就会找到新的线索，线索环环相扣。\n\n';
+out+='───── 第一关 ─────\n🔎 '+picks[0].t+'\n❓ '+picks[0].q+'\n💡 '+picks[0].a+'\n\n';
+out+='───── 第二关 ─────\n🔎 '+picks[1].t+'\n❓ '+picks[1].q+'\n💡 '+picks[1].a+'\n\n';
+out+='───── 第三关 ─────\n🔎 '+picks[2].t+'\n❓ '+picks[2].q+'\n💡 '+picks[2].a+'\n\n';
+out+='🏆 通关结局：\n随着最后一道机关被破解，暗门缓缓打开，一道月光穿缝而入——“'+story.split('、')[2]+'”在前方等候。你们成功找到了逃出'+theme+'的钥匙，密室挑战圆满完成！';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 密室剧本已复制！'))}
+</script>
+</body>
+</html>

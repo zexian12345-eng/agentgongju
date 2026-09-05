@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 婚礼流程与祝酒词 | AgentGongju.com</title>
+<meta name="description" content="一键生成婚礼迎宾到敬酒的完整环节流程表，并附开场词、祝酒词与新人对白参考">
+<meta name="keywords" content="婚礼流程,婚礼主持,祝酒词,婚礼策划,新婚致辞">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:70px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2.2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.time{color:#fbbf24;font-weight:700}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>💒 AI 婚礼流程 & 祝酒词</h1><p>从迎宾到敬酒的完整流程卡 + 开场词、祝酒辞模板，照着念不冷场</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>👰 新娘称呼</label><input type="text" id="wife" placeholder="如：小美"></div>
+<div><label>🤵 新郎称呼</label><input type="text" id="hus" placeholder="如：阿凯"></div>
+</div>
+<div class="param-row">
+<div><label>🕛 婚宴形式</label><select id="form"><option value="中式午宴">中式午宴(11:00-14:00)</option><option value="西式晚宴">西式晚宴(17:30-20:30)</option><option value="户外仪式">户外草坪仪式</option></select></div>
+<div><label>👨‍👩‍👧 宾客规模</label><select id="guests"><option>小桌宴(5桌内)</option><option>中等宴席(10-15桌)</option><option>大型宴席(20桌以上)</option></select></div>
+</div>
+<label>🎤 我主要负责（多选主线）</label>
+<select id="mission"><option value="主持">我是主持/司仪</option><option value="新人">我是新人要写稿</option><option value="亲友">我是亲友代表致辞</option></select>
+<button class="btn-gen" id="genBtn" style="margin-top:8px">💌 生成流程与文案</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 流程表与祝酒词已生成</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制全文</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 婚礼流程与祝酒词 | AgentGongju.com'))return;
+const wife=document.getElementById('wife').value.trim()||'新娘';
+const hus=document.getElementById('hus').value.trim()||'新郎';
+const form=document.getElementById('form').value;
+const gu=document.getElementById('guests').value;
+const mission=document.getElementById('mission').value;
+const late=form.includes('晚宴')||form.includes('户'), s=late?17:11;
+let out='💒 【婚礼执行流程卡】 '+(late?'晚宴':'午宴')+'\n婚宴形式：'+form+'　宾客：'+gu+'；新人：'+hus+'×'+wife+'\n';
+out+='━━━━━━━━━━━━━━━━\n';
+let t=s;
+const steps=[
+ [0,'开场暖场：迎宾音乐循环，宾客签到留影'],
+ [25,'主持人开场，全场灯光暗，求婚式音乐起'],
+ [30,hus+'入场＋'+wife+'挽父亲入场，交接仪式'],
+ [40,'证婚人/长辈致辞、交换戒指、深情告白'],
+ [50,'新人&父母共同向来宾鞠躬，宣布开席'],
+ [72,'新人逐桌敬酒，主持播报祝福语'],
+ [100,'互动游戏/抛花球(中大型可选)']];
+steps.forEach(st=>{const hh=String(s+Math.floor(st[0]/60)).padStart(2,'0');const mm=String(st[0]%60).padStart(2,'0');out+=(s+Math.floor(st[0]/60))%24+':'+mm+'　'+st[1]+'\n';});
+out+='\n━━━ ✦ 可复制的祝酒词 ✦ ━━━\n';
+if(mission==='主持'){
+out+='【司仪 · 开场词】\n“尊敬的各位来宾，此刻'+(wife)+'与'+(hus)+'将在这里许下一生的承诺。感谢大家冒着'+(late?'晚风轻抚的夜色':'午后的暖阳')+'前来见证这一时刻。接下来，请把目光聚焦到幸福开始的地方——让我们有请新人入场！”\n\n';
+out+='【敬酒环节串词】\n“现在'+(hus)+'与'+(wife)+'要来向各位敬酒了。第一杯敬父母，感谢养育之恩；第二杯敬在座亲友，感谢见证与陪伴。大家举起酒杯，为这一对璧人送上最热烈的祝福——干杯！”';}
+else if(mission==='亲友'){
+out='【亲友代表 · 致辞模板】\n“大家好，我是新郎的多年好友'+(hus)+'（新娘的闺蜜'+(wife)+'）。'+(hus)+'这个人吧，平时话不多，可一提到'+(wife)+'，眼睛都在发光。你们一路走来我们都看在眼里。今天看到你们终于走进婚姻，作为朋友，我只想说一句：往后的日子，'+(hus)+'你可得继续宠着她、护着她。（转向两人）祝你们：踏遍山海，归来仍是彼此的少年与少女。干杯！”';}
+else{
+out='【新人 · 对白开场】\n'+(hus)+'：“'+(wife)+'，从今天起，我愿与你共享喜乐、分担风雨，把平凡的日子过成四季三餐的浪漫。”\n'+(wife)+'：“'+(hus)+'，谢谢你包容我的小脾气。往后的柴米油盐，我们要一起写进故事里。”\n\n【新人/主家 · 敬酒总祝酒辞】\n“今天非常荣幸，能与这么多爱我们的家人朋友同坐一堂。这一杯酒，先敬双方父母，感谢你们含辛茹苦的养育；再敬在座的每一位，感谢你们远道而来的见证。愿大家身体健康、阖家幸福——干杯！”';}
+out+='\n\n📌 主持Tips：敬酒时'+(gu.includes('小桌')?'节奏可放慢，每桌多留两三句寒暄，宾主尽欢。':'请提前安排伴郎伴娘帮新人挡酒换口，务必新人多喝温水少喝急酒。');
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 流程与祝酒词已复制！'))}
+</script>
+</body>
+</html>
