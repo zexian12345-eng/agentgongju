@@ -126,16 +126,6 @@ textarea#inEvents:focus{outline:none;border-color:rgba(167,139,250,0.6)}
 .big-plain{color:#a7f3d0;font-size:.82rem;line-height:1.7;margin-top:3px}
 @media(max-width:640px){.param-row,.param-row-3{grid-template-columns:1fr}.bazi-grid{grid-template-columns:repeat(2,1fr)}.info-grid{grid-template-columns:1fr}}
 </style>
-<script>
-var _hmt = _hmt || [];
-(function() {
-  var hm = document.createElement("script");
-  hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949";
-  var s = document.getElementsByTagName("script")[0];
-  s.parentNode.insertBefore(hm, s);
-})();
-</script>
-<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 </head>
 <body>
 <nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
@@ -223,7 +213,7 @@ const ZHI_WX = {子:"Water",丑:"Earth",寅:"Wood",卯:"Wood",辰:"Earth",巳:"F
 const YY_EN = {阳:"Yang",阴:"Yin"};
 const NAYIN_EN = {海中金:"Sea Metal",炉中火:"Furnace Fire",大林木:"Forest Wood",路旁土:"Road Earth",剑锋金:"Sword Metal",山头火:"Hill Fire",涧下水:"Ravine Water",城头土:"City Earth",白蜡金:"Wax Metal",杨柳木:"Willow Wood",泉中水:"Spring Water",屋上土:"Roof Earth",霹雳火:"Thunder Fire",松柏木:"Pine Wood",长流水:"Flowing Water",沙中金:"Sand Metal",山下火:"Mountain Fire",平地木:"Plain Wood",壁上土:"Wall Earth",金箔金:"Gold Foil Metal",覆灯火:"Lamp Fire",天河水:"Sky River Water",大驿土:"Highway Earth",钗钏金:"Hairpin Metal",桑柘木:"Mulberry Wood",大溪水:"Stream Water",沙中土:"Sand Earth",天上火:"Sky Fire",石榴木:"Pomegranate Wood",大海水:"Ocean Water"};
 const SS_EN = {比肩:"Peer (Bi Jian)",劫财:"Rob Wealth (Jie Cai)",食神:"Eating God (Shi Shen)",伤官:"Hurting Officer (Shang Guan)",偏财:"Indirect Wealth (Pian Cai)",正财:"Direct Wealth (Zheng Cai)",偏印:"Indirect Resource (Pian Yin)",正印:"Direct Resource (Zheng Yin)",七杀:"Seven Killings (Qi Sha)",正官:"Direct Officer (Zheng Guan)"};
-const SHEN_EN = {天乙贵人:"Heavenly Noble",文昌:"Wen Chang (Scholar Star)",桃花:"Peach Blossom (Romance)",驿马:"Travel Horse (Movement)",华盖:"Hua Gai (Solitude & Wisdom)",魁罡:"Kui Gang (Firm Will)",红鸾:"Hong Luan (Wedding Star)",羊刃:"Yang Ren (Blade Star)",将星:"General Star",丧门:"Sang Men (Mourning)",吊客:"Diao Ke (Bereavement)",月德:"Monthly Virtue",天德:"Heavenly Virtue",金舆:"Golden Chariot",孤辰:"Solitary Star",寡宿:"Widowhood Star"};
+const SHEN_EN = {天乙贵人:"Heavenly Noble",文昌:"Wen Chang (Scholar Star)",桃花:"Peach Blossom (Romance)",驿马:"Travel Horse (Movement)",华盖:"Hua Gai (Solitude & Wisdom)",魁罡:"Kui Gang (Firm Will)",红鸾:"Hong Luan (Wedding Star)",羊刃:"Yang Ren (Blade Star)",将星:"General Star",丧门:"Sang Men (Mourning)",吊客:"Diao Ke (Bereavement)",月德:"Monthly Virtue",天德:"Heavenly Virtue",金舆:"Golden Chariot",孤辰:"Solitary Star",寡宿:"Widowhood Star",禄神:"Lu Shen (Salary Star)",劫煞:"Jie Sha (Robbery Star)",灾煞:"Zai Sha (Calamity Star)"};
 const REL_EN = {冲:"Clash",合:"Combination",刑:"Punishment",害:"Harm",破:"Break"};
 const SANHE_EN = {水局:"Water Bureau",火局:"Fire Bureau",金局:"Metal Bureau",木局:"Wood Bureau"};
 const LUNAR_MONTH_EN = {正:"1st",二:"2nd",三:"3rd",四:"4th",五:"5th",六:"6th",七:"7th",八:"8th",九:"9th",十:"10th",冬:"11th",腊:"12th"};
@@ -305,6 +295,12 @@ const EN_MAP = {
   "大白话总结":"Plain-language overview",
   "五行强弱排序：":"Five Elements (strong → weak): ",
   "五行所缺：":"Missing elements: ",
+  "💪 身强身弱打分（旺衰量化）":"💪 Strength Score (Day Master Vitality)",
+  "怎么算出来的":"How it is calculated",
+  "总分：":"Total: ",
+  "分 → ":" → ",
+  "≥4分为偏强，不足4分为偏弱":"Score ≥ 4 = Slightly Strong; below 4 = Slightly Weak",
+  "旺衰依据：简化量化法（知识库§五）——得令看月支与日主五行关系（旺相休囚死：同我=当令4分、生我=相2分、我生=休0分、我克=囚0分、克我=死-2分）；通根看四支藏干是否含日主同类五行（每处+1.5）。与专业“月令旺衰+党众”判断方向一致，但属简化，不可替代格局论，仅供参考。":"Vitality method: a simplified scoring (KB §5) — the season term scores the month branch vs. Day Master element (Flourishing same-element +4; Nurtured generating-element +2; Resting/Imprisoned draining or conquered-by-you 0; Dead month-conquers-you −2); roots count branches whose hidden stems include your element (+1.5 each). Direction matches professional month-strength + faction analysis, but it is simplified and not a substitute for pattern theory — for reference only.",
   "无明显缺失":"None missing",
   "⚖️ 命局格局（据《子平真诠》取格法）":"⚖️ Chart Pattern (per Zi Ping Zhen Quan)",
   "喜：":"Favorable: ",
@@ -537,7 +533,10 @@ const EN_DESC = {
   "流年伏吟年柱":"Fu Yin on Year Pillar",
   "流年伏吟月柱":"Fu Yin on Month Pillar",
   "流年伏吟日柱":"Fu Yin on Day Pillar",
-  "流年伏吟时柱":"Fu Yin on Hour Pillar"
+  "流年伏吟时柱":"Fu Yin on Hour Pillar",
+  "禄神临年":"Lu Shen (Salary Star) arrives",
+  "流年劫煞临":"Jie Sha (Robbery Star) arrives",
+  "流年灾煞临":"Zai Sha (Calamity Star) arrives"
 };
 
 // ---------- 十神 / 神煞 / 关系 英文含义 ----------
@@ -586,7 +585,10 @@ const EN_PLAIN_SHEN = {
   "天德贵人":"Heavenly Virtue is a benevolent blessing: few disasters in life, troubles often dissolve with a helper's aid — kindness widens your path.",
   "金舆":"Golden Chariot = a dignified, steady life: smooth travel and errands, possibly support from your spouse's family.",
   "孤辰":"Solitary Star: independent and quiet-loving — comfortable alone, but kinship bonds are thinner; nurture relationships actively.",
-  "寡宿":"Widowhood Star: rich inner world but prone to loneliness — stay socially active to dissolve it."
+  "寡宿":"Widowhood Star: rich inner world but prone to loneliness — stay socially active to dissolve it.",
+  "禄神":"Lu Shen (Salary Star): your own 'rice bowl' — steady income, salary and position carry real substance; good for raises, formal posts and building stable income.",
+  "劫煞":"Jie Sha (Robbery Star): bold and quick-minded, but prone to sudden losses and impulse — think twice before big spending, loans, guarantees and big signatures.",
+  "灾煞":"Zai Sha (Calamity Star): guard against bumps, minor accidents and sudden illness — drive carefully, avoid risky places, slow down a beat."
 };
 
 // 中国主要城市英文名
@@ -986,7 +988,7 @@ const SHENG={木:"火",火:"土",土:"金",金:"水",水:"木"};
 const KE={木:"土",土:"水",水:"火",火:"金",金:"木"};
 function shishen(dayGan,otherGan){if(dayGan===otherGan)return"比肩";const dw=WX_GAN[dayGan],ow=WX_GAN[otherGan];const same=YY_GAN[dayGan]===YY_GAN[otherGan];if(dw===ow)return same?"比肩":"劫财";if(SHENG[dw]===ow)return same?"食神":"伤官";if(KE[dw]===ow)return same?"偏财":"正财";if(SHENG[ow]===dw)return same?"偏印":"正印";if(KE[ow]===dw)return same?"七杀":"正官";return"?";}
 function sanheGroup(z){for(const k of["申子辰","寅午戌","巳酉丑","亥卯未"])if(k.includes(z))return k;return null;}
-function shensha(dg,dz,yg,yz,mz,hz){const out={};const tianyi={甲:["丑","未"],戊:["丑","未"],庚:["丑","未"],乙:["子","申"],己:["子","申"],丙:["亥","酉"],丁:["亥","酉"],壬:["卯","巳"],癸:["卯","巳"],辛:["午","寅"]};for(const[g,src]of[[dg,"日"],[yg,"年"]])for(const[z,col]of[[dz,"日"],[mz,"月"],[hz,"时"],[yz,"年"]])if(tianyi[g]&&tianyi[g].includes(z))out["天乙贵人("+src+"干起)"]=col+"支";const taohua={"申子辰":"酉","寅午戌":"卯","巳酉丑":"午","亥卯未":"子"};const yima={"申子辰":"寅","寅午戌":"申","巳酉丑":"亥","亥卯未":"巳"};const huagai={"申子辰":"辰","寅午戌":"戌","巳酉丑":"丑","亥卯未":"未"};const jiangxing={"申子辰":"子","寅午戌":"午","巳酉丑":"酉","亥卯未":"卯"};for(const[z,src]of[[yz,"年"],[dz,"日"]]){const grp=sanheGroup(z);if(grp){for(const[tz,nm]of[[taohua[grp],"桃花"],[yima[grp],"驿马"],[huagai[grp],"华盖"],[jiangxing[grp],"将星"]])for(const[z2,col]of[[dz,"日"],[mz,"月"],[hz,"时"],[yz,"年"]])if(z2===tz)out[nm+"("+src+"支起)"]=col+"支";}}const yangren={甲:"卯",丙:"午",戊:"午",庚:"酉",壬:"子"};if(yangren[dg])for(const[z2,col]of[[dz,"日"],[mz,"月"],[hz,"时"],[yz,"年"]])if(z2===yangren[dg])out["羊刃(日干起)"]=col+"支";const dayIdx=encodeGZ(dg,dz);const kong=[((Math.floor(dayIdx/10)*10)+10)%12,((Math.floor(dayIdx/10)*10)+11)%12];for(const[z2,col]of[[yz,"年"],[mz,"月"],[dz,"日"],[hz,"时"]])if(kong.includes(zhiIndex(z2)))out["空亡(日柱旬)"]=col+"支";const wenchang={甲:"巳",乙:"午",丙:"申",丁:"酉",戊:"申",己:"酉",庚:"亥",辛:"子",壬:"寅",癸:"卯"};if(wenchang[dg])for(const[z2,col]of[[dz,"日"],[mz,"月"],[hz,"时"],[yz,"年"]])if(z2===wenchang[dg])out["文昌(日干起)"]=col+"支";const hongluan={子:"卯",丑:"寅",寅:"丑",卯:"子",辰:"亥",巳:"戌",午:"酉",未:"申",申:"未",酉:"午",戌:"巳",亥:"辰"};const hl=hongluan[yz];for(const[z2,col]of[[dz,"日"],[mz,"月"],[hz,"时"],[yz,"年"]])if(z2===hl)out["红鸾(年支起)"]=col+"支";const sm=ZHI[(zhiIndex(yz)+2)%12],dk=ZHI[(zhiIndex(yz)+10)%12];for(const[z2,col]of[[yz,"年"],[mz,"月"],[dz,"日"],[hz,"时"]])if(z2===sm)out["丧门(年支起)"]=col+"支";for(const[z2,col]of[[yz,"年"],[mz,"月"],[dz,"日"],[hz,"时"]])if(z2===dk)out["吊客(年支起)"]=col+"支";const yuede={寅:"丙",午:"丙",戌:"丙",申:"壬",子:"壬",辰:"壬",亥:"甲",卯:"甲",未:"甲",巳:"庚",酉:"庚",丑:"庚"};if(yuede[mz])for(const[g2,col]of[[dg,"日"],[yg,"年"]])if(g2===yuede[mz])out["月德(月支起)"]=col+"干";const tiande={寅:"丁",卯:"申",辰:"壬",巳:"辛",午:"亥",未:"甲",申:"癸",酉:"寅",戌:"丙",亥:"乙",子:"巳",丑:"庚"};const td=tiande[mz];if(td){const isGan="甲乙丙丁戊己庚辛壬癸".includes(td);if(isGan){for(const[g2,col]of[[dg,"日"],[yg,"年"]])if(g2===td)out["天德(月支起)"]=col+"干";}else{for(const[z2,col]of[[dz,"日"],[mz,"月"],[hz,"时"],[yz,"年"]])if(z2===td)out["天德(月支起)"]=col+"支";}}const jinyu={甲:"辰",乙:"巳",丙:"未",戊:"未",丁:"申",己:"申",庚:"戌",辛:"亥",壬:"丑",癸:"寅"};if(jinyu[dg])for(const[z2,col]of[[dz,"日"],[mz,"月"],[hz,"时"],[yz,"年"]])if(z2===jinyu[dg])out["金舆(日干起)"]=col+"支";const guchen={亥:"寅",子:"寅",丑:"寅",寅:"巳",卯:"巳",辰:"巳",巳:"申",午:"申",未:"申",申:"亥",酉:"亥",戌:"亥"};const guasu={亥:"戌",子:"戌",丑:"戌",寅:"丑",卯:"丑",辰:"丑",巳:"辰",午:"辰",未:"辰",申:"未",酉:"未",戌:"未"};for(const[z2,col]of[[dz,"日"],[mz,"月"],[hz,"时"],[yz,"年"]])if(z2===guchen[yz])out["孤辰(年支起)"]=col+"支";for(const[z2,col]of[[dz,"日"],[mz,"月"],[hz,"时"],[yz,"年"]])if(z2===guasu[yz])out["寡宿(年支起)"]=col+"支";if([["庚","辰"],["庚","戌"],["壬","辰"],["戊","戌"]].some(x=>x[0]===dg&&x[1]===dz))out["魁罡(日柱)"]="日柱";return out;}
+function shensha(dg,dz,yg,yz,mz,hz){const out={};const tianyi={甲:["丑","未"],戊:["丑","未"],庚:["丑","未"],乙:["子","申"],己:["子","申"],丙:["亥","酉"],丁:["亥","酉"],壬:["卯","巳"],癸:["卯","巳"],辛:["午","寅"]};for(const[g,src]of[[dg,"日"],[yg,"年"]])for(const[z,col]of[[dz,"日"],[mz,"月"],[hz,"时"],[yz,"年"]])if(tianyi[g]&&tianyi[g].includes(z))out["天乙贵人("+src+"干起)"]=col+"支";const taohua={"申子辰":"酉","寅午戌":"卯","巳酉丑":"午","亥卯未":"子"};const yima={"申子辰":"寅","寅午戌":"申","巳酉丑":"亥","亥卯未":"巳"};const huagai={"申子辰":"辰","寅午戌":"戌","巳酉丑":"丑","亥卯未":"未"};const jiangxing={"申子辰":"子","寅午戌":"午","巳酉丑":"酉","亥卯未":"卯"};for(const[z,src]of[[yz,"年"],[dz,"日"]]){const grp=sanheGroup(z);if(grp){for(const[tz,nm]of[[taohua[grp],"桃花"],[yima[grp],"驿马"],[huagai[grp],"华盖"],[jiangxing[grp],"将星"]])for(const[z2,col]of[[dz,"日"],[mz,"月"],[hz,"时"],[yz,"年"]])if(z2===tz)out[nm+"("+src+"支起)"]=col+"支";}}const yangren={甲:"卯",丙:"午",戊:"午",庚:"酉",壬:"子"};if(yangren[dg])for(const[z2,col]of[[dz,"日"],[mz,"月"],[hz,"时"],[yz,"年"]])if(z2===yangren[dg])out["羊刃(日干起)"]=col+"支";const dayIdx=encodeGZ(dg,dz);const kong=[((Math.floor(dayIdx/10)*10)+10)%12,((Math.floor(dayIdx/10)*10)+11)%12];for(const[z2,col]of[[yz,"年"],[mz,"月"],[dz,"日"],[hz,"时"]])if(kong.includes(zhiIndex(z2)))out["空亡(日柱旬)"]=col+"支";const wenchang={甲:"巳",乙:"午",丙:"申",丁:"酉",戊:"申",己:"酉",庚:"亥",辛:"子",壬:"寅",癸:"卯"};if(wenchang[dg])for(const[z2,col]of[[dz,"日"],[mz,"月"],[hz,"时"],[yz,"年"]])if(z2===wenchang[dg])out["文昌(日干起)"]=col+"支";const hongluan={子:"卯",丑:"寅",寅:"丑",卯:"子",辰:"亥",巳:"戌",午:"酉",未:"申",申:"未",酉:"午",戌:"巳",亥:"辰"};const hl=hongluan[yz];for(const[z2,col]of[[dz,"日"],[mz,"月"],[hz,"时"],[yz,"年"]])if(z2===hl)out["红鸾(年支起)"]=col+"支";const sm=ZHI[(zhiIndex(yz)+2)%12],dk=ZHI[(zhiIndex(yz)+10)%12];for(const[z2,col]of[[yz,"年"],[mz,"月"],[dz,"日"],[hz,"时"]])if(z2===sm)out["丧门(年支起)"]=col+"支";for(const[z2,col]of[[yz,"年"],[mz,"月"],[dz,"日"],[hz,"时"]])if(z2===dk)out["吊客(年支起)"]=col+"支";const lushen={甲:"寅",乙:"卯",丙:"巳",丁:"午",戊:"巳",己:"午",庚:"申",辛:"酉",壬:"亥",癸:"子"};if(lushen[dg])for(const[z2,col]of[[dz,"日"],[mz,"月"],[hz,"时"],[yz,"年"]])if(z2===lushen[dg])out["禄神(日干起)"]=col+"支";const jiesha={申子辰:"巳",亥卯未:"申",寅午戌:"亥",巳酉丑:"寅"};const zaisha={申子辰:"午",亥卯未:"酉",寅午戌:"子",巳酉丑:"卯"};for(const[z,src]of[[yz,"年"],[dz,"日"]]){const grp=sanheGroup(z);if(grp)for(const[z2,col]of[[dz,"日"],[mz,"月"],[hz,"时"],[yz,"年"]]){if(z2===jiesha[grp])out["劫煞("+src+"支起)"]=col+"支";if(z2===zaisha[grp])out["灾煞("+src+"支起)"]=col+"支";}}const yuede={寅:"丙",午:"丙",戌:"丙",申:"壬",子:"壬",辰:"壬",亥:"甲",卯:"甲",未:"甲",巳:"庚",酉:"庚",丑:"庚"};if(yuede[mz])for(const[g2,col]of[[dg,"日"],[yg,"年"]])if(g2===yuede[mz])out["月德(月支起)"]=col+"干";const tiande={寅:"丁",卯:"申",辰:"壬",巳:"辛",午:"亥",未:"甲",申:"癸",酉:"寅",戌:"丙",亥:"乙",子:"巳",丑:"庚"};const td=tiande[mz];if(td){const isGan="甲乙丙丁戊己庚辛壬癸".includes(td);if(isGan){for(const[g2,col]of[[dg,"日"],[yg,"年"]])if(g2===td)out["天德(月支起)"]=col+"干";}else{for(const[z2,col]of[[dz,"日"],[mz,"月"],[hz,"时"],[yz,"年"]])if(z2===td)out["天德(月支起)"]=col+"支";}}const jinyu={甲:"辰",乙:"巳",丙:"未",戊:"未",丁:"申",己:"申",庚:"戌",辛:"亥",壬:"丑",癸:"寅"};if(jinyu[dg])for(const[z2,col]of[[dz,"日"],[mz,"月"],[hz,"时"],[yz,"年"]])if(z2===jinyu[dg])out["金舆(日干起)"]=col+"支";const guchen={亥:"寅",子:"寅",丑:"寅",寅:"巳",卯:"巳",辰:"巳",巳:"申",午:"申",未:"申",申:"亥",酉:"亥",戌:"亥"};const guasu={亥:"戌",子:"戌",丑:"戌",寅:"丑",卯:"丑",辰:"丑",巳:"辰",午:"辰",未:"辰",申:"未",酉:"未",戌:"未"};for(const[z2,col]of[[dz,"日"],[mz,"月"],[hz,"时"],[yz,"年"]])if(z2===guchen[yz])out["孤辰(年支起)"]=col+"支";for(const[z2,col]of[[dz,"日"],[mz,"月"],[hz,"时"],[yz,"年"]])if(z2===guasu[yz])out["寡宿(年支起)"]=col+"支";if([["庚","辰"],["庚","戌"],["壬","辰"],["戊","戌"]].some(x=>x[0]===dg&&x[1]===dz))out["魁罡(日柱)"]="日柱";return out;}
 function calcDayun(monthGZIdx,forward,birthUtcJd,jtMap){const years=Object.keys(jtMap).map(Number);const all=[];for(const y of years)for(const name of JIE_LIST)all.push(jtMap[y][name]);let target;if(forward)target=Math.min(...all.filter(t=>t>birthUtcJd));else target=Math.max(...all.filter(t=>t<birthUtcJd));const diffH=Math.abs(target-birthUtcJd)*24;const yearsN=Math.floor(diffH/72);const rem=diffH%72;const months=Math.floor(rem/6);const days=Math.floor((rem%6)*5);const startAge=yearsN+months/12.0+days/365.0;const steps=[];for(let i=0;i<8;i++){const idx=((forward?monthGZIdx+(i+1):monthGZIdx-(i+1))%60+60)%60;const[g,z]=decodeGZ(idx);const s=startAge+i*10;steps.push({gz:g+z,start:Math.round(s*100)/100,end:Math.round((s+10)*100)/100});}return{qiYun:[yearsN,months,days],steps};}
 // 农历
 function newMoonJDE(k){const T=k/1236.85;let JDE=2451550.09766+29.530588861*k+0.00015437*T*T-0.000000150*T*T*T+0.00000000073*Math.pow(T,4);const M=(2.5534+29.10535670*k-0.0000014*T*T)*Math.PI/180;const Mp=(201.5643+385.81693528*k+0.0107582*T*T+0.00001238*T*T*T-0.000000058*Math.pow(T,4))*Math.PI/180;const F=(160.7108+390.67050284*k-0.0016118*T*T-0.00000227*T*T*T+0.000000011*Math.pow(T,4))*Math.PI/180;const Om=(124.7746-1.56375588*k+0.0020672*T*T+0.00000215*T*T*T)*Math.PI/180;JDE+=-0.40720*Math.sin(Mp)+0.17241*Math.sin(M)+0.01608*Math.sin(2*Mp)+0.01039*Math.sin(2*F)+0.00739*Math.sin(Mp-M)-0.00514*Math.sin(Mp+M)+0.00208*Math.sin(2*M)-0.00111*Math.sin(Mp-2*F)-0.00057*Math.sin(Mp+2*F)+0.00056*Math.sin(2*Mp+M)-0.00042*Math.sin(2*Mp-M)+0.00042*Math.sin(M)+0.00038*Math.sin(M-2*F)+0.00024*Math.sin(2*Mp-2*F)-0.00017*Math.sin(Om)-0.00007*Math.sin(Mp+2*M)+0.00004*Math.sin(2*Mp-2*M)+0.00004*Math.sin(2*F+Om)+0.00003*Math.sin(2*Mp+2*F)+0.00003*Math.sin(Mp+M-2*F)+0.00003*Math.sin(M-Mp-2*F)-0.00002*Math.sin(M-Mp+F)-0.00002*Math.sin(3*Mp)+0.00002*Math.sin(Om);return JDE;}
@@ -1342,7 +1344,10 @@ const PLAIN_SHEN = {
   "天德贵人": "天德贵人是仁德福星，逢凶化吉：一生少灾少难，遇麻烦常有贵人化解，为人仁慈厚道。",
   "金舆": "金舆是福气车马星，主日子体面、出行安稳，也代表妻家或夫家的助力。",
   "孤辰": "孤辰主孤独独立：性格偏独、喜清净，六亲缘分淡一些，感情上要主动经营。",
-  "寡宿": "寡宿主孤寡：容易感到孤单、想得多，多交朋友、多走动可化解。"
+  "寡宿": "寡宿主孤寡：容易感到孤单、想得多，多交朋友、多走动可化解。",
+  "禄神": "禄神是日主的俸禄位，代表稳定的收入来源和底气：靠本事吃饭能拿稳，正财缘好。",
+  "劫煞": "劫煞主突发破财与冲动：敢闯敢拼是优点，但投资借贷要三思，防冲动决策。",
+  "灾煞": "灾煞提示意外磕碰与小病小灾：出行慢半拍、少去危险场合，谨慎能避大半。"
 };
 
 // ==================== 调候用神（《穷通宝鉴》通行版本） ====================
@@ -1469,6 +1474,17 @@ function flowShensha(lz, bazi){
   if(yangren[bazi.pillars.day.g]===lz) out.push("羊刃");
   const jiangxing={"申子辰":"子","寅午戌":"午","巳酉丑":"酉","亥卯未":"卯"};
   if(grp&&jiangxing[grp]===lz) out.push("将星");
+  // 禄神：流年/月支=日主禄地（十干禄：甲寅乙卯丙戊巳丁己午庚申辛酉壬亥癸子）
+  const lushen={甲:"寅",乙:"卯",丙:"巳",丁:"午",戊:"巳",己:"午",庚:"申",辛:"酉",壬:"亥",癸:"子"};
+  if(lushen[bazi.pillars.day.g]===lz) out.push("禄神");
+  // 劫煞/灾煞（以年支或日支的三合局查：劫煞 申子辰巳/亥卯未申/寅午戌亥/巳酉丑寅；灾煞 申子辰午/亥卯未酉/寅午戌子/巳酉丑卯）
+  const jiesha={"申子辰":"巳","亥卯未":"申","寅午戌":"亥","巳酉丑":"寅"};
+  const zaisha={"申子辰":"午","亥卯未":"酉","寅午戌":"子","巳酉丑":"卯"};
+  for(const srcZ of [yz, dz]){
+    const g2 = sanheGroup(srcZ);
+    if(g2 && jiesha[g2]===lz) out.push("劫煞");
+    if(g2 && zaisha[g2]===lz) out.push("灾煞");
+  }
   const tianyi={甲:["丑","未"],戊:["丑","未"],庚:["丑","未"],乙:["子","申"],己:["子","申"],丙:["亥","酉"],丁:["亥","酉"],壬:["卯","巳"],癸:["卯","巳"],辛:["午","寅"]};
   if((tianyi[bazi.pillars.day.g]||[]).includes(lz)) out.push("天乙贵人");
   const huagai={"申子辰":"辰","寅午戌":"戌","巳酉丑":"丑","亥卯未":"未"};
@@ -1704,6 +1720,9 @@ function analyzeYear(yy, bazi, step, age){
     if(s==="天德贵人") add("贵人相助",1.5, "流年引动天德贵人（仁德福星）：逢凶化吉，遇麻烦常有长辈、贵人或官方化解，为人处事厚道些更顺。","流年天德贵人临");
     if(s==="孤辰") add("进修独处",1, "流年孤辰临：这年偏孤独、喜清净，六亲走动少，适合静心学习、独处充电；也提示多主动联系家人朋友。","流年孤辰临",16);
     if(s==="寡宿") add("进修独处",1, "流年寡宿临：内心容易孤单、想得多，感情上偏平淡，多参加集体活动、多交朋友可化解。","流年寡宿临",16);
+    if(s==="禄神") add("收入提升",2, "禄神临年（日主临官禄地）：禄是日主的‘饭碗位’，这年收入、职位上有底气——正财机会实在，适合谈薪、接正职、拓稳定进项，做事有本钱撑腰。","禄神临年",18);
+    if(s==="劫煞") add("破财",1.5, "流年逢劫煞：防突发破财与冲动消费，投资、借贷、担保、大额签字务必三思，宜稳不宜赌，钱包看紧些。","流年劫煞临",18);
+    if(s==="灾煞") add("伤病",1.2, "流年逢灾煞：防意外磕碰与身体小恙，出行开车多留神，少去危险场所凑热闹，凡事慢半拍。","流年灾煞临",16);
   }
 
   // 4. 组合细化规则
@@ -2673,6 +2692,9 @@ function preciseSummary(bazi){
   if(ssList.includes("金舆")) out.push(["你命中带金舆，是福气车马星：日子过得体面安稳，出门办事顺当，也可能得到配偶家的助力。","You carry the Golden Chariot star: a dignified, steady life — smooth travel and errands, possibly support from your spouse's family."]);
   if(ssList.includes("孤辰")) out.push(["你命中带孤辰，性格偏独立、爱清净，自己待得住，但六亲缘分淡一些，感情上要主动经营、多走动。","You carry the Solitary star: independent and quiet-loving — comfortable alone, but kinship bonds are thinner; nurture relationships actively."]);
   if(ssList.includes("寡宿")) out.push(["你命中带寡宿，内心世界丰富、想得多，容易感到孤单，多交朋友、多参加集体活动能化解。","You carry the Widowhood star: rich inner world but prone to loneliness — stay socially active to dissolve it."]);
+  if(ssList.includes("禄神")) out.push(["你命中带禄神（日主禄地），是自带‘饭碗’的星：收入、职位上有底气，靠本事吃饭能拿稳，正财缘好，适合稳扎稳打攒家底。","You carry Lu Shen (the Salary Star, your own income seat): real substance behind income and position — steady earnings suit you; build your savings step by step."]);
+  if(ssList.includes("劫煞")) out.push(["你命中带劫煞，性格里有敢闯敢拼、脑子快的一面，但也要防突发破财和冲动决策：投资借贷多留后手，遇事缓一缓再定。","You carry Jie Sha (Robbery Star): bold and quick-minded — but guard against sudden losses and impulsive calls; keep a backup plan and sleep on big decisions."]);
+  if(ssList.includes("灾煞")) out.push(["你命中带灾煞，提示你一生多留意意外磕碰和小病小灾：出行开车慢半拍，别去危险场合，谨慎些能避开大半麻烦。","You carry Zai Sha (Calamity Star): a nudge to stay alert against bumps and minor illness — drive carefully, avoid risky spots; caution dodges most trouble."]);
   return out.filter(x=>x&&x[0]).map(x=>x[zh?0:1]).join("");
 }
 
@@ -2697,11 +2719,13 @@ function strengthAnalysis(bazi){
   const dw = WX_GAN[dg];
   const mz = bazi.monthZhi;
   const mw = {寅:"木",卯:"木",巳:"火",午:"火",申:"金",酉:"金",亥:"水",子:"水",辰:"土",戌:"土",丑:"土",未:"土"}[mz];
-  const sheng = {木:"水",火:"木",土:"火",金:"土",水:"金"}; // 生我
   const order = {木:["木","火","土","金","水"],火:["火","土","金","水","木"],土:["土","金","水","木","火"],金:["金","水","木","火","土"],水:["水","木","火","土","金"]};
-  const seasonRank = order[dw].indexOf(mw); // 0=当令最强
-  const roots = [bazi.pillars.year.z,bazi.pillars.month.z,bazi.pillars.day.z,bazi.pillars.hour.z].filter(z=>WX_GAN[z]===dw || CANG[z].some(c=>WX_GAN[c]===dw)).length;
-  let score = (seasonRank===0?4:seasonRank===1?2:seasonRank===2?0:-2) + roots*1.5;
+  const seasonRank = order[dw].indexOf(mw); // 0=同我(当令/旺) 1=我生(休) 2=我克(囚) 3=克我(死) 4=生我(相)
+  // 得令分（旺相休囚死简化量化，知识库§五）：当令(同我)4分、得生(生我/相)2分、平相(我生/休、我克/囚)0分、失令(克我/死)-2分
+  const seasonTerm = (seasonRank===0?4 : seasonRank===4?2 : seasonRank===3?-2 : 0);
+  const rootsList = [bazi.pillars.year.z,bazi.pillars.month.z,bazi.pillars.day.z,bazi.pillars.hour.z].filter(z=>CANG[z].some(c=>WX_GAN[c]===dw));
+  const roots = rootsList.length;
+  let score = seasonTerm + roots*1.5;
   let strong = score >= 4;
   // 同党（印比）异党（财官食伤）数量
   const sameWx = ["比肩","劫财","正印","偏印"];
@@ -2713,7 +2737,7 @@ function strengthAnalysis(bazi){
   const verdict = strong ? (LANG==="zh"?"偏强":"Slightly Strong") : (LANG==="zh"?"偏弱":"Slightly Weak");
   const xi = strong ? (LANG==="zh"?"克泄耗（官杀、食伤、财星）":"Draining elements (Officer, Output, Wealth)") : (LANG==="zh"?"生扶（印星、比劫）":"Supporting elements (Resource, Peer)");
   const ji = strong ? (LANG==="zh"?"印比":"Resource & Peer") : (LANG==="zh"?"财官食伤":"Wealth, Officer & Output");
-  return {score, strong, verdict, xi, ji, same, diff, season: mw, seasonRank};
+  return {score, strong, verdict, xi, ji, same, diff, season: mw, seasonRank, seasonTerm, roots, rootsList};
 }
 // 五行缺补
 function wuxingStats(bazi){
@@ -2794,6 +2818,31 @@ function renderReport(bazi, input){
   h.push(`<div><span class="k">${T("五行强弱排序：")}</span><span class="v">${wxSorted.map(([k,v])=>wxNames[k]+" "+v.toFixed(1)).join(" · ")}</span></div>`);
   h.push(`<div><span class="k">${T("五行所缺：")}</span><span class="v">${missing.length?missing.join(zh?"、":", "):T("无明显缺失")}</span></div>`);
   h.push(`</div>`);
+  // 身强身弱量化打分卡（旺衰怎么算的：得令+通根，知识库§五）
+  {
+    const sa2 = strengthAnalysis(bazi);
+    const dg2 = p.day.g, dw2 = WX_GAN[dg2], mz2 = bazi.monthZhi, mw2 = {寅:"木",卯:"木",巳:"火",午:"火",申:"金",酉:"金",亥:"水",子:"水",辰:"土",戌:"土",丑:"土",未:"土"}[mz2];
+    const relName = {
+      0: ["当令","同我之月（旺）","As in season (same element — Flourishing)"],
+      4: ["得生","生我之月（相）","Fed by the month (generating element — Nurtured)"],
+      1: ["平（泄）","我生之月（休·泄气）","You feed the month (draining — Resting)"],
+      2: ["平（耗）","我克之月（囚·耗力）","You conquer the month (costly — Imprisoned)"],
+      3: ["失令","克我之月（死·受克）","The month conquers you (oppressed — Dead)"]
+    };
+    const rn = relName[sa2.seasonRank];
+    const seasonTxtZh = `${dg2}${dw2}日主生在${mz2}月（${mw2}月）→ ${rn[0]}：${rn[1]}，得令分 ${sa2.seasonTerm>=0?"+":""}${sa2.seasonTerm}`;
+    const seasonTxtEn = `${dg2} ${WX_EN[dw2]} Day Master born in ${mz2} (${WX_EN[mw2]} month) → ${rn[2]}, seasonal term ${sa2.seasonTerm>=0?"+":""}${sa2.seasonTerm}`;
+    const rootsZh = sa2.roots? `地支通根 ${sa2.roots} 处（${sa2.rootsList.join("、")} 藏有${dw2}），每处 +1.5 → 共 +${(sa2.roots*1.5).toFixed(1)}` : `地支无${dw2}之根（四支藏干均无同类），通根 +0`;
+    const rootsEn = sa2.roots? `${sa2.roots} root(s) in branches (${sa2.rootsList.join(", ")} hide ${WX_EN[dw2]}), +1.5 each → +${(sa2.roots*1.5).toFixed(1)}` : `No ${WX_EN[dw2]} root in the branches (no hidden stem of the same element), +0`;
+    h.push(`<div class="section-title">${T("💪 身强身弱打分（旺衰量化）")} <span class="tag">${T("怎么算出来的")}</span></div>`);
+    h.push(`<div class="gua-box" style="font-size:.9rem">`);
+    h.push(`<div style="line-height:1.9">${zh?seasonTxtZh:seasonTxtEn}</div>`);
+    h.push(`<div style="line-height:1.9;color:#475569">${zh?rootsZh:rootsEn}</div>`);
+    h.push(`<div style="line-height:1.9;margin-top:4px"><b>${T("总分：")}</b>${sa2.score} ${T("分 → ")}<b>${sa2.verdict}</b>（${T("≥4分为偏强，不足4分为偏弱")}）</div>`);
+    h.push(`<div style="line-height:1.9;color:#0f766e">${zh?`🧭 ${sa2.strong?`你${sa2.verdict}：自身能量足，扛得住财官，喜${sa2.xi}，忌${sa2.ji}再帮；适合往外闯、担事、理财置业，但印比之运年（长辈帮、朋友聚）反而容易添乱。`:`你${sa2.verdict}：自身能量偏弱，喜${sa2.xi}，忌${sa2.ji}；适合借力——靠贵人长辈、靠团队伙伴，印比之运年（读书考证、长辈提携、朋友合作）最旺你，财官食伤过重的年份量力而行。`}`:`🧭 ${sa2.strong?`You are ${sa2.verdict}: abundant inner energy that can carry wealth and office — draining elements (${sa2.xi}) favor you; avoid more ${sa2.ji}. Push outward, take responsibility, manage property — but Resource/Peer years (elder help, friend gatherings) may actually stir trouble.`:`You are ${sa2.verdict}: softer inner energy — supporting elements (${sa2.xi}) favor you; ${sa2.ji} weigh you down. Lean on mentors, elders, and teams; Resource/Peer years (study, certification, elder backing, partnership) suit you best — go easy in years heavy with wealth/officer/output.`}`}</div>`);
+    h.push(`<div style="color:#94a3b8;font-size:.72rem;margin-top:6px">${T("旺衰依据：简化量化法（知识库§五）——得令看月支与日主五行关系（旺相休囚死：同我=当令4分、生我=相2分、我生=休0分、我克=囚0分、克我=死-2分）；通根看四支藏干是否含日主同类五行（每处+1.5）。与专业“月令旺衰+党众”判断方向一致，但属简化，不可替代格局论，仅供参考。")}</div>`);
+    h.push(`</div>`);
+  }
   // 格局详情卡（取格·喜忌·从格）
   const gj = gejuAnalysis(bazi);
   if(gj){
