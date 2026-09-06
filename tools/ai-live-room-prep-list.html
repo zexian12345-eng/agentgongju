@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>直播开播前准备清单助手 | AgentGongju.com</title>
+<meta name="description" content="开播总手忙脚乱、临场翻车？输入你卖什么/播什么类型，一键生成专属于你的"开播前90分钟检查表"：设备网络、货品话术、违禁自查、流量冷启动动作、彩排顺口溜，让每一场直播都从容开场。">
+<meta name="keywords" content="直播,开播准备,直播清单,带货主播,直播话术,直播运营,冷启动">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+input[type=text],textarea,select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:80px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s;margin-top:6px}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.95;white-space:pre-wrap;font-size:0.95rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.output-box{font-size:.9rem}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📡 直播开播前准备清单助手</h1><p>开播不慌张，靠的不是运气，是这张清单</p></div>
+
+<div class="card">
+<div class="param-grid">
+<div><label>📺 直播类型</label>
+<select id="type"><option selected>带货/卖货</option><option>知识分享/培训</option><option>娱乐/才艺</option><option>游戏直播</option></select></div>
+<div><label>🧭 今晚主推的品/主题（可空）</label>
+<input type="text" id="topic" placeholder="如：秋季外套 / 英语口语入门课…"></div>
+</div>
+<div class="param-grid">
+<div><label>👥 预估同时在线</label>
+<select id="scale"><option selected>刚起步(<50人)</option><option>中小场(50-300)</option><option>中场(300-1000)</option><option>大场次(1000+主播)</option></select></div>
+<div><label>🎬 开播时段</label>
+<select id="slot"><option selected>晚间黄金档20-23点</option><option>上午档</option><option>凌晨档</option><option>午休档</option></select></div>
+</div>
+<div><label>💡 以往最容易翻车的点（可选填）</label>
+<textarea id="pain" placeholder="例如：讲着讲着忘词 / 价格说错被喷 / 人少的时候心态崩…"></textarea>
+<button class="btn-gen" id="genBtn">🧾 生成我的开播检查表</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">✅ 开播前90分钟 · 逐项自查清单</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制检查表</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function pick(a){return a[Math.floor(Math.random()*a.length)];}
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('直播开播前准备清单助手 | AgentGongju.com'))return;
+const type=document.getElementById('type').value;
+const topic=document.getElementById('topic').value.trim();
+const scale=document.getElementById('scale').value;
+const slot=document.getElementById('slot').value;
+const pain=document.getElementById('pain').value.trim();
+const small=scale.indexOf('刚起步')>-1;
+let r='📡 直播检查表 · '+(topic||type==='带货/卖货'?'本场主推待定品':type)+'\n';
+r+='类型：'+type+'｜时段偏好：'+slot+'｜场次：'+scale+'\n';
+r+=(pain?'历史痛点提醒：'+pain+'\n':'');
+r+='\n──────── 🕐 T-90分钟：设备与布景 ────────\n';
+r+='□ 相机/手机电量满、存储清空；支架角度摆好（以自己坐姿为中心）\n□ 灯光三层：主光不刺眼、补光不晃屏、轮廓光让你的脸立体\n□ 连一次麦：网络延迟与回声测试OK，备用热点/备用机随时切\n□ 背景干净吸睛，试播录15秒看音画与构图\n□ 大场面字幕/提示板贴到位（价格、话术、关键词、本场节奏表）\n';
+if(small)r+='□ (小场)提前发预告+剪2条预热短视频，为冷启动攒热度。\n';
+r+='\n──────── 🕐 T-60分钟：货品与内容弹药 ────────\n';
+r+=type==='带货/卖货'?'□ 全场品按顺序放旁边，每品的卖点/价格/库存/福利页在手边\n□ 起草并确认：开场钩子话术、每个品的1句"非买不可"理由、压轴话术\n□ 提前写好FAQ(尺寸、包邮、售后、退换)并放一个可查文档\n':'□ 主题大纲与关键知识点/流程写成一页提词，避免讲歪\n□ 准备3-5个互动问题与1-2个讲得意的小故事兜底冷场\n';
+r+='□ 自查轻违禁：不承诺"绝对/第一/百分百/央视认证"等极端词；不留联系方式硬广(以平台规则为准)\n□ 定好本场的"黄金钩子"开场：'+(type==='带货/卖货'?'前5分钟快讲福利+互动扣1，别急着卖货':'先抛"今天一定帮大家解决XX"的一个提问，留住第一波流量')+'\n';
+r+='\n──────── 🕐 T-15分钟：模拟彩排 ────────\n';
+r+='□ 顺一遍开场白到第一个互动；把价格/数字大声念三遍（防口误）\n□ 播报镜调试，确认小黄车/商品/课程上架成功可点击\n□ 和场控对暗号：谁负责憋单、怎么抬氛围、冷场cue谁\n□ 深呼吸、喝口水、照一次镜子——你的状态是直播最好的滤镜\n';
+r+='\n──────── 🟢 开播头10分钟：冷启动动作 ────────\n';
+if(small)r+='□ 前半小时是人气爬坡期：建议喊话互动(让宝贝们扣"在/想要")、随机点名感谢，先别急着卖\n□ 每5分钟用一个"提问/投票"刷新停留，系统才愿意推更多流量给你\n';
+else r+='□ 开场别急着讲干货/卖货，先花2分钟"无压力欢迎新来的朋友"留人\n□ 用预约人数/直播订阅引导加关注，为下一场蓄水\n';
+r+='□ 破冰三连问：今天几点来的？从哪刷到的？在弹幕扣一下。\n\n';
+r+='──────── 收尾（防止虎头蛇尾）────────\n□ 结尾总结今日高光 + 预告下一场固定时间(做"养成收看习惯")\n□ 提醒关注+预约下场；做最后5分钟的催单闭环\n□ (若讲错价格或忘词被喷)别硬刚——大方认错纠正，观众更爱真实的你胜过完美的你\n□ 下播后：导出本场数据(停留时长/转粉/转化)记进复盘表，明早看一眼。';
+document.getElementById('outputBox').innerText=r;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 检查表已复制！'))}
+</script>
+</body>
+</html>

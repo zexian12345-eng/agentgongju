@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>年假调休拼假攻略助手 | AgentGongju.com</title>
+<meta name="description" content="只有几天年假，怎么凑出超长假期？输入法定节假日和你的年假天数，智能给出"请哪天+怎么拼"方案，算清实际躺平天数、成本与返工缓冲期。打工人出门旅行前先来拼一发。">
+<meta name="keywords" content="拼假,年假,调休,假期规划,请假攻略,连休">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+input[type=text],textarea,select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:80px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s;margin-top:6px}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.95;white-space:pre-wrap;font-size:0.95rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.output-box{font-size:.9rem}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📅 年假调休拼假攻略助手</h1><p>让每一张请假条都物超所值</p></div>
+
+<div class="card">
+<div class="param-grid">
+<div><label>🗓 法定假期间（先选最接近的目标）</label>
+<select id="festival"><option selected>明年元旦</option><option>明年春节</option><option>明年五一</option><option>明年国庆/中秋</option><option>其他日期(自定义)</option></select></div>
+<div><label>🗓 你的年假/可调休天数</label>
+<select id="leave"><option selected>5天</option><option>2天</option><option>3天</option><option>8天</option><option>10天+</option></select></div>
+</div>
+<div><label>📝 请假理由/你的顾虑（可空，如"领导好说话可多请/需保守一点"）</label>
+<textarea id="note" placeholder="例如：我只是想连着周末出去溜一圈 / 领导比较开明，但同事要排班…"></textarea>
+<div class="param-grid">
+<div><label>✈️ 出行目的</label>
+<select id="aim"><option selected>出远门旅行</option><option>回老家探亲</option><option>宅家躺平</option><option>扫墓/办事</option></select></div>
+<div><label>🤝 同事覆盖风险</label>
+<select id="risk"><option selected>请确认别和同组撞假即可</option><option>没法多请(一两天都难)</option><option>弹性，可提前拼</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">🧩 帮我拼出最长假期</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🗓 我的拼假方案 & 返工缓冲</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制攻略</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const F={
+'明年元旦':{conf:'元旦法定1天，若遇周末前后通常连休3天；(以国务院公布为准)'},
+'明年春节':{conf:'春节法定3天，拼上年假前后可达8-9天'},
+'明年五一':{conf:'五一法定1天，通过调休假期通常5天(4.29-5.1左右，须以官方为准)'},
+'明年国庆/中秋':{conf:'国庆+中秋豪华叠加年月，法定3天，调休常拼出8天连休'},
+'其他日期(自定义)':{conf:'自定义：请按实际国家公布的调休安排校验日期'}
+};
+function pick(a){return a[Math.floor(Math.random()*a.length)];}
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('年假调休拼假攻略助手 | AgentGongju.com'))return;
+const festival=document.getElementById('festival').value;
+const leave=document.getElementById('leave').value;
+const aim=document.getElementById('aim').value;
+const risk=document.getElementById('risk').value;
+const note=document.getElementById('note').value.trim();
+const leaveN=parseInt(leave.replace(/\D/g,''))||5;
+const Fobj=F[festival];
+let r='📅 拼假攻略 · '+festival+' ｜ 可支配年假/调休约 '+leave+' 天\n';
+r+='('+Fobj.conf+')\n';
+if(note)r+='备注顾虑：'+note+'\n';
+r+='\n■ 方案A：标准拼法（公司都在用，好批）\n';
+if(festival.indexOf('春节')>-1){
+ r+='· 春节通常是"除夕前后放假"。建议在节后多请 '+Math.min(leaveN,3)+' 天(初X起连请)，把假期从法定连到下一个周末，get约 '+(leaveN+ (leaveN>=3?5:2))+' 天连续假期。\n';
+ r+='· 若选择节前多请，返工后的节奏会更累，且同事多在年关排班，通常节后请更容易批。\n';
+} else if(festival.indexOf('国庆')>-1){
+ r+='· 国庆常与中秋凑成8天连休，如果你剩 '+leaveN+' 天年假：可在假期前请 '+Math.min(leaveN,2)+' 天 + 假期后请 '+Math.max(leaveN-2,0)+'-'+leaveN+' 天，实现前接后连，总躺平 '+ (8+leaveN) +' 天左右。\n';
+ r+='· 策略上"前请少、后请多"能帮你错峰返程也能多缓冲收心。\n';
+} else if(festival.indexOf('五一')>-1){
+ r+='· 参考往年五一是前借后还调休形成5天。若你请节前/节后各补，加上年假可拼到10天+小长假。\n';
+ r+='· 记得错开返程高峰（假期最后一天往往人挤人，选节后多请1天会舒服很多）。\n';
+} else {
+ r+='· 元旦一般已是3天小连休。想扩充就请节前1-2天或节后1-2天(+你'+leave+'天年假)，连周末可达'+ (leaveN>=4?8:5) +'天左右；具体以当年调休公告为准。\n';
+}
+r+='\n■ 方案B：把年假拆到"刀口"（如果你无法一次请完）\n';
+r+='· 优先级回顾：春节探亲 > 五一春游 > 十一错峰出门 > 日常周末前后补休；\n· 太仓促的假不值得请——航空调价和机票都要提前，至少提前一个月规划。\n\n';
+r+='■ 关于你「'+risk+'」\n';
+if(risk.indexOf('没法')>-1)r+='· 如果团队能批的窗口很紧，建议别贪"最大方案"，保住核心出行日期更重要。\n';
+else r+='· 记得提前和同组撞假日历对表，别两三个核心岗同时消失；涉及排班的岗位，先锁定班口头确认再提交OA。\n';
+r+='· 返工缓冲：留最后0.5-1天不安排远途/硬仗，只做收邮件与准备周会，避免"节后综合征"直接暴雷。\n\n';
+r+='▶ 请假申请话术模板（可微调）\n领导好，我想申请 '+pick(['X月X日至X月X日','相应时间段'])+' 的年假（共'+leaveN+'天）。已提前核对与组内排班不冲突，手头任务会在放假前完成交接。出行计划已定，回来后第一时间同步进展，感谢理解～';
+document.getElementById('outputBox').innerText=r;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 拼假攻略已复制！'))}
+</script>
+</body>
+</html>

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>刷卡消费方案推荐助手 | AgentGongju.com</title>
+<meta name="description" content="外卖、网购、加油、机票……每个月刷卡返现差出一顿火锅？输入你的月消费结构，一键分析哪种"刷卡姿势"更划算：返现/里程/免息/立减怎么搭，避开手续费和大坑。帮你不盲选、不乱刷。">
+<meta name="keywords" content="信用卡,刷卡返现,消费优惠,里程兑换,免息期,支付选择">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+input[type=text],textarea,select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:80px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s;margin-top:6px}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.95;white-space:pre-wrap;font-size:0.95rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+@media(max-width:600px){.grid-3{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>💳 刷卡优惠/返现消费方案助手</h1><p>同样的钱，不同的刷法，一个月差一顿火锅钱</p></div>
+
+<div class="card">
+<div><label>🛍 你每月大概在哪些地方花钱最多？</label>
+<textarea id="spend" placeholder="例如：日常点外卖多 / 常出差买机票 / 网购电子产品 / 公司应酬请客…"></textarea></div>
+<div class="grid-3">
+<div><label>🍚 餐饮外卖(元/月)</label><input type="number" id="food" value="0"></div>
+<div><label>🛒 网购/电商(元/月)</label><input type="number" id="online" value="0"></div>
+<div><label>✈️ 出行/差旅(元/月)</label><input type="number" id="trip" value="0"></div>
+</div>
+<div class="grid-3">
+<div><label>⛽ 加油/停车</label><input type="number" id="gas" value="0"></div>
+<div><label>📱 话费/水电</label><input type="number" id="bill" value="0"></div>
+<div><label>💼 其它大额</label><input type="number" id="other" value="0"></div>
+</div>
+<div class="param-grid">
+<div><label>🧭 最看重哪种"回血"</label>
+<select id="prefer"><option selected>返现/立减最实在</option><option>攒里程/刷卡金</option><option>免息期+积分</option><option>薅到就是赚到</option></select></div>
+<div><label>🧾 是否常忘还款？</label>
+<select id="memo"><option selected>不会，我都设自动</option><option>偶尔会忘，先求别逾期</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">🧮 分析我的最优刷卡姿势</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">💡 你的"刷卡姿势"体检报告</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制报告</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function n(x){return isNaN(x)||x<=0?0:Number(x);}
+function pick(a){return a[Math.floor(Math.random()*a.length)];}
+function 字(x){return x} // 占位防误
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('刷卡优惠/返现消费方案助手 | AgentGongju.com'))return;
+const food=n(document.getElementById('food').value);
+const online=n(document.getElementById('online').value);
+const trip=n(document.getElementById('trip').value);
+const gas=n(document.getElementById('gas').value);
+const bill=n(document.getElementById('bill').value);
+const other=n(document.getElementById('other').value);
+const txt=document.getElementById('spend').value.trim();
+const total=food+online+trip+gas+bill+other;
+const prefer=document.getElementById('prefer').value;
+const memo=document.getElementById('memo').value;
+let r='💳 你的月消费体检报告（约￥'+total.toFixed(0)+'）\n';
+r+='结构：餐饮'+food.toFixed(0)+'｜网购'+online.toFixed(0)+'｜出行'+trip.toFixed(0)+'｜加油停车'+gas.toFixed(0)+'｜话费水电'+bill.toFixed(0)+'｜其他'+other.toFixed(0)+'\n';
+r+='文字描述补充：'+(txt||'（未填，按数字估算）')+'\n\n';
+r+='■ 值得优先的"刷法"\n';
+const advice=[];
+if(food>=800) advice.push('餐饮线上支付平台常有「周五/周末餐饮立减」，用支持云闪付/支付宝刷带餐饮类返现的卡更划算；单月餐饮大额时把免息期长的卡放着以备大额。');
+if(online>=1500) advice.push('网购集中在「电商会员日」放量、且优先使用有「线上消费+1%返现或积分加速」权益的卡，别小额拆单刷，反而浪费笔数返现门槛。');
+if(trip>=800||txt.indexOf('机票')>-1) advice.push('常出差就把「里程/商旅卡」当主力：机票、酒店优先用它们，能攒里程兑换免费机票的话价值高于普通返现。');
+if(gas>=300) advice.push('用车多就关注「加油满减」活动卡，中石化/中石油的打折或返现一个月能省几十块。');
+if(bill>=300) advice.push('话费水电这类固定支出用「无脑返现」类卡最舒服，不用记活动规则，1%左右日积月累也不亏。');
+if(total>=15000) advice.push('大额消费（装修/买大件）建议「免息期≥50天」的卡并合理切分账单日，把还款日尽量往后推、现金先放货基，别用期数刚需的分期。');
+if(!advice.length) advice.push('月消费还不大的话，避免为了活动去开一堆卡——主刷一张「通用返现/免年费」的，把精力省在记还款日上更划算。');
+r+=advice.map((a,i)=>'· '+(i+1)+'. '+a).join('\n')+'\n\n';
+r+='■ 按你的偏好「'+prefer+'」来选卡建议\n';
+const pref={};
+if(prefer.indexOf('返现')>-1) pref.one='优先消费直接返现到账、规则透明的「现金回馈型」卡，返现比例常见0.5%-1%餐饮/加油另计，看真实到账别只看宣传。';
+else if(prefer.indexOf('里程')>-1) pref.one='常出差可接受年费高但权益强的「商旅/miles卡」，前提是你一年真飞够次数；偶尔飞就别硬攒，可能换到过期。';
+else if(prefer.indexOf('免息')>-1) pref.one='选账单日灵活的卡，大额放这里享受最长免息期；别为了积分多办分期或取现。';
+else pref.one='薅羊毛原则：±50元内的收益不值得你记十个平台规则。守住「办卡送积分/首刷返现」这类一次性大礼最实在。';
+r+='· '+pref.one+'\n\n';
+r+='■ 避坑红线（必看）\n';
+r+=memo.indexOf('偶尔')>-1?'· 你容易忘还款：请务必开自动还款或提醒，逾期上征信的损失远大于任何返现。\n':'· 即便自动还款也请每月对一次账单：防盗刷、防被悄悄开通增值服务。\n';
+r+='· 取现/分期手续费年化往往很高，别为"救急"透支分期上瘾；\n· 返现/立减类活动常有"名额/限次"限制，大额前先看清细则；\n· 遇到"代办高额卡/套现"一律拉黑，属于违法与高风险中介。\n\n';
+r+='总结：按你每月 '+total.toFixed(0)+' 元的盘子，最值得花心思优化的其实是'+pick(['餐饮+网购这两个"高频小额"','差旅机票酒店这个"大额可积里程"','固定支出这个"无脑自动刷"'])+'，其余别折腾。把规则熟悉一张主力卡，比开十张吃灰卡强太多。';
+document.getElementById('outputBox').innerText=r;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 报告已复制！'))}
+</script>
+</body>
+</html>

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>久坐族工间微运动助手 | AgentGongju.com</title>
+<meta name="description" content="久坐久盯屏幕腰酸脖子僵？输入你的工作类型与主要酸痛部位，一键生成几个能在工位上悄悄的5分钟微运动套餐(颈肩/腰背/手腕/眼睛+动作要点)，再给一个喝水起身提醒法。办公室养生，从此不尴尬。">
+<meta name="keywords" content="久坐,工间操,肩颈放松,办公拉伸,颈椎保健,微运动,职业病">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+input[type=text],textarea,select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:80px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s;margin-top:6px}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.95;white-space:pre-wrap;font-size:0.95rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.output-box{font-size:.9rem}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>💺 久坐族工间微运动助手</h1><p>不动声色地动起来，拯救你的腰颈肩</p></div>
+
+<div class="card">
+<div class="param-grid">
+<div><label>🧑‍💻 工作形态</label>
+<select id="job"><option selected>天天坐电脑前码字</option><option>长时间开会+坐</option><option>久坐也要常打字/用鼠标</option><option>久站/久坐混合(会务、客服)</option></select></div>
+<div><label>😣 最难受的部位</label>
+<select id="pain"><option selected>肩颈/脖子酸</option><option>腰/背僵</option><option>手腕/腱鞘</option><option>眼干眼涩+久坐头晕</option></select></div>
+</div>
+<div class="param-grid">
+<div><label>⏰ 能抽出的工间时长</label>
+<select id="dur"><option selected>3-5分钟/次</option><option>不到1分钟</option><option>10分钟午间</option></select></div>
+<div><label>🎯 每天想提醒自己几次</label>
+<select id="freq"><option selected>每1小时一次</option><option>每2小时</option><option>想起来才做(佛系)</option></select></div>
+</div>
+<div><label>📝 其它身体情况/顾虑（如腰椎间盘突出请先遵医嘱）</label>
+<textarea id="note" placeholder="例如：有腰椎病史，不敢随便扭腰 / 旁边同事多，做动作不雅…"></textarea>
+<button class="btn-gen" id="genBtn">🤸 给我一套工位可做的微运动</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🤾 你的工间5分钟套餐</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制运动套餐</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function pick(a){return a[Math.floor(Math.random()*a.length)];}
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('久坐族工间微运动助手 | AgentGongju.com'))return;
+const job=document.getElementById('job').value;
+const pain=document.getElementById('pain').value;
+const dur=document.getElementById('dur').value;
+const freq=document.getElementById('freq').value;
+const note=document.getElementById('note').value.trim();
+const tiny=dur.indexOf('不到1分钟')>-1;
+let r='💺 工位微运动套餐（每次约'+(tiny?'40秒':dur.replace('/次',''))+'，适合'+job+'）\n';
+r+='主攻部位：'+pain+(note?'｜身体备注：'+note:'')+'\n';
+r+='\n──────── 动作编排 ────────\n';
+if(pain.indexOf('肩颈')>-1||pain.indexOf('脖子')>-1){
+ r+= tiny
+  ?'① 耸肩绕肩：双肩向上耸起-后绕-放下，做10次；\n② 颈侧拉伸：头缓慢向左右各倾，每侧停5秒×2；抬手够不到电脑也没事。\n'
+  : '① 金刚耸肩绕肩(10次)：耸到顶停2秒再缓缓后旋放下\n② 颈后仰抗阻：双手放在后脑勺，头向后仰手轻挡形成对抗，保持5秒×3\n③ 左右侧颈拉伸：右手轻扶椅边，头向左倾找左肩，每侧保持15秒\n④ 收尾调息：肩颈放松、下巴微收，深呼吸5次、感受肩颈卸力\n';
+}
+else if(pain.indexOf('腰')>-1||pain.indexOf('背')>-1){
+ r+= tiny
+ ?'① 坐姿卷腹收核心：吸气挺直、呼气把肚脐往后拉，静态保持10秒×3；\n② 站起来伸个大懒腰，双手尽量向上+头向后看天花板两次。\n'
+ : '① 猫牛式(在椅子上)：吸气挺胸抬头、呼气弓背低头，来10个（轻缓为主）\n② 坐姿体前扭转：右手放左膝，身体向左缓缓扭到头看左后肩，保持15秒换边\n③ 站姿体侧拉伸：双手交叉上举够向右侧，牵拉左侧腰，两侧各15秒\n④ 靠墙站立30秒让脊柱归位(若旁边没墙，就贴椅背挺直也可)\n';
+}
+else if(pain.indexOf('手腕')>-1){
+ r+= tiny?'① 甩腕+转腕各10下;\n② 快速十指张合+捏放20次。\n'
+ : '① 手指拉伸：五指用力张开停3秒再握拳，重复10次\n② 手腕绕环正逆各10圈（轻柔不使劲）\n③ 前臂伸肌拉伸：手臂前伸掌心向下，另一手把指背往下压，保持15秒×2\n④ 打字间隙甩甩手+给手腕"立提醒"别看太猛\n';
+}
+else{
+ r+= tiny?'① 看远20秒(6米外)，再快速眨眼10下润眼球;\n② 掌心对搓发热后敷眼10秒。\n'
+ : '① 20-20-20护眼法：每看屏20分钟→看6米外20秒（工间做3轮）\n② 眼球慢转：上-右-下-左顺时针一圈×5，再逆时针×5\n③ 放松眼部：双手搓热温敷双眼10-15秒，轻按眉骨沿线滑到太阳穴\n④ 顺便站起来垫脚尖10次，促进下肢回流，缓解久坐脑供血不足的头晕感\n';
+}
+if(!tiny){
+ r+='\n──────── 送给忙碌久坐人的"养生暗号" ────────\n';
+ r+='· '+(pain.indexOf('肩颈')>-1?'把显示器垫高到视线水平，凳子略调高让手肘≈90°，能减一半肩颈压力':'腰部：腰后垫个靠枕或卷起来的衣物，让腰不要悬空')+'；\n';
+ r+='· 每'+freq.replace('想起来才做(佛系)','当你有空').replace('每1小时一次','1小时').replace('每2小时','2小时')+'站起来走2步接杯水或上个厕所——"喝水=起身=血液循环"三合一；\n';
+ r+='· 实在不敢乱动/有'+(note||'特殊情况')+'，就把动作幅度减半并优先做"静态保持"类，疼了立刻停下。\n';
+ r+='原则：工位微运动追求的是"打断久坐的节奏"，不是练成肌肉。动静小、不吓到同事，挤在会议与代码之间偷偷完成，就是胜利。';
+}
+document.getElementById('outputBox').innerText=r;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 微运动套餐已复制！'))}
+</script>
+</body>
+</html>

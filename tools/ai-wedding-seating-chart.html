@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>婚宴座位安排助手 | AgentGongju.com</title>
+<meta name="description" content="婚礼/宴席宾客座位怎么排才不得罪人？输入大致宾客分名单与桌数，自动给出"主宾桌-长辈桌-朋友桌-同事桌"的分层建议、邻座搭配雷区提示和方便打印的桌卡文案。让每一桌都坐得舒服聊得起来。">
+<meta name="keywords" content="婚宴座位,婚礼排桌,宾客安排,桌卡,婚礼筹备,宴席策划">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+input[type=text],textarea,select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:80px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s;margin-top:6px}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.95;white-space:pre-wrap;font-size:0.95rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.output-box{font-size:.9rem}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>💒 婚宴座位安排助手</h1><p>让每一位宾客都坐得舒服，聊得来</p></div>
+
+<div class="card">
+<div><label>👰 新人简介（两句即可，让桌卡更走心）</label>
+<textarea id="couple" placeholder="例如：小李&小杨，通过朋友认识两年，爱猫。2026年国庆办酒…"></textarea></div>
+<div class="param-grid">
+<div><label>👥 大致宾客规模</label>
+<select id="scale"><option selected>小桌仪(5-10桌)</option><option>中型(10-20桌)</option><option>大型(20桌以上)</option></select></div>
+<div><label>🔢 每桌人数</label>
+<select id="per"><option selected>10人/桌</option><option>8人/桌</option><option>12人/桌</option><option>圆桌不定按到场</option></select></div>
+</div>
+<div><label>🧑‍🤝‍🧑 宾客大致构成（填几组关键词，如：双方长辈、大学同学、老同事、街坊邻居…）</label>
+<textarea id="groups" placeholder="例如：
+男方亲戚
+女方亲戚
+大学室友们
+前公司老同事
+双方共同朋友"></textarea>
+<label>⚠️ 有需要避开的"搭配雷区"吗（如谁和谁矛盾/谁不能坐一起）</label>
+<textarea id="avoid" placeholder="例如：二姑妈和大姑妈最好别一桌 / 双方爷爷辈坐主桌…"></textarea>
+<button class="btn-gen" id="genBtn">🧮 生成分桌建议 & 桌卡文案</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🪑 你的排桌思路 & 桌卡草稿</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制方案</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function pick(a){return a[Math.floor(Math.random()*a.length)];}
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('婚宴座位安排助手 | AgentGongju.com'))return;
+const coupleTxt=document.getElementById('couple').value.trim()||'新人';
+const scale=document.getElementById('scale').value;
+const per=document.getElementById('per').value;
+const groups=document.getElementById('groups').value.trim().split(/\n+/).map(s=>s.trim()).filter(Boolean);
+const avoid=document.getElementById('avoid').value.trim();
+const perN=parseInt(per)||10;
+let r='💒 座位安排手册（供你与家人最终敲定）\n新人：'+coupleTxt+'\n规模:'+scale+'｜桌型约'+perN+'人/桌\n';
+if(avoid)r+='你的雷区备注：'+avoid+'\n\n';
+r+='\n──────── 整体布局思路 ────────\n';
+r+='· 前台(舞台侧)留主桌/主宾桌：双方父母+证婚人+长辈代表，离舞台与上菜入口都近；\n· 次近舞台放"关系亲近的长辈/亲戚区"；\n· 外侧/靠门放"年轻人/朋友/同事区"(他们随意聊天也不怕吵到仪式感)；\n· 把"双方共同朋友"这种最能热场的放中段，负责带起整场气氛。\n\n';
+r+='■ 分桌粗排建议（具体人名请填入，每桌≤'+perN+'人）\n';
+const desktop=[
+ {t:'① 主宾桌',who:'双方父母 + 证婚/主婚人 + 双方最长辈代表',note:'面向舞台正中央，菜先上，是全场"动静最大"的那桌'},
+ {t:'② 男方长辈桌',who:'叔伯姑舅姨等近亲长辈',note:'亲人叙旧为主，桌位靠里安静'},
+ {t:'③ 女方长辈桌',who:'女方近亲长辈/亲友',note:'同理，别让双方长辈陌生感太强的长期同桌硬凑'},
+ {t:'④-⑤ 双方亲戚大桌',who:'远亲、街坊',note:'同宗同村的一长辈带队即可'},
+ {t:'⑥ 同学/死党桌(青年)',who:'伴郎伴娘居多的那圈人最容易带动全场',note:'放中传，负责起哄、红包、接梗'},
+ {t:'⑦ 前同事桌/同行朋友',who:'工作认识的伙伴',note:'尽量与原同事编排开避免聊工作冷场,温和放外侧'},
+ {t:'🧑 机动/儿童桌',who:'带孩子的家庭,预留儿童椅',note:'孩子多的桌配玩具垫,大人轻松'}
+];
+r+=desktop.map(d=>'· '+d.t+'：'+d.who+'——'+d.note).join('\n')+'\n\n';
+r+='■ 你的宾客构成拆解👇\n';
+const userGroups=groups.length?groups:['双方长辈','朋友'];
+userGroups.slice(0,6).forEach((g,i)=>{
+ r+='· "'+g+'" → 建议单独/合开'+(i<2?' 靠近主桌区':(i<4?' 中段':' 外围'))+'区域，避免与完全不熟的另一半亲戚硬塞一桌。\n';
+});
+r+='\n■ 桌卡文案（可当作打印小样，抽2-3款备用）\n';
+const couple=(coupleTxt||'').split(/&|和|、|与/)[0];
+r+='款A｜文艺款：「'+coupleTxt+' · 老友围坐，今日的喜事，也是有你的故事。」\n';
+r+='款B｜搞怪款：「这桌人多势众，负责把新人逗笑、把喜糖吃光💗」\n';
+r+='款C｜长辈桌：「恭迎 尊长入席，请您多多照顾这对小年轻～」\n';
+r+='款D｜通用款：「在座皆贵宾，同桌同喜同饮。」\n';
+r+='\n──────── 给主理人的避坑小抄 ────────\n';
+r+='· 关系越亲近的摆越靠前仪式位，越疏远摆越靠外——出错概率最小；\n· 两口子刚闹矛盾/多年情敌这类，别抱侥幸，直接分到不同桌与方向；\n· 带娃多的预留儿童桌 + 桌边加座位，省得开席手忙脚乱；\n· 桌卡建议同时印桌号与"人群说明"(如"大学同学桌")，方便引导员指路；\n· 最终排定后，建议发一张电子座位图或放大打印放签到台,减少现场混乱。';
+document.getElementById('outputBox').innerText=r;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 座位方案已复制！'))}
+</script>
+</body>
+</html>

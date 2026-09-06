@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>新员工90天入职成长计划 | AgentGongju.com</title>
+<meta name="description" content="刚入职新公司不知道从哪下手？输入岗位方向与带教人情况，自动生成30/60/90天分阶段计划，含关键动作、里程碑与每周复盘清单。HR及主管也能用TA规划新人的融入节奏。">
+<meta name="keywords" content="新员工,入职计划,30-60-90,新人融入,试用期规划,职场新人">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+input[type=text],textarea,select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:80px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s;margin-top:6px}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.95;white-space:pre-wrap;font-size:0.95rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.output-box{font-size:.9rem}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🚀 新员工90天入职成长计划</h1><p>把"心里没底"变成一张看得懂的里程碑地图</p></div>
+
+<div class="card">
+<div class="param-grid">
+<div><label>🎯 你的岗位身份</label>
+<select id="role"><option selected>我来用（我是新员工）</option><option>我帮新人做计划（HR/主管）</option></select></div>
+<div><label>🧭 岗位方向</label>
+<select id="func"><option selected>运营/市场</option><option>产品/设计</option><option>技术/研发</option><option>销售/商务</option><option>职能/支持类</option></select></div>
+</div>
+<div><label>📝 一句话描述你接到的主要任务或团队情况（可空）</label>
+<textarea id="goal" placeholder="例如：接手增长组内容侧的日常工作；或带教人比较忙、主要靠自学…"></textarea></div>
+<div class="param-grid">
+<div><label>🧠 现在最担心的一件事</label>
+<select id="worry"><option selected>对业务不熟悉</option><option>不知道怎么跟同事/上级沟通</option><option>怕活儿做不好背锅</option><option>试用期考核没底</option></select></div>
+<div><label>📅 试用期长度</label>
+<select id="trial"><option selected>3个月</option><option>1个月</option><option>6个月</option><option>还没明确</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">🧭 生成我的90天计划</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🗺 你的 30-60-90 计划（覆盖试用期）</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制计划</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const FUNC={
+'运营/市场':{learn:['搞清楚你们的核心指标(DAU/留存/转化)现在多少、谁在跑哪些渠道','翻近3个月活动复盘和排期表，理出内容/投放SOP','认识一圈增长与产研接口人，把"问题找谁"画成通讯录','列10个关键疑问，学会带着答案问问题'],do30:'先把手上"能立刻见效"的小事做扎实(表格补全/排期对齐/素材整理)',do60:'独立跟进一条中型活动或渠道优化并闭环,输出一版复盘',do90:'能对外讲清业务的增长逻辑,并提议一个新试点(哪怕很小)'},
+'产品/设计':{learn:['把你在做的模块从页面到背后逻辑拆一遍','每个按钮对应的数据埋点在哪、用户画像大概什么样——能讲成故事','认识开发/测试/用研三方，学会把需求讲成场景'],do30:'从低风险小需求入手，完整走一遍提需→评审→上线的流程',do60:'主导并打磨一个上线迭代，把回收数据整理成结论',do90:'沉淀1页"产品/设计入门地图"给下一位新人'},
+'技术/研发':{learn:['在本地把核心服务跑起来，能讲清模块间调用链','细读近3个月关键故障/变更记录，理解红线在哪','找到"环境搭建/代码规范/提测流程"三份文档并读透'],do30:'交付第一个被合并的小需求/修复，熟悉评审与发布流程',do60:'独立完成一个中等模块并写清技术文档与边界',do90:'能带人快速上手的程度：对系统瓶颈有自己的判断与验证'},
+'销售/商务':{learn:['背熟核心产品的卖点、定价与自己敢承诺的边界','把目标客户名单和KP(关键人)画出来','听3场销冠录音，记下提问节奏'],do30:'完整走一遍从线索到报价的流程，输出一张客户跟进表',do60:'独立跟完1-2单（哪怕小额），做出自己的异议处理话术卡',do90:'形成自己的开场/逼单/复盘套路，并沉淀成模板'},
+'职能/支持类':{learn:['把部门职责、汇报链和你服务的接口人列表画出来','熟悉核心制度文件(报销/考勤/权限)以及审批的口子','搞清"哪些事找流程、哪些事找人"'],do30:'把日常被问最多的20个问题整理成一份FAQ',do60:'主动优化/文档化一到两个被重复问到的流程',do90:'成为"问不倒"的接口人,并输出一本岗位操作手册'}
+};
+const WORRY={
+'对业务不熟悉':'优先解决"我不懂"：前两周地图式学习(见计划learn1-4)，每天自问"今天弄清了一个什么概念"。',
+'不知道怎么跟同事/上级沟通':'主动约1:1：开场先汇报进展再问两件最关心的事；把"我不懂"换成"我想确认下我的理解对吗"。',
+'怕活儿做不好背锅':'凡事留痕+对齐预期：关键判断写进周报，早请示晚同步，不憋着不问。',
+'试用期考核没底':'入职第一周就问清：转正看哪三件事？让主管把标准写出来，每月主动对齐一次。'
+};
+function pick(a){return a[Math.floor(Math.random()*a.length)];}
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('新员工90天入职成长计划 | AgentGongju.com'))return;
+const role=document.getElementById('role').value;
+const func=document.getElementById('func').value;
+const worry=document.getElementById('worry').value;
+const trial=document.getElementById('trial').value;
+const txt=document.getElementById('goal').value.trim();
+const L=FUNC[func];
+let r='🧭 '+func+' 新人 · 30/60/90 成长计划（试用期参考:'+trial+'）\n使用身份：'+(role==='我来用'?'新人本人':'HR/主管视角')+'\n任务背景：'+(txt||'（未填，按通用路径）')+'\n\n';
+r+='■ 第1-30天｜扎根：少说多问，先跑通小事\n';
+r+='学习动作：\n'+L.learn.map(x=>'· '+x).join('\n')+'\n';
+r+='出手目标：'+L.do30+'\n';
+r+='每日节奏建议：早晨列"今天3件事"，下班前补一句"今天学到的/卡住的"。\n\n';
+r+='■ 第31-60天｜独立：从"跟着做"到"接得住"\n';
+r+='核心动作：把第30天的成果复盘一遍，主动认领中级任务。\n';
+r+='出手目标：'+L.do60+'\n';
+r+='这阶段把"害怕"换成"敢问"：\n· 效率卡住/标准不清就同步，不默默硬扛；\n· 每完成一项，主动在周报里写"在项目里的角色与卡点"。\n\n';
+r+='■ 第61-90天｜沉淀：能讲、能带、能优化\n';
+r+='核心动作：整理成可复用的经验，向主管要一次正式反馈。\n';
+r+='出手目标：'+L.do90+'\n\u200b';
+r+='转正面谈准备清单：三条硬产出 + 一条下季度想提升的点 + 希望能得到的支持。\n';
+r+='\n────────\n⚠ 你的隐藏雷区提示：'+WORRY[worry]+'\n通用保命法则：有记录的习惯 > 当面承诺；主动对齐 > 被动等安排；完成>完美，先跑起来再优化。';
+document.getElementById('outputBox').innerText=r;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 90天计划已复制！'))}
+</script>
+</body>
+</html>

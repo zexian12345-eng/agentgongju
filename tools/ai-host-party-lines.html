@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>开场白/敬酒金句生成器 | AgentGongju.com</title>
+<meta name="description" content="接待宴、家庭聚会、结婚答谢、年会开场、同学会……到了要站起来说话的时刻总怕冷场。输入场合与你想表达的意思，一键生成多种风格的开场白、敬酒词、祝酒金句与暖场小段子，让你得体又不尴尬。">
+<meta name="keywords" content="开场白,敬酒词,祝酒词,发言稿,宴会致辞,金句,社交口才">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+input[type=text],textarea,select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:80px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s;margin-top:6px}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.95;white-space:pre-wrap;font-size:0.95rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.output-box{font-size:.9rem}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🍷 开场白/敬酒词金句生成器</h1><p>关键时刻站起来，话要漂亮又不假</p></div>
+
+<div class="card">
+<div class="param-grid">
+<div><label>🎉 这是什么场合</label>
+<select id="occasion"><option selected>年底/公司聚餐</option><option>接待远客/答谢宴</option><option>家庭团圆/长辈寿宴</option><option>朋友聚会/同学会</option></select></div>
+<div><label>🧑‍🎤 你的角色</label>
+<select id="role"><option selected>组织者/主人</option><option>被敬到要回礼的晚辈</option><option>随便被点名cue到</option></select></div>
+</div>
+<div><label>📝 你想重点表达的意思（3-6个关键词即可）</label>
+<textarea id="msg" placeholder="例如：感谢照顾、祝身体健康、新的一年越来越好 / 大家开心最重要…"></textarea>
+<div class="param-grid">
+<div><label>🎭 语言风格</label>
+<select id="tone"><option selected>大气稳重</option><option>轻松幽默</option><option>走心真诚</option><option>简短利落</option></select></div>
+<div><label>⏱ 讲话时长</label>
+<select id="dur"><option selected>约1分钟</option><option>15秒就够</option><option>2分钟完整篇</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">🍾 生成我能说出口的话</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🎤 你可以直接这样说（附小提示）</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function pick(a){return a[Math.floor(Math.random()*a.length)];}
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('开场白/敬酒词金句生成器 | AgentGongju.com'))return;
+const occasion=document.getElementById('occasion').value;
+const role=document.getElementById('role').value;
+const msg=document.getElementById('msg').value.trim();
+const tone=document.getElementById('tone').value;
+const dur=document.getElementById('dur').value;
+const short=dur.indexOf('15秒')>-1;
+const kws=msg||'开心、感谢、越来越好';
+let r='';
+let line1='';
+if(occasion.indexOf('公司')>-1){ line1=short?'在座的各位，我先干为敬。':'今天这顿饭，不聊KPI。项目再难，架不住咱们这一桌人都在。';
+}else if(occasion.indexOf('接待')>-1){line1=short?'远道而来辛苦了，我先敬大家一杯。':'有朋自远方来，不亦乐乎——今天的菜再普通，情分是满的。请大家举杯，欢迎远道而来的朋友！';
+}else if(occasion.indexOf('团圆')>-1){line1=short?'一家人不说两家话，先干一杯。':'平时各忙各的，今天能凑齐这一桌，就是最好的年。愿桌上的长辈身体硬朗，愿咱们小辈日子红火。';
+}else{line1=short?'都在呢就对了，干杯！':'多年没见的你们还能叫出我名字，我就知道今晚这酒得喝明白。';
+}
+const mid={};
+if(tone==='大气稳重'){
+ mid.say=short?'话不多说，祝各位在座一切都好。':'我想表达的很简单：'+(kws)+'。借此机会，敬大家一杯，愿你们事事顺心、前程似锦，也愿咱们的情分长长久久。';
+ if(!short)mid.extra='我不太会说场面话，但真心都在这杯酒里。';
+} else if(tone==='轻松幽默'){
+ mid.say=short?'服务员说这桌酒够，我寻思着重点是人齐。':'刚才组织者说随便吃，听话的朋友已经开动了。我说句实在话：今晚不图别的，就图个「'+(kws)+'」——你们开心了，我这顿就没白张罗。';
+ if(!short)mid.extra='别看我嘴上会说，其实就是脸皮厚，先把话撂这儿，剩下的随意。';
+} else if(tone==='走心真诚'){
+ mid.say=short?'谢谢大家，我先干为敬。':'比起漂亮话，我更想说：谢谢你们真的在。回望这两年，多亏了'+(occasion)+'里这些实实在在的人。'+(msg?'——'+kws+'。':'还是那句话，愿大家都好。');
+ if(!short)mid.extra='有些感谢平时说不出口，今天就借着这杯酒，全在里头了。';
+} else {
+ mid.say=short?'都在酒里了，干。':'简单两句：一，感谢现场各位；二，'+(kws)+'。行了，话不多说，我先干，各位随意。';
+}
+let tail='';
+if(!short){
+ tail='最后敬各位'+(occasion.indexOf('公司')>-1?'同事':'朋友亲朋')+'：愿我们都能在忙碌里偷点乐子，在要紧处彼此托底。来，共同举杯——干！';
+}
+let tip='';
+if(role.indexOf('晚辈')>-1) tip='（作为晚辈/被敬方：先说感谢、回敬长辈在位，杯沿略低于对方，语速放慢显得诚恳。）\n';
+else if(role.indexOf('被点名')>-1) tip='（被突然点名也别慌：先以一句通用话接住，再顺势把话题交回给全场最重要的人，就稳了。）\n';
+else tip='（作为主人：先热情迎客→再简明表意→最后祝全场，掌控节奏，少讲多敬。）\n';
+let r1='🎤 你可以这样讲\n「'+line1+'」\n\n';
+if(!short&&dur.indexOf('2分钟')>-1) r1+='展开版：\n「'+mid.say+'」\n\n引一句'+(tone==='轻松幽默'?'玩笑':tone==='走心真诚'?'真心话':'得体话')+'：'+mid.extra+'，'+(tone==='走心真诚'?'再把更多好话留给私下里慢慢说。':'')+'\n\n';
+else r1+='完整正文：\n「'+mid.say+'」\n\n';
+if(tail)r1+='收尾：\n「'+tail+'」\n\n';
+r1+='(提示时长约"'+dur+'"，建议对着镜子说一遍会更有底气哈)\n小贴士：'+tip;
+document.getElementById('outputBox').innerText = r1;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 金句已复制！'))}
+</script>
+</body>
+</html>

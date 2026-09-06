@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>深度影评扩写助手 | AgentGongju.com</title>
+<meta name="description" content="看完电影在豆瓣只写得出一句"好看"？输入你的三句短评，AI帮你扩成有理有据、有层次有观点的长评：先给剧情概括要不要、再接人物/摄影/主题拆解、最后升华金句。影迷与影视自媒体都能秒用。">
+<meta name="keywords" content="影评,深度影评,电影评论,豆瓣影评,短评扩写,影视解读">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+input[type=text],textarea,select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:80px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s;margin-top:6px}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.95;white-space:pre-wrap;font-size:0.95rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.output-box{font-size:.9rem}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🎬 深度影评扩写助手</h1><p>把心里那句"还挺好看"，写成别人忍不住读完的长评</p></div>
+
+<div class="card">
+<div><label>🎞 影片名称（方便我框上下文）</label>
+<input type="text" id="movie" placeholder="如：《流浪地球2》《奥本海默》…"></div>
+<div><label>📝 你的核心感受（2-5句即可，越真实越有料）</label>
+<textarea id="notes" placeholder="例如：后半段看得有点喘不过气 / 男主角那条线特别戳我 / 结尾我很喜欢，但觉得节奏有点拖…"></textarea><div class="param-grid">
+<div><label>🧭 想侧重深度哪个维度</label>
+<select id="dim"><option selected>均衡(故事+人物+视听)</option><option>只讲情绪共鸣</option><option>只做镜头/视听分析</option><option>只做主题/现实议题深挖</option></select></div>
+<div><label>✍️ 语气与篇幅</label>
+<select id="style"><option selected>克制影评式(约600字)</option><option>粉丝安利式，热情一点</option><option>学术/分析向(约900字)</option><option>简单接地气(约300字)</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">✍️ 生成深度长评草稿</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🎬 你的长评草稿（结构化，拿走再微调）</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制长评</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function pick(a){return a[Math.floor(Math.random()*a.length)];}
+const EMOTION=['它的力量不靠台词喊出来，而藏在那些没有说出口的停顿与空镜里。','看完离场时，有人沉默，有人急着刷手机——而我还在那场戏里没走出来。','这部电影最好的地方，是它拒绝给你一个轻松的答案。','那股后劲儿不是惊吓，而是被放大的、你我都会遇到的普通时刻。'];
+function metaIntro(){return pick(['先说清楚我看到了什么：','让我试着把这种感受拆开来看：','真正让它立住的，是下面这几层：']);}
+function midBridge(dim){
+ if(dim==='只讲情绪共鸣')return null;
+ const a=['人物弧光与转折往往建立在细节的反差上，而不只是情节的推进；','画面的构图、光线与配乐其实一直在替台词说话边缘上的情绪；','它与现实议题之间那条暗线，才是它区别于爽片的野心；'];
+ return pick(a);
+}
+function topicPunch(){return pick(['如果只把它当爽片看，就错过了它想讨论的取舍与代价。','它讲的从来不只是片中的那个世界，也是屏幕前每个人的处境。','真正高级的批评不是"好或坏"，而是说清它动人之处为何成立。']);}
+function endingEncore(style){
+ const base={};
+ let tail=[];
+ if(style==='粉丝安利式，热情一点')tail.push('如果你还没看，请给它两个小时，也给自己一个被打动的机会。');
+ else if(style==='学术/分析向(约900字)')tail.push('综合来看，它在类型片框架内完成了对既有叙事范式的有效偏移，值得作为案例进一步展开。');
+ else tail.push('它未必完美，但那些让我反复回想的片段，正是它值得的理由。');
+ return tail[0];
+}
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('深度影评扩写助手 | AgentGongju.com'))return;
+const movie=document.getElementById('movie').value.trim()||'（这部影片）';
+const notes=document.getElementById('notes').value.trim()||'它让我想起很多生活中的时刻 ';
+const dim=document.getElementById('dim').value;
+const style=document.getElementById('style').value;
+const lines=notes.split(/[。！？\n]/).map(s=>s.trim()).filter(s=>s.length>0);
+const short=(lines[0]||notes).replace(/^[。！？\s]+/,'');
+let r='《'+movie.replace(/^《|》$/g,'')+'》：'+short+'\n\n';
+r+='—————— 长评草稿 ——————\n\n';
+r+=pick(['这不是一篇要说服谁"它值不值得看"的影评。','写之前我想先承认，电影好坏的答案从来是主观的。'])+'\n';
+r+=metaIntro()+'\n\n';
+r+='先说最直观的观感：「'+short+'」。这句话说出来很容易滑向情绪化表达，但当我们顺着它往里走，会发现这种体验其实有迹可循。'+pick(['开场的几处闲笔并非浪费，它们在为后面情绪的爆发积蓄势能；','角色越是克制，观众越容易把自己的经验投射进去；','节奏起伏里的每一次"拖"，或许正是它想让你慢下来的安排。'])+'\n\n';
+if(dim!=='只讲情绪共鸣'&&dim!=='只做主题/现实议题深挖'){
+ r+='从视听上讲，'+pick(['对焦与构图的几次骤变很好的配合了情绪切换','声画错位与长镜头的使用让场景的情绪密度显著升高','剪辑节奏从一开始的平缓逐渐收紧，配合叙事形成共振'])+'。这些也许不会第一时间被察觉，却实实在在地支撑着观感。\n\n';
+}
+if(dim==='只做镜头/视听分析'){r+='回到镜头语言：本片值得写一笔的是它'+pick(['对空间的正反打处理','对光线的戏剧化运用','把道具当作情绪载体的习惯'])+'——这一类细节足够撑起一篇不空洞的视听向分析。\n\n';}
+if(dim==='只做主题/现实议题深挖'){r+='而若落到主题上：'+topicPunch()+' 那种进退两难的选择、以及面对外部规则时个体的无力感，恰好呼应了我们正在经历的一些集体经验。\n\n';}
+else if(dim==='只讲情绪共鸣'){r+=pick(['最打动我的其实是副线上那个不重要的人','看到后半程我几次想起的是自己某个具体的夜晚','它没打算教你做人，它只是把你心中早已存在却说不出的东西轻轻点亮'])+'。\n\n';}
+else {r+=topicPunch()+'\n\n';}
+r+='————————————\n收束：「'+movie.replace(/^《|》$/g,'')+'」最难得的，是它在'+pick(['商业属性和作者表达之间','煽情与克制之间','娱乐性和思考性之间'])+'找到了一个不算滑头的平衡点。'+pick(EMOTION)+' '+endingEncore(style)+'\n';
+r+='\n* （上述为草稿框架：请删除任何你不认同、我没看过实片造成的假设句，换成你对台词/剧情的真实引用会更扎实。文中带"或许/大概"处请按实核对或用确证细节替换。）';
+document.getElementById('outputBox').innerText=r;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 长评草稿已复制！'))}
+</script>
+</body>
+</html>

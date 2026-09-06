@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>短视频高赞神回复助手 | AgentGongju.com</title>
+<meta name="description" content="玩抖音/快手/B站想抢热评却憋不出金句？输入视频主题或你要评论的对象，一键生成多条不同风格的神回复：扎心反讽、玩梗谐音、暖评安慰、专业点评...还能做评论区运营的控评与引导话术。">
+<meta name="keywords" content="神回复,短视频评论,抖音评论,热评,评论区运营,玩梗,搞笑评论">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+input[type=text],textarea,select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:80px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s;margin-top:6px}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.95;white-space:pre-wrap;font-size:0.95rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.output-box{font-size:.9rem}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>💬 短视频高赞神回复助手</h1><p>让每一条评论都有人点赞不止一次</p></div>
+
+<div class="card">
+<div><label>🎬 视频主题 / 你想评论的内容（一句话点题）</label>
+<textarea id="topic" placeholder="例如：老板画的饼又大又圆；这只猫太会摆拍了；我要剪个发视频…"></textarea></div>
+<div class="param-grid">
+<div><label>🧭 你的使用身份</label>
+<select id="who"><option selected>单纯想抢热评</option><option>我是博主/运营，想带节奏</option><option>评论自家视频，引导互动</option></select></div>
+<div><label>🌟 拿手风格（可多，我全给）</label>
+<select id="style"><option selected>整活搞笑为主</option><option>走心治愈为主</option><option>毒舌扎心为主</option><option>专业吐槽为主</option></select></div>
+</div>
+<div class="param-grid">
+<div><label>🛡 是否希望带温柔/安全边界</label>
+<select id="safe"><option selected>要 不冒犯发言</option><option>随便 敢说敢玩</option></select></div>
+<div><label>🔢 出几条</label>
+<select id="count"><option selected>6条</option><option>3条</option><option>10条</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">✨ 批量生成神回复</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🔥 你的神回复弹药库</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制全部</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function pick(a){return a[Math.floor(Math.random()*a.length)];}
+const FUNNY=['笑死，这不是评论区这是在拍纪录片。','这波操作，建议成立一个"反卷协会"请你当会长。','本来想划走，看到你我又坐了回来，毕竟乐子难得。','我在屏幕前笑出了声，我妈以为我恋爱了。','这内容，属于是路过的小狗都得停下来点个赞的程度。','看完我只想问：你到底是天才还是懒得出奇？'];
+const HEART=['有些在屏幕里笑的人，其实很需要一个抱抱，今天你也要照顾好自己。','这一下真的戳到我了，成年人的崩溃往往就是这种轻轻的、没人注意的时刻。','愿你屏幕这头收到的不只是笑，还有一点被懂得的暖意。','看完了，突然想给我爸妈也发一条这样的，简单的那种也好。','说得真好，有人能把你的心里话讲出来，也是种幸福。'];
+const SHARP=['这个"道理"我懂，但下次能不能先把坑填了再讲。','好听的话谁都会说，难的是照着做的时候别装看不见。','你以为你赢了，其实是还没遇到那个会拆穿的人。','精致到连内容都不真诚，也是种能力。','这段下来，最累的不是镜头里的你，是替你尴尬的观众。'];
+const PRO=['作为相关从业者，认真说一句：底层逻辑没问题，但执行层面漏了几个关键细节，建议先补数据再讲结论。','快节奏确实是流量密码，但信息的取舍可以再严谨一点，别让好选题毁在表述上。','这角度有意思，换个样本再测一遍结论会更稳，期待后续。','专业给到：方向对、形式新，唯一想提的是别把个例当通例，那会误导人。'];
+function themed(topic,style){
+ if(!topic)return pick(['金句虽好，前提是得有人愿意为你的幽默多停留三秒。','评论区最高级的幽默，往往只用了最朴实的一句话。']);
+ // 若主题与"老板画饼"之类
+ if(topic.indexOf('饼')>-1&&style!=='走心治愈为主')return ['这饼我吃过，挺扎实，就是有点费牙齿，得配点真金白银的嚼劲。','老板画的饼，我们负责翻译成报表，从此卷王见卷王。','画饼技术哪家强？建议出书，我第一批买来垫桌角。'];
+ return null;
+}
+function guard(line){return line.slice(0,60);}
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('短视频高赞神回复助手 | AgentGongju.com'))return;
+const topic=document.getElementById('topic').value.trim();
+const style=document.getElementById('style').value;
+const who=document.getElementById('who').value;
+const safe=document.getElementById('safe').value==='要 不冒犯发言';
+const count=parseInt(document.getElementById('count').value);
+const POOL=style==='整活搞笑为主'?FUNNY:style==='走心治愈为主'?HEART:style==='毒舌扎心为主'?SHARP:PRO;
+const spec=themed(topic,style);
+const chosen=((spec&&style!=='走心治愈为主')?[...spec]:[]).slice(0,2);
+const needs=count-chosen.length;
+const shuffled=POOL.map((v,i)=>({v,i})).sort(()=>Math.random()-0.5).slice(0,needs);
+let all=[...chosen,...shuffled.map(o=>o.v)].slice(0,count);
+let r='💬 视频主题建议挂个我的评论：'+themeLead(topic,style)+'\n\n';
+all.forEach((line,i)=>{r+=('第'+(i+1)+'条）'+line+'\n');});
+r+='\n────────\n';
+if(who.includes('博主')||who.includes('想带节奏')||who.includes('运营')){
+ r+='📣 若你是运营/博主，可用玩法：\n· 置顶一条"提问式"评论引导网友@好友，如：'+pick(['身边有没有同款"画饼"老板？@一个来','第一次刷到我也愣了三秒，你们说离谱不离谱','谁懂啊，@全部想转发的人'])+'\n· 抽一位回复送小礼物前，先在主评论补一句"好的点子会翻牌"。\n· 神回复适合当"诱饵"，真正促活靠你后续真诚翻牌互动。';
+} else {
+ r+='🏆 抢热评小贴士：发布时间在前3分钟、紧跟高赞者的回复更容易被顶上去；别带明显引流链接，平台会压。';
+}
+document.getElementById('outputBox').innerText=r;
+document.getElementById('resultArea').classList.add('active');
+});
+function themeLead(topic,style){
+ if(!topic)return '（先告诉我视频主题，我能给得更贴）';
+ const s=style, t=topic;
+ if(t.indexOf('猫')>-1||t.indexOf('狗')>-1)return '这难道不是全网都在羡慕的流量密码…我也是写代码写到想养只'+ (t.indexOf('猫')>-1?'猫':'狗') +'了。';
+ if(t.indexOf('吃')>-1)return '深夜刷到你，注定今晚睡不着，先是饿的，然后是更饿的。';
+ if(t.indexOf('请假')>-1)return '我的请假条能不能也用你这个理由，在线等，挺急的。';
+ return '看完我只想说：这主题我先赞为敬，谁反对我跟谁急（开玩笑的，和平讨论也可以）。';
+}
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 神回复已复制！'))}
+</script>
+</body>
+</html>

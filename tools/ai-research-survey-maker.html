@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>问卷调研题目生成器 | AgentGongju.com</title>
+<meta name="description" content="做用户调研、课程反馈、市场问卷却不会出题？输入调研目的与目标人群，秒出一套结构完整、无诱导、可量化的问卷初稿（含题型搭配与避坑提示）。学生小组作业、产品经理、市场人都能用。">
+<meta name="keywords" content="问卷调查,调研题目生成,问卷设计,用户研究,市场调研,题目模板">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+input[type=text],textarea,select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:80px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s;margin-top:6px}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.95;white-space:pre-wrap;font-size:0.95rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.output-box{font-size:.9rem}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📊 问卷调研题目生成器</h1><p>别让问题带节奏，好问卷从第一批题开始</p></div>
+
+<div class="card">
+<div><label>🎯 这次调研想弄清什么？（说人话即可）</label>
+<textarea id="topic" placeholder="例如：想了解大学生对校园咖啡外卖的消费意愿 / 员工对远程办公的满意度…"></textarea></div>
+<div class="param-grid">
+<div><label>🧑‍🎓 目标人群</label>
+<select id="crowd"><option selected>大学生/学生</option><option>上班族/白领</option><option>普通消费者</option><option>企业内部员工</option><option>家长/家庭人群</option></select></div>
+<div><label>📏 题型长度偏好</label>
+<select id="len"><option selected>精炼版（约12-15题）</option><option>标准版（约20题）</option><option>精简版（8-10题）</option></select></div>
+</div>
+<div class="param-grid">
+<div><label>🔘 问卷用途</label>
+<select id="purpose"><option selected>课程/小组作业</option><option>商业市场调研</option><option>产品/服务反馈</option><option>内部员工调研</option></select></div>
+<div><label>🎁 是否会发礼物/抽奖</label>
+<select id="gift"><option selected>会 有小礼物</option><option>纯志愿填写</option><option>会 红包/优惠券</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">🧾 生成问卷初稿</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">📋 你的问卷草稿（可直接复制去加工）</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制问卷</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const CLOSING={
+'会 有小礼物':['抽5位送小礼品一份，留联系方式即可参与','前N名填完可得小样/贴纸，先到先得(可在结尾留微信/邮箱)'],
+'纯志愿填写':['感谢您的耐心，数据仅用于本次研究分析并严格匿名','为了感谢您，我们把结果摘要整理后与您分享(可选留邮箱)'],
+'会 红包/优惠券':['填完可领小额红包，数量有限先到先得','发放无门槛券一张(结尾领取，不留手机号)']
+};
+function pick(a){return a[Math.floor(Math.random()*a.length)];}
+function lk(){return '很不同意 / 不同意 / 一般 / 同意 / 很同意（五级）';}
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('问卷调研题目生成器 | AgentGongju.com'))return;
+const topic=document.getElementById('topic').value.trim();
+const crowd=document.getElementById('crowd').value;
+const len=document.getElementById('len').value;
+const purpose=document.getElementById('purpose').value;
+const gift=document.getElementById('gift').value;
+if(!topic){alert('请先写下调研目的～');return;}
+let t=topic;
+// 简短适配人称
+let r='📊 问卷主题：关于「'+t+'」的调研\n';
+r+='面向人群：'+crowd+' | 用途：'+purpose+' | 题型量：'+len+'\n';
+r+='开篇语参考：您好！本问卷约需 '+{'精简版（8-10题）':'1分钟','标准版（约20题）':'3分钟','精炼版（约12-15题）':'2分钟'}[len]+'，答案没有对错，仅用于「'+t+'」的研究分析，全程匿名，感谢支持！\n\n';
+// 结构生成
+const n={'精简版（8-10题）':8,'标准版（约20题）':18,'精炼版（约12-15题）':13}[len];
+r+='■ 第一部分｜基础信息(1-3题)\n';
+r+='1. 您的年龄段：18岁以下 / 18-25 / 26-35 / 36-45 / 45以上\n';
+const g=crowd==='大学生/学生'?'2. 所在年级：大一 / 大二 / 大三 / 大四及以上 / 研究生\n':'2. 您目前的职业/身份：'+crowd+'具体可细分(下拉) / 其他____\n';
+r+=g;
+r+=crowd==='企业内部员工'?'3. 工作年限：1年内 / 1-3年 / 3-5年 / 5年以上\n':'3. 使用该类产品/服务的频率：几乎不用 / 偶尔(月1-2次) / 每周 / 每天\n\n';
+r+='■ 第二部分｜核心体验(4-'+(n-4)+'题，可自由选答)\n';
+const template=[
+'您第一次听说或用上相关服务，主要来自哪种渠道? A搜索 B朋友推荐 C广告/短视频 D线下 E其他____',
+'总体而言，您对相关服务的满意度打几分?(1-10) ____ 分，不满意的点集中在______',
+'请为以下维度打分('+lk()+')：功能性 / 便捷性 / 性价比 / 服务态度',
+'与同类相比，您认为它最突出的差异点是______',
+'如果相关服务做一处改进，您最希望改什么?(多选) 价格更低 / 体验更流畅 / 内容更丰富 / 客服更及时 / 其他____',
+'在什么情况下您会更愿意持续使用它? 请简要说明____',
+'对于相关方向，您还有哪些未被满足的需求，一句话写下来即可：____'
+];
+let body=template.map((q,i)=>String(i+4)+'. '+q).join('\n');
+r+=body+'\n\n';
+r+='■ 第三部分｜意愿与收尾\n';
+r+=(n-2)+'. 未来6个月内，您对该方向的使用/付费意愿是：A肯定不会 B不太可能 C视情况 D很可能会 E一定会\n';
+r+='(可加一题开放题'+((n)+'')+')还有什么想补充的建议？欢迎直接写在这里：____\n';
+r+=	'\n────────\n';
+r+='✅ 出品规范提醒：\n· 单题只问一件事，避免"是+价格"二合一；\n· 选项要互斥且覆盖全(习惯加"其他/不确定")；\n· 不要出现倾向性措辞如"这么好用，您一定喜欢吧";\n· '+'● 结尾感谢语建议：'+(crowd==='企业内部员工'?'您的反馈将直接影响内部优化排期，再次感谢！':'结果将汇总为报告供改进参考～')+'\n';
+r+='● 激励设置提示：'+pick(CLOSING[gift]);
+document.getElementById('outputBox').innerText=r;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 问卷草稿已复制！'))}
+</script>
+</body>
+</html>

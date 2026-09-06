@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>背单词计划与记忆法助手 | AgentGongju.com</title>
+<meta name="description" content="四六级、考研、雅思托福单词背了忘、忘了背？输入考试或目标词量与你可投入时间，自动生成"艾宾浩斯+间隔重复"的每日背词排期表、薄弱环节诊断与助记口诀，让词汇量在这个备考期真的涨起来。">
+<meta name="keywords" content="背单词,单词计划,艾宾浩斯,记忆法,四六级,考研英语,雅思,托福,词汇量">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+input[type=text],textarea,select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:80px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s;margin-top:6px}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.95;white-space:pre-wrap;font-size:0.95rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.output-box{font-size:.9rem}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📖 背单词计划与记忆法助手</h1><p>告别"abandon"，一天背出新高度也不怕忘</p></div>
+
+<div class="card">
+<div class="param-grid">
+<div><label>📚 备考/词量目标</label>
+<select id="target"><option selected>四级约4000词</option><option>六级约5500词</option><option>考研英语约5500词</option><option>雅思/托福6000-8000词</option><option>日常够用3000词</option></select></div>
+<div><label>🕗 距考试/截止还有</label>
+<select id="due"><option selected>3个月</option><option>1个月</option><option>6个月</option><option>半个月冲刺</option></select></div>
+</div>
+<div class="param-grid">
+<div><label>⏰ 每天愿投入(分钟)</label>
+<select id="mins"><option selected>30分钟</option><option>15分钟</option><option>60分钟</option><option>碎片10分钟</option></select></div>
+<div><label>🌀 我的大敌</label>
+<select id="foe"><option selected>背了就忘，第二天全没</option><option>只看得懂、不会拼写/用法</option><option>坚持不了每天打卡</option><option>一词多义看到就头大</option></select></div>
+</div>
+<div><label>📝 可选：告诉我你正卡在哪一本书/哪部分</label>
+<textarea id="note" placeholder="例如：新东方乱序第10单元背完一轮了但第二遍还是生词 / 高频词都会，专四难词崩…"></textarea>
+<button class="btn-gen" id="genBtn">🧠 生成每日背词排期</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🗓 你的"抗遗忘"排期单</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制排期</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function n(x){return parseInt(x)||0;}
+function pick(a){return a[Math.floor(Math.random()*a.length)];}
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('背单词计划与记忆法助手 | AgentGongju.com'))return;
+const target=document.getElementById('target').value;
+const tgtMatch=target.match(/(\d+)/);
+const total= tgtMatch?parseInt(tgtMatch[1]):4500;
+const due=document.getElementById('due').value;
+const dueDays={ '1个月':30,'3个月':90,'6个月':180,'半个月冲刺':15 }[due];
+const mins=parseInt(document.getElementById('mins').value)||30;
+const foe=document.getElementById('foe').value;
+const note=document.getElementById('note').value.trim();
+// 假设新词还差一半需从0背
+const needCycle=Math.ceil(total*0.7);
+const batchPerDay=Math.max(20, Math.ceil(needCycle/dueDays));
+let r='🧠 目标 '+target+'（约'+total+'词）｜距截止约'+due+'（'+dueDays+'天）\n';
+r+='每日投入：'+mins+'分钟 → 建议新词量每天 '+batchPerDay+' 个上下\n';
+r+=(note?'你的备注：'+note+'\n':'');
+r+='\n──────── 每日 4 步流程（艾宾浩斯示范）────────\n';
+r+='1️⃣ 先听词音认读 5 分钟（新'+(Math.ceil(batchPerDay/2))+'个）\n';
+r+='2️⃣ 用「词根/词缀+联想」细啃'+batchPerDay+'个新词，写在本子上不追求抄多遍\n';
+r+='3️⃣ 完形默背（盖住释义回忆或写完形）10 分钟\n';
+r+='4️⃣ 关书睡前 3 分钟做「闪卡快测」：把白天错过的词过一遍\n\n';
+r+='■ 复习节奏（间隔重复，防"背了就忘"）\n';
+r+='· 当日新词 →次日 →第3天 →第7天 →第15天 →第30天 各复习一次；\n';
+r+='· 第一周排期示意（A=当天新词池，数字=第几天复）：\n';
+let sched=[];
+for(let d=1;d<=14;d++){ let pool='D'+d+'(+'+batchPerDay+')'; let review=[]; if(d>1)review.push('回D'+(d-1)); if(d>3)review.push('回D'+(d-3)); if(d>7)review.push('回D'+(d-7)); review.push('回D'+(d>=8?d-7:'')); sched.push('第'+d+'天|新词 '+pool+(review.length?'｜复 '+review.join(','):'')); }
+r+=sched.map(s=>'· '+s).join('\n')+'\n\n';
+r+='■ 针对你的大敌「'+foe+'」\n';
+if(foe.indexOf('背了就忘')>-1)r+='→ 忘是常态，不是失败。每天只留"必须记住50个"的执念会累死；改用闪卡+间隔复习，让"熟悉感"长成一棵越浇越牢的树。\n';
+else if(foe.indexOf('拼写')>-1)r+='→ 认读ok但写不出/用不对：多增加"盖释义回写 + 例句仿写"，把单词放进完整句子里用一遍才真正长在你手上。\n';
+else if(foe.indexOf('打卡')>-1)r+='→ 把词汇量目标换成"每天都碰一下"：哪怕只背5个也算，别给自己设"今天必须背完20个否则失败"的坎。\n';
+else r+='→ 一词多义别死磕长串释义：第一次只记"最常用1个义项+配1个例句"，先用起来，其它义项等你在阅读里碰到再补。\n';
+r+='\n■ 给零碎时间的利用建议\n';
+r+='· 通勤/排队：用手机闪卡App刷"复习卡"（只复习新学的，别贪进度）；\n· 午休：翻一翻今天的20个新词本，只求混个脸熟；\n· 睡前：把今天错词录音/读出来，第二天第一个复习。\n\n';
+r+='■ 重要的"心理按摩"\n· 前两周最痛苦，挺过去词汇量是"复利式"增长，越到后面越顺；\n· 用"可量化的打卡表"奖励自己，每完成连续7天给自己一点小甜头；\n· 别迷信天数，重视"复习次数"。宁可少学新的，也别欠复习债。';
+document.getElementById('outputBox').innerText=r;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 背词排期已复制！'))}
+</script>
+</body>
+</html>
