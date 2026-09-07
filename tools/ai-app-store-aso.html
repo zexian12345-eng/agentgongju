@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 应用商店上架文案(ASO)助手 | AgentGongju.com</title>
+<meta name="description" content="给App生成高转化的商店标题、副标题、详情关键词与卖点句子，覆盖应用商店与国内安卓应用市场上架文案。">
+<meta name="keywords" content="ASO,应用商店优化,App上架,标题副标题,关键词优化,应用推广">
+<link rel="stylesheet" href="../css/style.css"><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:840px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:36px}
+.tool-header h1{font-size:2.1rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:26px;margin-bottom:18px}
+label{display:block;color:#cbd5e1;font-weight:500;margin-bottom:7px;font-size:.9rem}
+input,textarea,select{width:100%;box-sizing:border-box;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;padding:11px 13px;font-family:inherit;font-size:.88rem;outline:none;margin-bottom:12px}
+textarea{min-height:66px;resize:vertical}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:#fff;font-weight:600;font-size:1.03rem;cursor:pointer}
+.result-area{display:none}
+.result-area.show{display:block}
+.cat{font-weight:700;color:#e9d5ff;font-size:.92rem;margin:20px 0 10px;display:flex;align-items:center;gap:8px}
+.cat::before{content:'';width:4px;height:14px;background:#a855f7;border-radius:3px;display:inline-block}
+.slot{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:13px 16px;margin-bottom:10px}
+.slot .t{color:#a5b4fc;font-size:.78rem;margin-bottom:5px}
+.slot .x{color:#f5f5fa;line-height:1.75;font-size:.93rem}
+.copy{float:right;font-size:.78rem;color:#94a3b8;background:none;border:1px solid rgba(148,163,184,.3);border-radius:6px;padding:2px 8px;cursor:pointer;font-family:inherit}
+.hint{color:#64748b;font-size:.77rem;margin-top:12px;line-height:1.8}
+@media(max-width:600px){.body .hint{font-size:.72rem}}
+</style>
+<script>
+var _hmt=_hmt||[];(function(){var s=document.createElement('script');s.src='https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949';document.body.appendChild(s);})();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📲 AI 应用商店换文案(ASO)助手</h1><p>填产品 1 分钟，一次给你标题/副标题/关键词/卖点句，苹果+安卓市场都用得上</p></div>
+<div class="card">
+<label>你产品的核心功能一句话(必填)</label>
+<input type="text" id="desc" placeholder="例：一款用AI把手机照片美化成一键大片风格的App">
+<label>主要目标用户/适用场景(必填)</label>
+<input type="text" id="user" placeholder="例：喜欢拍照发朋友圈的年轻人">
+<label>可选补充词(逗号隔开，如 相机/滤镜/朋友圈/一键)</label>
+<input type="text" id="extra" placeholder="自动联想高频词，留空也行">
+<label>上架平台渠道偏好</label>
+<select id="channel"><option value="all">苹果+安卓都想优化</option><option value="ios">以苹果 App Store为主</option><option value="cn">以国内应用市场为主(华为/小米/应用宝)</option></select>
+<button class="btn-gen" id="gen">✨ 一键生成上架文案</button>
+</div>
+<div class="result-area" id="resultArea">
+<div class="card" id="res"></div>
+<div class="hint">💡 技巧：①副标题/关键词是权重红利区，尽量写满字符不浪费；②「卖点句」适合放应用介绍前两行，把最能打的数字(用户量/评分/更新)放最前；③国内安卓市场标题通常≤30字，本工具已按中等长度控制；④建议按词法把“用户高频搜的词”排在副标题与描述前面。</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com</p></div></footer>
+<script>
+document.getElementById('gen').addEventListener('click',function(){
+  if(!Paywall.countUse('AI 应用商店上架文案(ASO)助手 | AgentGongju.com'))return;
+  const desc=(document.getElementById('desc').value||'').trim();const user=(document.getElementById('user').value||'').trim();
+  if(!desc){alert('请先填你的产品一句话说明');return;}
+  const ex=(document.getElementById('extra').value||'').split(/[,，、]/).map(s=>s.trim()).filter(Boolean);
+  const ch=document.getElementById('channel').value;
+  const core=desc.replace(/一款?/,'').replace(/的app$/i,'');
+  // 推测品类词
+  const catGuess=(function(){
+    const low=core;
+    const map=[['聊天','通讯'],['相机','拍照'],['记账','财务'],['外教','学习'],['办公','效率'],['健康','运动'],['音乐','听歌'],['视频','剪辑'],['购物','电商'],['地图','出行']];
+    for(const [k,v] of map) if(core.includes(k)) return v;
+    return '工具';
+  })();
+  const kwList=Array.from(new Set([user, ...ex, catGuess, core.slice(0,4), (user||'')+'实用','一键',core])).filter(Boolean).slice(0,10);
+  // 标题(多种)
+  const title1=(user||'')+'专用'+(catGuess)+'『'+core+'』';
+  const title2=core.slice(0,9)+(user?'·'+user.slice(0,8):'')+' 神器';
+  const genLine=(arr)=>arr.sort(()=>Math.random()-.5)[0];
+  // 卖点句库
+  const sellA=['把复杂操作藏起来，一键出片/出结果，像有个设计师随时在线。','不只“能用”，还超“好用”：响应快、不卡顿、越用越懂你。','【痛并爽】用过真的回不去——上手零门槛，效果却立竿见影。','碎片时间就能搞定，效率直接起飞，适合忙到飞起的都市人。'];
+  const sellB=['自带多种专业模板，小白也能做出高质感的效果。','无广告打扰、隐私安全，纯净体验不闹心。','新版本大幅优化，老用户都说“这波更新太值了”。'];
+  const sell=[ '◎ '+desc+'。',
+    '◎ '+genLine(sellA),'◎ '+genLine(sellB),
+    '◎ '+(user||'目标用户')+'都在用它：下载量持续增长，口碑街知巷闻。','◎ 被XX商店编辑推荐过的宝藏应用，一生推。'];
+  const needNote=ch==='cn'? '（国内安卓标题建议控制≤30字，具体按市场规则裁剪）':ch==='ios'?'（App Store 全标题+副标题约50字符内更佳）':'';
+  // 描述正文
+  const para='【一句话介绍】'+desc+'。\n\n【核心功能】'+core+'，专为'+user+'打造——简单直观，即开即用。\n\n【为什么会爱上它】\n'+genLine(sellA)+'\n'+genLine(sellB)+'\n\n【适合谁】'+user+'；如果你也有类似场景，它就是你的趁手工具。\n\n【更多】'+(ex.join('、')||'持续更新中')+' 等实用能力正在路上。';
+  const outp=[];
+  outp.push({t:'主标题(选一)',x:'① '+title1+'\n② '+title2+needNote});
+  outp.push({t:'副标题 / 一句话卖点',x:genLine(sellA)+' '+genLine(sellB)});
+  outp.push({t:'搜索关键词(建议取满)',x:kwList.join('，')});
+  outp.push({t:'详情页2-5行精华(卖点句)',x:sell.join('\n')});
+  outp.push({t:'应用介绍/描述正文(可放详情尾部)',x:para});
+  const box=document.getElementById('res');box.innerHTML='';
+  outp.forEach(function(o){const d=document.createElement('div');d.className='slot';d.innerHTML='<span class="t">'+o.t+'</span> <button class="copy">复制</button><div class="x" style="white-space:pre-wrap">'+o.x.replace(/</g,'&lt;')+'</div>';d.querySelector('.copy').onclick=function(){navigator.clipboard.writeText(o.x).then(function(){alert('已复制');});};box.appendChild(d);});
+  document.getElementById('resultArea').classList.add('show');
+  document.getElementById('resultArea').scrollIntoView({behavior:'smooth'});
+});
+</script>
+</body>
+</html>

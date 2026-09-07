@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 日式和风名字生成器 | AgentGongju.com</title>
+<meta name="description" content="一键生成日剧感、和风古韵、二次元风的名字，自带含义与读音，适合网名、角色、文艺署名。">
+<meta name="keywords" content="日式起名,日文名字,和风名,昵称,二次元名">
+<link rel="stylesheet" href="../css/style.css"><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px;box-sizing:border-box}
+select:focus,input:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.list-line{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;background:rgba(99,102,241,0.06);border:1px solid rgba(99,102,241,0.18);border-radius:12px;padding:14px 18px;margin-bottom:12px}
+.list-line .nm{font-size:1.35rem;color:#fff;font-weight:700;letter-spacing:1px}
+.list-line .rd{color:#f0abfc;font-size:.8rem;margin-top:2px}
+.list-line .mn{color:#94a3b8;font-size:.8rem}
+.copy-btn{padding:7px 16px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.35);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.82rem;font-family:inherit}
+.copy-btn:hover{background:rgba(99,102,241,0.28)}
+.hint{font-size:.78rem;color:#64748b;line-height:1.7;margin-top:16px;background:rgba(255,255,255,0.02);border-radius:10px;padding:10px 14px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🏯 AI 日式和风名字生成器</h1><p>和风古韵 · 日剧清新 · 二次元元气，想给角色/网名起日系名就来</p></div>
+
+<div class="card">
+<label>🌸 想要的意境 / 关键词（选填，例如：雪、月光、森林、温柔）</label>
+<input type="text" id="keyword" placeholder="可留空，也可填如「雪 / 月 / 樱」等意象词">
+<div class="param-row">
+<div><label>🎐 风格气质</label>
+<select id="style">
+<option value="和风古韵">和风古韵</option>
+<option value="日剧清新">日剧清新</option>
+<option value="二次元元气">二次元元气</option>
+<option value="中二飒爽">中二飒爽</option>
+</select></div>
+<div><label>📛 生成数量（3-6个）</label>
+<input type="number" id="num" min="3" max="6" value="4">
+</div>
+</div>
+<button class="btn-gen" id="genBtn">🌸 生成日系名字</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div style="color:#22c55e;font-weight:600;margin-bottom:14px">✅ 为你写好的日系名字：</div>
+<div id="box"></div>
+<div class="hint">💡 本工具名字为日语汉字 + 假名读法组合，用在网名、小说/游戏角色、汉服/文创署名都很合适。汉字取意清新，若想完全照日式汉字书写可保留原名。</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function rf(a){return a[Math.floor(Math.random()*a.length)]}
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+// [汉字名, 读法, 含义]
+const POOL={
+'和风古韵':[['霜月','しもつき','冬月凌霜，清卓有节'],['雪见','ゆきみ','冬雪初霁，如玉人初见'],['千鹤','ちづる','千羽白鹤，吉祥长寿'],['青岚','あおあらし','青山岚风，自在洒脱'],['栖川','すみかわ','临水而居，淡泊安然'],['凉音','すずね','夏夜凉风，清音入耳'],['月咏','つくよみ','月下轻吟，诗意翩然'],['千重','ちえ','千重花影，含蓄内敛']],
+'日剧清新':[['菜花','なのは','如春野菜花，明朗清新'],['晴海','はるみ','晴空与海，心胸开阔'],['结衣','ゆい','温暖关联，治愈人心'],['柚子','ゆず','清新酸甜，鲜活有趣'],['美咲','みさき','花开正好，明艳乐观'],['真澄','ますみ','真诚澄澈，简单纯粹'],['七海','ななみ','七重海的浪漫，自由烂漫'],['凛花','りんか','凛然如霜花，独立清醒']],
+'二次元元气':[['桃绯','ももあか','元气桃色，活力四射'],['芽衣','めい','破土新芽，永远热血'],['星奈','せいな','如星闪耀，任性向前'],['奏太','そうた','奏响青春，阳光少年'],['空羽','そらは','天空之羽，每天都要元气满满'],['结弦','ゆづる','坚韧之弦，努力不认输'],['光希','みき','追寻光芒与希望'],['千影','ちかげ','有点小神秘却超温柔']],
+'中二飒爽':[['夜斗','やと','黑夜斗士，我行我素'],['绯村','ひむら','绯色村庄的游侠'],['黑泽','くろさわ','深沉黑泽，目光如刃'],['神狼','かみおおかみ','高傲如神狼，绝不低头'],['斩月','ざんげつ','一刀斩月，潇洒快意'],['苍龙','そうりゅう','苍天之龙，气势如虹'],['离烬','はなれじん','尘埃落尽，王者独行'],['瞬雪','しゅんせつ','快如飞雪，锋芒毕露']]
+};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI 日式和风名字生成器 | AgentGongju.com'))return;
+const kw=document.getElementById('keyword').value.trim();
+let n=parseInt(document.getElementById('num').value||4);n=Math.max(3,Math.min(6,n));
+let style=document.getElementById('style').value;
+// 关键词匹配改写风格
+if(kw){if(/雪|雪月|月|霜/.test(kw))style='和风古韵';else if(/猫|可爱|甜|元气/.test(kw))style='二次元元气';else if(/中二|飒|帅|战斗|侠/.test(kw))style='中二飒爽';else if(/清爽|清新|温柔|日剧|治愈/.test(kw))style='日剧清新';}
+const pool=shuffle(POOL[style]).slice(0,n);
+const box=document.getElementById('box');box.innerHTML='';
+pool.forEach(it=>{
+const d=document.createElement('div');d.className='list-line';
+d.innerHTML=`<div><div class="nm">${it[0]}</div><div class="rd">${it[1]}</div></div><div style="flex:1"><div class="mn">${it[2]}</div></div><button class="copy-btn" onclick="c(this,'${it[0]}')">📋 复制</button>`;
+box.appendChild(d);
+});
+document.getElementById('resultArea').classList.add('active');
+document.getElementById('resultArea').scrollIntoView({behavior:'smooth',block:'start'});
+});
+function c(b,t){navigator.clipboard.writeText(t).then(()=>{const o=b.textContent;b.textContent='✅ 已复制';setTimeout(()=>b.textContent=o,1300);}).catch(()=>prompt('复制失败，手动复制：',t));}
+</script>
+</body>
+</html>

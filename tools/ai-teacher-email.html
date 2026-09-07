@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 学生写给老师/教授的邮件 | AgentGongju.com</title>
+<meta name="description" content="根据场景（请假、问成绩、求推荐信、约谈、补交作业、转专业咨询）一键生成措辞得体、有礼貌的学生邮件草稿，中英可选。">
+<meta name="keywords" content="学生邮件,给老师写信,请假模板,求推荐信,转专业邮件">
+<link rel="stylesheet" href="../css/style.css"><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:780px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:32px}
+.tool-header h1{font-size:2.1rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:24px;margin-bottom:18px}
+label{color:#cbd5e1;font-weight:600;display:block;margin-bottom:6px;font-size:.9rem}
+input,textarea,select{width:100%;box-sizing:border-box;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:9px;color:#e2e8f0;font-family:inherit;font-size:.9rem;padding:10px 12px;outline:none;margin-bottom:14px}
+input:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:#fff;font-weight:700;font-size:1.03rem;cursor:pointer}
+.result-area{display:none}
+.result-area.show{display:block}
+.paper{background:#fffefb;color:#26211b;border-radius:12px;padding:22px 24px;white-space:pre-wrap;line-height:1.9;font-size:.95rem}
+.paper .subj{color:#7c3aed;font-weight:700;margin-bottom:8px}
+.lang-tabs{display:flex;gap:10px;margin:14px 0 6px}
+.lang-tabs button{background:rgba(99,102,241,.12);border:1px solid rgba(99,102,241,.3);color:#a5b4fc;padding:7px 15px;border-radius:8px;cursor:pointer;font-family:inherit}
+.lang-tabs button.on{background:#6366f1;color:#fff}
+.hint{color:#64748b;font-size:.77rem;margin-top:12px;line-height:1.8}
+@media(max-width:600px){.card{padding:18px}}
+</style>
+<script>
+var _hmt=_hmt||[];(function(){var s=document.createElement('script');s.src='https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949';document.body.appendChild(s);})();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📬 AI 学生给老师的邮件</h1><p>选场景填信息，一封措辞得体不卑不亢的邮件马上好</p></div>
+<div class="card">
+<label>老师称呼(称呼，如 张老师 / 李教授)</label>
+<input type="text" id="teacher" placeholder="张老师 / Prof. Wang">
+<label>老师姓氏英文(发英文邮件用，可选)</label>
+<input type="text" id="engName" placeholder="如 Zhang / Wang">
+<label>你的称呼(姓名/学号班级)</label>
+<input type="text" id="me" placeholder="王小明 · 计算机2301班">
+<label>邮件场景</label>
+<select id="scn"><option value="ask">请教一道题 / 课程内容</option><option value="leave">请假缺课</option><option value="delay">补交/推迟作业</option><option value="rec">请求写推荐信(保研/出国)</option><option value="office">预约办公室面谈</option><option value="major">选专业/转专业咨询</option><option value="thank">致谢老师</option></select>
+<label>补充具体信息(一句话，会自然嵌入正文)</label>
+<input type="text" id="detail" placeholder="例：想请教第三章算法复杂度那道题的思路">
+<label>希望老师回复的截止时间(可选，如：本周五之前)</label>
+<input type="text" id="deadline" placeholder="留空则不写">
+<button class="btn-gen" id="gen">✉️ 生成邮件</button>
+</div>
+<div class="result-area" id="resultArea"><div class="card"><div class="lang-tabs"><button class="on" id="b-cn">中文版</button><button id="b-en">English</button></div><div class="paper" id="pre">…</div></div></div>
+<div class="hint">💡 学生邮件四不要：不留自己的名字学号、开头不写“我是谁谁谁的学生”绕圈、事情不一次说清让老师追问、结尾忘了道谢并留下联系方式。</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com</p></div></footer>
+<script>
+let cur='cn',draft='';
+document.getElementById('gen').addEventListener('click',function(){
+  if(!Paywall.countUse('AI 学生写给老师/教授的邮件 | AgentGongju.com'))return;
+  const t=(document.getElementById('teacher').value||'').trim();const m=(document.getElementById('me').value||'').trim();
+  const en=(document.getElementById('engName').value||'').trim();
+  const dt=(document.getElementById('detail').value||'').trim();
+  const dl=(document.getElementById('deadline').value||'').trim();
+  const g=(x,d)=>x||d;
+  const scn=document.getElementById('scn').value;
+  const body={};
+  if(scn=='ask'){body.cn=['您好，我是'+g(m,'您的学生')+'。上完您'+['今天的课','这周的课'][Math.floor(Math.random()*2)]+'后，关于【课程/作业/知识点】我还有些不太明白。'+dtOr(dt),'我查过课本和课件，也上网搜了，但还是拿不准，想向您请教是否正确。若您方便，能否麻烦您在【方便的时间】做一个简短指导？我保证不影响您的时间。'];}else if(scn=='leave'){body.cn=['老师您好，我是'+g(m,'您的学生')+'。因【具体原因，如发烧/家中有急事】，'+(dt||'【日期】')+'的课我需要请假一次，可能要麻烦您准假。','我会第一时间找同学补上笔记与作业，若有重点内容不懂会在课后向您请教，绝不落下进度。给您添麻烦了，谢谢您！'];}else if(scn=='delay'){body.cn=['老师好，我是'+g(m,'您的学生')+'。非常抱歉，【课程/作业名】'+'的提交我因为【原因，写具体对表道歉真诚】没能按时完成。','能否恳请您宽限到【具体日期/时间】？我已经完成大部分，会尽快补齐并在提交后第一时间向您说明。这次是我的疏忽，以后一定提前规划，再次说声抱歉！'];}else if(scn=='rec'){body.cn=['老师您好！我叫'+g(m,'同学')+'，这学期选修了您的【课程名】，对您教的【方向】特别感兴趣，也想往这个方向继续深造。','冒昧打扰，我想恳请您可否为我写一封推荐信？用于【申请目的：保研/出国/评奖】。我知道您很忙，若您愿意，我把个人简历、成绩单和拟申请材料一并整理给您，若您觉得不合适也完全理解。不管结果如何，都非常感谢您这一学期的教导！'];}else if(scn=='office'){body.cn=['老师您好，我是'+g(m,'您的学生')+'。最近阅读/学习中有几个问题想当面和您聊聊('+dtOr(dt)+')。','想请问您【下周/本周】哪个时间段方便？大约是【10-15分钟】。我会带上具体问题，不占用太多时间。先谢谢您！'];}else if(scn=='major'){body.cn=['老师您好，我是'+g(m,'同学')+'，目前正在考虑专业/方向的选择。听学长学姐说您在【该方向】上很有见地，心里非常敬重。','想请教您：以我现在的情况（'+dtOr(dt,'我的情况是…')+'），继续在现在方向还是尝试【XX】会更适合？我希望能得到您的中肯建议，若您方便回复或给个当面机会，都感激不尽！'];}else{body.cn=['老师您好，这学期能在您的课堂上学习'+(dt?('【'+dt+'】'):'【课程】')+'，真的收获很多。想借这个机会郑重向您说一声谢谢！','我会把学到的方法用在今后的学习中，遇到问题也希望还能再向您请教。祝老师工作顺利、身体健康！'];}
+  // en summary rough
+  body.en='Subject: [clear short subject]\n\nDear '+g(en||t,'Dr. Smith')+',\n\n[Greeting line depending on scenario]\n\nI am '+(en?('a student in your class'):('your student'))+'... (please fill specifics below)\n\nThank you for your time and consideration. I look forward to your reply.\n\nBest regards,\n'+g(m,'[Your Full Name/ID]');
+  body.subj={cn:'【请教/请假等】…',en:'Inquiry regarding …'};
+  draft=JSON.stringify(body);
+  show();
+});
+function dtOr(dt,fallback){return dt?('（'+dt+'）'):(fallback||'（这里写清具体时间或事项，更显诚意）');}
+function show(){
+  const o=JSON.parse(draft);const paper=document.getElementById('pre');
+  paper.textContent = cur==='cn'? o.cn.join('\n\n') : o.en;
+}
+document.getElementById('b-cn').onclick=function(){cur='cn';document.getElementById('b-cn').classList.add('on');document.getElementById('b-en').classList.remove('on');if(draft)show();};
+document.getElementById('b-en').onclick=function(){cur='en';document.getElementById('b-en').classList.add('on');document.getElementById('b-cn').classList.remove('on');if(draft)show();};
+</script>
+</body>
+</html>

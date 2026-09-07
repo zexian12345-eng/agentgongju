@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 顺风拼车/通勤助手 | AgentGongju.com</title>
+<meta name="description" content="每天上下班往返太贵？根据你的出发到达地、时间与常走路线，一键生成顺风拼车发帖文案、同路人沟通话术与分摊参考价。">
+<meta name="keywords" content="顺风车,拼车通勤,上下班拼车,分摊油费,发帖模板">
+<link rel="stylesheet" href="../css/style.css"><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:760px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:34px}
+.tool-header h1{font-size:2.1rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:24px;margin-bottom:18px}
+label{display:block;color:#cbd5e1;font-weight:600;margin-bottom:6px;font-size:.9rem}
+input,select,textarea{width:100%;box-sizing:border-box;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,.1);border-radius:9px;color:#e2e8f0;font-family:inherit;font-size:.9rem;padding:11px 13px;outline:none;margin-bottom:14px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:#fff;font-weight:700;font-size:1rem;cursor:pointer}
+.result-area{display:none}
+.result-area.show{display:block}
+h4{cursor:pointer;display:flex;justify-content:space-between;align-items:center;color:#e9d5ff;margin:6px 0;font-size:.92rem}
+.blk{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:0 16px;margin-bottom:8px}
+.blk .b{display:none;color:#e8e6ee;line-height:1.9;font-size:.9rem;white-space:pre-wrap;padding-bottom:14px}
+.copy-btn{font-size:.75rem;padding:2px 9px;border:1px solid rgba(99,102,241,.4);border-radius:6px;background:none;color:#a5b4fc;cursor:pointer;font-family:inherit}
+.hint{color:#64748b;font-size:.76rem;margin-top:12px;line-height:1.8}
+@media(max-width:600px){.card{padding:18px}}
+</style>
+<script>
+var _hmt=_hmt||[];(function(){var s=document.createElement('script');s.src='https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949';document.body.appendChild(s);})();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🚗 AI 顺风拼车 / 通勤助手</h1><p>写清路线与时间，发帖文案/分摊价/沟通话术一步到位</p></div>
+<div class="card">
+<label>我是车主 or 想搭车</label>
+<select id="role"><option value="car">我是车主，愿意带人、分摊油费</option><option value="pass">我想搭车顺风出行</option></select>
+<label>出发地</label><input type="text" id="from" placeholder="例：欢乐谷·华侨城 / 福田CBD">
+<label>到达地</label><input type="text" id="to" placeholder="例：南山科技园">
+<label>通勤时间(去程)</label>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px"><select id="dir"><option value="go">早上去程</option><option value="back">晚上返程</option></select><input type="time" id="time" value="08:30"></div>
+<label>大约距离(公里，估算油费)</label>
+<input type="number" id="km" value="20" min="0">
+<label>你的补充(可选，如：隔天到 / 有只安静宠物 / 近地铁口等)</label>
+<input type="text" id="note" placeholder="例：工作日DAY可取，A口出，车况良好">
+<button class="btn-gen" id="gen">🧭 生成拼车方案</button>
+</div>
+<div class="result-area" id="resultArea"><div class="card" id="res"></div>
+<div class="hint">💡 安全提醒：拼车请走正规顺风车平台结算与行程留痕，线下交易需自备风险意识；与陌生人见面尤选白天人多处，核对车牌与车主证照再上车。</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com</p></div></footer>
+<script>
+document.getElementById('gen').addEventListener('click',function(){
+ if(!Paywall.countUse('AI 顺风拼车/通勤助手 | AgentGongju.com'))return;
+ const role=document.getElementById('role').value;
+ const from=(document.getElementById('from').value||'').trim()||'【出发地】';
+ const to=(document.getElementById('to').value||'').trim()||'【到达地】';
+ const dir=document.getElementById('dir').value==='go'?'早上去程':'晚上返程';
+ const time=document.getElementById('time').value||'08:30';
+ const km=parseFloat(document.getElementById('km').value)||0;
+ const note=(document.getElementById('note').value||'').trim();
+ // 参考分摊：按每公里0.5-0.8元估计通行成本 / 顺风参考按单程油价+少量
+ const base=Math.round(km*0.7);
+ const refA=Math.round(km*0.5),refB=Math.round(km*0.9);
+ const box=document.getElementById('res');box.innerHTML='';
+ const mk=(title,body,open)=>{
+  const d=document.createElement('div');d.className='blk';
+  d.innerHTML='<h4><span>'+title+'</span><button class="copy-btn">复制</button></h4><div class="b">'+body.replace(/</g,'&lt;')+'</div>';
+  d.querySelector('h4').onclick=function(ev){if(ev.target.tagName!=='BUTTON')d.querySelector('.b').style.display=d.querySelector('.b').style.display==='block'?'none':'block';};
+  d.querySelector('.copy-btn').onclick=function(){navigator.clipboard.writeText(body);};
+  box.appendChild(d);return d;
+ };
+ if(role==='car'){
+  mk('📣 发帖招聘(发布群/顺风平台可复制)',
+'【'+(note?note:'工作日通勤')+'】\n'+(dir==='早上去程'?'每天 早':'每天 晚')+' '+time+' '+from+' → '+to+'\n车型：'+'【车型，可写SUV/轿车】'+' · 车况 ：干净整洁（车型自己补充）\n可带 1~3 人，'+(note||'时间基本固定，路线可微调就近接送。')+'\n分摊参考：单趟约 ¥'+refA+'~'+refB+(km?'（约'+km+'公里）':'(请按实际油费/高速费再商量)')+'\n坐标：可从就近地铁口一带上车。私我聊～');
+  mk('🤝 与有意者沟通要点', '（初次确认可发这段）\n你好～看到你问'+from+'到'+to+'，我想带个人分摊点油费。\n简单确认：地点在【交接点】上车方便吗？出发时间是早上'+time+'，我一般会准时到。\n安全起见平台走流程即可，我车是【车牌/颜色】，你看可以我们再定。');
+ } else {
+  mk('📣 求搭帖文案','【求搭｜'+dir+'】\n'+from+' → '+to+'\n约早上 '+time+' 出发，'+'【周一~周五】\n人在'+from+'附近，可配合司机时间微调，分摊油费¥'+refA+'/趟('+km+'公里参考)\n有顺路的车主麻烦带带，谢谢！'+'\n'+(note?'补充：'+note:''));
+  mk('🤝 回复车主话术','您好，看到您每天早'+time+'跑'+from+'→'+to+'，时间正好合适！\n我上班点在'+to+'，可以分摊油费，上车地点在【地点】，您方便的话我们平台互约？\n想先确认您那边一般几点到点出发，我好提前等~');
+ }
+ mk('🧮 分摊价参考(私人AA参考值)', km?('约 '+km+' 公里，单趟参考：\n· 纯算油费 ≈ ¥'+refA+'\n· 含车损/高速综合 ≈ ¥'+base+'~'+refB+'\n→ 建议单趟分摊落在 ¥'+refA+'~'+refB+'（走平台另按平台规则）'):'先补上公里数，这里会给你一个按油耗估算的参考区间。');
+ box.querySelector('.blk .b').style.display='block';
+ document.getElementById('resultArea').classList.add('show');
+ document.getElementById('resultArea').scrollIntoView({behavior:'smooth'});
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 吉祥物昵称生成器 | AgentGongju.com</title>
+<meta name="description" content="为品牌、赛事、校园社团、动物IP取一个朗朗上口又可爱的吉祥物昵称，可选动物、行业与风格。">
+<meta name="keywords" content="吉祥物取名,IP昵称,品牌吉祥物,萌宠昵称,形象起名">
+<link rel="stylesheet" href="../css/style.css"><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px;box-sizing:border-box}
+select:focus,input:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.mascot{background:rgba(99,102,241,0.06);border:1px solid rgba(99,102,241,0.2);border-radius:14px;padding:18px 20px;margin-bottom:12px}
+.mascot .nm{font-size:1.6rem;font-weight:800;color:#fff;letter-spacing:1px}
+.mascot .tag{font-size:.78rem;color:#f0abfc;margin:2px 0 6px}
+.mascot .wh{color:#94a3b8;font-size:.83rem;line-height:1.6}
+.copy-btn{padding:8px 18px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.82rem;font-family:inherit;margin-top:8px}
+.copy-btn:hover{background:rgba(99,102,241,0.28)}
+.hint{font-size:.78rem;color:#64748b;line-height:1.7;margin-top:14px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🐻 AI 吉祥物昵称生成器</h1><p>给品牌 / 社团 / 赛事 / 校园 IP 挑个超好记的吉祥物名字</p></div>
+
+<div class="card">
+<label>🐾 吉祥物形象（动物/形象）</label>
+<select id="animal">
+<option value="熊">🐻 熊</option>
+<option value="兔子">🐰 兔兔</option>
+<option value="猫">🐱 猫</option>
+<option value="狗">🐶 狗</option>
+<option value="熊猫">🐼 熊猫</option>
+<option value="龙">🐲 龙</option>
+<option value="虎">🐯 老虎</option>
+<option value="鹿">🦌 鹿</option>
+<option value="狐狸">🦊 狐狸</option>
+<option value="海豚">🐬 海豚</option>
+<option value="熊2">🐼 猛禽/老鹰</option>
+<option value="娃娃">🧸 拟人娃娃</option>
+</select>
+<label>🏷️ 所属行业 / 场景（用于主题贴合）</label>
+<select id="industry">
+<option value="">通用</option>
+<option value="互联网科技">互联网 / 科技</option>
+<option value="教育校园">教育 / 校园</option>
+<option value="体育赛事">体育 / 赛事</option>
+<option value="食品餐饮">食品 / 餐饮</option>
+<option value="旅游文创">旅游 / 文创</option>
+<option value="金融财税">金融 / 财税</option>
+<option value="医疗健康">医疗 / 健康</option>
+<option value="游戏动漫">游戏 / 动漫</option>
+</select>
+<div class="param-row">
+<div><label>🎭 风格</label>
+<select id="style">
+<option value="元气可爱">元气可爱</option>
+<option value="稳重可靠">稳重可靠</option>
+<option value="呆萌好记">呆萌好记</option>
+<option value="国潮高级">国潮高级</option>
+</select></div>
+<div><label>📛 生成数量（3-6个）</label>
+<input type="number" id="num" min="3" max="6" value="5"></div>
+</div>
+<button class="btn-gen" id="genBtn">✨ 生成吉祥物昵称</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div style="color:#22c55e;font-weight:600;margin-bottom:14px">✅ 候选吉祥物昵称（均附一句品牌人格化内涵）：</div>
+<div id="box"></div>
+<div class="hint">💡 命名小贴士：先给吉祥物定“性格”，昵称最好两到四个字、平仄好听、可联想到画面。上桌后记得配套一句Slogan，这里是给到可延展的开口。</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function rf(a){return a[Math.floor(Math.random()*a.length)]}
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+document.getElementById('genBtn').addEventListener('click',()=>{
+  if(!Paywall.countUse('AI 吉祥物昵称生成器 | AgentGongju.com'))return;
+  const a=document.getElementById('animal').value;
+  const ind=document.getElementById('industry').value;
+  const style=document.getElementById('style').value;
+  let n=parseInt(document.getElementById('num').value||5);n=Math.max(3,Math.min(6,n));
+  const pool=build(a,ind,style);
+  const names=shuffle(pool).slice(0,n);
+  const box=document.getElementById('box');box.innerHTML='';
+  names.forEach((it,i)=>{
+    const d=document.createElement('div');d.className='mascot';
+    d.innerHTML=`<div class="nm">${it[0]}</div><div class="tag">${it[1]}</div><div class="wh">${it[2]}</div><button class="copy-btn" onclick="c(this,'${it[0]}')">📋 复制</button>`;
+    box.appendChild(d);
+  });
+  document.getElementById('resultArea').classList.add('active');
+  document.getElementById('resultArea').scrollIntoView({behavior:'smooth'});
+});
+function c(b,t){navigator.clipboard.writeText(t).then(()=>{const o=b.textContent;b.textContent='✓ 已复制';setTimeout(()=>b.textContent=o,1200);});}
+function build(animal,ind,style){
+  // [名字, 标签(形象+风格), 内涵一句话]
+  const B={
+  '熊':[['阿憨','元气可爱','憨厚又好脾气，人人都想给它抱一抱。'],['壮壮','稳重可靠','壮实可靠，像把品牌的安稳都扛在肩上。'],['团团熊','呆萌好记','圆圆一团让人想rua，亲和力满分。'],['北辰','国潮高级','如北国之星，沉稳大气有分量。']],
+  '兔子':[['跳跳','元气可爱','蹦蹦跳跳一见你就开心。'],['软糖','呆萌好记','又甜又软，有它在就很治愈。'],['雪团','元气可爱','白白一团像小雪山，干净温柔。'],['瑶瑶','国潮高级','灵动轻盈，敏捷又有福气。']],
+  '猫':[['阿卷','呆萌好记','爱窝成一小卷，慵懒又治愈。'],['嗨皮','元气可爱','元气十足，走到哪都能嗨起来。'],['灵犀','国潮高级','心有灵犀，默契又机灵。'],['招财团','稳重可靠','招财纳福，靠谱稳当。']],
+  '狗':[['旺财','元气可爱','把福气迎进大门，见人就摇尾巴。'],['铁头','稳重可靠','忠心又坚毅，认定的事一定干成。'],['来福','元气可爱','把福气迎进来，亲热照顾客人。'],['忠勇','稳重可靠','忠诚勇敢的伙伴形象。']],
+  '熊猫':[['糯米团','元气可爱','白白糯糯，憨态可掬人见人爱。'],['圆圆','呆萌好记','圆滚滚的国宝，把地球人萌化。'],['墨宝','国潮高级','黑白衣着如墨，自带东方气韵。'],['滚滚','呆萌好记','爱打滚的快乐担当。']],
+  '龙':[['小龙包','元气可爱','包子脸的酷龙，奶凶又可爱。'],['腾云','国潮高级','腾云驾雾，气势不凡。'],['晓龙','国潮高级','破晓之龙，朝气勃发。'],['阿敖','稳重可靠','翱翔九天，稳得住的担当。']],
+  '虎':[['虎哥','元气可爱','敞亮豪爽，见谁都是哥们儿。'],['威风','稳重可靠','威风凛凛又充满安全感。'],['跃跃','元气可爱','虎虎生威，跃跃欲试。'],['赳赳','国潮高级','雄赳赳气昂昂，中国气派。']],
+  '鹿':[['诺诺','呆萌好记','鹿角软萌小宝宝，听话又温顺。'],['灵鹿','国潮高级','福禄同音，温雅灵动。'],['音音','元气可爱','轻轻松松敲开你心门。'],['瑞鹿','国潮高级','瑞兽临门，吉祥温润。']],
+  '狐狸':[['阿狐','元气可爱','机灵俏皮，点子王。'],['雪黛','国潮高级','白狐黛眉，聪明又雅致。'],['嗖嗖','元气可爱','跑得快主意灵。'],['睿狐','稳重可靠','睿智冷静处变不惊。']],
+  '海豚':[['跃跃','元气可爱','跃出水面，元气满满。'],['波仔','呆萌好记','爱冲浪的蓝色小伙伴。'],['灵波','国潮高级','身姿灵巧，笑声如波。'],['冲浪','呆萌好记','活力与自由的化身。']],
+  '熊2':[['飞羽','国潮高级','翱翔凌厉，目光如炬。'],['闪电','元气可爱','快如闪电，一飞冲天。'],['毅哥','稳重可靠','坚毅果敢，长空霸主。'],['疾风','元气可爱','御风而行，潇洒自信。']],
+  '娃娃':[['小福','元气可爱','把福气慢慢讲给你听。'],['芽芽','元气可爱','元气新芽，代表成长与希望。'],['团子','呆萌好记','圆头圆脑自带喜感。'],['小满','国潮高级','小得盈满，不骄不躁。']]
+  };
+  let list=B[animal]||B['熊'];
+  // 行业附加暗示词
+  const indFix={
+   '': ['', '', '', ''],
+   '互联网科技': ['AI灵感常驻', '科技感拉满', '聪明又靠谱', '数字时代的暖伙伴'],
+   '教育校园': ['象牙塔里的活宝', '学到哪见到哪', '求知小伙伴', '操场上的快乐担当'],
+   '体育赛事': ['运动神经在线', '为冠军打CALL', '热血担当', '荣誉守护者'],
+   '食品餐饮': ['看着就很好吃', '自带好胃口', '餐桌上的开心果', '健康饮食小卫士'],
+   '旅游文创': ['爱旅行的远方客', '带你看世界', '旅途最佳拍档', '把风景装进口袋'],
+   '金融财税': ['严谨又亲民', '帮你管好钱袋', '理财好帮手', '稳稳的幸福'],
+   '医疗健康': ['元气守护者', '健康小卫士', '给人力量催人向上', '温柔告白的贴心人'],
+   '游戏动漫': ['把把超神', '攻略小能手', '开黑气氛组', '次元破壁机']
+  }[ind]||['','','',''];
+  // 附加行业后缀偏好 - 生成
+  const out=[];let idx=0;
+  for(const base of list){ const fix=(indFix&&indFix[idx])?' · 行业人设：'+indFix[idx]:''; out.push([base[0], ind+ ' 吉祥物 · '+(base[0]||''), (base[2]||'')+fix]); idx++; }
+  // 若不足补风格变体
+  const extra=[[''+rf(['宝','豆','果','仔']),'风格变体','好记上口的后缀变体，适合更进一步取舍。']];
+  out.push(...extra);
+  return out.filter(Boolean);
+}
+</script>
+</body>
+</html>

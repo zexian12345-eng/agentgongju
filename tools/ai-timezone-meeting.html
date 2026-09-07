@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 跨时区会议撮合器 | AgentGongju.com</title>
+<meta name="description" content="国内外多地远程团队约开会时间：填每位成员的时区与本地方便时段，自动秒算大家都能接受的整点半点时间。">
+<meta name="keywords" content="时区会议,远程办公,国际通话,会议安排,时差撮合">
+<link rel="stylesheet" href="../css/style.css"><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:880px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,input{width:100%;padding:11px 12px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:9px;color:#e2e8f0;font-size:.87rem;outline:none;font-family:inherit;box-sizing:border-box}
+select:focus,input:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s;margin-top:8px}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.slot{background:rgba(99,102,241,.06);border:1px solid rgba(99,102,241,.25);border-radius:14px;padding:18px;margin-bottom:12px}
+.slot .rank{display:inline-block;background:linear-gradient(135deg,#6366f1,#a855f7);color:#fff;border-radius:7px;padding:2px 10px;font-size:.75rem;font-weight:700;margin-right:8px}
+.slot .when{font-size:1.05rem;font-weight:800;color:#fff}
+.slot .go{color:#cbd5e1;font-size:.85rem;background:rgba(255,255,255,.03);border-radius:8px;padding:8px 12px;margin:8px 0 4px;line-height:1.8}
+.slot .go b{color:#f0abfc}
+.slot .note{color:#94a3b8;font-size:.78rem}
+.hint{font-size:.78rem;color:#64748b;line-height:1.7;margin-top:14px}
+.m-wrap{display:flex;flex-direction:column;gap:8px}
+.m-row{display:grid;grid-template-columns:1.4fr .9fr .7fr .7fr auto;gap:8px;align-items:center}
+.rm{background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.4);color:#fca5a5;width:38px;height:38px;border-radius:9px;cursor:pointer;font-size:1rem;flex:none;line-height:1}
+.m-row select{margin:0}
+.addline{display:block;width:100%;margin:8px 0;padding:9px;background:rgba(99,102,241,.08);border:1px dashed #6366f1;border-radius:9px;color:#a5b4fc;text-align:center;cursor:pointer;font-size:.88rem;font-family:inherit}
+.addline:hover{background:rgba(99,102,241,.16)}
+.host-label{color:#22c55e;font-size:.78rem;margin-top:6px}
+@media(max-width:640px){.m-row{grid-template-columns:1fr 1fr}.rm{width:100%}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🌍 AI 跨时区会议撮合器</h1><p>填每人时区与本地方便时段，自动算出大家都精神的会议时间</p></div>
+
+<div class="card">
+<label>🌏 发起人时区（你我所在时区）</label>
+<select id="hostTz"><option value="8" >中国 (+8)</option><option value="9" >日本/韩国 (+9)</option><option value="-5">美东纽约 (-5)</option><option value="-8">美西 (-8)</option><option value="0">英国伦敦 (0)</option><option value="1">欧洲中部 (+1)</option><option value="10">澳大利亚悉尼 (+10)</option></select>
+<label>⏱️ 会议时长</label>
+<select id="dur"><option value="30">30 分钟</option><option value="60">60 分钟</option></select>
+<label>👥 团队成员（城市＝时区，开始～结束为TA本地的方便时段，小时制0-23）</label>
+<div class="m-wrap" id="members"></div>
+<button class="addline" id="addBtn">＋ 增加一位成员</button>
+<button class="btn-gen" id="genBtn">🧮 撮合会议时间</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 推荐时间（均显示为【发起人时区】的本地时间）</div>
+<div id="box"></div>
+<div id="noneNote" style="color:#f87171;font-size:.9rem;display:none"></div>
+<div class="hint">💡 说明：推荐的是未来 7 天内、所有人在各自上班时段内且不碰到当地深夜(凌晨1-6点)的整点/半点。请你以工具结果加上双方确认邮件为准。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function addRow(){
+  const d=document.createElement('div');d.className='m-row';
+  d.innerHTML=`<select class="tz">
+    <option value="8">🇨🇳 中国 +8</option><option value="9">🇯🇵 日本/韩 +9</option><option value="7">🇹🇭 泰国 +7</option><option value="5.5">🇮🇳 印度 +5.5</option><option value="4">🇦🇪 迪拜 +4</option><option value="1">🇩🇪 欧洲 +1</option><option value="0">🇬🇧 英国 0</option><option value="-3">🇧🇷 巴西 -3</option><option value="-5">🇺🇸 美东 -5</option><option value="-6">🇺🇸 中部 -6</option><option value="-8">🇺🇸 美西 -8</option><option value="10">🇦🇺 悉尼 +10</option><option value="12">🇳🇿 奥克兰 +12</option></select>
+    <input class="st" type="number" min="0" max="23" value="9" title="本地可开始(小时)">
+    <input class="ed" type="number" min="1" max="24" value="18" title="本地可结束(小时)">
+    <span style="color:#64748b;font-size:.7rem">本地时段</span>
+    <button class="rm">✕</button>`;
+  d.querySelector('.rm').onclick=()=>d.remove();
+  document.getElementById('members').appendChild(d);
+}
+document.getElementById('addBtn').onclick=addRow;
+addRow();addRow();addRow();
+const TZNAME={'8':'中国','9':'日本/韩国','7':'泰国','5.5':'印度','4':'迪拜','1':'欧洲+1','0':'英国','-3':'巴西','-5':'美东','-6':'美中','-8':'美西','10':'悉尼','12':'奥克兰'};
+const norm=h=>{h%=24;if(h<0)h+=24;return h;};
+const fmt=h=>{h=norm(h);let hh=Math.floor(h),mm=Math.round((h-hh)*60);mm+=14; // 助凑整
+  if(mm>=60){mm-=60;hh++;}return String(hh).padStart(2,'0')+':'+String(mm).padStart(2,'0');};
+const inWin=(l,s,e)=>{const L=norm(l);let S=s,E=e;if(E<=S)E+=24;let x=L;if(x<S)x+=24;return x>=S&&x<=E;};
+function hostOf(){return parseFloat(document.getElementById('hostTz').value||8);}
+function utcOfHost(hh,tz){return hh-(tz-0);}
+document.getElementById('genBtn').addEventListener('click',()=>{
+  if(!Paywall.countUse('AI 跨时区会议撮合器 | AgentGongju.com'))return;
+  const rows=[...document.querySelectorAll('.m-row')];
+  if(rows.length<1){alert('请至少保留1名成员');return;}
+  const dur=parseInt(document.getElementById('dur').value||30)/60;
+  const host=hostOf();
+  const now=new Date();
+  const today=(new Date(now.getFullYear(),now.getMonth(),now.getDate()).getHours()) - host; // approx
+  let cands=[];
+  for(let dd=1;dd<=7;dd++){
+    const d=now;
+    // host local midnight for dd days later, in hours not exact but index for display only
+    for(let Hh=8;Hh<=19;Hh+=0.5){ // host local start
+      if(dd===1){const hostLocalNow=now.getHours()+now.getMinutes()/60; if(Hh-dur < hostLocalNow) continue;}
+      if(!checkAll(Hh,dur,rows))continue;
+      const score=scoreFor(Hh,rows);
+      cands.push({dd,Hh,score});
+    }
+  }
+  cands.sort((a,b)=>b.score-a.score||a.dd-b.dd);
+  const top=cands.slice(0,5);
+  const box=document.getElementById('box');box.innerHTML='';
+  const nn=document.getElementById('noneNote');
+  if(!top.length){nn.style.display='block';nn.textContent='😢 没找到大家都清醒的交叉时段。建议放宽某位成员时段或减少成员再试。';}else nn.style.display='none';
+  const wd=['日','一','二','三','四','五','六'];
+  box.innerHTML=top.map((c,i)=>{
+    let date=new Date(now);date.setDate(date.getDate()+c.dd);
+    const ys=`${date.getMonth()+1}月${date.getDate()}日`;
+    const lines=rows.map(r=>{const tz=parseFloat(r.querySelector('.tz').value);const lt=norm(c.Hh-(host-tz));return `<b>${TZNAME[tz]||(tz)}</b> ${fmt(lt)}`;}).join('　');
+    const rank=['🥇 最佳','🥈 备选二','🥉 备选三','4️⃣ 备选四','5️⃣ 备选五'][i];
+    return `<div class="slot"><span class="rank">${rank}</span><span class="when">${c.dd<=1?'明天':c.dd+'天后'}（${ys} · 周${wd[date.getDay()]}）  [发起时区] ${fmt(c.Hh)} 开始 · ${fmt(c.Hh+dur)} 结束</span><div class="go">🔔 各地本地时间：${lines}</div><div class="note">参加人数越多想凑齐越难，一般取前2-3个交集最多、时间最舒服的即可。</div></div>`;
+  }).join('');
+  document.getElementById('resultArea').classList.add('active');
+  document.getElementById('resultArea').scrollIntoView({behavior:'smooth'});
+});
+function checkAll(Hh,dur,rows){for(const r of rows){const tz=parseFloat(r.querySelector('.tz').value);const st=parseInt(r.querySelector('.st').value||9);const ed=parseInt(r.querySelector('.ed').value||18);const lt0=(Hh-(hostOf()-tz));const lt1=lt0+dur;if(!inWin(lt0,st,ed)||!inWin(lt1,st,ed))return false;const dw=duskWatch(norm(lt0),norm(lt1));if(dw)return false;}return true;}
+function duskWatch(a,b){let h=a;for(let k=0;k<4;k++){const c=Math.floor(norm(h+0.01));if(c>=1&&c<6)return true;h+=0.25;}return false;}
+function scoreFor(Hh,rows){let s=0;for(const r of rows){const tz=parseFloat(r.querySelector('.tz').value);const l=norm(Hh-(hostOf()-tz));if(l>=9&&l<13)s+=1;if(l>=9&&l<18)s+=2;else if((l>=8&&l<22))s+=1;}return s;}
+</script>
+
+</body>
+</html>

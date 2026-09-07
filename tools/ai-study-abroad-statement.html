@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 留学申请个人陈述(PS)大纲 | AgentGongju.com</title>
+<meta name="description" content="申请英美研究生面试常用的Personal Statement，按问答自动生成有逻辑的四段式大纲与开篇模板，帮你把经历讲成打动招生官的故事。">
+<meta name="keywords" content="留学申请,个人陈述,PS,文书,动机信,材料准备">
+<link rel="stylesheet" href="../css/style.css"><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:36px}
+.tool-header h1{font-size:2.15rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:26px;margin-bottom:20px}
+.card h3{color:#e9d5ff;font-size:.98rem;margin:4px 0 10px}
+input,textarea,select{width:100%;box-sizing:border-box;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;padding:11px 13px;font-family:inherit;font-size:.88rem;outline:none;margin-bottom:14px}
+textarea{min-height:74px;resize:vertical}
+input:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.03rem;font-weight:600;cursor:pointer}
+.btn-gen:hover{box-shadow:0 8px 28px rgba(99,102,241,.3)}
+.result-area{display:none}
+.result-area.show{display:block}
+.sec{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-left:3px solid #6366f1;border-radius:10px;padding:16px 18px;margin-bottom:14px}
+.sec h4{color:#0ff; color:#67e8f9;margin:0 0 8px;font-size:.9rem}
+.sec ul{margin:0;padding-left:18px;line-height:1.9;color:#cbd5e1;font-size:.88rem}
+.hint{color:#64748b;font-size:.78rem;margin-top:14px;line-height:1.8}
+.ki{color:#f0abfc;font-weight:700}
+@media(max-width:600px){.card{padding:20px}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() { var hm=document.createElement("script");hm.src="https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949";var s=document.getElementsByTagName("script")[0];s.parentNode.insertBefore(hm,s);})();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>✍️ 留学申请 · 个人陈述(PS)大纲</h1><p>回答几个问题，AI 帮你把经历串成招生官爱看的故事结构</p></div>
+
+<div class="card">
+<h3>🎓 目标信息</h3>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+<div><input type="text" id="major" placeholder="目标专业(例:计算机科学)"></div>
+<div><input type="text" id="country" placeholder="国家/地区(英美加澳港新等)"></div>
+</div>
+</div>
+
+<div class="card">
+<h3>1. 你的起点 / 最初感兴趣的那一刻</h3>
+<textarea id="whyStart" placeholder="例：高中第一次写代码/参加某社团活动/读了某本书，从此对这个领域产生兴趣…"></textarea>
+<h3>2. 中间做了什么(经历/项目/科研/实习)</h3>
+<textarea id="work" placeholder="例：大学这几年，做过XX项目/在某公司实习负责XX/参与课题组…(请尽量具体，含做了什么+结果)"></textarea>
+<h3>3. 遇到的困难/转折点(可选但加分)</h3>
+<textarea id="setback" placeholder="例：项目失败/被拒/远程协作困难，我是怎么调整与成长的…"></textarea>
+<h3>4. 为什么是这个学校这个专业 / 未来规划</h3>
+<textarea id="whySchool" placeholder="例：目标校在XX方向很强、想深造XX后再回国做XX…"></textarea>
+<button class="btn-gen" id="gen">📝 生成四段式 PS 大纲 + 开篇句</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:700;margin-bottom:4px">✅ 你的 PS 大纲</div>
+<p style="color:#94a3b8;font-size:.8rem;margin-top:6px">把每段括号里的指引替换成你上文的细节再动笔；中文是写作方向，正式文书请写成英文。</p>
+<div id="box"></div>
+<div class="hint">📌 动笔提醒：招生官最反感“空喊热爱没有证据”。请记住 STAR 原则——把<strong style="color:#f0abfc">背景(S)→任务(T)→行动(A)→结果(R)</strong>写具体，数字、对比越清晰越有说服力；全文控制在 500-1000 词（视目标院校要求）。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+document.getElementById('gen').addEventListener('click',function(){
+  if(!window.Paywall||!Paywall.countUse('AI 留学申请个人陈述(PS)大纲 | AgentGongju.com'))return;
+  const g=x=> (document.getElementById(x).value||'').trim();
+  const major=g('major')||'目标专业    ';const cty=g('country')||'目标院校';
+  const a=g('whyStart')||'你在一次具体经历里最初的兴趣点(请补充具体细节 ✍️)';
+  const b=g('work');
+  const c=g('setback')||'(可写一次具体挫折：项目失败/竞标被拒/远程困难)';
+  const d=g('whySchool')||'为什么是它+读完想做什么(例:想深耕XX后回国创业/做研究)';
+  const box=document.getElementById('box');box.innerHTML='';
+  const mk=function(title,color,lines){
+    const s=document.createElement('div');s.className='sec';
+    s.innerHTML='<h4>'+title+'</h4><ul>'+lines.map(l=>'<li>'+l+'</li>').join('')+'</ul>';
+    box.appendChild(s);
+  };
+  mk('第一段 · Hook 为什么是你开篇', '从你对'+major+'产生真实兴趣的那个瞬间讲起', [
+    '<b>黄金开场(选你情况写法)：</b>别写“我从很小就热爱…”(招生官会皱眉)，用一个小场景/画面或一个反常识问题切入，例如：',
+    '✍️ 例：&ldquo;那年我夏令营的一次demo翻车，让我意识到…&rdquo; / &ldquo;图书馆里那本翻旧的书，成了我转专业的原因&rdquo;',
+    '在这段末尾点出：正是这件事让你决定在 ['+major+'] 这个方向走下去 → 呼应你现在的申请专业。超链接用你资料「'+a.replace(/[。；]*$/,'')+'」里的真实场景补全。'
+  ]);
+  mk('第二段 · 我为此做了什么(展示实力)','拿出 1-2 个最有含金量的经历讲透，别贪多', [
+    '从上方你输入的「'+(b?b.slice(0,40):"...你的经历仍为空")+'」里挑一段最能证明"能力+热情"的写成完整段落：',
+    '✍️ 结构示范：我(动词 承担/主导/负责…)【做什么】→ 用了什么方法/工具 → 量化的结果(数字/对比/认可) → 这段经历让我理解到……(与专业方向扣上)',
+    b?'建议把输入内容拆成 行动怎么做 + 结果多亮眼 两句，剩余资料可作为你举证的备用点再单独成句。':'(速去上方第2题把经历写具体，这一段的质感决定整体成败)'
+  ]);
+  mk('第三段 · 挫折/成长/收获(optional 但可加分)', '体现抗挫与自我迭代', [
+    '把你输入中的「'+c+'」写成一个反思段落，注意落点在成长而非卖惨：',
+    '✍️ 例：遇到XX困难 → 我是如何分析原因/调整策略/找合作 → 结果从A变成B → 我意识到(团队沟通/问题拆解/……)是这个领域更底层的东西。'
+  ]);
+  mk('第四段 · 为什么是它 + 未来规划', '结尾要有目标和落地感', [
+    '落到具体的大学 & 项目：紧扣 ['+cty+'] 目标院校在'+major+'的强项+某门课/某教授/某实验室可打动你(建议去官网查1-2个真实点写上)',
+    '未来：毕业后想【继续深造/进某行业/回国创业/做研究】，并说清这段学习为何是必经之路',
+    '✍️ 结尾金句参考：&ldquo;把对'+major+'的passion沉淀成扎实的方法, 是我到[校名]的目的。&rdquo;'
+  ]);
+  document.getElementById('resultArea').classList.add('show');
+  document.getElementById('resultArea').scrollIntoView({behavior:'smooth'});
+});
+</script>
+</body>
+</html>

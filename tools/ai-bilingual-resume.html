@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 英文简历加分句·双语版 | AgentGongju.com</title>
+<meta name="description" content="选岗位方向加经验级别，一键生成可直接套用的中英对照简历加分句、常用关键词与自定亮点句，英文简历不用再憋词。">
+<meta name="keywords" content="英文简历,简历句子,双语简历,加分句,求职,个人陈述">
+<link rel="stylesheet" href="../css/style.css"><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:860px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,input{width:100%;padding:11px 13px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:9px;color:#e2e8f0;font-size:.88rem;outline:none;font-family:inherit;box-sizing:border-box;margin-bottom:12px}
+select:focus,input:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.bullet{display:flex;gap:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:14px 16px;margin-bottom:12px}
+.bm{background:linear-gradient(135deg,#6366f1,#a855f7);color:#fff;border-radius:7px;width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;flex:none;margin-top:2px}
+.en{color:#f0f4ff;font-size:.9rem;line-height:1.7;font-weight:500}
+.cn{color:#94a3b8;font-size:.78rem;line-height:1.7;margin-top:4px}
+.keywords{margin:14px 0 4px}
+.kw{display:inline-block;background:rgba(168,85,247,.12);border:1px solid rgba(168,85,247,.25);color:#e9d5ff;border-radius:20px;padding:3px 13px;font-size:.78rem;margin:3px 4px 3px 0}
+.custom-note{background:rgba(99,102,241,.07);border-left:3px solid #6366f1;padding:12px 16px;border-radius:0 10px 10px 0;margin:12px 0;color:#c7d2fe;font-size:.83rem;line-height:1.7}
+.copy-row{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap}
+.copy-btn{padding:9px 18px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.35);border-radius:9px;color:#a5b4fc;cursor:pointer;font-size:.85rem;font-family:inherit}
+.copy-btn:hover{background:rgba(99,102,241,0.3)}
+.hint{font-size:.78rem;color:#64748b;line-height:1.7;margin-top:14px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>💼 AI 英文简历加分句 · 中英对照</h1><p>选方向选级别 → 一键生成可直接改造的双语经历描述与关键词</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>🎯 岗位方向</label>
+<select id="role">
+<option value="pm">产品经理 PM</option>
+<option value="tech">技术 / 研发</option>
+<option value="data">数据分析 / 算法</option>
+<option value="mkt">市场 / 运营</option>
+<option value="design">设计 UX/UI</option>
+<option value="hrfin">人力 / 财务 / 职能</option>
+</select></div>
+<div><label>📈 经验级别</label>
+<select id="level">
+<option value="jr">初级 / 应届</option>
+<option value="mid">中坚 (3-6年)</option>
+<option value="sr">资深 / 管理</option>
+</select></div>
+</div>
+<label>✨ 你的一个亮点(选填：会插入一条“动词开头+待补结果”的定制句)</label>
+<input type="text" id="custom" placeholder="例：把一个功能从立项做到上线，日活破10万">
+<button class="btn-gen" id="genBtn">🚀 生成加分句清单</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:6px">✅ 你的双语加分句清单</div>
+<p style="color:#64748b;font-size:.8rem;margin:0 0 14px">把句子里的 [可替换词] 换成你的真实数据，直接粘贴进简历 / LinkedIn Profile。</p>
+<div id="box"></div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+(function(){
+const DATA = {
+ pm: { kw:["Product Roadmap","User Research","MVP / PRD","Agile / Scrum","OKR","A/B Testing","Stakeholder Mgmt","SQL for PMs"],
+   jr:[
+    {e:"Collected and synthesized user feedback from [N] interviews to prioritize product improvements.",c:"收集并整合了N次用户访谈，用于排定产品改进优先级。"},
+    {e:"Collaborated with engineering & design to ship [feature] across [platforms] within [X] sprints.",c:"与研发/设计协作，在X个迭代内把功能上线到多个平台。"},
+    {e:"Assisted in writing PRDs and maintained the product backlog for [product line].",c:"协助撰写PRD，并维护某产品线的需求池。"}],
+   mid:[
+    {e:"Owned the roadmap for [product], improving [core metric] by [X]% within [N] quarters.",c:"负责某产品路线图，N个季度内核心指标提升X%。"},
+    {e:"Drove the A/B testing roadmap and iterated [feature] from data, lifting conversion [X]%.",c:"主导A/B测试线并据数据迭代优化功能，转化提升X%。"},
+    {e:"Partnered with product & eng leads to launch [flagship]; reached [X] DAU within [N] months.",c:"与多方配合上线旗舰功能，N个月内日活达到X。"}],
+   sr:[
+    {e:"Set product vision & KPI framework for [business line]; grew [revenue] [X]x and led a team of [N] PMs.",c:"制定业务线愿景与KPI体系，收入增长X倍并带领N人PM团队。"},
+    {e:"Influenced executive strategy with data-driven narratives, shipping [S] major releases a year.",c:"用数据驱动叙事影响高管战略，每年交付S个重大版本。"},
+    {e:"Built a cross-functional growth engine (product/market/eng), delivering [X]% annual growth.",c:"搭建产品-市场-研发增长机制，实现X%年增长。"}]},
+ tech:{kw:["System Design","CI/CD","Microservices","REST / gRPC APIs","Cloud (AWS/Azure)","SQL & NoSQL","Testing","Perf Optimization"],
+   jr:[
+    {e:"Developed and maintained [service] in [language], reducing defects by [X]%.",c:"用某语言开发并维护某服务，缺陷率下降X%。"},
+    {e:"Wrote clean, tested code; lifted unit & integration coverage to [X]%.",c:"写出整洁可测代码，单测与集成测试覆盖率达X%。"},
+    {e:"Fixed [N]+ bugs and improved API p95 latency by [X]% via code & query tuning.",c:"修复N+个bug，通过代码与查询优化使接口p95延迟降X%。"}],
+   mid:[
+    {e:"Designed and shipped [system] handling [X] requests/day at [99.9%] uptime.",c:"设计上线某系统，日处理X请求且可用性99.9%。"},
+    {e:"Led migration to [cloud/microservices], cutting deploy time from [A]h to [B]min.",c:"主导迁云/微服务，把部署时间从A小时降到B分钟。"},
+    {e:"Championed code review & engineering standards, reducing incidents by [X]%.",c:"推动评审与工程规范，生产事故下降X%。"}],
+   sr:[
+    {e:"Architected a high-availability platform supporting [X]M MAU at sub-second p95.",c:"主导架构高可用平台，支撑X百万月活与亚秒级p95。"},
+    {e:"Grew the team from [A] to [B]; defined tech roadmap and mentored [N] engineers.",c:"团队从A扩展到B人，制定技术路线并带教N名工程师。"},
+    {e:"Drove cost optimization, lowering cloud spend [X]% under [Y]x traffic growth.",c:"在流量Y倍增长下，推动云成本下降X%。"}]},
+ data:{kw:["SQL","Python / Pandas","Statistics","A/B Testing","Tableau / PowerBI","ETL","ML models","Dashboarding"],
+   jr:[
+    {e:"Cleaned & queried large datasets in SQL, powering [N] weekly business reports.",c:"用SQL清洗查询海量数据，支撑N份周报。"},
+    {e:"Built KPI dashboards in [BI tool] now used by [X]+ stakeholders.",c:"用BI工具搭建KPI看板，被X+相关方日常使用。"},
+    {e:"Assisted in A/B analytics that informed the [feature] product decision.",c:"参与A/B分析，用数据支持某功能决策。"}],
+   mid:[
+    {e:"Built a predictive [model] that improved [metric] accuracy by [X]%.",c:"搭建预测模型，使某指标准确率提升X%。"},
+    {e:"Launched an experimentation platform enabling [N] parallel rigorous tests.",c:"上线实验平台，支持N个并行且严谨的测试。"},
+    {e:"Turned unstructured logs into insights that guided a [X]% business gain.",c:"把非结构化日志变成洞察，助力X%业务增长。"}],
+   sr:[
+    {e:"Designed a company-wide metrics framework unified across [N] squads.",c:"设计跨N个团队、统一口径的指标体系。"},
+    {e:"Led the DS team delivering [ML products]; realized [X]M annual impact.",c:"带领数据团队交付ML产品，年价值X百万。"},
+    {e:"Partnered with execs on data strategy and mentored [N] analysts to senior.",c:"与高管共建数据战略，培养N名分析师至资深。"}]},
+ mkt:{kw:["User Acquisition","SEM / SEO","Content & Social","CRM / Retention","Email lifecycle","Funnel Optimization","Brand Voice"],
+   jr:[
+    {e:"Managed the [platform] content calendar, growing followers [X]% in [N] months.",c:"运营某平台内容排期，N个月粉丝增长X%。"},
+    {e:"Executed an SEO keyword plan that lifted organic traffic [X]%.",c:"执行SEO关键词计划，自然流量提升X%。"},
+    {e:"Prepared campaign assets & weekly reports for [channel] launches.",c:"为渠道活动准备素材并输出周报。"}],
+   mid:[
+    {e:"Owned paid acquisition on [channel]; cut CAC [X]% while scaling spend [Y]x.",c:"负责某渠道付费投放，获客成本降X%并放量Y倍。"},
+    {e:"Launched an integrated campaign lifting qualified leads [X]% at measurable ROI.",c:"上线整合活动，有效线索提X%且ROI可衡量。"},
+    {e:"Built the email/CRM life-cycle raising activation and retention [X]% & [Y]%.",c:"搭CRM/邮件生命周期，促活与留存分别升X%和Y%。"}],
+   sr:[
+    {e:"Led full-funnel growth for [brand], scaling revenue [X]x at stable CAC.",c:"负责某品牌全漏斗增长，收入X倍且获客成本稳。"},
+    {e:"Built & scaled international market entry taking [X]% share in year one.",c:"搭建海外市场并规模扩展，首年拿下X%份额。"},
+    {e:"Owned brand & channel strategy with a [X]M annual marketing budget.",c:"主管品牌与渠道战略，管理X百万年预算。"}]},
+ design:{kw:["Figma / Sketch","Design Systems","User Research","Prototyping","Usability Testing","WCAG","Interaction Design"],
+   jr:[
+    {e:"Created wireframes & hi-fi mockups in [Figma] aligned to brand guidelines.",c:"用Figma做某功能线框与高保真稿并贴合品牌规范。"},
+    {e:"Ran usability tests with [N] users and turned insights into design iterations.",c:"组织N名用户做可用性测试并把洞察落到迭代。"},
+    {e:"Contributed components now reused across [X]+ projects.",c:"沉淀组件被X+个项目复用。"}],
+   mid:[
+    {e:"Designed end-to-end UX for [product], lifting task success rate [X]%.",c:"负责完整UX链路，任务成功率提升X%。"},
+    {e:"Led usability research cycles cutting reported friction by [X]%.",c:"主导可用性研究循环，用户反馈障碍减少X%。"},
+    {e:"Built & scaled a design system accelerating delivery [X]%.",c:"建立并扩展设计系统，交付速度提升X%。"}],
+   sr:[
+    {e:"Set the UX vision & design language across [line], raising CSAT to [X]/10.",c:"确立交互愿景与设计语言，满意度升至X分。"},
+    {e:"Led a [N]-person design team and built process tripling design throughput.",c:"带N人设计团队建流程，产出提升3倍。"},
+    {e:"Embedded accessibility (WCAG AA) standards across all products.",c:"把无障碍WCAG AA标准落地到全产品。"}]},
+ hrfin:{kw:["HRIS / ATS","Payroll & Compliance","Recruiting pipeline","Finance reporting","Vendor mgmt","Onboarding","Budgeting","SOP"],
+   jr:[
+    {e:"Screened & coordinated interviews for [N] roles, shortening time-to-hire by [X] days.",c:"负责N个岗位筛选与面试协调，招聘周期缩短X天。"},
+    {e:"Maintained accurate [payroll / finance / inventory] records at [99.9%] accuracy.",c:"高准确率维护账目/档案数据。"},
+    {e:"Coordinated onboarding for new hires, boosting their first-month engagement.",c:"统筹新人入职，提升首月融入度。"}],
+   mid:[
+    {e:"Streamlined [recruiting / expense] workflows, cutting processing time [X]%.",c:"优化流程，使处理时间下降X%。"},
+    {e:"Managed [compensation / vendor] processes, saving [X]% while protecting SLAs.",c:"管理薪酬/供应商事务，省X%成本并守住服务水准。"},
+    {e:"Built an onboarding & training program reducing early turnover [X]%.",c:"搭建入职培训体系，使早期离职率下降X%。"}],
+   sr:[
+    {e:"Spearheaded people strategy aligned to [X]% company growth targets.",c:"牵头人力战略，对齐X%增长目标。"},
+    {e:"Drove finance/ops digitization automating [N] manual workflows (saved [X] FTE-hours).",c:"推动财务/运营数字化，自动化N条流程省X人时。"},
+    {e:"Advised leadership on org design & comp while scaling to [X] employees.",c:"随公司扩张至X人，提供组织与薪酬战略建议。"}]}
+};
+function bullet(role, lvl, custom){
+  const cur=DATA[role];
+  let arr= (lvl==='sr')?cur.sr:(lvl==='mid'?cur.mid:cur.jr);
+  let out=[];
+  arr.forEach(it=>out.push(it));
+  if(custom){
+    const shapes={
+      pm:["Directed the product for ",],
+      tech:["Developed and shipped ",],
+      data:["Analyzed data around ",],
+      mkt:["Grew traction via ",],
+      design:["Designed the journey for ",],
+      hrfin:["Set up the process for ",]
+    };
+    const verb=(shapes[role]&&shapes[role][0])||"Owned ";
+    out.unshift({e:verb+custom+". Please replace with your own English wording and add a [quantified result].",c:"这是根据你的亮点生成的一句话开头（参考引入语）。建议用一个动词开头，讲清你做了什么，并把[custom]再补成更精炼的英文 + 可量化结果，不要直译中文。"});
+  }
+  return {items:out,kw:cur.kw};
+}
+window.runs=function(){
+  const role=document.getElementById("role").value;
+  const lvl=document.getElementById("level").value;
+  const cus=document.getElementById("custom").value.trim();
+  const r=bullet(role,lvl,cus);
+  const box=document.getElementById("box");box.innerHTML="";
+  r.items.forEach(function(it,i){
+    const d=document.createElement("div");d.className="bullet";
+    const en=document.createElement("div");en.className="en";en.textContent="• "+it.e;
+    const cn=document.createElement("div");cn.className="cn";cn.textContent="中文参考： "+it.c;
+    const bm=document.createElement("div");bm.className="bm";bm.textContent=i+1;
+    const wrap=document.createElement("div");wrap.style.flex="1";wrap.appendChild(en);wrap.appendChild(cn);
+    d.appendChild(bm);d.appendChild(wrap);box.appendChild(d);
+  });
+  const kd=document.createElement("div");kd.className="keywords";
+  r.kw.forEach(function(k){var s=document.createElement("span");s.className="kw";s.textContent=k;kd.appendChild(s);});
+  box.appendChild(kd);
+  const note=document.createElement("div");note.className="custom-note";note.textContent="Job Keywords：上面的标签可作为英文简历、领英Profile的软技能词云。点下方可整份复制。";
+  box.appendChild(note);
+  document.getElementById("resultArea").classList.add("active");
+  document.getElementById("resultArea").scrollIntoView({behavior:"smooth"});
+};
+document.getElementById("genBtn").addEventListener("click",function(){
+  if(!Paywall.countUse("AI 英文简历加分句·双语版 | AgentGongju.com"))return;
+  window.runs();
+});
+function cpAll(){
+  var t="";document.querySelectorAll("#box .bullet").forEach(function(b){t+="• "+b.querySelector(".en").textContent.replace(/^• /,"")+"\n  "+b.querySelector(".cn").textContent+"\n";});
+  navigator.clipboard.writeText(t).then(function(){alert("✅ 已复制全部双语内容");}).catch(function(){alert("复制失败，请手动选择复制");});
+}
+function cpEn(){
+  var t="";document.querySelectorAll("#box .bullet").forEach(function(b){t+="• "+b.querySelector(".en").textContent.replace(/^• /,"")+"\n";});
+  navigator.clipboard.writeText(t).then(function(){alert("✅ 已复制全部英文句");}).catch(function(){alert("复制失败");});
+}
+})();
+</script>
+</body>
+</html>

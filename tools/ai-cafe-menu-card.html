@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 饮品店菜单文案设计 | AgentGongju.com</title>
+<meta name="description" content="一键为奶茶咖啡甜品店生成主推款、命名带卖点与定价建议的菜单文案，新手开店也能摆出会说话的点单板。">
+<meta name="keywords" content="奶茶店菜单,咖啡菜单,菜单文案,开店,饮品命名,价格">
+<link rel="stylesheet" href="../css/style.css"><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px;box-sizing:border-box}
+select:focus,input:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.mk{background:rgba(99,102,241,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:18px 20px;margin-bottom:14px}
+.mk .hdr{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;margin-bottom:8px;border-bottom:1px dashed rgba(255,255,255,.12);padding-bottom:8px}
+.mk .cat{color:#c4b5fd;font-weight:700;font-size:.95rem}
+.mk .item{display:flex;justify-content:space-between;gap:8px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.mk .inm{color:#e2e8f0;font-weight:600}
+.mk .idea{color:#94a3b8;font-size:.78rem;line-height:1.5;padding:2px 0 6px;width:100%}
+.mk .price{color:#a855f7;font-weight:700;white-space:nowrap}
+.copy-btn{padding:8px 18px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem;font-family:inherit;margin-top:6px}
+.copy-btn:hover{background:rgba(99,102,241,0.28)}
+.hint{font-size:.78rem;color:#64748b;line-height:1.7;margin-top:16px;background:rgba(255,255,255,0.02);border-radius:10px;padding:10px 14px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🥤 AI 饮品店菜单文案设计</h1><p>给主推款起名字、配卖点、给定价建议，让点单板自己会说话</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>🏪 店铺类型</label>
+<select id="type">
+<option value="奶茶">奶茶</option>
+<option value="咖啡">咖啡</option>
+<option value="果茶">果茶 / 鲜榨</option>
+<option value="甜品">甜品 / 烘焙</option>
+</select></div>
+<div><label>📍 客单价定位（城市/商圈）</label>
+<select id="price">
+<option value="社区平价">社区平价（10-18元）</option>
+<option value="商圈主流">商圈主流（15-25元）</option>
+<option value="精致小资">精致小资（25-40元）</option>
+</select></div>
+</div>
+<label>🌸 店铺名 / 品牌调性（选填，会写进文案里）</label>
+<input type="text" id="brand" placeholder="例：山茶花开，走清新治愈风">
+<button class="btn-gen" id="genBtn">🧋 生成菜单文案</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:6px">✅ 菜单建议（可整段复制去排版）</div>
+<p style="color:#64748b;font-size:.78rem;margin:0 0 14px">价格只作参考锚点，请结合你食材成本与商圈再微调30%；主推款记得放视觉C位。</p>
+<div id="box"></div>
+<button class="copy-btn" onclick="copyMenu()">📋 复制整份菜单文案</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function rf(a){return a[Math.floor(Math.random()*a.length)]}
+function sh(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+let lastMenu='';
+const PRICE={
+ '社区平价':[8,10,12,13,15,18],
+ '商圈主流':[13,15,16,18,20,22,24],
+ '精致小资':[22,26,28,30,32,36,40]
+};
+// signature 品类主推： (名称关键结构)
+function genSet(type,price,brand){
+  const P=PRICE[price];
+  let sig=[],cats=[];
+  if(type==='奶茶'){
+    sig=[['招牌·厚乳脏脏乌龙','¥'+(P[2]+2),'黑糖挂壁，三重好料，甜而不腻。'],['生椰丝绒拿铁·轻负担','¥'+(P[0]+2),'换低卡生椰乳，清爽到能连喝两杯。']];
+    cats=[['经典奶茶','波霸珍珠奶茶','鲜煮红茶重逢低卡奶','¥'+P[1]],['港式冻柠奶','手打柠檬撞炼乳','¥'+(P[0])],['茉莉小圆满','茉莉奶绿+脆啵啵','¥'+(P[1])]];
+  }else if(type==='咖啡'){
+    sig=[['招牌·山茶花 Dirty','¥26','浓郁与惊喜层层递进，新品主推。'],['冷萃·葡萄气泡美式','¥24','小众冷门，点单率却偷偷上升。']];
+    cats=[['浓郁经典','澳白 Flat White','双份浓缩 x 丝滑奶泡','¥28'],['冰美式/冷萃','冷萃冰美','16h 慢萃，苦冽回甘','¥20'],['人气常青','海盐焦糖拿铁','海盐微咸，甜而不齁','¥26']];
+  }else if(type==='果茶'){
+    sig=[['招牌·凤梨百香满贯','¥'+(P[3]),'满杯真果肉，看得见的实在。'],['葡萄冻冻 · 0糖','¥'+(P[2]),'使用当季巨峰，清爽轻负担。']];
+    cats=[['现摇果茶','鲜橙柠檬茶','现切整橙 + 整颗香水柠檬','¥'+(P[1])],['清香路线','青提茉莉','绿茶底配当季青提','¥'+(P[2])],['厚料满足','芒果甘露','西柚西米双加料','¥'+(P[2]+1)]];
+  }else{
+    sig=[['招牌·巴斯克熔岩','¥'+(P[3]),'流心一戳即化，桌桌必点。'],['国王的焦糖布丁','¥'+(P[1]),'烤箱边最温柔的一抹焦香。']];
+    cats=[['法甜经典','烤可露丽','壳脆芯软，蜂蜡香','¥18'],['黄油浪漫','现烤可颂·黄油香','酥到掉渣','¥14'],['意式经典','手工提拉米苏','马斯卡彭现做','¥28']];
+  }
+  const fmtItem=(it,withIdea)=>{let s='';s+='<div class="item"><span class="inm">'+it[1]+'</span><span class="price">'+it[3]+'</span></div>';if(it[2])s+='<div class="idea">'+it[2]+'</div>';return s;};
+  let out='';
+  out+='<div class="mk"><div class="hdr"><span class="cat">✦ 主推款 SIGNATURE</span><span style="color:#22c55e;font-size:.75rem">建议放点单板C位 / 配大图</span></div>';
+  sig.forEach(s=>{out+='<div><div class="item"><span class="inm">'+s[0]+'</span><span class="price">'+s[1]+'</span></div><div class="idea">推荐语：'+s[2]+'</div></div>';});
+  out+='</div>';
+  cats.forEach(c=>{out+='<div class="mk"><div class="hdr"><span class="cat">· '+c[0]+'</span></div><div class="item"><span class="inm">'+c[1]+'</span><span class="price">'+(c[3]||('¥'+P[1]))+'</span></div>'+(c[2]?'<div class="idea">'+c[2]+'</div>':'')+'</div>';});
+  return out;
+}
+document.getElementById('genBtn').addEventListener('click',()=>{
+  if(!Paywall.countUse('AI 饮品店菜单文案设计 | AgentGongju.com'))return;
+  const type=document.getElementById('type').value;
+  const price=document.getElementById('price').value;
+  const brand=document.getElementById('brand').value.trim();
+  const box=document.getElementById('box');box.innerHTML='';
+  box.innerHTML=genSet(type,price,brand);
+  lastMenu=box.innerText;
+  if(brand)box.insertAdjacentHTML('beforeend',`<div class="mk"><div class="hdr"><span class="cat">· 一句话品牌调性(放菜单首页/外卖简介)</span></div><div class="idea">「${brand}」，我们${{'奶茶':'只做让心情变甜的那一杯','咖啡':'认真萃取城市里每一刻的清醒','果茶':'把整季水果的新鲜装进这一杯','甜品':'用甜治愈每一个忙碌的下午'}[type]}</div></div>`);
+  document.getElementById('resultArea').classList.add('active');
+  document.getElementById('resultArea').scrollIntoView({behavior:'smooth'});
+});
+function copyMenu(){if(!lastMenu){alert('还没有内容');return;}navigator.clipboard.writeText(lastMenu).then(()=>alert('✅ 已复制整份菜单文案')).catch(()=>alert('复制失败，请手动全选复制'));}
+</script>
+</body>
+</html>
