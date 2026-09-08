@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>人民币金额大写转换 | AgentGongju.com</title>
+<meta name="description" content="财务报销常用小工具：输入阿拉伯数字金额，一键转换为人民币大写（壹贰叁…），支持元角分与小数，自动识别合法金额。">
+<meta name="keywords" content="人民币大写,金额大写转换,财务报销,票据大写,数字转大写,欠条大写,报销单">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+input[type=text],select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:1rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.btn-eg{width:100%;padding:10px;margin-top:8px;background:rgba(255,255,255,0.05);border:1px dashed rgba(148,163,184,0.4);border-radius:10px;color:#94a3b8;font-size:.9rem;cursor:pointer}
+.btn-eg:hover{border-color:#6366f1;color:#a5b4fc}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{color:#94a3b8;font-size:.85rem;margin-bottom:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() { var hm = document.createElement("script"); hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949"; var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(hm, s); })();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>💴 人民币金额大写转换</h1><p>报销、打欠条、开发票前——把数字翻译成"正规大写"</p></div>
+
+<div class="card">
+<label>💰 输入金额（数字）</label>
+<input type="text" id="num" placeholder="例如：3867.50">
+<button class="btn-gen" id="genBtn">🔢 转换为大写</button>
+<button class="btn-eg" id="egBtn">🎲 随机示例金额试试</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 大写转换结果</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制大写金额</button>
+<div class="tip" style="margin-top:12px">💡 财务规范：整数金额需写好"整/正"，大小写必须一致否则可能被退票拒收。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const CN=['零','壹','贰','叁','肆','伍','陆','柒','捌','玖'];
+const U=['','拾','佰','仟'];
+const UNIT=['','万','亿','万亿'];
+// 把 4 位段转成中文（忽略前导零，段内零只补一次）
+function segToCn(seg){
+  if(seg===0)return '';
+  const s=('0000'+seg).slice(-4);
+  let out='',seen=false,pending=false;
+  for(let i=0;i<4;i++){
+    const d=+s[i];
+    if(d===0){ pending=seen; }
+    else{
+      if(pending)out+='零';
+      pending=false;
+      out+=CN[d]+U[3-i];
+      seen=true;
+    }
+  }
+  return out;
+}
+function intToCn(n){
+  if(n===0)return '零';
+  const chunks=[];let v=n;
+  while(v>0){chunks.push(v%10000);v=Math.floor(v/10000);}
+  let out='',needZero=false;
+  for(let gi=chunks.length-1;gi>=0;gi--){
+    const seg=chunks[gi];
+    if(seg===0){ if(out!=='')needZero=true; continue; }
+    const inner=segToCn(seg);
+    if(needZero){ out+='零'; needZero=false; }
+    else if(out!==''&&seg<1000){ out+='零'; }
+    out+=inner+UNIT[gi];
+  }
+  return out;
+}
+document.getElementById('egBtn').addEventListener('click',()=>{
+  const r=()=>[0,1,2,3,20,90][Math.floor(Math.random()*6)];
+  const amt=(Math.floor(Math.random()*900000)+100)+'.'+r()+r();
+  document.getElementById('num').value=amt;
+});
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('人民币金额大写转换 | AgentGongju.com'))return;
+const raw=document.getElementById('num').value.trim().replace(/,/g,'');
+if(!raw){alert('请先输入金额');return;}
+if(!/^\d+(\.\d{1,2})?$/.test(raw)){alert('请输入正确金额，最多两位小数：如 3867.50');return;}
+const parts=raw.split('.');
+const yi=intToCn(parseInt(parts[0],10));
+const f=parts.length>1?parts[1]:'';
+const j= f?parseInt((f+'0').slice(0,2)[0]||'0',10):0;
+const s= f?parseInt((f+'0').slice(0,2)[1]||'0',10):0;
+let head, tail;
+if(parts.length===1||f===''){
+  // 纯整数输入：无小数
+  head= yi==='零' ? '人民币零元' : '人民币'+yi+'元';
+  tail='整';
+}else if(j===0&&s===0){
+  // 小数全为 0（如 100.00 或 .00）
+  head= yi==='零' ? '人民币零元' : '人民币'+yi+'元';
+  tail='整';
+}else{
+  head= yi==='零' ? '人民币' : '人民币'+yi+'元';
+  if(j>0&&s>0){ tail=CN[j]+'角'+CN[s]+'分'; }
+  else if(j>0){ tail=CN[j]+'角'; }
+  else { tail=(yi==='零'?'':'零')+CN[s]+'分'; }
+}
+const up=head+tail;
+document.getElementById('outputBox').innerText='大写金额：\n'+up;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

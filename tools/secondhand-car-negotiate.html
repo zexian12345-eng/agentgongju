@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI二手车选购与砍价 | AgentGongju.com</title>
+<meta name="description" content="想买二手车不被套路？输入预算与需求，输出看车检查清单、砍价策略节点与防坑话术，帮你避开事故车、泡水车，省下冤枉钱。">
+<meta name="keywords" content="二手车,砍价话术,二手车选购,检查清单,二手车避坑,瓜子二手车,买二手车">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:60px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{color:#94a3b8;font-size:.85rem;margin-bottom:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() { var hm = document.createElement("script"); hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949"; var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(hm, s); })();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🚗 AI 二手车选购 & 砍价助手</h1><p>看车前带着清单，谈价时握着底线——别当韭菜</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>💰 购车预算（万元）</label><input type="text" id="budget" placeholder="例如：12"></div>
+<div><label>🎯 首要需求</label>
+<select id="need"><option value="家用">👨‍👩‍👧 家用省心</option><option value="代步">🚦 代步便宜</option><option value="操控">🏁 有点操控/喜欢开</option><option value="商务">💼 商务有面子</option></select></div>
+</div>
+<div class="param-row">
+<div><label>⛽ 能源类型偏好</label>
+<select id="energy"><option value="油">⛽ 燃油</option><option value="混动">🔋 混动/插混</option><option value="电">⚡ 纯电</option><option value="都行">🤔 都行</option></select></div>
+<div><label>🧾 二手车来源</label>
+<select id="src"><option value="平台">🏢 平台/车商</option><option value="个人">👤 个人一手</option><option value="门店">🏬 品牌认证/门店</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">🚗 生成买车攻略</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 你的二手车功课包</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制攻略</button>
+<div class="tip" style="margin-top:12px">💡 最稳妥：先花一两百做一次第三方全车检测（记录里程/事故/泡水），比省下的砍价额度值多了。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const NEED={
+'家用':['看空间：后排坐人不顶头、后备箱够放婴儿车','看三大件口碑与维修保养成本，别追"小众帅车"','重点检查空调、座椅、车门密封等日常体感项目'],
+'代步':['优先车龄短、里程适中的通勤小车，油耗/电耗越低越好','别为面子加钱，兜里留5000做第一年保养罚款准备金','查网点密集度，维修别跑太远'],
+'操控':['试驾感受方向、底盘、换挡，别只看数据','看原厂保养记录，涡轮增压车更要查烧机油历史','找懂车的朋友坐副驾听怠速与发动机'],
+'商务':['看车况成色与内饰整洁度，接待不掉面子','查车史(调表/抵押/过户次数),过户越少越干净','优先带品牌认证质保，转手时好出手']
+};
+const CHECK=['车架号(VIN)与行驶证一致性（出生证明）','漆面：用漆膜仪看是否大面积重喷','看螺丝是否拧动、拼接缝是否均匀（侧撞痕迹）','发动机舱：听怠速、看漏油、查电瓶','看座椅滑轨、安全带是否有泡水/锈迹（泡水车铁律）','试刹车、原地打死方向听异响','打开全部空调/天窗/车窗，检查电子件','查第三方报告(出险记录/维保)，调表多出现在事故后','试跑高速感受抖动、方向跑偏','过户次数与抵押状态(用App查询一手明细)'];
+const TALK={
+'开局':'开场别激动表露"非它不可"，先报一个低于预算8-10%的心理价，留还价空间。',
+'抓痛点':'"这台${E}虽然不错，但${P}有磕碰/里程偏高，补漆+换件也是钱啊。"（拿已发现的毛病压价，别无中生有）',
+'对比压价':'"同款车之家上挂X万，隔壁还有台XX版比你便宜两千。"（提前查好同型车行情引用）',
+'谈附加':'"若你能包一次小保养+满箱油+过户费，我就可以定。"（用附加服务换总价）',
+'收尾':'"今天能给到这个价我马上签，不然我回去再想想。"（制造节点，别无限纠缠让卖家以为你非买不可）'
+};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI二手车选购与砍价 | AgentGongju.com'))return;
+const budget=document.getElementById('budget').value.trim()||'预算待填';
+const need=document.getElementById('need').value,energy=document.getElementById('energy').value,src=document.getElementById('src').value;
+const N=NEED[need];
+let out=`🚗 二手车选购 & 砍价功课（预算约 ${budget} 万）\n\n`;
+out+=`🎯 需求：${({'家用':'家用省心','代步':'代步便宜','操控':'操控乐趣','商务':'商务形象'})[need]} ｜ 能源：${energy==='油'?'燃油':energy==='混动'?'混动/插混':energy==='电'?'纯电':'油电都行'} ｜ 来源：${({'平台':'平台/车商','个人':'个人一手','门店':'品牌认证'})[src]}\n\n`;
+out+=`━━ 看车检查清单（上车前过一遍） ━━\n${CHECK.map(c=>'☑ '+c).join('\n')}\n`;
+out+=`\n━━ 「${({'家用':'家用省心','代步':'代步','操控':'操控','商务':'商务'})[need]}」挑选重点 ━━\n${N.map(n=>'· '+n).join('\n')}\n`;
+out+=`\n━━ 砍价策略节点 ━━\n${Object.values(TALK).map((t,i)=>'STEP '+(i+1)+'. '+t).join('\n')}\n`;
+out+='\n━━ 付款防坑 ━━\n· 切勿全款转账给个人私下账户，走平台或门店对公，留合同；\n· 提车先过户+拿齐钥匙/备用钥匙/保养手册；\n· 合同写清"无重大事故/无水泡/无火烧"，作为索赔依据。\n\n【功课做足，钱包少亏 🚗】';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

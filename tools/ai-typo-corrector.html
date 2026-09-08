@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI文案错别字修正 | AgentGongju.com</title>
+<meta name="description" content="一键检查中文文案中的常见错别字、易混词与病句提示，适合公众号、简历、作业、周报里的文字把关，让表达更严谨。">
+<meta name="keywords" content="错别字检查,病句修改,中文校对,文案纠错,文字检查,易混词,书面表达">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:180px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{color:#94a3b8;font-size:.85rem;margin-bottom:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() { var hm = document.createElement("script"); hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949"; var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(hm, s); })();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>✍️ AI 文案错别字修正</h1><p>发布之前先掂量一遍——错别字是专业感的隐形杀手</p></div>
+
+<div class="card">
+<label>📝 粘贴你的文案（公众号/简历/周报/作业……）</label>
+<textarea id="text" placeholder="例如：今天做了份报告，重点是和大部门协做，我已经把最终数据发布在钉钉群了，待大加查阅。"></textarea>
+<div style="margin-bottom:10px;color:#94a3b8;font-size:.85rem">检查范围：常见错别字 · 易混用词 · 表达润色提示</div>
+<button class="btn-gen" id="genBtn">🔍 检查错别字</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 检查结果</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制修正建议</button>
+<div class="tip" style="margin-top:12px">💡 内置常见易错词库比对结果供作甄别提示，重要文本建议再通读确认一遍语境。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const PAIRS={'映像':'印象','至使':'致使','按装':'安装','防碍':'妨碍','佩带':'佩戴','既使':'即使','松驰':'松弛','精萃':'精粹','决对':'绝对','做为':'作为','寒喧':'寒暄','装璜':'装潢','题纲':'提纲','以经':'已经','座标':'坐标','加据':'加剧','历害':'厉害','渲泄':'宣泄','竟争':'竞争','布署':'部署','急燥':'急躁','烦燥':'烦躁','家俱':'家具','协做':'协作','大加':'大家','三翻五次':'三番五次','人情事故':'人情世故','一愁莫展':'一筹莫展','不泄':'不懈','前题':'前提','免强':'勉强','篷勃':'蓬勃','明片':'名片'};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI文案错别字修正 | AgentGongju.com'))return;
+const raw=document.getElementById('text').value;
+if(!raw.trim()){alert('请先粘贴一段文案');return;}
+let found=[];
+const keys=Object.keys(PAIRS).sort((a,b)=>b.length-a.length);
+for(const err of keys){
+  const re=new RegExp(err.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'g');
+  if(re.test(raw))found.push({err,good:PAIRS[err]});
+}
+let out=`✍️ 文案错别字检查结果\n\n`;
+out+=`📄 原文共 ${raw.replace(/\s/g,'').length} 字\n\n`;
+if(found.length){
+  out+='━━ 疑似错别字 / 易混词 ━━\n';
+  found.forEach((f,i)=>{ out+=`${i+1}. 「${f.err}」→ 建议改用「${f.good}」\n`; });
+  out+='\n说明：以上由内置常见易错词库比对得出，请结合上下文确认后再替换。\n';
+}else{
+  out+='🎉 未命中内置易错词库中的明显错别字。\n\n· 仍建议人工检查标点是否成对、语病与专有名词；\n· 可再复核一遍"的 / 地 / 得"的用法是否规范。\n';
+}
+out+='\n━━ 表达润色提醒 ━━\n· 数字与单位之间留空格更清爽（如"3 家公司"）；\n· 书名、专名正确使用《》与成对的中文引号“”‘’；\n· "进行""我们""非常"等虚词滥用会让句子发闷，读出声删繁就简。\n\n【好文字值得再读一遍 ✍️】';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

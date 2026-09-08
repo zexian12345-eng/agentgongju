@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI工位书桌布置规划 | AgentGongju.com</title>
+<meta name="description" content="输入桌面尺寸、办公类型与常见困扰，输出符合人体工学的分区布置、桌面收纳思路与添置建议，打造高效又不乱的书桌/工位。">
+<meta name="keywords" content="工位布置,桌面整理,书桌收纳,人体工学,办公室桌椅,桌面分区,高效办公">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:60px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{color:#94a3b8;font-size:.85rem;margin-bottom:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() { var hm = document.createElement("script"); hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949"; var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(hm, s); })();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🖥 AI 工位 / 书桌布置规划</h1><p>把桌面分成几个区，效率自然就上来了</p></div>
+
+<div class="card">
+<label>📏 桌面大小（可简选）</label>
+<select id="size"><option value="小">🪑 小桌面 / 工位隔断（<1米）</option><option value="中" selected>🖥 标准工位 1米左右</option><option value="大">🛋 大书桌 / 独立书房（1.4米+）</option></select>
+<label>💼 主要做什么</label>
+<select id="job"><option value="写代码">💻 写代码/设计</option><option value="写文档">📝 写文档/做表</option><option value="双屏视频">🎬 双屏/视频剪辑/自媒体</option><option value="网课学习">📚 网课/备考/学习</option></select>
+<label>🔴 最困扰你的</label>
+<select id="pain"><option value="线">⚡ 线材一团乱</option><option value="杂">📦 杂物没处放</option><option value="累">🧘 坐着累/姿势不对</option><option value="景">🍀 桌面看起来乱影响心情</option></select>
+<button class="btn-gen" id="genBtn">🖥 生成布置方案</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 你的桌面布置方案</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制方案</button>
+<div class="tip" style="margin-top:12px">💡 布置核心口诀："眼睛正前方留空，常用物在臂长范围内，暂时用不上的都进抽屉/收纳盒"。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const ZONE={on:'左',off:'停'}
+const JOB={
+'写代码':{hz:'🔲 横屏双屏或一屏+资料',tip:['屏幕调到眼睛平视略低，约10°,离眼60-70cm；','键盘鼠标贴近身体，手肘90°自然垂放。']},
+'写文档':{hz:'📄 单屏+纸质草稿区',tip:['屏幕放正前方，文档用深色分区；','纸笔、便签放左手边"随手拿起"位。']},
+'双屏视频':{hz:'🎛 主屏(剪辑)+副屏(素材)略偏',tip:['主操作屏正对双眼，副屏放旁边的45°位；','图形/剪辑建议外接大屏保护视力。']},
+'网课学习':{hz:'📚 本子左、屏幕中(不遮笔记)',tip:['把本子当主战场，屏幕稍偏也OK方便抄笔记；','笔袋、台灯集中在"右手顺手"范围。']}
+};
+const PAIN={
+'线':['用磁吸理线器/理线槽把电源、数据线归成"一根主干"贴桌底走；','显示器支架(桌面夹式)可把大部分线束藏起来；','抽屉分隔放充电器，只留一根常用线线上。'],
+'杂':['做"三层收纳":桌面只留最高频，一次-两次用的进抽屉分隔盒，其余进柜子；','一个"杂项托盘"集中零碎(回形针/便利贴/笔)，看着就清静；','用桌面增高架把不常用的书和杯垫放高一层。'],
+'累':['显示器垫高到与眼睛平视，避免低头弓背；','键盘建议用带腕托的产品，手肘能有支撑；','每45分钟起身2分钟，水杯放远点逼自己动一动。'],
+'景':['给正前方留"呼吸区"——只放一个主屏+一盏杯灯；','用统一色收纳盒装杂色物件，视觉立刻干净；','单插一盆绿植/一盏暖光氛围灯，心情值+1。']
+};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI工位书桌布置规划 | AgentGongju.com'))return;
+const size=document.getElementById('size').value,job=document.getElementById('job').value,pain=document.getElementById('pain').value;
+const J=JOB[job],P=PAIN[pain===null?'杂':pain];
+let out=`🖥 桌面布置方案（${size==='小'?'桌面<1米':size==='中'?'标准1米工位':'大桌面/书房'}）\n\n`;
+out+=`━━ 分区布局（从左到右） ━━\n· 手边区(顺左手)：水杯、便签、常用笔——瞎摸也能拿到；\n· 核心区(正前方)：${J.hz}——眼睛不歪头；\n· 过渡/杂物区(桌面最右或架下)：纸巾、充电器、零食放「托盘一次性归位」；\n`;
+out+=`\n━━ 适配「${JOB[job]? ({'写代码':'写代码/设计','写文档':'写文档/做表','双屏视频':'双屏剪辑','网课学习':'网课学习'})[job]:'--'}」的优化 ━━\n${J.tip.map(t=>'· '+t).join('\n')}\n`;
+out+=`\n━━ 针对你的困扰：「${({'线':'线材乱','杂':'杂物没处放','累':'坐着累','景':'看着乱'})[pain]}」 ━━\n${P.map(t=>'· '+t).join('\n')}\n`;
+out+='\n━━ 一周养成 ━━\n· 收工前花1分钟"归位"：纸巾回托、线收好、杯子放固定位；\n· 周五清一次垃圾/过期文件，周日心情都不一样。\n\n【桌面清爽了，思路就清爽了 🖥】';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

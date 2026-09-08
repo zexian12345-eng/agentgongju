@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI快递单信息提取 | AgentGongju.com</title>
+<meta name="description" content="粘贴快递短信、聊天记录或截图识别文本，自动提取快递单号、承运商、收寄人与状态关键词，帮你一眼理清手头包裹。">
+<meta name="keywords" content="快递单号识别,快递提取,物流单号,顺丰京东圆通中通韵达,包裹查询,短信解析">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+textarea{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:150px;resize:vertical}
+textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.btn-eg{width:100%;padding:10px;margin-top:8px;background:rgba(255,255,255,0.05);border:1px dashed rgba(148,163,184,0.4);border-radius:10px;color:#94a3b8;font-size:.9rem;cursor:pointer}
+.btn-eg:hover{border-color:#6366f1;color:#a5b4fc}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{color:#94a3b8;font-size:.85rem;margin-bottom:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() { var hm = document.createElement("script"); hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949"; var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(hm, s); })();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📦 AI 快递单信息提取</h1><p>复制一段短信或文字，包裹单号、快递公司一把抓清</p></div>
+
+<div class="card">
+<label>📋 粘贴短信/聊天内容（尽量整段复制）</label>
+<textarea id="raw" placeholder="例如：【菜鸟驿站】您的包裹已到某某站10-3-201柜，提货码123456，凭码领取。<br>或：顺丰 SF1234567890123 今天18:00前送达，联系13900000000"></textarea>
+<button class="btn-gen" id="genBtn">🔍 智能提取信息</button>
+<button class="btn-eg" id="egBtn">📋 填入示例文本</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 识别结果</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制整理结果</button>
+<div class="tip" style="margin-top:12px">💡 识别基于常见单号格式规则；若未能匹配，请确认文字以纯文本方式粘贴（去掉换行错乱）。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const PAT=[
+ {name:'顺丰',re:/SF\d{12,15}/i},
+ {name:'京东',re:/JD[KV]?\d{10,18}/i},
+ {name:'邮政/EMS',re:/[EKY][A-Za-z]?\d{9,12}[A-Za-z]{2}/i},
+ {name:'圆通',re:/YT\d{10,15}/i},
+ {name:'申通',re:/ST\d{10,15}|[37][0-9A-Z]{10,13}/i},
+ {name:'中通',re:/73\d{9,12}|\d{12}\b/},
+ {name:'韵达',re:/[37][0-9A-Z]{12,14}/i},
+ {name:'极兔',re:/JT\d{10,15}/i},
+ {name:'德邦',re:/DPK\d{10,15}/i}
+];
+document.getElementById('egBtn').addEventListener('click',()=>{
+ document.getElementById('raw').value='【圆通快递】您的包裹由圆通发货，单号YT6201589632100，预计明日到达，收货人王女士，如有问题请电联400-111-1111。';
+});
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI快递单信息提取 | AgentGongju.com'))return;
+const raw=document.getElementById('raw').value;
+if(!raw.trim()){alert('请先粘贴文本');return;}
+const plain=raw.replace(/<[^>]*>/g,' ').replace(/\s+/g,' ');
+let out=`📦 快递信息提取结果\n\n`;
+out+=`📄 输入文本（净化后）：\n「${plain.slice(0,180)}${plain.length>180?'…':''}」\n\n`;
+let anyNo=false;
+out+='━━ 匹配到的单号 ━━\n';
+const seen=new Set();
+for(const p of PAT){
+  const m=plain.match(p.re);
+  if(m&&!seen.has(m[0]+p.name)){ seen.add(m[0]+p.name); out+=`· ${p.name}：${m[0]}\n`; anyNo=true; }
+}
+// generic fallback: long digit/uppercase runs
+const generic=plain.match(/\b[A-Z]{2,}\d{8,}\b|\b\d{10,15}\b/g);
+if(!anyNo&&generic){ out='━━ 匹配到的单号 ━━\n'; new Set(generic).forEach(g=>out+='· 疑似单号：'+g+'\n'); anyNo=true; out='📦 快递信息提取结果\n\n'+out; }
+if(!anyNo){ out+='· 未识别出常见快递单号。\n\n请确认文本含完整单号（通常10位以上数字或"字母+数字"），或用截图OCR后重试。\n'; }
+out+='\n━━ 顺带识别 ━━\n';
+const tel=plain.match(/1[3-9]\d{9}/);
+out+=tel?('· 联系电话：'+tel[0]+'\n'):'· 联系电话：未识别\n';
+const code=plain.match(/提货码[:：]?\s*(\d{4,8})/);
+out+=code?('· 驿站提货码：'+code[1]+'\n'):'· 驿站提货码：未识别\n';
+const day=plain.match(/预计?(今日|明日|后天|\d{1,2}[日号]?到|到达)/);
+out+=day?('· 送达时间线索：'+day[1]+'前后\n'):'· 送达时间线索：未识别\n';
+out+='\n━━ 下一步建议 ━━\n· 复制的单号去"菜鸟/对应快递App"输入即可实时追踪；\n· 若驿站短信，直接用提货码+取件码在柜机取件。\n\n【收包裹不再翻聊天记录 📦】';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

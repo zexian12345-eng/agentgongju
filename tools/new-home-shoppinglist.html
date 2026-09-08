@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI新房入住购物清单 | AgentGongju.com</title>
+<meta name="description" content="搬新家不知道要买啥？按户型、居住人数与到货急缓生成分区采购清单：客厅卧室厨房卫浴家电软装，分三批买不花冤枉钱。">
+<meta name="keywords" content="搬家清单,新房购物,入住采购,软装家电清单,乔迁购物,新家布置,搬家攻略">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:60px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{color:#94a3b8;font-size:.85rem;margin-bottom:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() { var hm = document.createElement("script"); hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949"; var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(hm, s); })();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🏠 AI 新房入住购物清单</h1><p>搬新家列清单就像搭积木——分批买，不浪费也不缺漏</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>🏘 户型大小</label>
+<select id="house"><option value="紧凑">🛏 一居/开间(小户型)</option><option value="标准" selected>🏠 两居-三居(刚需)</option><option value="大">🏡 三居以上/大平层</option></select></div>
+<div><label>👥 居住人数</label>
+<select id="ppl"><option value="1">1 人</option><option value="2">2 人(情侣/新婚)</option><option value="3">3 人(有娃)</option><option value="5">4-5人(含老人)</option></select></div>
+</div>
+<div class="param-row">
+<div><label>🧸 家里有老人/孩子？</label>
+<select id="vul"><option value="无">无/不太需要</option><option value="有">有(可多备安全与适老适幼件)</option></select></div>
+<div><label>🛒 准备买的程度</label>
+<select id="done"><option value="全部">全部都要买(全新入住)</option><option value="部分">部分从旧家带来</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">🏠 生成采购清单</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 你的分区采购清单</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制清单</button>
+<div class="tip" style="margin-top:12px">💡 按"第一批必买 / 第二批入住2周内 / 第三批慢慢添"分三波采购，预算更从容。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const base={
+'厅':'沙发·茶几·电视柜/玄关镜·装饰边几','卧':'床+床垫·床头柜×2·衣柜/斗柜·四件套被芯·台灯','厨':'锅具(炒锅/汤锅)·砧板刀·碗盘筷子·电饭煲·热水壶·调味收纳架','卫':'毛巾/浴巾·洗漱用品架·马桶刷·浴室地垫·拖鞋','家电':'洗衣机·冰箱(按人数选容量)','软装':'窗帘·地毯·绿植·台灯·挂钩收纳'}
+const LIST={
+'1':['扫地机器人/吸尘器(一人房也值得)'],
+'2':['冰箱中等容量(250-330L)·洗衣机洗烘可选','叫上共同还贷计划'],
+'3':['冰箱大容量(400L+)·加装安全锁·儿童餐椅'],
+'5':['冰箱超大·防滑倒适老扶手','双卫加防水地垫']
+};
+const VUL=['儿童安全插座保护盖·桌角贴','老人马桶扶手·防滑地垫','夜灯/走廊感应地脚灯'];
+const BATCH1=['床品(当晚就要睡)·毛巾牙具·拖鞋','锅碗瓢盆基础套·米面油盐·热水壶','扫拖工具·垃圾袋·抽纸','路由器·插线板·紧急药品'],
+BATCH2=['沙发/餐桌等大件软装·窗帘','洗衣机/冰箱等大家电预约送货安装','灯饰与收纳架','绿植除味/空气净化器'],
+BATCH3=['挂画装饰·香薰·小家电(咖啡机/电炖锅)','季节用品(风扇/加湿器)·节日布置'];
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI新房入住购物清单 | AgentGongju.com'))return;
+const house=document.getElementById('house').value,ppl=document.getElementById('ppl').value,vul=document.getElementById('vul').value;
+const sn=({'1':'1人','2':'2人','3':'3人家庭','5':'4-5人'})[ppl];
+let out=`🏠 新房入住采购清单(${({'紧凑':'小户型','标准':'两/三居','大':'大户型'})[house]} · ${sn})\n\n`;
+out+='━━ 🛋 客厅 ━━\n· '+base['厅']+'\n';
+out+='━━ 🛏 卧室 ━━\n· '+base['卧']+'\n';
+out+='━━ 🍳 厨房 ━━\n· '+base['厨']+'\n';
+out+='━━ 🚿 卫浴 ━━\n· '+base['卫']+'\n';
+out+='━━ ⚡ 家电 ━━\n· '+base['家电']+'\n';
+const extra=LIST[ppl]||LIST['2'];
+out+='\n━━ 按人数补充 ━━\n· '+extra.join('\n· ')+'\n';
+if(vul==='有')out+='\n━━ 适老/适幼加分项 ━━\n· '+VUL.join('\n· ')+'\n';
+out+='\n━━ 分三波买(按到货急缓) ━━\n【第一批·今天就能用】\n· '+BATCH1.join('\n· ')+'\n';
+out+='【第二批·入住1-2周】\n· '+BATCH2.join('\n· ')+'\n';
+out+='【第三批·慢慢添乐趣】\n· '+BATCH3.join('\n· ')+'\n';
+out+='\n📋 省钱提醒：大件等大促/以旧换新，小件拼团更划算；软装别一口气填满，住一段才知道真需要啥。\n\n【新家从一只水杯开始 🏠】';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI宠物寄养交接准备 | AgentGongju.com</title>
+<meta name="description" content="出差/假期把毛孩子交给寄养或朋友？输入宠物种类与寄养天数，生成交接清单：疫苗证件、粮药量、习性交代与接送检查，主人安心主子舒心。">
+<meta name="keywords" content="宠物寄养,宠物交接,猫咪寄养,狗狗寄养,寄养清单,宠物托管,出差寄养">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:60px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{color:#94a3b8;font-size:.85rem;margin-bottom:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() { var hm = document.createElement("script"); hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949"; var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(hm, s); })();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🐾 AI 宠物寄养交接准备</h1><p>出门时把毛孩子托付好，大人安心主子舒心</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>🐕 宠物种类</label>
+<select id="pet"><option value="猫">🐱 猫咪</option><option value="狗">🐶 狗狗</option><option value="鸟">🦜 鸟类</option><option value="兔仓鼠">🐹 兔子/仓鼠等小宠</option></select></div>
+<div><label>📅 寄养时长</label>
+<select id="days"><option value="短">1-3天</option><option value="中" selected>4-7天</option><option value="长">2周以上</option></select></div>
+</div>
+<div class="param-row">
+<div><label>📍 寄养方式</label>
+<select id="where"><option value="机构">🏬 专业寄养机构</option><option value="朋友">👥 托朋友/邻居上门</option><option value="上门">🚪 上门喂养(毛孩留家)</option></select></div>
+<div><label>💊 宠物是否有长期用药/慢性病</label>
+<select id="med"><option value="无">无</option><option value="有">有</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">🐾 生成交接清单</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 您的宠物寄养交接单</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制交接单</button>
+<div class="tip" style="margin-top:12px">💡 交接单提前发给对方，附上兽医电话，关键时刻省下慌乱。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const PET={
+'猫':{doc:'疫苗本+驱虫记录+猫三联/狂犬',food:['每天分2-3顿定量猫粮/罐头','备应急罐头以防挑食','常备益生菌防应激软便'],habit:['用其习惯的猫砂，需勤铲','陌生环境先放安静角落适应','别强行抱/洗澡，减少应激']},
+'狗':{doc:'疫苗本+养犬证+芯片号',food:['早中晚定量狗粮(按平时克数)','带足过渡期狗粮防换粮腹泻','自带爱玩玩具减压'],habit:['每天至少散步/排便2-3次(带拾便袋)','带常用项圈/胸背与旧窝垫有安全感','若分离焦虑，留一件带主人气味的衣服']},
+'鸟':{doc:'健康记录+兽医联系方式',food:['每日定量鸟粮+果蔬','备水器并每天换净水','远离猫狗与油烟'],habit:['笼子放固定安静处','保持室温恒定不吹风','定时互动别长期无人理']},
+'兔仓鼠':{doc:'简短喂养记录卡',food:['定量主粮+干草(兔子)','饮水器装满净水','给垫材/跑轮等日常消耗品'],habit:['环境保持通风干燥','兔子备磨牙草棒','小宠对环境敏感别随意惊吓']}}
+;
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI宠物寄养交接准备 | AgentGongju.com'))return;
+const pet=document.getElementById('pet').value,days=document.getElementById('days').value,where=document.getElementById('where').value,med=document.getElementById('med').value;
+const P=PET[pet];
+const dayNote=days==='短'?'3天内(注意别过度喂食)':days==='中'?'一周内(隔两天汇报一次状态)':'两周以上(叮嘱每周发照片+若药物需按时给)';
+let out=`🐾 宠物交接单（${({'猫':'🐱猫','狗':'🐶狗','鸟':'🦜鸟','兔仓鼠':'🐹小宠'})[pet]} · ${({'短':'1-3天','中':'4-7天','长':'2周+'})[days]} · ${({'机构':'寄养机构','朋友':'托朋友','上门':'上门喂养'})[where]}）\n\n`;
+out+='━━ 📄 证件与健康 ━━\n· 提供：'+P.doc+'\n';
+out+=med==='有'?'· 重点：附上用药明细+病历+喂药演示视频，并把兽医电话写进单里。\n':'· 附上一张近期照片与平时体重，便于观察状态变化。\n';
+out+='\n━━ 🍽 食物与用品 ━━\n'+P.food.map(f=>'· '+f).join('\n')+'\n';
+out+='\n━━ 📋 习性交代(重要!) ━━\n'+P.habit.map(h=>'· '+h).join('\n')+'\n';
+out+=`\n━━ 📆 沟通约定(${dayNote}) ━━\n· 给到对方您的紧急联系方式+宠物医生电话；\n`;
+if(where==='机构')out+='· 入住前签好协议，确认意外责任·照护条款与探视/视频权限；\n';
+if(where==='朋友')out+='· 别让帮忙的朋友有压力，把"正常状态"写清楚，异常才需要联系；\n';
+if(where==='上门')out+='· 可留监控/钥匙托管柜，交代开锁与多备一套粮与猫砂在家里的位置；\n';
+out+='\n━━ ✈ 接送检查 ━━\n· 送时：当面清点用品、钥匙、记录精神状态拍合照；\n· 接回：检查有没有外伤/体重变化，回家先让毛孩自己过渡。\n\n【准备到位，它就是度假——你也可以安心出差 🐾】';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI雨天通勤应急指南 | AgentGongju.com</title>
+<meta name="description" content="暴雨天上班上学总手忙脚乱？按你的通勤方式选一套雨天预案：防湿装备、备选路线、到公司从容小贴士，让你少淋雨少迟到更体面。">
+<meta name="keywords" content="雨天通勤,暴雨出行,防雨装备,下雨天上班,通勤装备,雨天交通,梅雨">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:60px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{color:#94a3b8;font-size:.85rem;margin-bottom:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() { var hm = document.createElement("script"); hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949"; var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(hm, s); })();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🌧 AI 雨天通勤应急指南</h1><p>给下雨天留一套预案，体面出门不慌到</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>🚶 平时怎么通勤</label>
+<select id="mode"><option value="地铁">🚇 地铁/公交</option><option value="骑行">🚲 骑车/电动车</option><option value="开车">🚗 开车/打车</option><option value="步行">🚶 步行/短途</option></select></div>
+<div><label>⏰ 这场雨的程度</label>
+<select id="rain"><option value="小雨">🌦 小雨/阵雨</option><option value="中雨">🌧 中到大雨</option><option value="暴雷">⛈ 暴雨/雷暴雨/台风天</option></select></div>
+</div>
+<div class="param-row">
+<div><label>🏢 到达后场景</label>
+<select id="work"><option value="办公">💼 公司上班</option><option value="上学">🎒 上学/考试</option><option value="面试">🤝 面试/重要约会</option></select></div>
+<div><label>🎒 可做预案的提前量</label>
+<select id="prep"><option value="今早">🌅 现在看还来得及</option><option value="昨夜">🌙 已提前到昨晚</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">🌧 生成雨天预案</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 你的雨天通勤预案</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制预案</button>
+<div class="tip" style="margin-top:12px">💡 核心口诀：多留20分钟余量 + 鞋不怕湿 + 证件手机放防水袋。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const MODE={
+'地铁':{g:'🚇 地铁/公交',t:['地铁最稳：雨天优先地铁，站台湿滑注意脚下；','备一套折叠式雨衣放包里，比长柄伞方便挤线；','到站前把雨伞甩干用伞套/塑料袋包好再入包。']},
+'骑行':{g:'🚲 骑车/电动车',t:['雨天骑电动优先走慢车道，穿雨衣记得把裤脚扎紧防止绞进轮子；','戴头盔+挡风片，雨大视线差时推一段或改地铁最安全；','车后泥水重，收工记得擦链条防锈。']},
+'开车':{g:'🚗 开车/打车',t:['提前查路况避开积水点，水淹没半个轮胎就绕行；','跟车拉大车距，开近光+雾灯别开双闪乱闪；','早高峰雨堵车概率大，出发留足20分钟余量。']},
+'步行':{g:'🚶 步行/短途',t:['穿防水鞋或备鞋套，袜子多带一双到地换；','短途雨天撑折叠伞，走人行道内侧避开屋檐滴水与积水坑；','手机放内袋/防水袋，别总掏出来看时间。']}
+};
+const WORK={
+'办公':['到公司第一件事：把湿伞放门口晾伞架，衣物挂起来再用干毛巾顺手擦桌子；','备一条干毛巾+一件替换T恤/衬衫在工位，淋湿了能换，还能借给同事(加分)。'],
+'上学':['到校先把湿外套晾好，书本放防水袋里别指望书包防雨；','提前打印/电子存好当天作业，避免淋湿后没法交。'],
+'面试':['贵重贴身：面试装备放防雨双肩包，衬衫用透明文件袋裹一层进包更保险；','提前一晚把西装/衬衫、皮鞋叠好装防水袋，面试前烫平。']
+};
+const RAIN={
+'小雨':{t:'🌦 小雨、阵雨',a:['撑折叠伞or薄雨衣即可，别小题大做','主要防"地滑+鞋微湿"，脚下稳点','短时阵雨可稍等五分钟躲过最强一波']},
+'中雨':{t:'🌧 中到大雨',a:['全套防雨：伞+雨衣二选一带足，鞋穿防水或带鞋套','提前20-30分钟出门，班车上人流会更挤','把纸质文件塞进防水袋，背包加个防雨罩']},
+'暴雷':{t:'⛈ 暴雨/雷暴/台风',a:['关注预警：若红色暴雨/台风停课停工信息发布，先和公司/学校确认','避开大树、电线杆、广告牌与低洼积水处','雷暴天收起金属柄长伞，优先室内通道/搭车']}
+};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI雨天通勤应急指南 | AgentGongju.com'))return;
+const mode=document.getElementById('mode').value,rain=document.getElementById('rain').value,work=document.getElementById('work').value,prep=document.getElementById('prep').value;
+const M=MODE[mode],R=RAIN[rain],W=WORK[work];
+let out=`🌧 雨天通勤预案（${M.g} · ${R.t} · ${({'办公':'到公司','上学':'去学校','面试':'赴约'})[work]}）\n\n`;
+out+='━━ 依据天气行动 ━━\n'+R.a.map(a=>'· '+a).join('\n')+'\n';
+out+='\n━━ 针对你的通勤方式 ━━\n'+M.t.map(t=>'· '+t).join('\n')+'\n';
+out+='\n━━ 到达「'+({'办公':'公司','上学':'教室','面试':'目的地'})[work]+'」后 ━━\n'+W.map(w=>'· '+w).join('\n')+'\n';
+out+=(prep==='昨夜'?'\n━━ 昨晚已准备+1 ━━\n· 干鞋干袜+防水袋+替换衣已就位，今天只剩从容。':'\n━━ 现在马上做 ━━\n· 手机充电到90%+上下载离线地图；\n· 把伞/鞋套/干巾装包再出门，别等到楼下才发现。\n');
+out+='\n━━ 通用保命项 ━━\n· 多留20分钟，堵在路上不急躁；\n· 淌水后到地先用干布擦干脚和鞋，防泡白起脚气；\n· 雷暴天尽量靠近室内避雨，安全第一不逞强。\n\n【手里有伞心中有数，雨天也从容 🌧】';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

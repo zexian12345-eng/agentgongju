@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI相亲见面前资料分析 | AgentGongju.com</title>
+<meta name="description" content="把相亲对象发给你的自我介绍、资料或聊天片段贴进来，粗筛话题雷达、给出加分项与三个不尴尬的聊天切入口，帮你准备第一次见面。">
+<meta name="keywords" content="相亲话题,相亲对象分析,相亲攻略,资料解析,第一次见面,聊天话题,脱单">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:140px;resize:vertical}
+input:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.btn-eg{width:100%;padding:10px;margin-top:8px;background:rgba(255,255,255,0.05);border:1px dashed rgba(148,163,184,0.4);border-radius:10px;color:#94a3b8;font-size:.9rem;cursor:pointer}
+.btn-eg:hover{border-color:#6366f1;color:#a5b4fc}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{color:#94a3b8;font-size:.85rem;margin-bottom:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() { var hm = document.createElement("script"); hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949"; var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(hm, s); })();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>💌 AI 相亲资料分析助手</h1><p>见面前做做功课，话题自然不尴尬</p></div>
+
+<div class="card">
+<label>📄 粘贴对方的自我介绍 / 资料简介 / 聊天片段</label>
+<textarea id="bio" placeholder="例如：你好，我叫小李，93年，江苏人，在杭州做产品经理，平时喜欢爬山拍照探店，会做点菜但不算高手，家里催得急想认真找一个。"></textarea>
+<div class="param-row">
+<div><label>🧑 你们的关系阶段</label>
+<select id="stage"><option value="聊天中">💬 还在聊天</option><option value="首见">🤝 即将第一次见面</option><option value="了解深">☕ 已见两三次</option></select></div>
+<div><label>🎯 主要目的</label>
+<select id="goal"><option value="话题">🗣 找聊天话题</option><option value="评估">⚖ 看看合不合适</option><option value="推进">❤️ 想更进一步</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">💡 生成分析建议</button>
+<button class="btn-eg" id="egBtn">📝 填入示例资料</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 见面 & 聊天策略</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制结果</button>
+<div class="tip" style="margin-top:12px">💡 工具用于帮你想深一层；真实交往的核心始终是真诚、尊重与倾听。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const HOBBY=['爬山','跑步','健身','游泳','骑行','羽毛球','旅行','摄影','探店','烘焙','做饭','看书','电影','追剧','追番','动漫','KTV','唱歌','游戏','剧本杀','桌游','麻将','篮球','足球','瑜伽','露营','钓鱼','音乐','吉他','书法','画画','宠物','猫','狗'];
+const LIFE=['事业单位','老师','医生','产品','程序员','公务员','国企','大厂','创业','教师','银行','销售','设计','运营','自媒体','本地人','双休','朝九晚五','稳定'];
+const FAM=['家里','爸妈','父母','催','结婚','生子','定居','买房','留在这个城市','户口','家人'];
+const redlight=['已离','带娃','负债','还在暧昧','总放鸽子','只谈钱','嫌','抱怨前任','忽冷忽热'];
+document.getElementById('egBtn').addEventListener('click',()=>{
+ document.getElementById('bio').value='你好，我是小周，91年双子座，本地人，医院工作需要倒班但是喜欢爬山和看展，有空会去探店咖啡，会煮一两个拿手菜，家里也催着想在35前定下来。';
+});
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI相亲资料分析助手 | AgentGongju.com'))return;
+const bio=document.getElementById('bio').value;
+const stage=document.getElementById('stage').value;
+const goal=document.getElementById('goal').value;
+if(!bio.trim()){alert('请先粘贴对方资料');return;}
+const t=bio;
+const hits=HOBBY.filter(h=>t.includes(h));
+const lifeHits=LIFE.filter(h=>t.includes(h));
+const famHits=FAM.filter(h=>t.includes(h));
+const redHits=redlight.filter(h=>t.includes(h));
+const score=Math.min(98,62+(hits.length*6)+(lifeHits.length?6:0)+(famHits.includes('稳定')?0:0)-(redHits.length?20:0)+(t.includes('认真')?5:0));
+let out=`💌 相亲资料分析参考\n\n`;
+out+=`━━ 资料"雷达" ▌初读印象分：${score}/100 ━━\n`;
+out+=`· 明显兴趣点：${hits.length?hits.slice(0,6).join('、')+' 等':'未在文本中明显提及'}\n`;
+out+=`· 生活/职业线索：${lifeHits.length?lifeHits.slice(0,5).join('、'):'未提及明显职业标签'}\n`;
+out+=`· 家人/定居意向：${famHits.length?famHits.slice(0,4).join('、'):'未提及，可直接自然地问'}\n`;
+if(redHits.length)out+=`\n⚠ 谨慎关注点（需当面确认，勿仅凭文字判断）：${redHits.join('、')}\n`;
+out+='\n━━ 加分见面切入口 ━━\n';
+if(hits.length){const top=hits[0];
+ out+=`1. 聊「${top}」细节："上次${top}最爽的一次是哪？"——给对方展示空间；\n`;
+ out+=`2. 若你们兴趣重叠（如都${top}）立刻约："那下次可以一起去呀"；\n`;}
+else out+='1. 资料没明显爱好？聊"平时下了班都干嘛"，观察对方节奏；\n2. 顺着对方回的城市/老家聊美食，几乎不会冷场。\n';
+if(lifeHits.length)out+=`3. 顺着「${lifeHits[0]}」展开：问一句"${lifeHits[0]}这份工作最有趣的部分"比直接问工资高明。\n`;
+out+=(stage==='首见'?'\n━━ 首面小贴士 ━━\n· 地点选你俩都方便、走动自然的（咖啡/展览），方便随时结束不尴尬；\n· 见面先少说话多点头，先记住对方讲的，再插一个共鸣细节。\n':(stage==='聊天中'?'\n━━ 聊天推进 ━━\n· 少用"在吗/吃了吗"闭环式问句，多用开放式话题；\n· 主动分享一个自己的小糗事，能快速拉近距离。\n':'\n━━ 关系深化 ━━\n· 适时把"听说"还原成"你当时……"，表示你真的在记；\n· 见面结尾给一句具体反馈："今天跟你聊爬山那part很有意思"。\n'));
+if(goal==='推进')out+='\n💡 若想更进一步：别急表白，先试一次"你安排兴趣共同活动+一次走心约会"，关系到位了再挑时机说。\n';
+out+='\n【真诚永远赢过套路 💌】';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

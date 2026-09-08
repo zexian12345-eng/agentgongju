@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI教爸妈用智能手机讲义 | AgentGongju.com</title>
+<meta name="description" content="把"教爸妈用手机"变成一张带孩子式的讲义卡：选教学对象与具体功能(微信视频/扫码付款/打车/查核酸/手机截图…)，生成一步步可打印的傻瓜教学文案。">
+<meta name="keywords" content="教爸妈用手机,老人智能手机教学,微信视频教程,扫码支付,长辈手机,适老化,教学讲义">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:70px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{color:#94a3b8;font-size:.85rem;margin-bottom:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr;}}@media print{.tool-container{margin-top:10px}.card{break-inside:avoid}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() { var hm = document.createElement("script"); hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949"; var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(hm, s); })();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📞 AI 教爸妈用智能手机讲义</h1><p>一次教一个功能，画成"傻瓜式"小卡片最有用</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>👵 教学对象</label>
+<select id="who"><option value="爸妈">🧓 爸妈(60-70岁)</option><option value="祖辈">👴 爷爷奶奶(70+)</option><option value="自己手机">📱 替爸妈看的子女</option></select></div>
+<div><label>📚 想学的功能</label>
+<select id="func"><option value="视频">📹 微信视频通话</option><option value="支付">💳 扫码付款(买菜/超市)</option><option value="打车">🚕 用滴滴/高德打车</option><option value="挂号">🏥 医院挂号/查报告</option><option value="截图">📸 截屏/发照片</option><option value="安全">🛡 防诈骗要点</option></select></div>
+</div>
+<div class="param-row">
+<div><label>📱 手机系统</label>
+<select id="os"><option value="安卓">🤖 安卓(华为/小米等)</option><option value="苹果">🍎 iPhone</option><option value="不分">❓ 不确定</option></select></div>
+<div><label>🔤 文字大小</label>
+<select id="font"><option value="开大字">🔍 已调成大字体</option><option value="默认">📏 默认字体</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">📄 生成教学讲义</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 可打印 / 照着一步步教的讲义</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制讲义</button>
+<button class="copy-btn" onclick="window.print()" style="margin-left:8px">🖨 打印讲义</button>
+<div class="tip" style="margin-top:12px">💡 教学心法：一次只教一个功能，让爸妈边说边自己点，你只动嘴不代劳。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const OS_EXTRA={安卓:{name:'安卓',tip:'“设置→显示→字体大小→调大”，并把桌面图标也调大些更容易点。'},苹果:{name:'iPhone',tip:'“设置→辅助功能→显示与文字大小→更大字体”，打开它们认得更清。'},不分:{name:'通用',tip:'多数手机在“设置→显示与亮度→字体大小”可调大。'}};
+const F={
+'视频':{t:'📹 微信视频通话，想孩子了就点开他',
+step:['① 找到微信(绿色图，右下角一绿点)，点开。','② 最上面一栏找到孩子的名字(聊天的那个)，点进去。','③ 点右上角那个“摄像机”图标(⊕或＋号旁)，选择【视频通话】。','④ 等对方接起来，就能看到孩子了！声音小就把手机侧边音量键往上按。','⑤ 想挂断就点屏幕上的红色“挂断”键。']},
+'支付':{t:'💳 用手机“扫一扫”买菜付款',
+step:['① 打开微信，点右上角“＋”，再点最下面【扫一扫】。','② 对着老板贴的二维码，把整个方框对准它。','③ 手机屏幕跳出一行数字，点【输入金额】。','④ 输好价钱(看清楚小数点，别多点一个0！)，点【付款】。','⑤ 老板手机响“叮”就是钱付成功了。','⚠ 密码只在自己手上输，别让旁人帮忙。']},
+'打车':{t:'🚕 用高德/滴滴叫车(先点开看步骤)',
+step:['① 让子女先把付款方式绑好(绑银行卡或子女代付更安全)。','② 打开“高德地图”，点上面的【打车】按钮。','③ 它会问你“从哪里上车”——你不动，站在路边等车就行，一般不用改。','④ 输入或喊出目的地(也可让子女提前存好：写在哪就点到哪)。','⑤ 点【确认叫车】→ 看见车牌号，车到了对号码再上车。']},
+'挂号':{t:'🏥 网上挂号看医生',
+step:['① 打开微信，搜你常去医院的公众号(子女帮忙关注好)。','② 公众号菜单里找【预约挂号/挂号】，点开。','③ 选【科室】→ 选【专家或普通号】→ 选【时间】。','④ 输就诊人信息(第一次要在-我的-就诊人里加好自己和证件)。','⑤ 付款后会收到短信/二维码，到院出示即可。']},
+'截图':{t:'📸 怎么把手机画面存下来/发给子女',
+step:['① 要看的东西先停在那个画面。','② 按住机身侧面的“电源键+音量小键”同时按一下(安卓)或有“屏幕录制/截屏”功能从顶部下拉选。','③ 听到“咔嚓”就说明截好了，会自动存到相册。','④ 打开微信→点“+”→相册→选刚才那张→发送。','⑤ iPhone：同时按“右侧电源键+左侧上音量键”。']},
+'安全':{t:'🛡 一张图认清诈骗套路，守好养老钱',
+step:['① 只要对方在电话里让你“转账/给验证码/去银行”，先挂断再亲自问孩子。','② “公检法/客服退款/免费抽奖”都是骗子最爱说的话。','③ 陌生链接、让点开短信里网址的，一律不点。','④ 手机上的支付密码只自己输，谁都别告诉。','⑤ 装好国家反诈中心APP，收到提醒第一时间提高警觉。']}
+};
+const TONE={爸妈:{p:'爸/妈',words:'学起来很快的，别急，我们一步一步来。'},祖辈:{p:'爷爷/奶奶',words:'这个特别简单，您点一下试试，我在这儿呢。'},自己手机:{p:'他/她',words:'一次只教一个动作，让长辈自己点手指，你只在旁边讲解。'}};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI教爸妈用智能手机讲义 | AgentGongju.com'))return;
+const who=document.getElementById('who').value,func=document.getElementById('func').value,os=document.getElementById('os').value,font=document.getElementById('font').value;
+const P=TONE[who],F2=F[func],OS=OS_EXTRA[os];
+let out=`📞 给${P.p}的《${F2.t}》手机小讲义\n\n`;
+out+=`💬 开场白：${P.words}　（注意：您说、他点，别抢他的手机！）\n\n`;
+out+=`━━ 一步一步来 ━━\n${F2.step.map(s=>s).join('\n')}\n`;
+out+='\n━━ 小贴士 ━━\n';
+out+=font==='开大字'?'· 字已经调大了，看得更清楚，很好！\n':'· 建议先把字调大：设置→显示→字体大小调到最大，长辈按起来舒服。\n';
+out+='· 把这些步骤抄在纸上贴在手机背面/桌面，忘了能查。\n· 教完让${P.p}自己完整做一遍，你在旁边看，最能巩固。\n';
+out+='· 别忘了夸一句！“对，就是这样，特别好！”\n';
+out+='\n━━ 系统提示 ━━\n· '+OS.tip+'\n';
+out+='\n━━ 如果卡住了 ━━\n· 让ta长按电源重启手机(不是关机)。\n· 真急了就当面帮，别隔着电话指挥太久。\n\n【多一份耐心，少一份代沟 📞】';
+document.getElementById('outputBox').innerText=out.replace(/\$\{P\.p\}/g,"他");
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

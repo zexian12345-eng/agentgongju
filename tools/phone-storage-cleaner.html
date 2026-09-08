@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI手机存储空间清理 | AgentGongju.com</title>
+<meta name="description" content="手机又提示储存不足？回答几个选项，输出微信缓存、照片视频、应用与系统垃圾的分区清理顺序与操作清单，稳妥腾空间。">
+<meta name="keywords" content="手机清理,存储空间,缓存清理,手机瘦身,微信清理,相册整理,手机垃圾">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=range]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px;box-sizing:border-box}
+input[type=range]{padding:0;height:6px;accent-color:#6366f1}
+textarea{min-height:60px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{color:#94a3b8;font-size:.85rem;margin-bottom:12px}
+.range-val{display:flex;justify-content:space-between;color:#94a3b8;font-size:.8rem;margin-top:-8px;margin-bottom:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() { var hm = document.createElement("script"); hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949"; var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(hm, s); })();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🧹 AI 手机存储空间清理</h1><p>不删重要东西也能腾出几个G——按优先级来</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>📱 手机系统</label>
+<select id="os"><option value="安卓">🤖 安卓</option><option value="苹果">🍎 苹果 iPhone</option></select></div>
+<div><label>🕳 提示空间不足多久了？</label>
+<select id="urgency"><option value="刚提示">🟡 刚提示</option><option value="一直">🔴 一直提示，快不能用了</option><option value="预防">🟢 想预防</option></select></div>
+</div>
+<div><label>💬 微信 / 聊天缓存大概占多少？（估一下）</label>
+<input type="range" id="wx" min="0" max="20" value="6"><div class="range-val"><span>0G</span><span id="wxv">≥6G</span><span>20G+</span></div></div>
+<div><label>🖼 相册里照片视频多吗？</label>
+<select id="photo"><option value="一般">📸 一般</option><option value="多">📹 非常多，见啥拍啥</option><option value="很少">🌈 很少，两三屏</option></select></div>
+<button class="btn-gen" id="genBtn">🧹 生成清理方案</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 你的手机瘦身方案</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制方案</button>
+<div class="tip" style="margin-top:12px">💡 清理前先给重要文件做一次备份，尤其通讯录与照片，避免误删。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const wx=document.getElementById('wx'),wxv=document.getElementById('wxv');
+wx.addEventListener('input',()=>wxv.textContent='≥'+wx.value+'G');
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI手机存储空间清理 | AgentGongju.com'))return;
+const os=document.getElementById('os').value,urg=document.getElementById('urgency').value,ph=document.getElementById('photo').value;
+const wxval=+wx.value;
+let out=`🧹 手机存储清理方案（${os==='安卓'?'🤖 安卓':'🍎 iPhone'}）\n\n`;
+out+=`━━ 第 1 步 · 微信/聊天最见效 ━━\n`;
+if(wxval>=8)out+='· 微信》我》设置》通用》存储空间》去清理：勾选"缓存"可安全清出大头；\n· 重点删大群缓存与大文件：设置里看"聊天记录管理"，按占用排序删过期群文件。\n';
+else out+='· 微信》设置》存储空间，先清"缓存"（不影响聊天记录）；\n· "聊天记录"里只删无价值的超大文件，别动重要资料。\n';
+out+='━━ 第 2 步 · 相册瘦身 ━━\n';
+if(ph==='多')out+='· 相机设置里关掉"连拍/实况/Live"，只保留需要的一张；\n· 把毕业照、旅行视频导出到网盘/电脑后本地删除，优先处理视频（视频最占空间）；\n· 用系统"最近删除"再清一次，能立即回收空间。\n';
+else out+='· 删除模糊屏拍、截图重复与已备份共享照片；\n· 截图文件夹定期单独清空。\n';
+out+='━━ 第 3 步 · 应用与系统 ━━\n';
+if(os==='安卓')out+='· 设置》应用管理按占用排序，卸载半年没打开的App，重装主流App体积更小；\n· 清理"下载/安装包"文件夹；系统缓存可在安全中心一键清理。\n';
+else out+='· 设置》通用》iPhone储存空间》按大小排序，卸载不常用App（选"卸载App"保留文稿）；\n· 优先整理"信息/微信/相册"三大户，系统自带清理更稳。\n';
+out+='\n━━ 预防反弹 ━━\n· 微信/抖音默认下载：关掉"自动下载视频/表情"；\n· 每周日花2分钟清一次下载目录与回收站；\n';
+if(urg==='一直提示')out+='· 若已严重不足：先备份通讯录与照片→在系统设置里一键"清除所有数据/恢复出厂"最彻底（记得重要资料已备份）。\n';
+out+='\n【清理不是一刀切，重要文件永远留备份 🧹】';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

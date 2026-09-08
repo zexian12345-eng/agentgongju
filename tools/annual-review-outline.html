@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI年终述职报告大纲 | AgentGongju.com</title>
+<meta name="description" content="年终总结没思路？输入岗位、主要成绩与不足的零散关键词，自动整理成"成绩-数据-不足-明年计划"的述职大纲，附高分表达话术。">
+<meta name="keywords" content="年终总结,述职报告,年度总结,绩效自评,年终复盘,总结大纲,汇报模板">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:90px;resize:vertical}
+input:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{color:#94a3b8;font-size:.85rem;margin-bottom:12px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() { var hm = document.createElement("script"); hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949"; var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(hm, s); })();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📊 AI 年终述职报告大纲</h1><p>把一年的零散成绩，捋成一份让领导点头的汇报</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>💼 你的岗位/角色</label><input type="text" id="job" placeholder="例如：产品经理 / JAVA工程师 / 门店店长"></div>
+<div><label>⭐ 自评档位</label>
+<select id="level"><option value="突出">🥇 超额完成</option><option value="完成">🥈 基本完成目标</option><option value="努力">🥉 部分未达，但很拼</option></select></div>
+</div>
+<label>🏆 今年的主要成绩（逗号分隔，越具体越好）</label>
+<textarea id="ach" placeholder="例如：新功能上线3个，降低客服接入15%，带2个新人，推动SOP优化"></textarea>
+<label>📉 主要不足 / 想改进的点（可留空）</label>
+<textarea id="gap" placeholder="例如：数据敏感度不够，跨部门协调慢，加班多效率低"></textarea>
+<button class="btn-gen" id="genBtn">📝 生成述职大纲</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 你的述职框架</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制大纲</button>
+<div class="tip" style="margin-top:12px">💡 大纲配话术：数据能省的词都换成"从X→Y"，比形容词可信十倍。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI年终述职报告大纲 | AgentGongju.com'))return;
+const job=document.getElementById('job').value.trim()||'本岗位';
+const level=document.getElementById('level').value;
+const ach=document.getElementById('ach').value.trim();
+const gap=document.getElementById('gap').value.trim();
+const acts=ach?ach.split(/[,，;；、\n]+/).map(s=>s.trim()).filter(Boolean):[];
+if(!acts.length){alert('请至少写一条年度成绩');return;}
+const gaps=gap?gap.split(/[,，;；、\n]+/).map(s=>s.trim()).filter(Boolean):[];
+let out=`📊 ${job} · 年度述职报告纲要\n\n`;
+out+='━━ 一、年度回顾（开场勾重点） ━━\n';
+out+='· 一句话：围绕「目标—动作—成果」讲清楚今年主线，用一句点题收束。\n';
+out+='\n━━ 二、核心工作与产出 ━━\n';
+acts.forEach((a,i)=>out+=`${i+1}. ${a}\n`);
+out+='\n建议每条配一个"硬数据"：\n· 做之前X → 做之后Y（如：交付周期5天→3天）\n· 覆盖人数 / 减少耗时 / 提升转化，能量化的都量化\n';
+out+='\n━━ 三、量化亮点（挑 2-3 个最优） ━━\n· 把上面里最漂亮的数据单独拎出来放大讲，配一句"意味着…"。\n';
+out+=`\n━━ 四、成长与学习 ━━\n· 今年掌握的新技能/方法论（举1-2个例子）。\n`;
+out+='\n━━ 五、不足与反思 ━━\n';
+if(gaps.length){gaps.forEach(g=>out+=`· ${g} →同时给出对应的改进动作\n`);}
+else out+='· 建议坦诚补 2 条（哪怕轻的），比"完美"更有可信度：如"跨部门沟通效率可再提升""时间管理需优化"。\n';
+let pl='';
+if(level==='突出')pl='明年把目标拍得略高一点，展示增长空间与野心；';
+if(level==='完成')pl='明年聚焦"把现有成绩再提一个台阶"的2-3个关键抓手；';
+if(level==='努力')pl='明年重点放在补短板+"小步快跑拿结果",承诺可量化改善项；';
+out+='\n━━ 六、明年计划（SMART 化） ━━\n· '+pl+'\n· 定 2-3 个可量化 Key Result，别只写形容词；\n· 附资源需求（人力/培训/工具），为来年铺路。\n';
+out+='\n━━ 收尾话术模板 ━━\n"过去一年在XX方向取得了成绩，也存在XX短板，明年我希望在XX上实现XX的具体目标，也感谢团队与领导在XX支持。恳请各位指正。"\n\n【你的付出值得被好好讲出来 📊】';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>

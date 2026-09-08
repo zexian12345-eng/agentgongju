@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI职场英语寒暄开场白 | AgentGongju.com</title>
+<meta name="description" content="涉外办公场景英语口语小助手：电梯、茶水间、会议前、跨时区视频开场怎么自然说？选场景生成2-3句地道不会尬的英文开场白。">
+<meta name="keywords" content="职场英语,英语寒暄,商务口语,开场白,电梯英语,会议英语,外企英语">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:60px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{color:#94a3b8;font-size:.85rem;margin-bottom:12px}
+.cmn{color:#64748b;font-size:.85rem;font-style:italic}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() { var hm = document.createElement("script"); hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949"; var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(hm, s); })();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🗣 AI 职场英语寒暄开场</h1><p>电梯、茶水间、会议前……开口不再尴尬三秒钟</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>📍 场景</label>
+<select id="scene"><option value="电梯">🔘 电梯/走廊偶遇</option><option value="茶水间">☕ 茶水间/咖啡区</option><option value="开会前">📊 会议室等待开场</option><option value="视频">📹 跨地区视频会议刚进来</option><option value="午休">🥗 午饭/订餐时间</option></select></div>
+<div><label>🥲 对方的身份</label>
+<select id="role"><option value="同级">👋 同级同事</option><option value="上司">👔 上司/管理层</option><option value="老外">🌍 外籍/客户</option><option value="新同事">🔰 刚来的新同事</option></select></div>
+</div>
+<label>✍️ 可选：补充一个你身边的真实信息（天气/活动/项目/周五了）</label>
+<input type="text" id="extra" placeholder="例如：这边又下雨了 / 明后天有个新品发布会">
+<button class="btn-gen" id="genBtn">💬 生成开场白</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 3 句可直接用的开场</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制</button>
+<div class="tip" style="margin-top:12px">💡 寒暄重在"找共同点+真诚一句"，不用背太长，说完自然过渡到正题才不尬。</div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+const BANKS={
+'电梯':{t:'电梯 / 走廊偶遇',lines:[]},
+'茶水间':{t:'茶水间',lines:[]},
+'开会前':{t:'会议开场',lines:[]},
+'视频':{t:'视频开场',lines:[]},
+'午休':{t:'午休/午饭',lines:[]}
+};
+const E=[
+{scene:'电梯',role:'同级',l:['Hey, heading to the same meeting? Busy morning so far?','Morning! Crushed it in standup — see you on the 5th floor later?','Long day ahead — glad we got that wrapped this morning.']},
+{scene:'电梯',role:'上司',l:['Good morning. How are you today? Have a nice weekend, hopefully?','Hi! Quick question — have you had a chance to look at the report yet?','Oh hi! Perfect timing, I wanted to say the deck turned out great.']},
+{scene:'电梯',role:'老外',l:['Hi! How is your visit going so far? Enjoying the city?','Morning! First week back? Getting used to the time difference?','Well hello — glad I caught you before you rushed off.']},
+{scene:'电梯',role:'新同事',l:['Hey, you must be new! Welcome — how are you settling in?','Hi! I remember you from onboarding. Everything clear so far?','Morning! First day nerves? You’re gonna do great.']},
+{scene:'茶水间',role:'同级',l:['Making tea? I swear I live on this stuff by 3 PM.','Hey, bright day outside — shall we grab a coffee together later?','You look like you need this refill as much as I do.']},
+{scene:'茶水间',role:'上司',l:['Hi, grabbing your usual? Anything on your mind I can queue up for later?','Oh hi! I was just about to grab a coffee — want one while I’m here?','Lovely we crossed paths — I’ll keep it short, don’t worry!']},
+{scene:'茶水间',role:'老外',l:['Hi! Tried the green tea here yet? It’s actually pretty good.','You’re braver than me with that much caffeine so late.','Nice break from the screen — how’s the week treating you?']},
+{scene:'茶水间',role:'新同事',l:['Hey newbie, found the good snacks yet? I’ll show you the stash.','Just in time — this machine only takes exact coins, haha.','How are you finding the team so far? Everyone’s friendly here.']},
+{scene:'开会前',role:'同级',l:['Ready for this? I looked at the doc — you covered the hard part.','Before we start — did the numbers land the way we hoped?','Glad we’re in this together, should be a quick one.']},
+{scene:'开会前',role:'上司',l:['Thanks for the prep notes, they were really clear.','Looks like a full room today — exciting agenda!','Glad you could make it. Would you like me to kick off with a recap?']},
+{scene:'开会前',role:'老外',l:['How are you today? Great to have you on this call.','Ready when you are — I’ll keep it snappy so we stay on time.','Nice to finally put a face to the name in this meeting.']},
+{scene:'开会前',role:'新同事',l:['Sit wherever you like — we’re pretty casual in here.','First big meeting? Don’t worry, it’s mostly update chat.','Feel free to jump in anytime — no such thing as a silly question here.']},
+{scene:'视频',role:'同级',l:['Hi! Can you hear me okay? Great — ready when you are.','Morning! I’ll be on camera the whole time so you know I’m listening.','Hey, nice to see your face on a Friday!']},
+{scene:'视频',role:'上司',l:['Good to see you! Let me just share my screen real quick.','Hi there — thanks for making time. Shall we dive in?','You’re coming through clear. Ready to start whenever suits.']},
+{scene:'视频',role:'老外',l:['Hi! How are you doing over there? Hope the connection is treating you well.','Great to see you online — thanks for joining across the time zones.','Can everyone see my screen? Perfect, let’s get rolling.']},
+{scene:'视频',role:'新同事',l:['Hi and welcome aboard! Feel free to turn video on whenever you like.','Great to have you on the call — this is our usual update format.','New to video calls? We keep them short and friendly, promise.']},
+{scene:'午休',role:'同级',l:['Lunchtime! Order something good or are we doing the usual salad?','You braving the canteen or ordering in today?','Walking somewhere for lunch? I need to stretch my legs.']},
+{scene:'午休',role:'上司',l:['Taking a proper lunch today? Hope you get a real break.','Off to grab a bite? I always seem to work through mine.','Enjoying the lunch break or is it all go today?']},
+{scene:'午休',role:'老外',l:['What’s for lunch today? Trying something local yet?','You know the best noodle place nearby? I’m still discovering.','Did you run into the lunch rush yet? I’ve got a few safe picks.']},
+{scene:'午休',role:'新同事',l:['Coming for lunch? I’ll show you the good spots near the office.','First week lunch hunt — want the local’s list?','Joining us at noon? Team’s pretty chill about food.']}
+];
+const CLOSERS={closing:'Have a good one! / See you around! /* nice to bump into you */'};
+document.getElementById('genBtn').addEventListener('click',()=>{
+if(!Paywall.countUse('AI职场英语寒暄开场白 | AgentGongju.com'))return;
+const scene=document.getElementById('scene').value,role=document.getElementById('role').value,extra=document.getElementById('extra').value.trim();
+const name={'电梯':'电梯/走廊','茶水间':'茶水间','开会前':'会议等待','视频':'视频会议','午休':'午饭时间'}[scene];
+const pick=E.filter(e=>e.scene===scene&&e.role===role);
+let out=`🗣 职场英语寒暄 · ${name} × ${({'同级':'同级同事','上司':'上司/管理层','老外':'外籍/客户','新同事':'新同事'})[role]}\n\n`;
+out+='━━ 3 句可直接说 ━━\n';
+pick.forEach((e,i)=>{ out+=`${i+1}. ${e.l[Math.floor(Math.random()*e.l.length)]}\n`; });
+if(extra){ out+=`\n📌 结合你的话题「${extra}」延伸：\n· About ${extra}... by the way, perfect timing to mention.\n· Speaking of that — exactly what I wanted to catch you on.\n· Oh you noticed too? Let’s chat more over coffee.\n`; }
+out+='\n━━ 场景收尾（别停在原地） ━━\n· 自然过渡："Anyway, good talking. I should head to [next thing]."\n· 简单告别退场：「Nice chatting — have a good one!」\n\n【每天进步一点点，开口零负担 🗣】';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(()=>alert('✅ 已复制！'))}
+</script>
+</body>
+</html>
