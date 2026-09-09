@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 一周食材循环利用计划 | AgentGongju.com</title>
+<meta name="description" content="每周买菜总吃不完还浪费？告诉我你有多少预算、几口人、厨房条件，把一周买什么折算成一份循环菜单：一菜多吃、边角料再用，帮你又省又少剩">
+<meta name="keywords" content="一周菜单,买菜,省钱,食材循环,边角料,减负,备菜,快手下饭菜,营养">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:10px}
+select:focus,input:focus{border-color:#a855f7}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(168,85,247,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(168,85,247,0.3);border-radius:12px;padding:22px;color:#e2e8f0;line-height:2;white-space:pre-wrap;min-height:60px;margin-bottom:12px;font-size:.92rem}
+.copy-btn{padding:8px 20px;background:rgba(168,85,247,0.15);border:1px solid rgba(168,85,247,0.3);border-radius:8px;color:#d8b4fe;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(168,85,247,0.25)}
+.hint{color:#94a3b8;font-size:.8rem;margin-top:-6px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🥬 AI 一周食材循环计划</h1><p>想省钱又不浪费？把一周的菜换算成“能互相消耗掉”的一份菜单</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>👥 几口人吃饭</label><select id="people"><option value="1">1人（打工人）</option><option value="2" selected>2人小家庭</option><option value="3">3-4口之家</option></select></div>
+<div><label>💰 一周买菜预算（自己做/买菜）</label><select id="budget"><option value="slim">尽量省（200元内）</option><option value="norm" selected>正常（200-400元）</option><option value="treat">吃好点（400元+）</option></select></div>
+</div>
+<div class="param-row">
+<div><label>🍳 下厨水平/时间</label><select id="skill"><option value="fast" selected>快手下厨，最好20分钟搞定</option><option value="mid">会做几个家常菜</option><option value="pro">爱折腾没在怕的</option></select></div>
+<div><label>🍚 主食米饭吃得多还是少</label><select id="rice"><option value="more">吃得多（每餐都要饭）</option><option value="less" selected>一般/少点碳水</option></select></div>
+</div>
+<label>🥗 有啥忌口或特别想吃的（可选）</label>
+<input type="text" id="pref" placeholder="例：孩子不吃香菜、这周想多吃鸡、别买鱼" value="">
+<button class="btn-gen" id="genBtn">📋 生成一周循环菜单</button>
+<div class="result-area" id="resultArea"><div class="card"><div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 一周计划好了</div><div class="result-box" id="result"></div><button class="copy-btn" onclick="copyResult()">📋 复制菜单</button></div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#94a3b8;text-align:center;padding:20px;font-size:.85rem">这是把“一次买菜”消化到极致的思路：主料入口、边角料再拼一个菜，一周下来冰箱基本清空才叫没浪费。</p></div></footer>
+
+<script>
+var NL = String.fromCharCode(10);
+document.getElementById('genBtn').addEventListener('click', function () {
+  if (!Paywall.countUse('AI 一周食材循环利用计划 | AgentGongju.com')) return;
+  var people = document.getElementById('people').value;
+  var budget = document.getElementById('budget').value;
+  var skill = document.getElementById('skill').value;
+  var rice = document.getElementById('rice').value;
+  var pref = document.getElementById('pref').value.trim();
+
+  var L = [];
+  var head;
+  if (people === '1') head = '1人份 · 主打一次备餐少洗碗';
+  else if (people === '2') head = '2人小家 · 中餐+晚餐，能多吃一顿当晚餐的余菜';
+  else head = '3-4口之家 · 量大但要避免做太多剩菜';
+  L.push('🥗 ' + head + NL);
+  if (pref) L.push('📌 按你备注的（' + pref + '）已在下面尽量避开/纳入。');
+
+  // 蛋白质组按预算定主材
+  var meats = [];
+  if (budget === 'slim') meats = ['鸡腿/整鸡（一只拆两顿）', '鸡蛋', '豆腐或千张', '瘦肉末一盒', '冷冻虾仁少许'];
+  else if (budget === 'treat') meats = ['肋排或五花肉一盒', '整鸡 or 半只', '鲜虾/鱼1条', '牛肉块', '鸡蛋豆腐'];
+  else meats = ['鸡翅或鸡腿', '肉末', '鸡蛋', '豆制品', '偶尔来条鱼'];
+
+  L.push('', '🛒 这周主材建议（同一把主料跨 2 餐用，避免一次买一堆做不完）:');
+  for (var i = 0; i < meats.length; i++) L.push('· ' + meats[i]);
+
+  // 蔬菜按耐放度安排
+  L.push('', '🥬 蔬菜别一次全买齐，分批：');
+  L.push('· 耐放的：土豆、胡萝卜、洋葱、南瓜、大白菜（周三前用不到也坏不了）');
+  L.push('· 先吃的叶菜：青菜/菠菜/油麦菜（头两天吃掉）');
+  L.push('· 中段：西红柿、黄瓜、豆角、青椒（3-5天内）');
+
+  var plan = [];
+  var d = ['周一', '周二', '周三', '周四', '周五', '周六', '周日'];
+  // 预设一轮主荤+一轮复用
+  if (people === '1') {
+    plan.push(d[0] + '：' + (budget === 'slim' ? '鸡腿焖土豆 + 手撕包菜' : budget === 'treat' ? '香煎牛排配彩椒' : '鸡翅烧香菇 + 清炒西兰花') + '（留一块到后一餐）');
+    plan.push(d[1] + '：把昨天的鸡/肉切碎 → 炒个饭/拌面，一菜两用');
+  } else if (people === '2') {
+    plan.push(d[0] + '：鱼/鸡做荤菜两份量，晚上吃一份冻一份当周三的汤底');
+    plan.push(d[1] + '：当天新菜+用昨晚余料做快手盖码面');
+  } else {
+    plan.push(d[0] + '：大荤（鸡 or 排骨）煮多些，下面三天都能配。');
+  }
+
+  // 通用安排 7 天
+  var menu = [];
+  var w = people === '3' ? ['卤/炖一锅大荤连吃两晚', '用卤汁下点豆干豆腐变个菜', '清冰箱：剩菜+剩饭做炒饭', '新买个鱼/肉做清口点的一顿'] : [];
+  if (people !== '3') {
+    menu = [
+      d[0] + ' 青椒肉丝 + 凉拌黄瓜' + (rice === 'more' ? '（配饭）' : '（主食少点）'),
+      d[1] + ' 番茄炒蛋盖饭 / 剩肉末做个麻婆豆腐',
+      d[2] + ' 鸡腿/肉排切块烧土豆，一次烧够今天加明天早餐可配个蛋',
+      d[3] + ' 清冰箱大扫除日：把番茄、青椒、鸡蛋、肉末做成酸辣汤/蛋炒饭',
+      d[4] + ' 周末前轻松点：虾仁炒时蔬 or 豆腐煲',
+      d[5] + ' 周六可炖锅大骨/鸡架汤，营养又便宜，汤底留到',
+      d[6] + ' 周日：用汤下点面/瓜，做白斩鸡的拆骨肉再炒个菜，完美收尾'
+    ];
+  } else {
+    menu = [
+      d[0] + ' 卤鸡腿+土豆+卤蛋一锅出（卤水留着）',
+      d[1] + ' 卤水+豆腐/海带/豆皮、炒个时蔬，剩饭变烧饼也可',
+      d[2] + ' 蚝油牛肉/番茄牛腩（一次多做留一盒冰箱）',
+      d[3] + ' 用上昨天的牛肉做番茄牛肉汤面/咖喱',
+      d[4] + ' 清冰箱：各种剩菜拼炒饭，或做个大炖菜',
+      d[5] + ' 鲜鱼/虾做顿好的：清蒸or蒜蓉开背虾，配绿叶菜',
+      d[6] + ' 周日清淡：老火汤（骨/鸡）+ 白灼青菜，收心'
+    ];
+  }
+  L.push('', '🍽 一周排菜（根据你选的档位推荐）：');
+  for (var j = 0; j < menu.length; j++) L.push(menu[j]);
+
+  // 循环利用 tip
+  L.push('', '♻ 边角料再就业（这是不浪费的钥匙）：');
+  L.push('· 青菜梗/萝卜皮/芹菜叶 → 攒起来第4天做“素乱炖汤”或焯水凉拌。');
+  L.push('· 每次切菜剩下的边角 → 丢进保鲜袋冷冻，周末熬汤底，白赚一锅高汤。');
+  L.push('· 剩饭别倒，第4天直接炒——比新煮的饭更弹牙，还省电。');
+  L.push('· 肉汤汁别扔，冷冻后是下面条的灵魂。');
+
+  if (skill === 'fast') L.push('', '⚡ 因为你说赶时间，周末把肉类提前分装冷冻、菜该洗的洗好放保鲜盒，工作日能省 15 分钟。');
+  if (rice === 'more') L.push('', '🍚 主食党福利：土豆/红薯/燕麦轮着上，穿插粗粮更省钱也不腻。');
+
+  L.push('', '结尾一句大实话：');
+  L.push('别追求每顿都现做现炒，真正的省钱高手，是“一次多花的功夫让后面三顿都省”。这周试试，惊喜会在月底的买菜账单上出现。');
+
+  document.getElementById('resultArea').classList.add('active');
+  document.getElementById('result').textContent = L.join(NL);
+});
+function copyResult() {
+  navigator.clipboard.writeText(document.getElementById('result').textContent).then(function () { alert('✅ 已复制'); });
+}
+</script>
+</body>
+</html>

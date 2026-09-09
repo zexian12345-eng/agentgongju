@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Excel 数据透视/仪表盘速通 | AgentGongju.com</title>
+<meta name="description" content="手里一堆Excel数据想做分析汇报？输入你的数据说明与老板想看什么，一张图帮你梳理：该先做哪几步清洗、用什么透视/公式/图表，附现成函数与快捷键清单">
+<meta name="keywords" content="Excel,数据透视,仪表盘,数据分析,办公,函数,VLOOKUP,图表,汇报">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+textarea{min-height:80px;resize:vertical}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:22px;color:#e2e8f0;line-height:2;white-space:pre-wrap;min-height:60px;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.hint{color:#94a3b8;font-size:.8rem;margin-top:-6px;margin-bottom:8px}
+.hint2{color:#64748b;font-size:.82rem;text-align:center;margin-top:8px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📊 AI Excel 数据速通助手</h1><p>不用报班，照着这份菜单把一坨表格变成能汇报的看板</p></div>
+
+<div class="card">
+<label>📋 你的数据大概是什么（一句话说清字段）</label>
+<textarea id="data" placeholder="例：我有一张表，列是 日期/地区/销售员/销售额/退货额，想按月看各组完成率">每天的各地区各业务员的成交额和退货额，要按月分地区看完成进度</textarea>
+<div class="param-row">
+<div><label>🎯 最想实现（可多选中最想先做）</label><select id="goal">
+<option value="pivot">做个能下拉筛选的数据透视表</option>
+<option value="trend" selected>做趋势看趋势/汇总对比图</option>
+<option value="clean">先把脏数据/格式规范化</option>
+<option value="kpi">算KPI（完成率/同比环比）</option>
+</select></div>
+<div><label>🛠 你用的软件</label><select id="sw"><option value="excel">Excel</option><option value="wps" selected>WPS表格</option></select></div>
+</div>
+<div class="param-row">
+<div><label>⏱ 我的经验</label><select id="lvl"><option value="new" selected>小白，函数不熟</option><option value="mid">会基础函数，想进阶透视</option><option value="pro">熟手要提效技巧</option></select></div>
+<div><label>📦 数据量大概</label><select id="rows"><option value="small">几千行以内</option><option value="big" selected>几万行以上/很卡</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">📊 生成操作路线</button>
+<div class="result-area" id="resultArea"><div class="card"><div style="color:#22c55e;font-weight:600;margin-bottom:12px">🧭 速通路线已生成</div><div class="result-box" id="result"></div><button class="copy-btn" onclick="copyResult()">📋 复制路线</button></div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#94a3b8;text-align:center;padding:20px;font-size:.85rem">WPS与Excel绝大多数操作与快捷键相近；版本若不一致可在软件\"帮助/搜索\"里查对应入口。</p></div></footer>
+
+<script>
+document.getElementById('genBtn').addEventListener('click',function(){
+ if(!Paywall.countUse('AI Excel 数据速通助手 | AgentGongju.com'))return;
+ var data=document.getElementById('data').value.trim()||'你的那堆数据';
+ var goal=document.getElementById('goal').value;
+ var sw=document.getElementById('sw').value;
+ var lvl=document.getElementById('lvl').value;
+ var rows=document.getElementById('rows').value;
+ var R=function(a){return a[Math.floor(Math.random()*a.length)];};
+ var A='【数据描述】'+data+'。';
+ var out='📊 「'+goalRadioName(goal)+'」速通菜单\n\n';
+ function goalRadioName(g){return {pivot:'想做透视表',trend:'做趋势/对比图',clean:'清洗整理',kpi:'算KPI指标'}[g];}
+ var steps=[];
+ // 0 通用第一步
+ var rowTip=(sw==='wps'?'WPS里用「数据→智能表格/自动筛选」':'Excel里先 Ctrl+T 转成\"表格\"（或 插入→表格)，让区域自动扩展，公式和透视都更好用');
+ if(rows==='big')steps.push('① 先治卡顿：大表直接筛选/透视反而省心，别在几万行里手拖；可先把无关列删掉仅留需要的。');
+ if(lvl==='new')steps.push('① '+(sw==='wps'?'先选中表头那行，点「数据→筛选」在标题旁加个下拉小三角，学会用它看数':'先给表头加自动筛选(数据→筛选)，每列标题出现小漏斗就能随手筛选排序')+'——很多\"看不清\"的问题筛一下就有数了。');
+ if(goal==='clean'){
+   steps.push('② 清查数据：①找有没有\"文本型数字\"(很多是从系统导出带绿三角的)——选中该列→(Excel)黄色感叹号选\"转为数字\"/WPS可直接筛选大于号看。②删重复：数据→删除重复项(记得先备份一列身份证/订单号最准)。③空值和\"合计\"行：下拉筛选去掉\"谁合计？\"这类汇总行，避免透视算重复。');
+   steps.push('③ 统一格式：日期列确保是日期格式(选中→右键→设置单元格格式→日期)；金额用千分位+两位小数；文字里藏的全角空格用 查找替换 换成无。');
+ }else if(goal==='pivot'){
+   steps.push('② '+rowTip+'。然后 插入→数据透视表→选数据范围→放\"新工作表\"。建议把 axis 拖\"月份\"到行、\"地区/业务员\"到列或筛选。');
+   steps.push('③ 把\"成交额\"拖进\"值\"区域，右键值字段→值字段设置→把它从\"求和\"或\"计数\"调对(金额用求和)。想带筛选就把它拖到\"筛选器\"区，点开能做下拉只看某地区。');
+   steps.push('④ 美化：把行标签里多余的空行折叠、样式选个浅色表样式(设计→套用)，一个能自己筛的透视表就成了。');
+ }else if(goal==='kpi'){
+   steps.push((sw==='wps'?'WPS用「插入→智能表格」或普通公式都行':'② Excel里建议：把\"日期\"用 =TEXT(日期,\"yyyy-mm\") 做成\"月份\"辅助列，后面全用它汇总。'));
+   steps.push('③ 常用公式现抄：完成率 =实际/目标(C2/B2再设百分比格式)；同比 =(本月-去年同月)/去年同月；累计用 =SUMIF(月份,\"<=2026-01\",金额)。VLOOKUP(要找的,表范围,第几列,0) 用于把老板给的一张汇总进来。');
+   steps.push('④ 嫌公式晕就先透视：把指标算到透视值(求和/平均/最大值切换都在\"值字段设置\")，再看同一张表上用\"已完成/目标\"两列做完成率最直观。');
+ }else{ // trend
+   steps.push('② '+rowTip+'。先把要看的\"时间轴做对\"：新加辅助列\"=TEXT(日期单元格,\"yyyy-mm\")\"，不然按日点的图会很碎。');
+   steps.push('③ 选中\"月份+成交额\"两列→插入→折线图(看趋势)/柱状图(比大小)，再把\"退货额\"也加进去对比——两类各配一个基础图最省心。');
+   steps.push('④ 做给老板的看图章法：先出一个大局(全年总览)，再落入细节(挑最高那月点开看地区)；轴上格式调成千分位、标题能写清\"2026年各地区销售趋势\"这么个主语你就赢了。');
+ }
+ // shortcuts
+ steps.push('⚡ 少走弯路快捷键'+(sw==='wps'?'(WPS基本一致)':'')+'：\n· Ctrl+方向键跳到底/ Ctrl+Shift+方向 一键选到底；Ctrl+1 设置格式；F4 重复上一步(超常用！)；Ctrl+T转表格。\n· 透视看数慢就双击某个汇总数字——它会自动开出这一笔的明细，老板问\"这数哪来的\"你就这点一下。');
+ var out2='📊 给你的「'+goalRadioName(goal)+'」速通菜单\n\n话我就直说了：'+steps.slice(0,rows==='big'?5:4).join('\n');
+ if(goal!=='clean')out2+='\n\n最后再套一步通用保险：做完先存个 .xlsx 档，重要操作前另存一份防手滑。';
+ out2+='\n\n✨ 送你一句：Excel不用全都会，会\"先筛、再转、后透视\"这三板斧，80%汇报都能应付了。祝今晚下班早!';
+ document.getElementById('resultArea').classList.add('active');
+ document.getElementById('result').textContent=out2;
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('result').textContent).then(function(){alert('✅ 已复制！');});}
+</script>
+</body>
+</html>

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 低盐控盐点餐助手 | AgentGongju.com</title>
+<meta name="description" content="适合高血压、肾病、减脂、孕产等需要限盐人群：输入你常点的外卖类型与一天几顿，估算钠摄入、标注高盐雷区，并给出一套点餐避坑与在家减盐换算方案">
+<meta name="keywords" content="低盐,控盐,减盐,钠,高血压,外卖,点餐,限盐">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:22px;color:#e2e8f0;line-height:2;white-space:pre-wrap;min-height:60px;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.hint{color:#94a3b8;font-size:.8rem;margin-top:-6px;margin-bottom:8px}
+.hint2{color:#64748b;font-size:.82rem;text-align:center;margin-top:8px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🧂 AI 低盐控盐点餐助手</h1><p>高血压/限盐人群的外卖避雷指南，一顿饭该点啥全明白</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>🍽 今日主餐类型</label><select id="meal">
+<option value="lunchbox">快餐米饭(盖浇/黄焖鸡/外卖套餐)</option>
+<option value="noodles">面食(拉面/牛肉面/炸酱面)</option>
+<option value="hotpot">火锅/麻辣烫/冒菜</option>
+<option value="bbq">烧烤/炸鸡/卤味</option>
+<option value="salad">轻食沙拉/水煮菜/自煮</option>
+</select></div>
+<div><label>🔢 一天大约吃几顿外卖/外食</label><select id="count"><option value="1">1顿（最多）</option><option value="2" selected>2顿</option><option value="3">3顿全外食</option></select></div>
+</div>
+<div class="param-row">
+<div><label>⚖️ 我需要严格到什么程度</label><select id="strict">
+<option value="mild">一般减盐（健康想控一点）</option>
+<option value="doc" selected>医生嘱咐限盐（高血压/肾病等）</option>
+</select></div>
+<div><label>🥤 平时爱喝咸味汤/吃咸菜吗</label><select id="salty"><option value="no">不太碰</option><option value="some">会配咸菜/泡菜</option><option value="yes">无汤不欢、爱喝咸汤</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">🧂 生成点餐方案</button>
+<div class="result-area" id="resultArea"><div class="card"><div style="color:#22c55e;font-weight:600;margin-bottom:12px">🍽 低盐方案已生成</div><div class="result-box" id="result"></div><button class="copy-btn" onclick="copyResult()">📋 复制方案</button></div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#94a3b8;text-align:center;padding:20px;font-size:.85rem">钠摄入为常见菜估测区间，个体差异大；严格的限盐请遵医嘱并以食品标签实际钠含量为准。</p></div></footer>
+
+<script>
+document.getElementById('genBtn').addEventListener('click',function(){
+ if(!Paywall.countUse('AI 低盐控盐点餐助手 | AgentGongju.com'))return;
+ var meal=document.getElementById('meal').value;
+ var cnt=parseInt(document.getElementById('count').value);
+ var strict=document.getElementById('strict').value;
+ var salty=document.getElementById('salty').value;
+ var dailyLimit=strict==='doc'?2000:2400; // mg sodium
+ var MAP={
+  lunchbox:{name:'盖浇饭/套餐',mg:1600,trap:'很多盖浇的\"浓汁\"就是盐开会',hack:['备注少盐少酱、汁拌饭改少一半或别吃汁','选清蒸/白灼/卤的先点，避免红烧、糖醋多重裹酱','换掉默认的咸菜、榨菜小碟，配菜挑青菜不挑腌菜']},
+  noodles:{name:'面食',mg:2000,trap:'一碗面汤的盐常占一顿的大半',hack:['汤面改\"面少汤海\"？不，减盐是少喝汤，面吃完留半碗汤','备注店家\"盐少放、别太咸\"，通常能减1/3','选清汤底别选重口牛油/酱香，加个水煮蛋补蛋白不比赘肉强','卤蛋、酸豆角、辣酱这些加料都是钠刺客，能去掉就去掉']},
+  hotpot:{name:'锅物/麻辣烫',mg:2500,trap:'锅底和汤料是最大雷',hack:['麻辣烫选\"清汤/微辣\"锅底，备注少放盐和辣椒粉','别喝那口红汤/白汤，蘸料改醋+蒜为主少蘸麻酱','主食选泡面就搭杯水多涮菜少丸子，丸子丸汤最藏盐']},
+  bbq:{name:'烧烤/炸鸡卤味',mg:2600,trap:'腌料+撒料双层加盐',hack:['选原味/微辣不选酱腌重口味，让店家少刷酱','把撒料抖掉一些再吃，或用醋碟涮一下','配蔬菜中和，别配啤酒+咸花生那一套']},
+  salad:{name:'轻食/自煮',mg:600,trap:'酱汁是隐藏盐库',hack:['沙拉酱汁单独装只蘸一半，或换油醋','自煮用\"后放盐+柠檬/醋提味\"技巧，少一半盐不减味','水煮菜出锅撒一点黑胡椒和葱就不寡淡了']}
+ };
+ var m=MAP[meal];
+ var est=m.mg*cnt;
+ var saltyAdd=salty==='some'?250:(salty==='yes'?500:0);
+ var total=est+saltyAdd;
+ var ok=total<=dailyLimit;
+ var out='🧂 今日外食盐量估算\n\n';
+ out+='· 主餐('+m.name+' × '+cnt+'顿)约 '+est+' 毫克钠';
+ if(saltyAdd)out+='，加上咸汤/咸菜约 '+saltyAdd+' 毫克';
+ out+='，全天预估共约 '+total.toFixed(0)+' 毫克钠。\n';
+ out+='· 目标上限：'+dailyLimit+' 毫克/天（'+(strict==='doc'?'遵医嘱严格限盐（≈5.2g盐/日更紧凑 — 实际按2g钠≈5g盐换算）':'一般人群健康推荐')+'）。\n';
+ out+='· '+(ok?'✅ 在安全线以内，继续保持！':'⚠️ 已超出'+dailyLimit+'目标'+(strict==='doc'?'，医生可会念叨你啦':',建议今天再吃就清淡点'))+'\n\n';
+ out+='🚩 这一类的\"盐雷区\"：'+m.trap+'\n\n';
+ out+='✅ 低盐点法（照着备注给店家就行）\n· '+m.hack.join('\n· ')+'\n\n';
+ out+='🍚 全天搭配建议\n· 每顿主食先吃够、蛋白质选瘦肉/蛋/豆腐，蔬菜吃到\"一拳头\"以上，这样饱腹感有了才不那么馋咸味。\n· '+(cnt>=2?'外卖店家不同盐量差别很大，尽量固定几家你试过\"备注后不太咸\"的店。':'今天只剩'+cnt+'顿外食压力小，其他几餐自己煮点粗粮青菜就补回来了。');
+ if(salty==='yes')out+='\n· 爱喝咸汤这个习惯先戒：饭后一杯100ml的汤，长期下来钠不少，改喝白开水或淡茶，一周后再喝汤会明显觉得\"太咸了\"——这说明味蕾正在变敏感。';
+ out+='\n\n🌟 小贴士：把\"少盐\"变成口头禅，三个月后你会惊讶——原来自己煮什么都好吃，曾经那些重口其实是味觉被惯坏了。';
+ document.getElementById('resultArea').classList.add('active');
+ document.getElementById('result').textContent=out;
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('result').textContent).then(function(){alert('✅ 已复制！');});}
+</script>
+</body>
+</html>

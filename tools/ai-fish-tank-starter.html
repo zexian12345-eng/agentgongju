@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 新手养鱼开缸助手 | AgentGongju.com</title>
+<meta name="description" content="第一次养鱼别急着买鱼！输入你的鱼缸尺寸、想养的类型与预算，自动生成开缸养水流程、安全放鱼密度、设备清单和20天开缸时间表，避开新手最容易犯的错">
+<meta name="keywords" content="养鱼,开缸,新手,鱼缸,养水,热带鱼,金鱼,过滤,宠物">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:22px;color:#e2e8f0;line-height:2;white-space:pre-wrap;min-height:60px;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.hint{color:#94a3b8;font-size:.8rem;margin-top:-6px;margin-bottom:8px}
+.hint2{color:#64748b;font-size:.82rem;text-align:center;margin-top:8px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🐠 AI 新手养鱼开缸助手</h1><p>把鱼养活的不是运气，是\"先养水、慢放鱼\"这套流程</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>🐟 鱼缸大小</label><select id="tank"><option value="20">20cm小鱼缸(桌面微缸)</option><option value="30" selected>30~40cm中缸(最常见)</option><option value="60">60cm以上大鱼缸</option></select></div>
+<div><label>🦐 想养什么</label><select id="type">
+<option value="guppy">皮实的孔雀鱼/斑马鱼</option>
+<option value="goldfish">金鱼（草金/鎏金）</option>
+<option value="tropical">中小型热带灯鱼群</option>
+<option value="shrimp">虾缸（极火/樱花/水晶虾）</option>
+<option value="betta">单养一条斗鱼</option>
+</select></div>
+</div>
+<div class="param-row">
+<div><label>💰 设备预算（不含鱼价）</label><select id="budget"><option value="low">100内（尽量省）</option><option value="mid" selected>100~300（够用到舒服）</option><option value="high">300以上（一步到位的快乐）</option></select></div>
+<div><label>🕐 你接受的最大学习耐心</label><select id="patience"><option value="wantfast">想快点养上鱼（能等3天最好）</option><option value="patient" selected>愿意按规矩养水一两周</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">🐠 生成开缸方案</button>
+<div class="result-area" id="resultArea"><div class="card"><div style="color:#22c55e;font-weight:600;margin-bottom:12px">🍀 开缸规划已生成</div><div class="result-box" id="result"></div><button class="copy-btn" onclick="copyResult()">📋 复制方案</button></div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#94a3b8;text-align:center;padding:20px;font-size:.85rem">具体型号、密度与水质数据请以靠谱鱼店或专业手册为准；养鱼先学\"少喂、勤观察、别乱加药\"。</p></div></footer>
+
+<script>
+document.getElementById('genBtn').addEventListener('click',function(){
+ if(!Paywall.countUse('AI 新手养鱼开缸助手 | AgentGongju.com'))return;
+ var tank=document.getElementById('tank').value;
+ var type=document.getElementById('type').value;
+ var budget=document.getElementById('budget').value;
+ var patience=document.getElementById('patience').value;
+ var L={20:12,30:36,60:90}[tank]; // 升估
+ var TYPE={
+  guppy:{name:'孔雀/斑马鱼',den:3,temp:'22~28℃',note:'皮实好养、会生鱼崽，适合练手，买小缸要先解决过滤和缺氧'},
+  goldfish:{name:'金鱼',den:5,temp:'18~24℃',note:'能吃能拉排废多，金鱼是需要更大水体和高流量过滤的\"硬件党\"，20cm缸就别碰'},
+  tropical:{name:'灯科热带鱼',den:4,temp:'24~28℃',note:'灯鱼原生水质软偏微酸，需要加热棒恒温，开缸杀菌时间放宽一些'},
+  shrimp:{name:'虾',den:0/*不用密度*/,temp:'22~28℃',note:'虾对氨氮极敏感，水必须养得极熟（建议开缸后空缸循环3周以上）再下极少量闯缸虾'},
+  betta:{name:'斗鱼',den:1,temp:'24~30℃',note:'一条斗鱼+小缸即可，反而清爽：低密度=低风险，适合新手第一缸'}
+ }[type];
+ var filter= budget==='low'?(tank==='20'?'挂壁式瀑布过滤（几块钱到十几，务必选静音款）':'小号外挂瀑布过滤'):(budget==='mid'?(tank==='60'?'外置滤桶或上滤':'小型外挂+一包滤材'):'外置滤桶+前置，一步到位最省心');
+ var needHeater=(type==='tropical'||type==='betta');
+ var out='🐟 你的开缸基础盘\n\n';
+ out+='· 缸体：'+(tank==='20'?'20cm微缸':tank==='30'?'30~40cm中缸':'60cm+大缸')+'（约'+L+'升）· 目标养：'+TYPE.name+'\n';
+ out+='· 加温：'+(needHeater?'需要加热棒，恒温到 '+TYPE.temp+' 附近':(type==='guppy'?'孔雀鱼室温(20℃+)通常可行，但冬天低于18℃建议加个加热棒':'冷水鱼不用加热棒，靠室温即可'))+'\n';
+ out+='· 过滤：'+filter+'。净化靠\"细菌\"不是靠\"多换水\"，这个预算逻辑要先摆正。\n';
+ if(budget==='high')out+='· 预算宽裕：建议再配一套便宜的水质测试液（氨氮/亚硝酸盐），养水期天天测，比什么都稳。\n';
+ // 密度
+ var density;
+ if(type==='shrimp')density='先放6~10只皮实的闯缸虾试试水，稳定一周再逐步加';
+ else if(type==='betta')density='就养这一条斗鱼，别加别的鱼（它会咬）';
+ else{var perCm;if(TYPE.den===5)perCm=Math.floor(L/5);else if(TYPE.den===3)perCm=Math.floor(L/3);else perCm=Math.floor(L/(type==='goldfish'?12:4));density=tank==='20'?'微缸只适合养 2~4 条小型鱼':'新开缸先只放约'+Math.max(2,Math.min(perCm,type==='goldfish'?3:15))+'条';}
+ out+='\n👨‍🎓 安全放养密度：'+density+'。宁可少别贪多——密度是新手鱼全灭的头号原因。\n';
+// schedule
+out+='\n🗓 标准养水时间表（别急，跟着走）\n';
+out+='第1天 洗缸洗滤材（自来水冲净即可，别用洗涤剂）；困水并爆氧/开着过滤循环。\n';
+out+='第2-3天 加入硝化菌液(按说明)+少量鱼食当"污染源"，让滤材开始挂膜。\n';
+out+=(needHeater?'第4-7天 每天测水，等氨氮/亚硝酸盐从"冒头"降到"测不到零"，水质就熟了':'第4-7天 继续循环，让滤材上的菌膜长起来（闻到水里有淡淡"鱼味"不是坏水，是系统在启动）')+'\n';
+ if(type==='shrimp')out+='第8-21天 虾缸推荐把闯缸阶段拉长：空缸养水+每天补硝化菌，满3周再下虾最稳。\n';
+ if(patience==='wantfast')out+='⚠️ 想快可以短期用\"热弯\"/成品硝化液，但至少要留3-7天别跳步，否则第二天就是收货死鱼。\n';
+ out+='第N天 买鱼→过水温(浮袋15分钟)→再过水(分次兑缸水)→入缸头3天不喂食，看它游动正常再开喂。\n\n';
+ out+='💧 日常三五条规矩\n· 三天喂一次、一次两分钟内吃完的量即可，90%死鱼和\"喂太多+换水太狠\"有关。\n· 每周换1/4~1/3困过的等温水，别大换全缸水。\n· 水妖精/灯菌不用捣鼓，看到鱼不舒服先停食观察，别一上来就乱下药。\n\n🌱 送你一句话：养鱼养的不是鱼，是耐心和那缸水。等水质真的熟了，鱼活得好，你会特别有成就感！';
+ document.getElementById('resultArea').classList.add('active');
+ document.getElementById('result').textContent=out;
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('result').textContent).then(function(){alert('✅ 已复制！');});}
+</script>
+</body>
+</html>

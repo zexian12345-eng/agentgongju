@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 大学专业就业方向解读 | AgentGongju.com</title>
+<meta name="description" content="填报志愿/选专业前，输入你想了解的专业名称：一键给出该专业课业难度、对口就业方向、适合人群与常见误区，帮考生和家长做个清醒的初步判断">
+<meta name="keywords" content="专业,志愿,高考,就业,选专业,大学专业,报志愿,就业方向">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+textarea{min-height:70px;resize:vertical}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:22px;color:#e2e8f0;line-height:2;white-space:pre-wrap;min-height:60px;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.hint{color:#94a3b8;font-size:.8rem;margin-top:-6px;margin-bottom:8px}
+.hint2{color:#64748b;font-size:.82rem;text-align:center;margin-top:8px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🎓 AI 大学专业就业解读</h1><p>把"这个专业以后干啥"讲清楚，志愿填报前先心里有底</p></div>
+
+<div class="card">
+<label>📘 想了解的专业（写名称即可）</label><input type="text" id="major" placeholder="例：计算机科学与技术 / 临床医学 / 汉语言文学 / 金融学 / 土木工程" value="">
+<div class="param-row">
+<div><label>🧭 你是</label><select id="who"><option value="student" selected>高三/填报志愿的考生</option><option value="fresh">大一纠结要不要转专业</option><option value="parent">帮孩子参考的家长</option></select></div>
+<div><label>🎯 最关心哪方面</label><select id="concern">
+<option value="job" selected>就业出路/工资前景</option>
+<option value="fit">适不适合我/难度</option>
+<option value="both">出路+难度都想看全</option>
+</select></div>
+</div>
+<button class="btn-gen" id="genBtn">🎓 解析这个专业</button>
+<div class="result-area" id="resultArea"><div class="card"><div style="color:#22c55e;font-weight:600;margin-bottom:12px">🧭 专业解读已生成</div><div class="result-box" id="result"></div><button class="copy-btn" onclick="copyResult()">📋 复制解读</button></div></div>
+<p class="hint2">本解读为通用科普参考，各校课程/就业差异大；报考请务必对照目标院校招生计划与教育部学科信息核实。</p>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#94a3b8;text-align:center;padding:20px;font-size:.85rem">本文内容不构成报考或职业决策的唯一依据，请结合兴趣、学科基础、院校层次与家人充分沟通后再定。</p></div></footer>
+
+<script>
+document.getElementById('genBtn').addEventListener('click',function(){
+ if(!Paywall.countUse('AI 大学专业就业解读 | AgentGongju.com'))return;
+ var m=document.getElementById('major').value.trim();
+ var who=document.getElementById('who').value;
+ var concern=document.getElementById('concern').value;
+ var R=function(a){return a[Math.floor(Math.random()*a.length)];};
+ if(!m){alert('请先输入你想了解的专业名称哦');return;}
+ // 简易关键词匹配
+ function has(arr){for(var i=0;i<arr.length;i++)if(m.indexOf(arr[i])>-1)return true;return false;}
+ var D;
+ if(has(['计算机','软件','数据科学','人工智能','网络','信息安全']))D={cat:'理工·计算机',duty:'以写代码和数据模型为主，入门到精通需要持续自学',hard:'中偏高，数学+编程是门槛，课下自学比课堂重要',job:['软件开发/后端/前端','测试/运维/云平台','算法/数据/AI方向','公务员/国企信息化部门'],salary:'理工类偏前列，应届分化大（好学校好技术很香，混日子则一般）',num:'文理兼收看学校，通常对数学物理有一定要求'};
+ else if(has(['临床','医学','护理','口腔','中医','药学']))D={cat:'医学',duty:'以救治为核心，本科只是起点，规培/考研是绕不开的长路',hard:'很高：课业重+实习+五年起步，需长期抗压',job:['医生（需规培/专硕）','公立/私立医院技术岗','医药研发/器械','健康管理/医保相关'],salary:'积累期长回报慢，越老越吃的是经验与执照',num:'多要求选科含物化或物理化学基础'};
+ else if(has(['法学','法律']))D={cat:'法学',duty:'大量记忆+逻辑分析，执业还要过法考',hard:'中高：背诵+案例训练，法考通过率让很多人头大',job:['律师（需过法考）','公检法公务员','公司法务','考研深造/律师助理'],salary:'两极分化：顶尖所高薪，普通小城市起薪一般',num:'文理科都可报考（视学校），文字与逻辑要强'};
+ else if(has(['汉语言','中文','文学']))D={cat:'文史',duty:'阅读写作+语言文学研究，也做师范方向(当语文老师)',hard:'门槛低卷度不小：看书多不多直接拉开差距',job:['语文教师/师范方向','编辑/出版/新媒体文案','公务员文字岗','考研做研究/文职'],salary:'稳定为主，考公考编认可度高，纯文学就业面要靠其他技能叠加',num:'文理兼收，对阅读量写作功底有要求'};
+ else if(has(['金融','经济','会计','审计','财会']))D={cat:'财经',duty:'以财务/投资/数据为工具做判断,KPI是数字敏感+考证+实习',hard:'中高：数理好的吃香，光背概念不够，要卷证书(CPA/CFA)和实习',job:['投行/银行/券商','会计审计(CPA)','财务/经营分析','公务员/国企财务'],salary:'头部金融机构高，普通岗位中等偏稳；学历和证书是硬通货',num:'文理兼收多在理科班招生，数学要求较真'};
+ else if(has(['土木','建筑','工程管理','造价']))D={cat:'工科·土建',duty:'盖楼修路造桥，工地+图纸是主战场',hard:'中：画图施工测量要下工地，体力与现场性强',job:['施工/监理','设计院(常要研究生)','造价/招投标','考公/转甲方'] ,salary:'行业有周期，应届起薪一般，头部企业+证书能好一些，近年整体景气度待观察',num:'理科，物理是核心'};
+ else if(has(['英语','翻译','外语','商务英语']))D={cat:'外语',duty:'语言为专业但往往也成不了唯一饭碗，常需叠加其他技能',hard:'中：语言靠天天泡，考级/专八是硬指标',job:['教师/培训机构','翻译(口笔译)','外贸/跨境电商','进外企靠外语当辅助'],salary:'纯翻译供需有限，外贸/教师较稳，想赚得多建议组合专业或技能',num:'文理兼收，口语听力是日常功夫'};
+ else D={cat:'通识参考',duty:'拿不准的专业：建议你今晚做两件事——①去目标大学官网看该专业培养方案(学哪些课)；②上招聘平台搜\"该专业名\"看真实岗位和薪资范围。',hard:'无法一刀切，先看课表与历年就业报告判断',job:['可对照各校就业质量报告看主流去向','再看该专业的\"招牌\"行业岗位'],salary:'看学校层次+个人技能，别只看专业名',num:'报考要求请查目标院校当年招生计划'};
+var out='📘 「'+m+'」专业速读\n\n';
+out+='· 领域分类：'+D.cat+'\n';
+if(concern!=='job')out+='· 适不适合 / 难度：'+D.hard+'\n';
+out+='\n📁 对口就业方向（常见）\n· '+D.job.join('\n· ')+'\n\n';
+out+='💰 就业与薪资场观\n· '+D.salary+'\n\n';
+out+='🎯 给'+(who==='student'?'正在填报的你':who==='fresh'?'纠结转专业的你':'帮孩子把关的你')+'的三句实在话：\n';
+out+='1. 专业决定你考研考编的门槛下限，但真正决定走多高的是\"你在这个专业之外自学叠加了什么\"。\n';
+out+='2. 别信\"文科没用/理科万能\"这种一刀切：顶尖计算机也有裁员季，汉语言考公上岸一样被羡慕——就业看的是真实数据+个人能力。\n';
+out+='3. '+((who==='parent')?'放手让孩子选真正感兴趣的，比硬塞一个\"听说好就业\"的更可能在大学发光。':'先诚实问自己一句：就算这专业将来就业一般，你还愿意学吗？愿意，说明是真爱，那就去。')+'\n\n';
+out+='本解读为通用科普参考，最终请以目标院校历年就业质量报告、招生计划及教育部专业信息为准。';
+ document.getElementById('resultArea').classList.add('active');
+ document.getElementById('result').textContent=out;
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('result').textContent).then(function(){alert('✅ 已复制！');});}
+</script>
+</body>
+</html>

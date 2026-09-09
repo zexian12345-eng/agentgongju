@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 手机通知与聊天清理 | AgentGongju.com</title>
+<meta name="description" content="手机被几百条群聊和推送淹没？按消息/群聊的重要度生成一套清理断舍离方案：哪些免打扰、哪些退群、哪些先存记录再退，附微信/QQ/iOS/安卓具体入口">
+<meta name="keywords" content="通知清理,聊天记录,断舍离,微信清理,手机整理,屏幕使用时间,免打扰,群聊">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+input[type=text],input[type=number],select,textarea{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus,textarea:focus{border-color:#a855f7}
+textarea{min-height:80px;resize:vertical}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(168,85,247,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(168,85,247,0.3);border-radius:12px;padding:22px;color:#e2e8f0;line-height:2;white-space:pre-wrap;min-height:60px;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(168,85,247,0.15);border:1px solid rgba(168,85,247,0.3);border-radius:8px;color:#d8b4fe;cursor:pointer;font-size:.85rem}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>✂️ 手机通知 & 聊天断舍离</h1><p>被群聊和推送淹得看不过来？按这张清单分清主次，每天少刷两小时</p></div>
+
+<div class="card">
+<label>📱 现在最吵的是哪几样？（勾最烦的 1–3 样，按住 Ctrl/Cmd 多选）</label>
+<select id="annoy" multiple size="6">
+<option value="app" selected>各种 App 推送 / 营销短信</option>
+<option value="group" selected>微信群/QQ群几百条未读</option>
+<option value="friend">朋友转发/聊天太多</option>
+<option value="video">短视频/直播根本停不下来</option>
+</select>
+<div class="param-row">
+<div><label>📱 手机系统</label><select id="os"><option value="ios" selected>iPhone</option><option value="android">安卓</option></select></div>
+<div><label>⏱ 计划分几次整理</label><select id="t"><option value="10">只想动10分钟</option><option value="30" selected>今晚花半小时</option><option value="60">大扫除一晚上</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">🧹 生成断舍离清单</button>
+<div class="result-area" id="resultArea"><div class="card"><div style="color:#22c55e;font-weight:600;margin-bottom:12px">🗂 专属清理路线</div><div class="result-box" id="result"></div><button class="copy-btn" onclick="copyResult()">📋 复制清单</button></div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#94a3b8;text-align:center;padding:20px;font-size:.85rem">不同 App 版本菜单位置略有差异，找不到的入口用 App 内搜索框输关键词直达。</p></div></footer>
+
+<script>
+var NL = String.fromCharCode(10);
+var os = 'ios';
+document.getElementById('genBtn').addEventListener('click', function () {
+  if (!Paywall.countUse('AI 手机通知与聊天清理 | AgentGongju.com')) return;
+  var picks = [];
+  var opts = document.getElementById('annoy').selectedOptions;
+  for (var ii = 0; ii < opts.length; ii++) picks.push(opts[ii].value);
+  if (picks.length === 0) picks = ['app'];
+  os = document.getElementById('os').value;
+  var pace = document.getElementById('t').value;
+  var L = []; 
+  L.push('🧹 手机断舍离 · 先动这几处：');
+
+  if (picks.indexOf('app') > -1) {
+    L.push('', '【App推送 / 营销短信】');
+    if (os === 'ios') L.push('1. 设置 → 通知 → 找到那个烦人App → 关掉(允许通知)；重要的可只留声音不跳横幅。');
+    else L.push('1. 长按通知弹出菜单点关闭通知，或在 设置 → 通知/通知管理 里逐条关；把 App 的推广消息也一并关掉。');
+    L.push('2. 营销短信：按短信里写的回复TD退订；仍收到的就在短信里 Mark 成垃圾号码来减少。');
+  }
+  if (picks.indexOf('group') > -1) {
+    L.push('', '【微信群 / QQ 群轰炸】');
+    L.push('1. 微信群点右上人像/··· → 消息免打扰 → 打开；彻底想清净的再勾(折叠该群聊)。');
+    L.push('2. 要退的群：点群名 → 拉到最底部(退出群聊)，退出前把公告/常用文件先截图或转存。');
+    L.push('3. QQ群同理：群设置里开免打扰，退出群聊在群资料最下方。');
+  }
+  if (picks.indexOf('friend') > -1) {
+    L.push('', '【个人聊天过载】');
+    L.push('1. 真在乎的3-5个联系人设为置顶聊天，其余别置顶。');
+    L.push('2. 几天不看的旧群/旧会话直接左滑删除，聊天记录一般可云端找回，不心疼。');
+    L.push('3. 清存储：微信 → 我 → 设置 → 通用 → 存储空间 → 管理；看谁是大户，把缓存的大视频/大图清一波。');
+  }
+  if (picks.indexOf('video') > -1) {
+    L.push('', '【短视频 / 直播太上头】');
+    if (os === 'ios') L.push('1. 设置 → 屏幕使用时间 → App限额 → 给短视频App设每天30分钟，到点要自己输密码。');
+    else L.push('1. 手机自带的数字健康/专注模式，给该App设使用时长限制或定时休屏。');
+    L.push('2. 顺手卸掉2个其实从不点开的视频类App，别让它们留在桌面招你。');
+  }
+
+  L.push('', '==== 执行节奏 ====');
+  if (pace === '10') L.push('今天只做上面第一步就好。做完全部退回到桌面，把手机放下，去做点别的。');
+  else if (pace === '60') L.push('今晚一次到位，每关一个App通知就在心里打个勾，全勾完会有种轻了几斤的感觉。');
+  else L.push('半小时就好，按1→2顺序做，做不完的明天继续。别贪多，能坚持比一次清完重要。');
+
+  L.push('', '结尾送你一句：');
+  L.push('清理手机不是把消息删光，而是让真正重要的信息浮出水面。清完之后，手机安静了，人也该安静地睡个好觉了。');
+
+  var out = L.join(NL);
+  document.getElementById('resultArea').classList.add('active');
+  document.getElementById('result').textContent = out;
+});
+function copyResult() {
+  navigator.clipboard.writeText(document.getElementById('result').textContent).then(function () { alert('✅ 已复制到剪贴板'); });
+}
+</script>
+</body>
+</html>

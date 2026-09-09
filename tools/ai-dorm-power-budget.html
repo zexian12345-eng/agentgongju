@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 宿舍限电省电规划 | AgentGongju.com</title>
+<meta name="description" content="针对大学宿舍功率限制和电费预充值场景，输入额定功率、每天用电时长与生活费预算，算出安全用电上限、一日电量分配和一套省电实测小技巧">
+<meta name="keywords" content="宿舍,限电,省电,功率,电费,大学生,生活,规划">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:22px;color:#e2e8f0;line-height:2;white-space:pre-wrap;min-height:60px;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.hint{color:#94a3b8;font-size:.8rem;margin-top:-6px;margin-bottom:8px}
+.hint2{color:#64748b;font-size:.82rem;text-align:center;margin-top:8px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>⚡ AI 宿舍限电省电规划</h1><p>算清功率红线与每度电账本，告别突然跳闸和月底电费吓一跳</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>🔌 宿舍额定功率上限(W)</label><select id="limit">
+<option value="300">300 W（老楼常见）</option>
+<option value="500" selected>500 W</option>
+<option value="800">800 W</option>
+<option value="1000">1000 W（部分新楼）</option>
+<option value="1500">1500 W（含空调）</option>
+</select></div>
+<div><label>💰 每度电价格(元，一般0.5~0.7)</label><input type="number" id="price" value="0.55" min="0.1" step="0.01"></div>
+</div>
+<div class="param-row">
+<div><label>🖥 大功率设备类型（占大头）</label><select id="appl">
+<option value="pc">台式机+显示器（约200-300W）</option>
+<option value="laptop-game">游戏笔记本（约120-180W）</option>
+<option value="heater">小太阳/取暖器（800W级）</option>
+<option value="blowdry">吹风机（1000-1800W短时）</option>
+<option value="kettle">宿舍小锅/电水壶（600-1000W短时）</option>
+</select></div>
+<div><label>🌡 所在季节散热需求</label><select id="season"><option value="cool">春秋（基本无需加热制冷）</option><option value="hot">夏（风扇/空调）</option><option value="cold">冬（取暖/热水需求大）</option></select></div>
+</div>
+<div class="param-row">
+<div><label>📅 每月生活费(元，用于估电费占比，选填)</label><input type="number" id="budget" value="1500" min="0"></div>
+<div><label>💡 是否学校先送免费额度再自充</label><select id="mode"><option value="freefirst" selected>是（先有基础额度，超了再充）</option><option value="selfpay">否（全程自己充值买电）</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">⚡ 测算省电方案</button>
+<div class="result-area" id="resultArea"><div class="card"><div style="color:#22c55e;font-weight:600;margin-bottom:12px">📊 测算结果</div><div class="result-box" id="result"></div><button class="copy-btn" onclick="copyResult()">📋 复制结果</button></div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#94a3b8;text-align:center;padding:20px;font-size:.85rem">各校限电与电费政策差异大，最终请以宿舍管理规定与计费表为准；估算仅作参考。</p></div></footer>
+
+<script>
+document.getElementById('genBtn').addEventListener('click',function(){
+ if(!Paywall.countUse('AI 宿舍限电省电规划 | AgentGongju.com'))return;
+ var R=function(a){return a[Math.floor(Math.random()*a.length)];};
+ var limit=parseInt(document.getElementById('limit').value);
+ var price=parseFloat(document.getElementById('price').value)||0.55;
+ var appl=document.getElementById('appl').value;
+ var season=document.getElementById('season').value;
+ var budget=parseFloat(document.getElementById('budget').value)||0;
+ var mode=document.getElementById('mode').value;
+var kWhPerMonth=(function(){var d;if(appl==='pc')d=2.6;else if(appl==='laptop-game')d=1.6;else if(appl==='heater')d=season==='cold'?4.5:0.9;else if(appl==='blowdry')d=0.9;else d=season==='cold'?2.4:1.0;return Math.round(d*30*0.8);})();
+ var monthBill=kWhPerMonth*price;
+ var budgetShare=budget?Math.round(monthBill/budget*100):null;
+ var safeLamp=Math.round(limit*0.7);
+ var tips=[];
+ if(appl==='pc')tips.push(R(['台式机是宿舍电老虎：不用时设30分钟自动睡眠，把显示器亮度调到60%左右，能省2-3成电','打游戏最费电，错峰写作业、下载放睡前，风扇/灯少开一小时回本最快']));
+ if(limit<500)tips.push('老楼限电严：大功率(热得快/小太阳/电磁炉)基本不能碰，会直接跳闸，建议换功率更低的暖水袋+泡脚桶组合。');
+ if(season==='cold')tips.push('冬季少开整晚取暖器，改用电热毯上床前预热15分钟+拔电，被窝热乎且安全，比小太阳省一半以上。');
+ if(season==='hot')tips.push('夏季空调别低于睡眠温度26℃、定时2小时再自然关，比整晚开空调节能明显，也护嗓子。');
+ tips.push(R(['充电器/排插不用就关，节假日整楼都回家时把宿舍总开合拉掉最省','错峰用电虽不省钱但能避免和大功率室友同时跳闸，深夜煮锅请关掉电脑再上']));
+ if(mode==='freefirst'&&budgetShare&&budgetShare>12)tips.push('你每月电费约占生活费'+ budgetShare +'%，偏高！建议上一条：减少加热类设备使用，把额度内灯换成LED，能压到5%左右。');
+var out='⚡ 功率红线 & 电费测算结果\n\n';
+ out+='· 宿舍额定上限：'+limit+' W，为确保不因瞬时大功率跳闸，建议日常同开总功率控制在 '+safeLamp+' W 以内（留30%余量）。\n';
+ out+='· 你主要的"大功率选手"：'+({pc:'台式整机','laptop-game':'游戏本',heater:'取暖器',blowdry:'吹风机',kettle:'宿舍小锅'})[appl]+'。按每月约20~25天常规使用估算，预月用电约 '+kWhPerMonth+' 度。\n';
+ out+='· 月电费预计约 '+monthBill.toFixed(1)+' 元'+(budgetShare?('（占生活费约 '+budgetShare+'%）'):'')+'。'+(budgetShare&&budgetShare>15?'这笔钱攒下来吃顿好的不香吗，下面几条能明显降下来。':'整体可控，按下面习惯能再省一点。')+'\n\n';
+ out+='💡 省电实操清单\n· ';
+ out+=tips.slice(0,3).join('\n· ')+'\n\n';
+ out+='🏆 一个小目标：本月把电费控制在预算的 '+((budgetShare&&budgetShare>10)?Math.max(5,budgetShare-5):5)+'% 以内→约 '+ (budget? (budget*0.05).toFixed(0):'75')+' 元，达标就全班请杯奶茶~';
+ document.getElementById('resultArea').classList.add('active');
+ document.getElementById('result').textContent=out;
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('result').textContent).then(function(){alert('✅ 已复制！');});}
+</script>
+</body>
+</html>

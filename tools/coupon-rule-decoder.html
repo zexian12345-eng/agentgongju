@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 电商满减优惠券解读 | AgentGongju.com</title>
+<meta name="description" content="满300减50、跨店满减、定金尾款、第二件半价……输入页面上的规则文字，AI帮你翻译成人话并算清到底怎么买最划算，附凑单与比价提醒">
+<meta name="keywords" content="凑单,满减,优惠券,跨店满减,定金,预售,第二件半价,比价,购物,省钱">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card h3{color:#e2e8f0;margin:0 0 6px;font-size:1rem}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+input[type=text],select,textarea{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:10px}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+textarea{min-height:70px;resize:vertical}
+.note{background:rgba(99,102,241,0.06);border-left:3px solid #6366f1;padding:10px 14px;border-radius:0 8px 8px 0;color:#cbd5e1;font-size:.85rem;margin:12px 0;line-height:1.8}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:22px;color:#e2e8f0;line-height:2;white-space:pre-wrap;min-height:60px;margin-bottom:12px;font-size:.92rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🎟 AI 满减优惠券翻译官</h1><p>把商城那套绕口规则翻译成人话，再帮你算清到底怎么买才真划算</p></div>
+
+<div class="card">
+<label>📝 贴一段活动/优惠规则文字（从页面复制即可）</label>
+<textarea id="rule" placeholder="例：全场跨店满300减50，上不封顶；限时第二件5折；店铺券满199减20可叠加，预售商品付定金立减……">本店参与跨店每满300减50，上不封顶；叠加店铺优惠券满199减20；前200名付尾款再送赠品。</textarea>
+<label>🛒 你打算买啥？大约多少钱（可填想买的东西）</label>
+<input type="text" id="cart" placeholder="例：一床被子329 + 一套睡衣129" value="一床被子329，加一箱纸巾49">
+<div class="param-row">
+<div><label>🛍 平台/场景</label><select id="scene">
+<option value="taobao" selected>天猫/淘宝（店铺券+跨店满减）</option>
+<option value="jd">京东（plus/运费券）</option>
+<option value="pdd">拼多多/其他</option>
+</select></div>
+<div><label>🎯 习惯</label><select id="mind">
+<option value="min">必要品，能省一点是一点</option>
+<option value="safe">不过度凑单，理智至上</option>
+</select></div>
+</div>
+<button class="btn-gen" id="genBtn">🤔 翻译并算账</button>
+<div class="result-area" id="resultArea"><div class="card"><div style="color:#22c55e;font-weight:600;margin-bottom:12px">💰 帮你算好了</div><div class="result-box" id="result"></div><button class="copy-btn" onclick="copyResult()">📋 复制结论</button></div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#94a3b8;text-align:center;padding:20px;font-size:.85rem">本工具仅做规则解释与估算，实际以支付页最终价格为准；警惕先涨价再满减，下单前可对比历史价。</p></div></footer>
+
+<script>
+var NL = String.fromCharCode(10);
+document.getElementById('genBtn').addEventListener('click', function () {
+  if (!Paywall.countUse('AI 电商满减优惠券解读 | AgentGongju.com')) return;
+  var rule = document.getElementById('rule').value.trim();
+  var cart = document.getElementById('cart').value.trim();
+  var scene = document.getElementById('scene').value;
+  var mind = document.getElementById('mind').value;
+
+  var L = [];
+
+  // 提取数字配对：满X减Y / 减Y
+  var man = 0, jian = 0, couponTh = 0, couponAmt = 0, half2 = false, deposit = false;
+  var m1 = rule.match(/满\s*(\d+)\s*减\s*(\d+)/);
+  var m2 = rule.match(/减\s*(\d+)/);
+  var c1 = rule.match(/满\s*(\d+)\s*元\s*(?:可)?(?:\s*)用|券.*满\s*(\d+)/);
+  var hasSecondHalf = /第二件[半5折]|第二件[×5折]|second/i.test(rule);
+  var hasDeposit = /定金|预售/i.test(rule);
+
+  if (m1) { man = parseInt(m1[1]); jian = parseInt(m1[2]); }
+  else if (m2 && m2.index > 0) { jian = parseInt(m2[1]); man = 0; }
+
+  L.push('🧾 把这段规则“翻译”成人话：');
+  if (rule) L.push('  原规则：' + rule);
+  L.push('');
+
+  if (m1) {
+    L.push('✅ 满' + man + '减' + jian + '：');
+    L.push('  意思是你一次买够 ' + man + ' 元，结账时直接便宜 ' + jian + ' 元。');
+    L.push('  · 差一点不满' + man + '元时，正好凑点刚需到' + man + '元整最划算，能白拿一档优惠。');
+  } else if (man === 0 && jian > 0) {
+    L.push('✅ 只提到“减' + jian + '”，一般是店铺券或新人券，达到页面显示的金额门槛就能用。');
+  } else {
+    L.push('⚠️ 我在这段里没抓到“满X减Y”的明确数，可能是用了别的说法，请把原页面那句话补全再算。');
+  }
+
+  if (scene !== 'pdd') L.push('  · ' + (scene === 'jd' ? '京东一般支持跨店满减，收货前提留意是否要先用Plus会员券。' : '天猫通常跨店满减自动用，多店铺一起结也能累计。'));
+
+  if (hasSecondHalf) L.push(NL + '✅ “第二件半价/第2件5折”：' + NL + '  买同款第2件按半价算。两个人拼/囤货划算，只买一件没这优惠。买2件的总价 ≈ 第1件全价 + 第2件的一半。');
+  if (hasDeposit) L.push(NL + '✅ 有“定金/预售”：' + NL + '  现在先付小额定金锁价，到付尾款日再付剩余。注意两点：定金一般不可退；一定要记清付尾款的时间，漏付浪费定金。');
+
+  // 算购物车
+  L.push('', '🛒 看你这单（' + cart + '）：');
+  if (cart) {
+    var nums = cart.match(/\d+/g) || [];
+    var total = 0;
+    for (var i = 0; i < nums.length; i++) total += parseInt(nums[i]);
+    if (m1 && total >= man) {
+      var fullUnits = Math.floor(total / man);
+      var disc = fullUnits * jian;
+      var pay = total - disc;
+      L.push('  商品合计约 ' + total + ' 元，按“满' + man + '减' + jian + '”可减 ' + disc + ' 元 → 实付约 ' + pay + ' 元。');
+      // 提示凑整
+      var rest = total % man;
+      if (rest > 0 && rest < man) {
+        var need = man - rest;
+        if (mind === 'min' && need <= 60) L.push('  💡 还差 ' + need + ' 元就能多凑一个“满' + man + '减' + jian + '”再省 ' + jian + ' 元。缺的额度正好拿纸巾/必需品凑，只凑刚需才划算。');
+        else if (mind !== 'min') L.push('  ⚖️ 你离再凑一单门槛还差 ' + need + ' 元，但若为凑单硬买不需要的东西，等于多花钱，理智点不凑也 OK。');
+        else L.push('  🤔 再差 ' + need + ' 元到下一个满减档，若没有便宜刚需可凑，就按现在买也行。');
+      }
+    } else if (m1 && total < man) {
+      L.push('  你目前约 ' + total + ' 元，还差 ' + (man - total) + ' 元才到满' + man + '减' + jian + '门槛。若正好有凑堆的日用品可补，否则建议这单就先别硬凑。');
+    } else if (jian > 0 && total > 0 && !m1) {
+      L.push('  你的合计约 ' + total + ' 元，能叠加的店铺券是否可用，看该券放购物车结算页是否自动抵扣，下单前多瞄一眼明细。');
+    }
+  }
+
+  L.push('', '⏰ 下单前最后 3 个提醒：');
+  L.push('1. 货比价：去比价工具/历史价页看这东西平时卖多少，防止“先涨价再满减”。');
+  L.push('2. 看清是否“可用券”：有些券限指定商品/指定店铺，结算前在购物车左上角勾一下券。');
+  L.push('3. 支付那一秒再核对一遍：原价合计 — 券后实付，数要对得上再按确认。');
+  L.push('', '赚到的是做减法，而不是为便宜多花钱。祝你买得开心又不踩坑。');
+
+  document.getElementById('resultArea').classList.add('active');
+  document.getElementById('result').textContent = L.join(NL);
+});
+function copyResult() {
+  navigator.clipboard.writeText(document.getElementById('result').textContent).then(function () { alert('✅ 已复制'); });
+}
+</script>
+</body>
+</html>

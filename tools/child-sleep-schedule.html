@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 宝宝哄睡作息助手 | AgentGongju.com</title>
+<meta name="description" content="按宝宝月龄与睡点规律，给出科学可执行的入睡作息建议、哄睡技巧与常见睡眠倒退应对法，帮新手爸妈告别「哄睡两小时、落地就醒」">
+<meta name="keywords" content="宝宝,睡眠,哄睡,婴儿,作息,月龄,睡觉,睡眠倒退,育儿">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:22px;color:#e2e8f0;line-height:2;white-space:pre-wrap;min-height:60px;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.hint{color:#94a3b8;font-size:.8rem;margin-top:-6px;margin-bottom:8px}
+.hint2{color:#64748b;font-size:.82rem;text-align:center;margin-top:8px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🌙 AI 宝宝哄睡作息助手</h1><p>按月龄给睡眠节奏，少走哄睡弯路、少熬几个秃头夜</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>👶 宝宝月龄</label><select id="mon">
+<option value="1">0~3个月（新生儿~小婴）</option>
+<option value="6" selected>3~8个月（会逐渐睡整觉的关键期）</option>
+<option value="12">8~18个月（幼儿作息，爱闹夜醒）</option>
+<option value="24">18个月以上（只要操心午睡别贪长）</option>
+</select></div>
+<div><label>🎯 现在的困扰</label><select id="issue">
+<option value="nap">白天小睡短/难哄</option>
+<option value="night">晚上落地醒/睡不久/频繁夜醒</option>
+<option value="late">入睡太晚/昼夜颠倒</option>
+<option value="all" selected>全面调作息</option>
+</select></div>
+</div>
+<div class="param-row">
+<div><label>🍼 主要喂养方式</label><select id="feed"><option value="bf">母乳亲喂</option><option value="pump">瓶喂/奶粉</option><option value="mix" selected>混合/随叫随喂</option></select></div>
+<div><label>🛏 睡前习惯现在是</label><select id="ritual"><option value="rock">必须抱着摇/奶睡</option><option value="bed" selected>放床拍睡为主</option><option value="none" >没固定程序，想建立</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">🌙 生成哄睡方案</button>
+<div class="result-area" id="resultArea"><div class="card"><div style="color:#22c55e;font-weight:600;margin-bottom:12px">💤 哄睡方案已生成</div><div class="result-box" id="result"></div><button class="copy-btn" onclick="copyResult()">📋 复制方案</button></div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#94a3b8;text-align:center;padding:20px;font-size:.85rem">每个宝宝气质不同，作息表是参考不是铁律；若伴随发热、异常哭闹或呼吸问题，请第一时间就医，别只靠作息硬扛。</p></div></footer>
+
+<script>
+document.getElementById('genBtn').addEventListener('click',function(){
+ if(!Paywall.countUse('AI 宝宝哄睡作息助手 | AgentGongju.com'))return;
+ var mon=document.getElementById('mon').value;
+ var issue=document.getElementById('issue').value;
+ var feed=document.getElementById('feed').value;
+ var ritual=document.getElementById('ritual').value;
+ var R=function(a){return a[Math.floor(Math.random()*a.length)];};
+ var out='';
+ out+='🌙 '+({1:'0-3月龄',6:'3-8月龄',12:'8-18月龄',24:'18月龄+'})[mon]+' · 宝宝睡眠参考\n\n';
+ var wake,bed;
+ if(mon==='1'){wake='清醒窗口只有40~60分钟就很困了，白天别硬撑超过1小时不睡';bed='晚上18:30-20:00之间往往就有一次\"日落前闹觉\"，抓这个点哄睡常最顺';}
+ else if(mon==='6'){wake='清醒窗口约2~2.5小时，醒太久反而\"过度疲劳\"更难哄';bed='这个月龄固定晚上 19:00~20:00 前后入睡是最佳窗口';}
+ else if(mon==='12'){wake='清醒可达3~4小时，白天睡太多会挤掉夜里整觉';bed='晚上入睡前建议固定一套程序，时间控制在 20:00 前完成';}
+ else {wake='午觉别再超过1.5~2小时，否则晚上会拖着不睡';bed='晚觉 20:30 前睡着比较合适，改回早点养成习惯';}
+ out+='· 清醒节律：'+wake+'。\n· 晚间目标：'+bed+'。\n\n';
+ var tips=[];
+ if(issue==='nap'||issue==='all')tips.push('白天小睡别哄到完全睡熟才放下——在宝宝\"眼皮打架、身体放松但还没闭眼\"就轻轻放下，练\"自主接觉\"能力。');
+ if(issue==='night'||issue==='all')tips.push(R(['落地醒多是\"睡眠联想\"（依恋抱着/摇着入睡）：先戒到\"放下后拍着\"，再慢慢过渡到\"拍拍就自己睡\"。','夜里频繁醒先看：房间全黑没(遮光窗帘)、室温合适、睡袋安全、不是饿——逐一排查比干哄强。']));
+ if(issue==='late'||issue==='all')tips.push('昼夜颠倒从\"早上定时叫醒\"开始：每天固定 7点 拉开窗帘用光+走动把它叫醒，白天正常玩不恋床，夜里自然会困。');
+ if(ritual==='rock')tips.push('奶睡/抱痫是头号\"坑\"：先改成\"喂完奶清醒着放下+拍睡\"，用白噪音+轻轻拍代替奶嘴去接觉，通常2周能戒。');
+ if(ritual==='bed')tips.push('已经有睡前程序很好——把每一步固定成一样的顺序(洗澡→抚触→关灯→哼歌→放下)，大脑一看到这套=该睡了。');
+ if(ritual==='none')tips.push('今晚就开个最简单的固定程序：洗澡(可选)→换睡袋→关大灯开小夜灯→安静哼一小段歌→轻拍入睡，每天在同一时刻做，别心软拖时间。');
+ if(mon==='12')tips.push('8个月后迎来睡眠倒退/分离焦虑期：白天多陪伴、晚上教它\"你躺着自己睡，妈妈就在旁边\"，用坚定温柔渡过，千万别一朝回到抱睡。');
+ tips.push('白天放电够、睡前2小时别玩得太疯太兴奋，是压舱石；夜里夜醒先用\"等2分钟看是否自己续\"，别一哼就冲进去大动作。');
+ var feedLine={pump:'瓶喂可参考\"相对定时\"：睡前一顿吃饱拉长间隔，夜里这次夜奶给水/短喂即可，3-8月后夜里可逐渐拉长不喂。',bf:'亲喂注意别\"一哭就喂\"（可能是没接上觉不是饿）；夜里几次可以先用安抚看看。',mix:'混合喂别夜里频繁加餐，判断标准：间隔3小时以上或真哭闹才喂，夜醒别用奶当万能安慰。'}[feed];
+ out+='🎯 针对「'+({nap:'白天小睡短',night:'夜里落地醒/夜醒',late:'入睡太晚会颠倒',all:'全面调作息'})[issue]+'」\n· '+tips.slice(0,4).join('\n· ')+'\n\n';
+ out+='🍼 夜醒与喂养参考\n· '+feedLine+'\n\n';
+ out+='📋 今日就能执行的三步\n1. '+({1:'晚上挑你方便的时间(如19点)固定做睡前程序，其余交给奶点别硬套。',6:'白天最后一次小睡别晚于 16:30 开始，给晚间留够疲劳度。',12:'白天两次小睡控制在总量 2.5小时内，晚上衔接流畅。',24:'午觉定时睡2小时内，下午三点后别睡，晚上定点收尾。'})[mon]+'\n2. 睡前环境做减法：拉窗帘、调暗、白噪音开小声、室温 22-26℃（穿得跟大人一样别盖太厚）。\n3. 今晚就录个\"放下后拍拍\"的小目标：哪怕只比昨天多自己睡了5分钟也算赢，请别急着对比别人家孩子。\n\n';
+ out+='🌟 一句宽心话：睡眠倒退不是孩子坏，是大脑在长新本事（翻身、出牙、分离焦虑）。你今晚的耐心，就是明天他学会\"自己睡\"的学费——都会过去的，抱抱。💤';
+ document.getElementById('resultArea').classList.add('active');
+ document.getElementById('result').textContent=out;
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('result').textContent).then(function(){alert('✅ 已复制！');});}
+</script>
+</body>
+</html>

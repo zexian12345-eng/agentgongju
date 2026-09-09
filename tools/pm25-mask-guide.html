@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PM2.5 空气出行防护助手 | AgentGongju.com</title>
+<meta name="description" content="输入你所在城市此刻的AQI/PM2.5数值与出行安排，自动解读等级、给出该戴什么口罩、要不要开窗、孩子老人能否户外活动等一整套防护建议">
+<meta name="keywords" content="PM2.5,AQI,空气污染,雾霾,口罩,防护,空气质量">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:22px;color:#e2e8f0;line-height:2;white-space:pre-wrap;min-height:60px;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.hint{color:#94a3b8;font-size:.8rem;margin-top:-6px;margin-bottom:8px}
+.hint2{color:#64748b;font-size:.82rem;text-align:center;margin-top:8px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🌫 PM2.5 空气出行防护助手</h1><p>报个数给你判断——口罩、开窗、晨跑、孩子上学，一次说清</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>🌡 当前 AQI 指数（空气质量指数，看天气App）</label><input type="number" id="aqi" value="120" min="0" max="500"></div>
+<div><label>🎯 今天最关心的场景</label><select id="scene">
+<option value="commute">通勤/骑车/步行出门</option>
+<option value="run">晨跑/户外锻炼</option>
+<option value="child">接送孩子或孩子在校</option>
+<option value="elder">家里老人外出买菜办事</option>
+<option value="indoors">宅家，要不要开窗通风</option>
+</select></div>
+</div>
+<div class="param-row">
+<div><label>🕐 预计在户外停留时长</label><select id="dur"><option value="30">30分钟内</option><option value="60" selected>1小时左右</option><option value="2h">2小时以上</option></select></div>
+<div><label>👤 有没有敏感人群</label><select id="sensitive"><option value="no">就是我，普通成年人</option><option value="yes">同行的有/我自己属于敏感人群（心肺/过敏体质/孕产）</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">🌫 生成防护建议</button>
+<div class="result-area" id="resultArea"><div class="card"><div style="color:#22c55e;font-weight:600;margin-bottom:12px">💨 防护建议已生成</div><div class="result-box" id="result"></div><button class="copy-btn" onclick="copyResult()">📋 复制建议</button></div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#94a3b8;text-align:center;padding:20px;font-size:.85rem">空气质量数值请以当地环保部门实时发布为准；本页为科普性行前参考，不替代专业医疗建议。</p></div></footer>
+
+<script>
+document.getElementById('genBtn').addEventListener('click',function(){
+ if(!Paywall.countUse('PM2.5 空气出行防护助手 | AgentGongju.com'))return;
+ var R=function(a){return a[Math.floor(Math.random()*a.length)];};
+ var aqi=Math.max(0,Math.min(500,parseInt(document.getElementById('aqi').value)||50));
+ var scene=document.getElementById('scene').value;
+ var dur=document.getElementById('dur').value;
+ var sens=document.getElementById('sensitive').value==='yes';
+ var out='🌫 今天的空气质量：AQI = '+aqi+'\n\n';
+ var mask;
+ // 等级
+ if(aqi<=50){out+='· 等级：优 —— 空气清洁，敞开了放心呼吸。\n';mask='普通医用口罩即可（其实不戴也行，防晒更重要）';}
+ else if(aqi<=100){out+='· 等级：良 —— 基本安全，敏感人群留意。\n';mask='普通医用口罩够用，透气不闷为佳';}
+ else if(aqi<=150){out+='· 等级：轻度污染 —— 出门建议防护。\n';mask='建议戴 KN95/N95，鼻梁条压紧不漏气';}
+ else if(aqi<=200){out+='· 等级：中度污染 —— 减少不必要外出。\n';mask='必须戴合格 KN95/N95，敏感人群尽量不出门';}
+ else if(aqi<=300){out+='· 等级：重度污染 —— 尽量留在室内。\n';mask='戴 KN95/N95 也建议只处理必要事项';}
+ else {out+='· 等级：严重污染 —— 非必要勿出门。\n';mask='能不出门就不出；实在要出戴N95并缩短时间';}
+ if(sens&&aqi<=100)mask+='（敏感人群宁可戴严实点）';
+ out+='\n🎭 口罩怎么选\n· '+mask+'。'+(['戴前检查口罩密合，眼镜不起雾才算贴好','口罩湿了/脏了或呼气阀发堵就果断换新的，别省那几毛钱','买到能反复用的电动口罩要看清过滤芯等级，普通布口罩挡不住PM2.5'])[Math.floor(Math.random()*3)]+'。\n';
+ // scene-specific
+ out+='\n📍 你的场景：'+({commute:'通勤/骑车/步行',run:'户外锻炼',child:'孩子上学/接送',elder:'老人外出',indoors:'宅家'})[scene]+'\n';
+ var lines=[];
+ if(scene==='commute'){
+   if(aqi>150)lines.push('能不骑车改坐地铁/公交就改，骑车一路呼吸量可比走路大3-5倍；若必须骑，把路程压到1小时以内，并选车流少的慢行道。');
+   else if(aqi>100)lines.push('步行通勤戴KN95没问题，但建议选绿化好、靠内侧的人行道走，离车道远一点曝露小很多。');
+   else lines.push('今天通勤不受影响，正常出门即可；若经过工地或大车多路段，临时捂住口鼻走快两步。');
+ }
+ if(scene==='run'){
+   if(aqi>100)lines.push('AQI超100就别在户外大口喘气了，去健身房跑或在家做核心训练；实在想跑步改快走、强度降到六成并把时间压到40分钟内。');
+   else if(aqi>50)lines.push('早上是一天污染物较高时段，若无大风的雾感早晨建议延后到午后跑，或改室内。');
+   else lines.push('今天适合户外锻炼，挑空气好的时段畅快跑吧。');
+ }
+ if(scene==='child'){
+   if(aqi>150)lines.push('AQI破150建议跟老师沟通让孩子的大课间/体育课改室内活动，并给他书包里备一只KN95应急。');
+   else if(aqi>100)lines.push('孩子上学可以正常去，但帮他带只口罩、提醒体育课如果灰蒙蒙就主动请假去室内，回家洗把脸。');
+   else lines.push('孩子上学、户外活动都没问题，正常安排即可。');
+ }
+ if(scene==='elder'){
+   if(aqi>150)lines.push('老人心肺负担重，AQI到中度就别让他出去买菜了，改叫外卖/网购，或让年轻人代跑。');
+   else if(aqi>100)lines.push('让老人出门戴好口罩、快去快回，别在外面久坐聊天，回家先洗手漱口。');
+   else lines.push('老人外出也别忘了提醒戴好口罩防花粉扬尘，慢慢走别急。');
+ }
+ if(scene==='indoors'){
+   if(aqi>150)lines.push('AQI高时别开窗，浊空气会飘进来；把家里用过的炖汤/油烟闷一会儿，用净化器或湿毛巾法先救急。');
+   else if(aqi>100)lines.push('可以开短窗对流，每次10分钟左右就关，别整夜开大窗。');
+   else lines.push('今天适合开窗，选上下午各通风15-20分钟，把屋里浊气换掉。');
+ }
+ out+=lines.map(function(s){return '· '+s;}).join('\n')+'\n';
+ // additional guidance as duration
+ if(dur==='2h'&&aqi>100)out+='\n⏱ 你预计在外2小时以上：AQI过100别硬扛，中间找商场/地铁/公共场所落落脚，减少连续暴露。';
+ if(dur==='30'&&aqi<=100)out+='\n⏱ 你在外只半小时，短时间低暴露，不必过度紧张。';
+ out+='\n\n💚 回家三件事：进门先洗手洗脸、漱口清鼻腔，再换下外套别蹭床。家里备台净化器+绿植，今天也省点电少炒炸（油烟也是PM2.5大户）。';
+ document.getElementById('resultArea').classList.add('active');
+ document.getElementById('result').textContent=out;
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('result').textContent).then(function(){alert('✅ 已复制！');});}
+</script>
+</body>
+</html>

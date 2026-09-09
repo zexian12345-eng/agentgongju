@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 视唱练耳每日训练 | AgentGongju.com</title>
+<meta name="description" content="给学音乐/备考音乐生/兴趣学唱歌的人：一键生成今日练耳任务单——音程听辨、节奏视唱、模唱与自测方法，配合手机钢琴App就能练，进步看得见">
+<meta name="keywords" content="视唱练耳,练耳,音程,节奏,模唱,音乐,乐理,训练,考级">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:22px;color:#e2e8f0;line-height:2;white-space:pre-wrap;min-height:60px;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.hint{color:#94a3b8;font-size:.8rem;margin-top:-6px;margin-bottom:8px}
+.hint2{color:#64748b;font-size:.82rem;text-align:center;margin-top:8px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🎶 AI 视唱练耳每日训练</h1><p>不用找老师也能练的\"耳朵健身房\"，每天10分钟见真章</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>🎵 你现在水平</label><select id="level">
+<option value="begin">零基础初学（想入门）</option>
+<option value="mid" selected>会认谱、能唱准基础音阶</option>
+<option value="adv">要备考音乐专业/考级</option>
+</select></div>
+<div><label>⏱ 每天能练多久</label><select id="mins"><option value="10">约10分钟</option><option value="20" selected>约20分钟</option><option value="30">30分钟以上</option></select></div>
+</div>
+<div class="param-row">
+<div><label>🎯 最想补的短板</label><select id="target">
+<option value="interval">音程听不准（高低差掌握不好）</option>
+<option value="rhythm">节奏老唱不稳/跟不上</option>
+<option value="sing" selected>模唱/唱准（音不准跑调）</option>
+<option value="read">视谱反应慢（看见不敢唱）</option>
+</select></div>
+<div><label>🛠 手头有什么</label><select id="tool">
+<option value="phone">智能手机（装个免费钢琴/调音器App）</option>
+<option value="real" selected>有真钢琴/电子琴/乐器</option>
+<option value="none">只有人声，什么都没有</option>
+</select></div>
+</div>
+<button class="btn-gen" id="genBtn">🎶 生成今日训练单</button>
+<div class="result-area" id="resultArea"><div class="card"><div style="color:#22c55e;font-weight:600;margin-bottom:12px">🎧 今日训练任务已生成</div><div class="result-box" id="result"></div><button class="copy-btn" onclick="copyResult()">📋 复制训练单</button></div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#94a3b8;text-align:center;padding:20px;font-size:.85rem">练耳没有捷径，但\"每天少量+天天坚持\"胜过\"一周突击一次\"；遇到音准问题用调音器多对比，别捂着耳朵硬唱。</p></div></footer>
+
+<script>
+document.getElementById('genBtn').addEventListener('click',function(){
+ if(!Paywall.countUse('AI 视唱练耳每日训练 | AgentGongju.com'))return;
+ var lvl=document.getElementById('level').value;
+ var mins=document.getElementById('mins').value;
+ var target=document.getElementById('target').value;
+ var tool=document.getElementById('tool').value;
+ var R=function(a){return a[Math.floor(Math.random()*a.length)];};
+ var key=R(lvl==='begin'?['C大调手写音阶']:[lvl==='adv'?'bB/试唱移调':''].concat(['C大调','a小调','某首喜欢的歌练唱调'])).replace(/^$/g,'C大调');
+ var a=new Date(),today=a.getMonth()+1+'月'+a.getDate()+'日';
+ var itv={
+  begin:{name:'音程',list:['纯一度→纯八度里先练同音：Do—Do','小二度Do-Re，#声往上半音的感觉'],desc:'先只盯两个音程不贪多：二度(上下移动一步的感觉)和三度(轻松软软、像跳远一步)。'},
+  mid:{name:'音程',list:['三度/四度/五度视唱跳进','区分大三度(明快)和小三度(带点忧郁)','六度跳进听辨：想到\"天空之城/婚礼进行曲\"的开头帮助定位'],desc:'把音程绑到听过的歌上，是耳朵记住音高的最快办法。'},
+  adv:{name:'音程/和弦',list:['相邻音程+转位','三和弦、七和弦性质听辨','离调音程识别'],desc:'到这一步要对着谱面边弹边唱母音，耳朵和手连着练效率才高。'} }[lvl];
+ var rhy={
+  begin:{t:'节奏',list:['用手/脚打稳定拍(节拍器或手机拍子App 60-72)，先能跟上不掉','全音符、二分、四分、八分：两拍打一次/一拍一打/半拍一打']},
+  mid:{t:'节奏',list:['视读 4/4 拍两小节组合：ta(四分) ti-ti(八分) 各组合','跟节拍器用\"口唱+手拍\"两声部：口唱旋律手打节拍']},
+  adv:{t:'节奏',list:['切分、附点、三连音专项','换拍号(3/4、6/8)切换顺畅','二声部手脚并用视唱']} }[lvl];
+ var sing={begin:['同度模唱：跟琴唱Do，再跟唱 Re，注意别\"滑\"进去，直接落准','用手机录音回放，听听自己是不是每句尾音往下掉'],mid:['唱大二度→小三度→大二度再到四度，带\"呼吸和支撑\"别喊','随便哼一段旋律，用调音器对每个音，跑调的自己听出来再纠正'],adv:['完整视唱一首自带调号与移调的谱子并录音回听','把节奏中加入快速经过音与连线，检验指法般流畅']};
+ var plan=[];
+ var B=[];
+ if(target==='interval'){B.push('今日重点「'+itv.name+'」\n· '+itv.list.join('\n· ')+'\n· '+itv.desc);}
+ else if(target==='rhythm'){B.push('今日重点「'+rhy.t+'」\n· '+rhy.list.join('\n· '));B.push('节奏小技：先用一只脚打地板节拍，再让手上的\"口唱\"在拍点里穿梭，感觉像织毛衣——主线不断就稳。');}
+ else if(target==='sing'){B.push('今日重点「模唱练准」\n· '+sing.join('\n· ')+'\n· 秘诀：用\"先低后高\"唱，高音别使劲\"够\"，想着\"往下坐\"反而准。');}
+ else {B.push('今日重点「视谱反应」\n· 每天拿3条陌生短谱，不求一次对，先看清调号/拍号再慢速从头到尾唱一遍不断\n· 唱不准的某一句单独拎出来慢练 3 遍再合起来，进步最快。');}
+ plan.push('🎧 '+today+' · 视唱练耳训练单（约'+mins+'分钟）\n');
+ plan.push('🟢 热身 2分钟：轻哼\"Ma—Me—Mi\"五个半音往上，放松喉咙通通气，别用力。');
+ plan.push(B.join('\n\n'));
+ // combos daily
+ plan.push('🔁 今日份组合练（挑一段）\n· 用琴(或App弹出)连续音：听→想名字→唱出来，5遍后换一组。\n· 打开手机录音，对着节拍器唱你最近学的一首歌/练习曲，播回来找音准问题。');
+ playR=rhy;
+ plan.push('⏱ 今天先'+(mins==='10'?'只挑上面\"重点\"两条认真做，别贪多':(mins==='20'?'做\"重点+一轮组合练\"即可，收尾留2分钟听录音':'做完整套：重点→组合练→再二轮视谱，最后对照录音自我打分')));
+ plan.push('📌 一句提醒：'+(target==='sing'?'所谓跑调大多是\"不敢听自己\"，多录音、多比对，脸皮厚点进步就快。':target==='rhythm'?'节奏不稳90%是拍没\"打稳\"，把节拍器调慢到你能从容打准再说快。':'每天15分钟，三周后的耳朵连你自己都会吓一跳。'));
+ var out=plan.join('\n');
+ out+='\n\n（用琴出现困难时可搜\"在线钢琴\"网页/免费App代替，练耳不挑设备，挑坚持。）';
+ document.getElementById('resultArea').classList.add('active');
+ document.getElementById('result').textContent=out;
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('result').textContent).then(function(){alert('✅ 已复制！');});}
+</script>
+</body>
+</html>

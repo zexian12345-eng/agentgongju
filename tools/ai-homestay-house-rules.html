@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 民宿入住须知生成器 | AgentGongju.com</title>
+<meta name="description" content="输入房源类型、位置与常客类型，一键生成一套专业又走心的民宿『入住须知+房屋守则』，可作欢迎卡片、平台简介或线下张贴，减少纠纷更省心">
+<meta name="keywords" content="民宿,入住须知,房屋守则,短租,欢迎卡片,房东,Airbnb,途家">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+textarea{min-height:80px;resize:vertical}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.sub-btn{display:inline-block;margin-top:6px;padding:10px 20px;background:rgba(99,102,241,.15);border:1px solid rgba(99,102,241,.3);border-radius:10px;color:#a5b4fc;cursor:pointer;font-size:.9rem;transition:all .2s}
+.sub-btn:hover{background:rgba(99,102,241,.28)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:22px;color:#e2e8f0;line-height:2;white-space:pre-wrap;min-height:60px;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.hint{color:#94a3b8;font-size:.8rem;margin-top:-6px;margin-bottom:8px}
+.hint2{color:#64748b;font-size:.82rem;text-align:center;margin-top:8px}
+.switch-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+.chip{padding:7px 14px;border:1px solid rgba(255,255,255,.12);border-radius:20px;color:#94a3b8;font-size:.82rem;cursor:pointer;transition:all .2s;background:transparent}
+.chip.active{background:rgba(99,102,241,.18);border-color:#6366f1;color:#a5b4fc}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🏠 AI 民宿入住须知生成器</h1><p>写一份清楚又不失温度的房子守则，让住客和房东都省心</p></div>
+
+<div class="card" id="formCard">
+<div class="param-row">
+<div><label>🏡 房源类型</label><select id="houseType">
+<option value="whole">整租整套房源</option>
+<option value="room">合租/单间</option>
+<option value="apt">公寓/高层小区</option>
+<option value="villa">别墅/四合院/独栋</option>
+</select></div>
+<div><label>📍 所在城市/商圈（选填）</label><input type="text" id="city" placeholder="例：成都春熙路 / 大理古城" value=""></div>
+</div>
+<div class="param-row">
+<div><label>👥 主要客群</label><select id="guestType">
+<option value="couple">情侣/小家庭度假</option>
+<option value="friend">朋友闺蜜出行</option>
+<option value="business">商务出差</option>
+<option value="mix">主打干净省心的普通游客</option>
+</select></div>
+<div><label>🕘 是否含自助入住（门锁/密码）</label><select id="selfEntry"><option value="y">是，有自助密码门锁</option><option value="n">否，房东前台接待</option></select></div>
+</div>
+<label>✨ 想特别强调的点（可选，选几个）</label>
+<div class="switch-row">
+<div class="chip" data-k="pet">可带宠物</div><div class="chip" data-k="nosmoke">全屋禁烟</div>
+<div class="chip" data-k="quiet">邻里安静</div><div class="chip" data-k="kitchen">可用厨房</div>
+<div class="chip" data-k="trash">垃圾分类</div><div class="chip" data-k="wifi">Wi-Fi/密码</div>
+<div class="chip" data-k="checkin">按时退房</div><div class="chip" data-k="breakfast">含早餐</div>
+</div>
+<div class="param-row">
+<div><label>🔖 生成语气</label><select id="tone"><option value="warm">亲切欢迎型（如老友到家）</option><option value="clear">清楚条文型（规则分明）</option><option value="professional">专业平台型（正式严谨）</option></select></div>
+<div><label>📄 输出形态</label><select id="format"><option value="poster">张贴版「入住须知」</option><option value="card">发给客人的欢迎卡片文字</option><option value="both">两者都要</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">✨ 生成入住须知</button>
+<div class="result-area" id="resultArea"><div class="card"><div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 已生成</div><div class="result-box" id="result"></div><button class="copy-btn" onclick="copyResult()">📋 复制内容</button></div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#94a3b8;text-align:center;padding:20px;font-size:.85rem">模板仅供参考，涉及押金、赔偿等请结合当地法规与平台规则落地。</p></div></footer>
+
+<script>
+(function(){
+var chips=document.querySelectorAll('.chip');
+chips.forEach(function(c){c.addEventListener('click',function(){c.classList.toggle('active');});});
+function getSelKeys(){var out=[];document.querySelectorAll('.chip.active').forEach(function(c){out.push(c.dataset.k);});return out;}
+var R=function(a){return a[Math.floor(Math.random()*a.length)];};
+document.getElementById('genBtn').addEventListener('click',function(){
+ if(!Paywall.countUse('AI 民宿入住须知生成器 | AgentGongju.com'))return;
+ var t={whole:'整栋房源',room:'合租房',apt:'公寓',villa:'独栋/别墅'}[document.getElementById('houseType').value];
+ var city=document.getElementById('city').value.trim();
+ var g=document.getElementById('guestType').value;
+ var self=document.getElementById('selfEntry').value==='y';
+ var keys=getSelKeys();
+ var tone=document.getElementById('tone').value;
+ var format=document.getElementById('format').value;
+ var chead='🏠 欢迎入住「'+(city?city+' · ':'')+t+'」';
+ var guestLine={couple:'你们多半想度过一段不被打扰、自在放松的假期',friend:'几位朋友一起出来玩，热闹又开心',business:'出差在外也想要安静、省心、好休息',mix:'希望住得干净舒服、来去都省心'}[g];
+ var extra='';
+ if(keys.includes('wifi'))extra+='\n📶 无线网络（Wi-Fi）：名称见路由器标签，密码已贴在玄关卡片，如连不上请直接找我，我来处理。';
+ if(keys.includes('smoke')===false&&keys.includes('nosmoke'))extra+='\n🚭 室内为无烟环境，阳台上吸烟请关闭玻璃门；大厦楼道内也请勿吸烟，谢谢体谅帮忙保住押金。';
+ if(keys.includes('pet'))extra+='\n🐾 可带宠物入住，请自备尿垫并及时清理，退房前一晚请把地毯无宠物毛并通风，避免下一位住客过敏。';
+ if(keys.includes('quiet'))extra+='\n🤫 这里晚上邻居睡得很早，22:00后请放轻脚步、降低音量，楼道也是住宅区请勿喧哗——安静对大家都好。';
+ if(keys.includes('kitchen'))extra+='\n🍳 厨房可开火，用后清洗归位即可。刀具与开瓶器请放回原位，明火不离人，谢谢。';
+ if(keys.includes('trash'))extra+='\n🗑 垃圾请分类投放：厨余/其他/可回收，厨余请沥干水再用袋装好，别让汤水漏出来招蚊虫。';
+ if(keys.includes('checkin'))extra+='\n⏰ 退房时间为次日中午12点前，如需寄存行李或稍晚退房请提前和我讲，我尽量安排。';
+ if(keys.includes('breakfast'))extra+='\n🍳 早餐时间 7:30–9:30，位于一楼餐厅；如有忌口提前告诉我即可。';
+ var entrance=self?'入住全程自助：我提前发你门锁密码与位置指引，密码在你入住期间有效，退房后自动失效，随时可联系我':'入住时我来接待：到达前我发你具体路线，我到门口等你或送自助密码';
+ // outcome text: combine based on format
+ var lines=[];
+ lines.push(chead+'\n');
+ lines.push('你好呀，很高兴在网上认识你。'+guestLine+'，'+(city?'到了'+city+'、':'')+'这套房子未来几天就是你的小家。我把入住说明和几条小小的配合事项一次写清楚，你照着入住就好，遇到任何问题随时发消息给我，我基本都在线。');
+ lines.push('— — —');
+ lines.push('🚪 入住事项\n· '+entrance+'\n· 进门先开窗通风换气，空调遥控器在床头柜抽屉。\n· 热水器/卫浴用法请看墙上贴的小卡片，不会用别硬来，喊我就行。');
+ if(extra)lines.push(extra.trim());
+ lines.push('🧺 需要顺手做的一点点小配合\n· 退房前把床品拆下放在床上就好，不用洗；垃圾提到楼下分类点。\n· 出门记得关灯关空调，屋里有摄像头的地方只有门口，室内无监控请放心。');
+ lines.push('💡 有问题或帮忙\n· 需要加被子、加垫子、多一套充电线、附近好吃的，都直接和我说。\n· 紧急情况请拨打物业或联系我在你到达时留的手机号。\n\n感谢你把假期/奔波交给这里安放。祝入住愉快，玩得尽兴，下次再来呀。😊');
+ var text=lines.join('\n');
+ document.getElementById('resultArea').classList.add('active');
+ document.getElementById('result').textContent=text;
+});
+})();
+function copyResult(){navigator.clipboard.writeText(document.getElementById('result').textContent).then(function(){alert('✅ 已复制！');});}
+</script>
+</body>
+</html>

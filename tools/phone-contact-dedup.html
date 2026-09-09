@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 手机通讯录整理助手 | AgentGongju.com</title>
+<meta name="description" content="通讯录越用越乱？输入你的联系人数量与清理诉求，自动生成一份去重、改备注、分组、归档的操作清单与执行顺序，10分钟内把通讯录整利索">
+<meta name="keywords" content="通讯录,整理,去重,联系人,手机,清理,备注,分组">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:22px;color:#e2e8f0;line-height:2;white-space:pre-wrap;min-height:60px;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.hint{color:#94a3b8;font-size:.8rem;margin-top:-6px;margin-bottom:8px}
+.hint2{color:#64748b;font-size:.82rem;text-align:center;margin-top:8px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📇 AI 手机通讯录整理助手</h1><p>把「一半是僵尸号」的通讯录，10分钟整成能随手就找到人的样子</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>👥 目前大约多少联系人</label><select id="size"><option value="200">200以下</option><option value="500" selected>200~800（不少僵尸号）</option><option value="1000">800以上（通讯录重度患者）</option></select></div>
+<div><label>🎯 最头疼的是</label><select id="pain">
+<option value="dup">一堆重复联系人搞不清</option>
+<option value="note">好多"王经理/小李"忘了是谁</option>
+<option value="sync">微信手机QQ多端同步乱套</option>
+<option value="all">都乱，想整体重整理一遍</option>
+</select></div>
+</div>
+<div class="param-row">
+<div><label>⏱ 愿意花多少时间</label><select id="time"><option value="10">10分钟快速处理</option><option value="30" selected>30分钟仔细理一遍</option></select></div>
+<div><label>💾 平时备份习惯</label><select id="backup"><option value="none">从没专门备份过</option><option value="often" selected>会定期备份到云/卡</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">📇 生成整理方案</button>
+<div class="result-area" id="resultArea"><div class="card"><div style="color:#22c55e;font-weight:600;margin-bottom:12px">🗂 整理方案已生成</div><div class="result-box" id="result"></div><button class="copy-btn" onclick="copyResult()">📋 复制方案</button></div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#94a3b8;text-align:center;padding:20px;font-size:.85rem">删除联系人有风险，先做备份再动手；云同步请开启并确认不会把删减反向同步到别的设备。</p></div></footer>
+
+<script>
+document.getElementById('genBtn').addEventListener('click',function(){
+ if(!Paywall.countUse('AI 手机通讯录整理助手 | AgentGongju.com'))return;
+ var R=function(a){return a[Math.floor(Math.random()*a.length)];};
+ var size=document.getElementById('size').value;
+ var pain=document.getElementById('pain').value;
+ var time=document.getElementById('time').value;
+ var backup=document.getElementById('backup').value;
+ var steps=[];
+ if(backup==='none')steps.push('① 存档保底：先把通讯录导出为 .vcf 存到网盘/邮箱（设置→导入导出→导出到存储，各品牌路径不同，搜\"通讯录导出\"即可）。这是全场的\"后悔药\"，别跳过。');
+ steps.push('② '+(pain==='sync'?'关掉多端自动合并干扰：先只保留一台主设备编辑，把微信/QQ/手机卡各自的常驻联系人合并规则看清楚，避免一边删一边手机又把旧的拉回来。':'先去重开火：用系统自带\"整理/合并重复联系人\"跑一遍，通常一次能清掉20%~40%的重复号。'));
+ steps.push(R([
+  '③ 大字清理：从\"最近通话/近期联系\"入手删，这些才是活人；按字母翻到尾部，那些年代久远的\"xx保险/办证/中介\"果断删。',
+  '③ 批量清僵尸：利用微信\"通讯录看看你是不是还加着\"会标出不常联系/拉黑你的，再结合手机号搜微信头像，不确定的直接删。',
+  '③ 对症下药：痛点是分不清谁是谁？把没备注只留数字号的，搜一下微信/短信上下文补全备注，一时认不出的归到\"待定\"分组别乱删。']));
+ if(time==='10'){
+   steps.push('④ 快速收尾：只做①②③里最痛的一条，其余下次再说——本次目标是把重复和明显垃圾清掉就够，别贪多把自己劝退。');
+ }else{
+   steps.push('④ 备注规范化：统一写成\"称呼—单位/身份—城市\"，例：\"老王-老房东-上海\"，姓名前加个能认出关系的标签，比记一堆\"姐\"\"哥\"强。');
+   steps.push('⑤ 分组管理：建\"家人/同事/同学/客户/特别重要的\"等分组，把90%不常联系的人留在\"普通\"不分组，找人的时候一眼定位。');
+   if(size==='1000')steps.push('⑥ 断舍离：>800这种重度情况，建议一口气删掉所有超过2年没联系、且发消息大概率不回的号，通常能清爽掉一大半。');
+ }
+ steps.push('⑥ 收个尾：最后全选看一眼有没有误删重要人（备份还在就放心），再手动同步一次云，本次整理就算大功告成。💪');
+ var out='📇 通讯录整理作战清单\n\n';
+ out+=(size==='1000'?'你的号超过800个，属于\"通讯录重度玩家\"':size==='500'?'中等规模，乱点是正常的，一次能理清':'号不多却乱，多半是备份和合并没做对')+'，本次按 '+(time==='10'?'10分钟快刀': '30分钟精修')+' 来执行：\n\n';
+ out+=steps.join('\n');
+ out+='\n\n✨ 陪你的一段话：通讯录不是名片夹，是\"现在想联系就能联系到\"的一张活网——删掉那些你永远不会再打给谁的人，你会发现找朋友反而更快了。';
+ document.getElementById('resultArea').classList.add('active');
+ document.getElementById('result').textContent=out;
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('result').textContent).then(function(){alert('✅ 已复制！');});}
+</script>
+</body>
+</html>
