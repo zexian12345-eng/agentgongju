@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>证件照尺寸规范查询 | AgentGongju.com</title>
+<meta name="description" content="一寸、二寸、小二寸、护照、签证等各类证件照尺寸、像素与背景要求一键查询，还能算出冲印排版数量和合影尺寸换算。">
+<meta name="keywords" content="证件照尺寸,一寸照片,二寸照片,护照照片,签证照片,证件照规格,照片尺寸">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;margin-bottom:12px;font-size:.92rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+table{width:100%;border-collapse:collapse;margin-bottom:12px;font-size:.85rem}
+th,td{padding:9px 10px;border-bottom:1px solid rgba(255,255,255,0.08);text-align:left;color:#cbd5e1}
+th{color:#a5b4fc;font-weight:600}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() { var hm = document.createElement("script"); hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949"; var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(hm, s); })();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🪪 证件照尺寸规范查询</h1><p>一寸二寸别再搞混，规格像素一次查清</p></div>
+
+<div class="card">
+<label>📐 选择证件照类型</label>
+<select id="spec">
+<option value="1cun">一寸（25×35mm）</option>
+<option value="1cun_s">小一寸（22×32mm）</option>
+<option value="2cun">二寸（35×49mm）</option>
+<option value="2cun_s">小二寸（35×45mm）</option>
+<option value="3cun">三寸（55×84mm）</option>
+<option value="passport">护照（33×48mm）</option>
+<option value="visa_us">美国签证（51×51mm）</option>
+<option value="visa_jp">日本签证（45×45mm）</option>
+<option value="idcard">身份证（26×32mm）</option>
+<option value="driver">驾驶证（22×32mm）</option>
+<option value="custom">自定义尺寸</option>
+</select>
+<div id="customBox" style="display:none">
+<label>✏️ 输入自定义宽×高（mm）</label>
+<input type="text" id="custom" placeholder="例如：30×40">
+</div>
+<label>🖨️ 冲印纸张</label>
+<select id="paper">
+<option value="5">5 寸相纸（89×127mm）</option>
+<option value="6">6 寸相纸（102×152mm）</option>
+<option value="a4">A4 纸（210×297mm）</option>
+</select>
+<button class="btn-gen" id="genBtn">📐 查询规格与排版</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 尺寸规格结果</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制规格</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+var SPEC={
+'1cun':{w:25,h:35,name:'一寸',px300:'295×413',bg:'红/蓝/白',use:'简历、学生证、各类登记表'},
+'1cun_s':{w:22,h:32,name:'小一寸',px300:'260×378',bg:'红/蓝/白',use:'部分学生证、职称证'},
+'2cun':{w:35,h:49,name:'二寸',px300:'413×579',bg:'红/蓝/白',use:'毕业证、简历、大多证件'},
+'2cun_s':{w:35,h:45,name:'小二寸',px300:'413×531',bg:'红/蓝/白',use:'护照、港澳通行证、部分签证'},
+'3cun':{w:55,h:84,name:'三寸',px300:'650×991',bg:'多白底',use:'毕业照、荣誉证书'},
+'passport':{w:33,h:48,name:'护照',px300:'390×567',bg:'白底',use:'中国护照办理'},
+'visa_us':{w:51,h:51,name:'美国签证',px300:'600×600',bg:'白底',use:'美国签证、绿卡'},
+'visa_jp':{w:45,h:45,name:'日本签证',px300:'531×531',bg:'白底',use:'日本签证申请'},
+'idcard':{w:26,h:32,name:'身份证',px300:'307×378',bg:'白底',use:'居民身份证办理'},
+'driver':{w:22,h:32,name:'驾驶证',px300:'260×378',bg:'白底',use:'驾驶证办理'}
+};
+document.getElementById('spec').addEventListener('change',function(){
+document.getElementById('customBox').style.display=this.value==='custom'?'block':'none';
+});
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('证件照尺寸规范查询 | AgentGongju.com'))return;
+var key=document.getElementById('spec').value;
+var paper=document.getElementById('paper').value;
+var w,h,name,bg,use,px;
+if(key==='custom'){
+var cv=document.getElementById('custom').value.trim();
+var m=cv.match(/(\d+(?:\.\d+)?)\s*[×xX*]\s*(\d+(?:\.\d+)?)/);
+if(!m){alert('请输入如 30×40 的自定义尺寸');return;}
+w=+m[1];h=+m[2];name='自定义';bg='按需';use='自定义用途';px=Math.round(w/25.4*300)+'×'+Math.round(h/25.4*300);
+}else{
+var s=SPEC[key];w=s.w;h=s.h;name=s.name;bg=s.bg;use=s.use;px=s.px300;
+}
+var paperDim={5:[89,127],6:[102,152],a4:[210,297]}[paper];
+var paperName={5:'5 寸',6:'6 寸',a4:'A4'}[paper];
+var cols=Math.floor(paperDim[0]/w), rows=Math.floor(paperDim[1]/h);
+var total=cols*rows;
+var out='【规格详情】\n';
+out+='类型：'+name+'照片\n';
+out+='物理尺寸：'+w+'mm × '+h+'mm（宽×高）\n';
+out+='像素尺寸（300dpi）：'+px+' 像素\n';
+out+='建议背景：'+bg+'\n';
+out+='常见用途：'+use+'\n\n';
+out+='【冲印排版】\n';
+out+='纸张：'+paperName+'（'+paperDim[0]+'×'+paperDim[1]+'mm）\n';
+out+='每张可排：'+cols+' 列 × '+rows+' 行 = '+total+' 张\n';
+if(total>1)out+='建议：一张'+paperName+'纸洗 '+total+' 张最省，通常商家按张收费。\n';
+else out+='注意：该尺寸较大，一张纸只能排 1 张，价格会偏高。\n';
+out+='\n【拍摄与制作要求】\n';
+out+='· 正面免冠，露双耳，表情自然，不戴帽子墨镜（宗教/医疗原因除外）；\n· 建议穿深色有领衣服，与背景形成对比；\n· 光线均匀无阴影，不美颜过度、不换脸，否则可能被拒收；\n· 头像约占照片高度的 2/3，头顶留少量空白；\n· 300dpi 是冲印清晰度的底线，网上传图注意别被压缩。\n';
+out+='\n【常见问答】\n· 一寸和二寸哪个大？二寸更大，一寸=25×35，二寸=35×49；\n· 小二寸和二寸区别？宽度一样，小二寸更短（45 vs 49），护照用它；\n· 电子照要多大？一般 20KB-100KB 以内，JPG 格式，具体看平台要求；\n· 可以自己手机拍吗？可以，找白墙光线好，用证件照 App 换底裁剪即可。\n';
+out+='\n💡 提交前务必再核对办理单位官网的最新要求，部分证件规格会有调整。';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(function(){alert('✅ 已复制！')})}
+</script>
+</body>
+</html>

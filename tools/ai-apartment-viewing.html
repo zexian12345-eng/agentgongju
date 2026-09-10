@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>租房看房避坑清单 | AgentGongju.com</title>
+<meta name="description" content="看房前生成一份逐项检查清单：水电燃气、防水霉斑、水压、安全、合同陷阱全覆盖，照单打钩，避免租到问题房。">
+<meta name="keywords" content="租房,看房清单,避坑,租房检查,押金,租房合同,租房注意事项">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;margin-bottom:12px;font-size:.92rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() { var hm = document.createElement("script"); hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949"; var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(hm, s); })();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🏠 租房看房避坑清单</h1><p>看房 20 分钟能查完的事，别等住进去才发现</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>🏘️ 房源类型</label>
+<select id="type">
+<option value="整租">整租</option>
+<option value="合租">合租单间</option>
+<option value="公寓">品牌公寓</option>
+<option value="老破小">老小区</option>
+</select></div>
+<div><label>🎯 最在意</label>
+<select id="focus">
+<option value="通勤">通勤方便</option>
+<option value="安静">安静隔音</option>
+<option value="省心">房东省心</option>
+<option value="省钱">租金便宜</option>
+</select></div>
+</div>
+<label>📝 补充关注点（可选）</label>
+<input type="text" id="extra" placeholder="例如：养猫、需要阳台、要能装洗衣机">
+<button class="btn-gen" id="genBtn">📋 生成看房清单</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 看房检查清单</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制清单</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('租房看房避坑清单 | AgentGongju.com'))return;
+var type=document.getElementById('type').value;
+var focus=document.getElementById('focus').value;
+var extra=document.getElementById('extra').value.trim();
+var out='【看房必备清单 · '+type+'】\n（建议现场逐项打钩，拍照留证）\n\n';
+out+='一、水与热水 ⭐必查\n□ 打开每个水龙头，看水压是否够、出水是否发黄\n□ 热水器出水温度与等待时间（燃气/电，几秒出热水）\n□ 马桶冲水是否顺畅，有无返味\n□ 下水道、地漏排水速度，闻有没有臭味\n\n';
+out+='二、电与网络 ⭐必查\n□ 试所有插座是否通电（带个手机充电器）\n□ 空调、洗衣机、冰箱能否正常启动\n□ 电表位置、是否独立电表，电价怎么算\n□ 宽带是否已入户，运营商可选哪家\n\n';
+out+='三、墙面与防潮 ⭐必查\n□ 天花板、墙角有无霉斑、水渍、脱皮\n□ 卫生间、厨房墙面是否有渗水痕迹\n□ 阳台、飘窗下雨会不会进水\n\n';
+if(type==='老破小'||type==='整租'){
+out+='四、安全与门窗\n□ 门锁是否好用，是否可自换锁芯\n□ 窗户能否锁紧，纱窗是否完好\n□ 楼道、消防通道是否通畅\n□ 有没有燃气报警、烟感装置\n\n';
+}
+if(type==='合租'||type==='公寓'){
+out+='四、合租特别项\n□ 公共区域卫生谁负责，有无保洁\n□ 室友作息、性别、是否抽烟养宠\n□ 水电燃气怎么分摊，有无公摊乱收费\n□ 厕所、洗衣机使用是否要排队\n\n';
+}
+out+='五、周边与通勤\n□ 实测到地铁/公交站步行时间\n□ 早晚高峰通勤耗时（按你的'+focus+'需求重点看）\n□ 楼下有无菜场、便利店、外卖可达\n□ 夜间噪音：临街、临工地、临商铺\n\n';
+out+='六、合同与费用 ⚠️最容易被坑\n□ 押金几个月，退还条件是否写清\n□ 是否收中介费、服务费、维修费\n□ 物业费、取暖费谁承担\n□ 提前退租违约金怎么算\n□ 房东是否本人，房产证与身份证是否核验\n□ 所有口头承诺写进合同，别只靠微信聊天\n\n';
+if(extra)out+='七、你的特别关注\n□ '+extra.split(/[，,、]/).join('\n□ ')+'\n\n';
+out+='【砍价与留证建议】\n1. 看房拍视频存证，尤其发现问题的地方；\n2. 报出小毛病（霉斑、水压不足）作为议价理由；\n3. 谈妥后立刻签合同，别口头锁房不给凭证；\n4. 转账备注“房租+月份”，保留付款记录。';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(function(){alert('✅ 已复制！')})}
+</script>
+</body>
+</html>

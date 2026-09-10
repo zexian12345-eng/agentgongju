@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Cron 定时表达式生成器 | AgentGongju.com</title>
+<meta name="description" content="用中文描述定时需求（如每天上午9点、每周一凌晨），自动生成 Crontab 定时表达式，并给出下次执行时间与通俗解释。">
+<meta name="keywords" content="cron表达式,crontab,定时任务,定时表达式生成,运维工具,计划任务">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:70px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:1.9;white-space:pre-wrap;margin-bottom:12px;font-size:.9rem;font-family:ui-monospace,Menlo,monospace;word-break:break-all}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.chip{display:inline-block;padding:5px 12px;margin:0 6px 6px 0;background:rgba(99,102,241,0.12);border:1px solid rgba(99,102,241,0.3);border-radius:20px;color:#a5b4fc;font-size:.8rem;cursor:pointer}
+.chip:hover{background:rgba(99,102,241,0.25)}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() { var hm = document.createElement("script"); hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949"; var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(hm, s); })();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>⏰ AI Cron 定时表达式生成器</h1><p>说人话，生成服务器能认的定时任务表达式</p></div>
+
+<div class="card">
+<label>💬 描述你的定时需求</label>
+<textarea id="desc" placeholder="例如：每天上午9点执行 / 每周一凌晨2点30分跑一次 / 每5分钟检查一次"></textarea>
+<label>📚 常用场景（点击填入）</label>
+<div>
+<span class="chip" onclick="setD('每天凌晨2点执行')">每天凌晨2点</span>
+<span class="chip" onclick="setD('每天上午9点执行')">每天上午9点</span>
+<span class="chip" onclick="setD('每周一凌晨3点执行')">每周一凌晨3点</span>
+<span class="chip" onclick="setD('每小时执行一次')">每小时</span>
+<span class="chip" onclick="setD('每5分钟执行一次')">每5分钟</span>
+<span class="chip" onclick="setD('每月1号中午12点执行')">每月1号</span>
+<span class="chip" onclick="setD('每工作日早上8点执行')">工作日 8 点</span>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px">
+<div><label>🖥️ 表达式格式</label>
+<select id="fmt">
+<option value="5">标准 Crontab（5 段）</option>
+<option value="6">含秒（6 段）</option>
+</select></div>
+<div><label>🌏 时区/系统</label>
+<select id="os">
+<option value="linux">Linux / Unix</option>
+<option value="java">Java Spring</option>
+<option value="quartz">Quartz</option>
+</select></div>
+</div>
+<button class="btn-gen" id="genBtn">✨ 生成 Cron 表达式</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 生成结果</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制表达式</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function setD(t){document.getElementById('desc').value=t;}
+function cn(n){return n<10?'0'+n:''+n;}
+function parse(d){
+var h=null,m=0,min=null,sec=null,dow='*',dom='*',mon='*';
+var mm;
+if((mm=d.match(/每\s*(\d+)\s*分钟/))) min=mm[1];
+if(/每小时/.test(d)) m=0;
+if((mm=d.match(/(凌晨|早上|上午|中午|下午|晚上|傍晚)?\s*(\d{1,2})\s*[点:时]\s*(\d{1,2})?\s*分?/))){
+  h=parseInt(mm[2],10); if(mm[3])m=parseInt(mm[3],10);
+  var p=mm[1]||'';
+  if((p==='下午'||p==='晚上'||p==='傍晚')&&h<12)h+=12;
+  if(p==='中午'&&h<12)h+=12;
+}
+if(/每周一|每星期一/.test(d)){dow='1';}
+else if(/每周二/.test(d))dow='2';
+else if(/每周三/.test(d))dow='3';
+else if(/每周四/.test(d))dow='4';
+else if(/每周五/.test(d))dow='5';
+else if(/每周六/.test(d))dow='6';
+else if(/每周日|每周天/.test(d))dow='0';
+else if(/工作日/.test(d)){dow='1-5';}
+if((mm=d.match(/每月\s*(\d{1,2})\s*[号日]/))) dom=mm[1];
+return {min:min,h:h,m:m,dow:dow,dom:dom,mon:mon};
+}
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('AI Cron 定时表达式生成器 | AgentGongju.com'))return;
+var d=document.getElementById('desc').value.trim();
+if(!d){alert('请先描述定时需求');return;}
+var p=parse(d);
+var minPart=p.min!==null?('*/'+p.min):(''+(p.h!==null?p.m:0));
+var hourPart=p.min!==null?'*':(p.h!==null?p.h:'*');
+var dowPart=p.dow, domPart=p.dom, monPart=p.mon;
+var base=minPart+' '+hourPart+' '+domPart+' '+monPart+' '+dowPart;
+var fmt=document.getElementById('fmt').value;
+var os=document.getElementById('os').value;
+var expr=base;
+if(fmt==='6')expr='0 '+base;
+if(os==='quartz')expr=(fmt==='6'?'0 ':'0 0 ')+base.replace(/\*\/1\b/g,'*');
+var human='';
+if(p.min!==null)human='每 '+p.min+' 分钟执行一次';
+else if(p.h!==null){
+var tp=(p.h<12?'上午':p.h<18?'下午':'晚上');
+var hh=p.h%12||12;
+human=(p.dow==='1-5'?'每个工作日':p.dow!=='*'?'每周'+['日','一','二','三','四','五','六'][+p.dow]:p.dom!=='*'?'每月 '+p.dom+' 号':'每天')+' '+tp+' '+hh+' 点'+(p.m?(' '+p.m+' 分'):'')+' 执行';
+}else if(/每小时/.test(d))human='每到整点执行一次（每小时第 0 分）';
+else human='按表达式规则执行';
+var out='【Cron 表达式】\n'+expr+'\n\n【字段含义】\n';
+if(fmt==='6')out+='秒  分  时  日  月  周\n';
+out+='分  时  日  月  周\n'+base.split(' ').map(function(x,i){var names=['分钟','小时','日','月','星期'];return names[i]+'：'+x;}).join('\n');
+out+='\n\n【通俗解释】\n'+human;
+out+='\n\n【配置示例】\n';
+if(os==='linux')out+=expr+' /usr/bin/python3 /home/script.py >> /var/log/task.log 2>&1';
+else if(os==='java')out+='@Scheduled(cron = "'+expr+'")\npublic void task() { /* your code */ }';
+else out+='Spring Quartz 中每 6 段或 7 段，如：'+expr;
+out+='\n\n【常用符号】\n* 任意值  |  , 枚举  |  - 区间  |  / 步长（如 */5 每5个单位）';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(function(){alert('✅ 已复制！')})}
+</script>
+</body>
+</html>

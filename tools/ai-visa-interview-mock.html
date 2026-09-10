@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 签证面签模拟器 | AgentGongju.com</title>
+<meta name="description" content="模拟美签、申根、日签等面签问答，生成高频问题与标准回答模板，帮你提前演练，减少临场紧张。">
+<meta name="keywords" content="签证面签,美国签证,面签问题,申根签证,签证面试,出国旅行,签证准备">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;margin-bottom:12px;font-size:.92rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() { var hm = document.createElement("script"); hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949"; var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(hm, s); })();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🛂 AI 签证面签模拟器</h1><p>提前把签证官要问的都演练一遍</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>🌍 签证国家</label>
+<select id="country">
+<option value="usa">🇺🇸 美国签证</option>
+<option value="schengen">🇪🇺 申根签证</option>
+<option value="japan">🇯🇵 日本签证</option>
+<option value="uk">🇬🇧 英国签证</option>
+<option value="canada">🇨🇦 加拿大签证</option>
+</select></div>
+<div><label>🧳 出行目的</label>
+<select id="purpose">
+<option value="tour">旅游观光</option>
+<option value="business">商务考察</option>
+<option value="study">留学</option>
+<option value="visit">探亲访友</option>
+</select></div>
+</div>
+<div class="param-row">
+<div><label>👤 申请人身份</label>
+<select id="who">
+<option value="在职">在职员工</option>
+<option value="free">自由职业</option>
+<option value="student">在校学生</option>
+<option value="retired">退休人员</option>
+<option value="boss">企业主</option>
+</select></div>
+<div><label>✈️ 同行情况</label>
+<select id="with">
+<option value="alone">独自出行</option>
+<option value="family">和家人一起</option>
+<option value="friend">和朋友一起</option>
+</select></div>
+</div>
+<label>📌 补充信息（可选）</label>
+<input type="text" id="extra" placeholder="例如：第一次出国、有房产、去过日本东南亚">
+<button class="btn-gen" id="genBtn">🎤 生成面签问题与应答</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🎤 面签演练稿</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制演练稿</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+var CN={usa:'美国',schengen:'申根区',japan:'日本',uk:'英国',canada:'加拿大'};
+var PUR={tour:'旅游观光',business:'商务考察',study:'留学深造',visit:'探亲访友'};
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('AI 签证面签模拟器 | AgentGongju.com'))return;
+var c=document.getElementById('country').value;
+var p=document.getElementById('purpose').value;
+var who=document.getElementById('who').value;
+var w=document.getElementById('with').value;
+var extra=document.getElementById('extra').value.trim();
+var cn=CN[c],pur=PUR[p];
+var out='【面签基本信息】\n国家：'+cn+'\n目的：'+pur+'\n身份：'+who+'\n同行：'+(w==='alone'?'独自出行':'与他人同行')+'\n\n';
+out+='【高频问题与回答思路】\n\n';
+out+='Q1：你去'+cn+'的目的是什么？\n答：我计划去'+cn+pur+'，行程大约 X 天，主要去 A 城和 B 城。回答要具体、简短、和申请材料一致。\n\n';
+out+='Q2：你会待多久？什么时候回来？\n答：我计划停留 X 天，已订好 X 月 X 日返程机票。务必给出确定的回程时间，证明你会回国。\n\n';
+if(who==='在职'){
+out+='Q3：你在哪里工作？做什么职位？\n答：我在 X 公司担任 X 职位，已工作 X 年，这次已向公司请假并获批，附有在职证明和准假信。\n\n';
+out+='Q4：你的月收入大概多少？谁承担旅行费用？\n答：我月收入约 X 元，本次旅行费用由本人承担，附银行流水与存款证明。\n\n';
+}else if(who==='student'){
+out+='Q3：你在哪所学校读书？读什么专业？\n答：我在 X 学校读 X 专业，X 年级，附在读证明和学生证。假期出行，开学前会返校。\n\n';
+out+='Q4：旅行费用谁出？\n答：由我父母/本人承担，附出资人的收入证明和亲属关系证明。\n\n';
+}else if(who==='free'){
+out+='Q3：你的收入来源是什么？\n答：我从事 X（如电商/设计/自媒体），有稳定收入，附营业执照/合同/流水。自由职业最容易被追问，材料务必扎实。\n\n';
+}else if(who==='retired'){
+out+='Q3：你退休前做什么？现在有退休金吗？\n答：我原在 X 单位工作，现已退休，每月退休金 X 元，附退休证。\n\n';
+}else{
+out+='Q3：你的公司是做什么的？\n答：我经营 X 公司，主营 X，这次是为了商务考察/洽谈合作，附营业执照和邀请函。\n\n';
+}
+out+='Q5：你在'+cn+'有亲戚朋友吗？\n答：按照实际情况回答。若没有就明确说“没有”；若有，要说明关系，但不要让人怀疑有移民倾向。\n\n';
+out+='Q6：为什么要去'+cn+'？为什么选这个时间？\n答：结合假期、季节、行程安排给出自然理由，如“利用年假看樱花/看展/参加展会”。\n\n';
+out+='Q7：你之前出过国吗？\n答：'+(/去过|日本|东南亚|欧洲/.test(extra)?'如实说明去过的国家，良好的出入境记录是加分项。':'如实回答。如果这是第一次出国，说明行程规划成熟、资金与工作稳定。')+'\n\n';
+out+='Q8：你在国内有房产/家人吗？\n答：如实说明，这类“国内约束力”问题是在判断你是否有回国意愿，有房产、稳定工作、家庭成员都是有力证明。\n\n';
+out+='【面签礼仪与技巧】\n';
+out+='1. 回答简洁直接，问什么答什么，不主动展开、不背稿；\n';
+out+='2. 全程与签证官有眼神交流，声音清晰，态度从容；\n';
+out+='3. 所有回答必须和申请表、材料完全一致，切忌自相矛盾；\n';
+out+='4. 材料按类别整理好，被要时能迅速递出；\n';
+out+='5. 不猜测、不夸大，不确定的事就说“需要看材料确认”。\n';
+out+='\n【容易踩雷的回答】\n· “去那边看看有没有工作机会”——直接暴露移民/工作倾向；\n· “不知道待多久”“机票还没订”——缺乏明确计划；\n· 支支吾吾、和材料对不上——最容易被拒。\n';
+if(extra)out+='\n【针对你的情况】\n'+extra+'——准备好对应的证明材料，回答时自然带出即可。\n';
+out+='\n⚠️ 以上为通用演练参考，各国政策与个案差异较大，请以官方领馆要求为准。';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(function(){alert('✅ 已复制！')})}
+</script>
+</body>
+</html>

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>经期护理助手 | AgentGongju.com</title>
+<meta name="description" content="记录经期情况，自动计算经期与排卵预测、给出缓解痛经的护理建议和饮食提醒，帮助女性更好地了解自己的周期。">
+<meta name="keywords" content="经期,月经周期,排卵期,痛经,经期护理,记录,女性健康,安全期">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;margin-bottom:12px;font-size:.92rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() { var hm = document.createElement("script"); hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949"; var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(hm, s); })();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🌸 经期护理助手</h1><p>算好下一次，也照顾好当下的不舒服</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>📅 上次月经第一天</label>
+<input type="text" id="last" placeholder="例如：2026-09-01"></div>
+<div><label>⏱️ 平均周期天数</label>
+<select id="cycle">
+<option value="26">26 天</option>
+<option value="28" selected>28 天</option>
+<option value="30">30 天</option>
+<option value="32">32 天</option>
+<option value="35">35 天（偏长）</option>
+</select></div>
+</div>
+<div class="param-row">
+<div><label>🩸 经期持续天数</label>
+<select id="dur">
+<option value="4">4 天</option>
+<option value="5" selected>5 天</option>
+<option value="6">6 天</option>
+<option value="7">7 天</option>
+</select></div>
+<div><label>😣 主要困扰</label>
+<select id="pain">
+<option value="none">没什么困扰</option>
+<option value="cramp" selected>痛经、肚子坠胀</option>
+<option value="mood">情绪波动大、易烦躁</option>
+<option value="head">头晕乏力、怕冷</option>
+<option value="acne">经期长痘、水肿</option>
+</select></div>
+</div>
+<label>📝 补充情况（可选）</label>
+<input type="text" id="extra" placeholder="例如：量少、有血块、经期推迟、备孕中">
+<button class="btn-gen" id="genBtn">✨ 生成周期预测与护理建议</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🌸 你的周期预测与护理方案</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制方案</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function fmt(d){return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2);}
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('经期护理助手 | AgentGongju.com'))return;
+var lastStr=document.getElementById('last').value.trim();
+if(!/^\d{4}-\d{1,2}-\d{1,2}$/.test(lastStr)){alert('请按 2026-09-01 格式填写上次月经第一天');return;}
+var last=new Date(lastStr.replace(/-/g,'/'));
+if(isNaN(last.getTime())){alert('日期格式不正确');return;}
+var cycle=+document.getElementById('cycle').value;
+var dur=+document.getElementById('dur').value;
+var pain=document.getElementById('pain').value;
+var extra=document.getElementById('extra').value.trim();
+var today=new Date();today.setHours(0,0,0,0);
+var next=new Date(last);next.setDate(next.getDate()+cycle);
+// 若已过预测日，顺延
+while(next<today){next.setDate(next.getDate()+cycle);}
+var nextStart=new Date(next);
+var nextEnd=new Date(nextStart);nextEnd.setDate(nextStart.getDate()+dur-1);
+// 排卵日约为下次月经前 14 天
+var ovu=new Date(nextStart);ovu.setDate(nextStart.getDate()-14);
+var ovuStart=new Date(ovu);ovuStart.setDate(ovu.getDate()-5);
+var ovuEnd=new Date(ovu);ovuEnd.setDate(ovu.getDate()+1);
+var daysTo=(nextStart-today)/86400000;
+var out='【周期预测】\n';
+out+='· 上次经期开始：'+fmt(last)+'\n';
+out+='· 本次周期长度：'+cycle+' 天\n';
+out+='· 预计下次经期：'+fmt(nextStart)+' 至 '+fmt(nextEnd)+'\n';
+out+='· 距下次经期还有约 '+Math.max(0,Math.round(daysTo))+' 天\n';
+out+='· 预计排卵日：'+fmt(ovu)+'（易孕期约 '+fmt(ovuStart)+' 至 '+fmt(ovuEnd)+'）\n\n';
+out+='【当前阶段判断】\n';
+var dayInCycle=(Math.floor((today-new Date(last))/(86400000))%cycle+cycle)%cycle;
+if(dayInCycle<dur)out+='你现在处于经期第 '+(dayInCycle+1)+' 天，注意保暖休息。\n';
+else if(dayInCycle<13)out+='你现在处于卵泡期（经期后到排卵前），精力回升，适合运动与高强度工作。\n';
+else if(dayInCycle<16)out+='你正接近排卵期，白带会变多、变透明拉丝，属于正常现象。\n';
+else out+='你处于黄体期（排卵后到下次月经前），容易出现情绪波动与水肿，属激素正常波动。\n';
+out+='\n【针对困扰的护理建议】\n';
+if(pain==='cramp'){
+out+='· 热敷下腹部最有效，热水袋 15-20 分钟即可；\n· 喝温热的红糖姜水或热水，别碰冰饮冰食；\n· 适度走动比卧床更利于缓解坠胀，但别剧烈运动；\n· 痛得厉害可在医生指导下服用布洛芬等止痛药，空腹别吃；\n· 持续剧烈痛经（影响上学上班）要去妇科排查子宫内膜异位等问题。\n';
+}else if(pain==='mood'){
+out+='· 情绪波动是激素变化导致，不是你“矫情”，别自责；\n· 保证睡眠、减少咖啡因与高糖饮食，能明显改善情绪起伏；\n· 适度运动（快走、瑜伽）有助稳定情绪；\n· 提前把重要决策避开经期前几天。\n';
+}else if(pain==='head'){
+out+='· 头晕乏力多与失血、睡眠不足有关，注意补铁补蛋白；\n· 多吃红肉、动物肝脏、菠菜、红枣，配合维 C 促进铁吸收；\n· 起立别太猛，防止体位性低血压。\n';
+}else if(pain==='acne'){
+out+='· 经期前长痘、水肿属激素性正常波动，别挤痘；\n· 少盐少糖，减少水肿；多喝水帮助代谢；\n· 护肤以温和清洁+保湿为主，别叠加高浓度猛药。\n';
+}else{
+out+='· 目前无明显不适，保持规律作息与均衡饮食即可；\n· 经期注意保暖、适度运动、避免过度劳累。\n';
+}
+out+='\n【经期通用注意事项】\n· 卫生巾 2-3 小时换一次，别捂太久防止感染；\n· 可以洗头洗澡，但要速战速决、注意水温与保暖；\n· 不建议经期做妇科检查、献血和剧烈运动；\n· 经期可以正常工作和轻度运动，不必过度忌口，但生冷要少吃。\n';
+out+='\n【重要提醒】\n· 周期在 21-35 天都属正常范围，偶尔提前或推迟几天不必焦虑；\n· 压力、熬夜、减肥、换季都会影响周期；\n· 若连续 3 个周期不规律、经量骤增骤减、非经期出血，请及时就医。\n';
+if(extra)out+='\n【针对你的情况】\n'+extra.split(/[，,、]/).join('\n· ')+'\n如与上述情况相关，建议记录 2-3 个周期后咨询妇科医生。\n';
+out+='\n⚠️ 本工具为健康参考，不能替代医学诊断。备孕或避孕请以医生指导为准。';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(function(){alert('✅ 已复制！')})}
+</script>
+</body>
+</html>

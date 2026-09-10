@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>科目一模拟刷题助手 | AgentGongju.com</title>
+<meta name="description" content="驾考科目一高频考点模拟刷题，覆盖标志识别、罚款记分、安全常识，答完自动解析错题并给出复习重点。">
+<meta name="keywords" content="科目一,驾考,模拟刷题,驾照考试,交通标志,罚款记分,学车工具">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+select:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.q-box{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:18px;margin-bottom:14px}
+.q-text{color:#e2e8f0;font-size:1rem;line-height:1.7;margin-bottom:12px}
+.opt{display:block;padding:11px 14px;margin-bottom:8px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#cbd5e1;cursor:pointer;font-size:.92rem;transition:all .2s}
+.opt:hover{border-color:#6366f1;background:rgba(99,102,241,0.1)}
+.opt.right{background:rgba(34,197,94,0.15);border-color:#22c55e;color:#86efac}
+.opt.wrong{background:rgba(239,68,68,0.15);border-color:#ef4444;color:#fca5a5}
+.explain{display:none;margin-top:10px;padding:12px;background:rgba(99,102,241,0.1);border-left:3px solid #6366f1;border-radius:6px;color:#c7d2fe;font-size:.88rem;line-height:1.7}
+.explain.show{display:block}
+.progress{color:#94a3b8;font-size:.85rem;margin-bottom:12px}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;font-size:.92rem}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() { var hm = document.createElement("script"); hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949"; var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(hm, s); })();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🚗 科目一模拟刷题助手</h1><p>重点考点随机抽题，答完立刻看解析</p></div>
+
+<div class="card">
+<label>📚 选择题库分类</label>
+<select id="cat">
+<option value="all">🎲 随机综合（推荐）</option>
+<option value="sign">🚸 交通标志</option>
+<option value="score">📊 记分与罚款</option>
+<option value="safe">🛡️ 安全文明驾驶</option>
+<option value="rule">📋 通行规则</option>
+</select>
+<label>🔢 本次题量</label>
+<select id="num">
+<option value="5" selected>5 题（快速练手）</option>
+<option value="10">10 题</option>
+<option value="15">15 题</option>
+</select>
+<button class="btn-gen" id="genBtn">🎯 开始刷题</button>
+</div>
+
+<div id="quizArea" style="display:none">
+<div class="card">
+<div class="progress" id="progress"></div>
+<div id="qList"></div>
+<button class="btn-gen" id="submitBtn" style="margin-top:8px">📊 提交并查看得分</button>
+</div>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">📊 刷题报告</div>
+<div class="output-box" id="outputBox"></div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+var BANK=[
+{c:'sign',q:'这个标志是什么含义？（黄底黑边三角，内有行人）',o:['注意行人','禁止行人通行','人行横道','行人优先'],a:0,e:'黄色三角为警告标志，提示前方注意行人，属于警示类标志。'},
+{c:'sign',q:'红圈内一条白色横杠的标志表示？',o:['禁止通行','禁止驶入','停车让行','单行路'],a:1,e:'红圈白横杠为“禁止驶入”，多见于单行道路口，禁止车辆进入。'},
+{c:'sign',q:'蓝底白色箭头的圆形标志通常表示？',o:['警告','指示行驶方向','禁止','注意'],a:1,e:'蓝底圆形多为指示标志，用于告知应遵循的行驶方向或车道。'},
+{c:'score',q:'饮酒后驾驶机动车，一次记多少分？',o:['3 分','6 分','9 分','12 分'],a:3,e:'饮酒后驾驶机动车一次记 12 分，且暂扣驾驶证并罚款，切勿酒后开车。'},
+{c:'score',q:'驾驶机动车不按规定使用安全带，一般记？',o:['不记分','1 分','3 分','6 分'],a:1,e:'不按规定使用安全带通常记 1 分，具体以最新交规为准，安全第一务必系好。'},
+{c:'score',q:'驾驶与准驾车型不符的机动车，一次记多少分？',o:['3 分','6 分','9 分','12 分'],a:2,e:'驾驶与准驾车型不符属于严重违法，一次记 9 分。'},
+{c:'safe',q:'遇前方车辆停车排队等候时，正确做法是？',o:['借道超车','依次排队等候','鸣笛催促','从应急车道通过'],a:1,e:'应当依次排队等候，借道超车、占用应急车道均属违法且危险。'},
+{c:'safe',q:'夜间会车时应在距对方来车多少米以外改用近光灯？',o:['50 米','100 米','150 米','200 米'],a:2,e:'夜间会车应在 150 米以外改用近光灯，避免远光灯致盲对向司机。'},
+{c:'safe',q:'雨天行车，车轮出现“水滑”现象时应？',o:['急踩刹车','猛打方向','松抬加速踏板，缓踩刹车','加速冲过去'],a:2,e:'水滑时轮胎失去抓地力，应松油门、稳住方向、缓慢减速，切忌急刹急打方向。'},
+{c:'rule',q:'在没有中心线的城市道路上，机动车最高时速不得超过？',o:['30 公里','40 公里','50 公里','60 公里'],a:0,e:'没有道路中心线的城市道路，最高时速不得超过 30 公里。'},
+{c:'rule',q:'高速公路最低时速不得低于？',o:['50 公里','60 公里','70 公里','80 公里'],a:1,e:'高速公路最低车速为每小时 60 公里，低于此速度易引发追尾。'},
+{c:'rule',q:'机动车在路口遇到黄灯亮时，已越过停止线的车辆应？',o:['立即停车','可以继续通行','倒回停止线','鸣笛通过'],a:1,e:'黄灯亮时已越过停止线的车辆可以继续通行，未越过的应停车等候。'},
+{c:'rule',q:'在道路上超车时，应从被超车辆的哪一侧超越？',o:['左侧','右侧','任意一侧','应急车道'],a:0,e:'我国为右侧通行，超车应从左侧超越，右侧超车属违法行为。'},
+{c:'sign',q:'红色圆形内有一条白色斜杠，下方写有数字“40”，表示？',o:['最低时速 40','最高时速 40','建议时速 40','禁止 40 以上'],a:1,e:'红圈数字为限速标志，表示该路段最高时速不得超过 40 公里。'},
+{c:'safe',q:'驾驶时接打手持电话，正确的做法是？',o:['单手操作即可','使用蓝牙或免提','停车后再接','边开车边打字回复'],a:2,e:'最安全的是停车后再使用手机；确需通话请使用合规免提设备并保持注意力。'}
+];
+var current=[],answered={};
+function shuffle(a){for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}return a;}
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('科目一模拟刷题助手 | AgentGongju.com'))return;
+var cat=document.getElementById('cat').value;
+var n=+document.getElementById('num').value;
+var pool=BANK.filter(function(q){return cat==='all'||q.c===cat;});
+if(pool.length<n)pool=BANK.slice();
+current=shuffle(pool.slice()).slice(0,n);
+answered={};
+var html='';
+current.forEach(function(q,i){
+html+='<div class="q-box"><div class="q-text">'+(i+1)+'. '+q.q+'</div>';
+q.o.forEach(function(op,j){
+html+='<div class="opt" data-q="'+i+'" data-o="'+j+'" onclick="pick(this)">'+'ABCD'[j]+'. '+op+'</div>';
+});
+html+='<div class="explain" id="ex'+i+'"></div></div>';
+});
+document.getElementById('qList').innerHTML=html;
+document.getElementById('progress').innerText='共 '+n+' 题 · 点击选项作答';
+document.getElementById('quizArea').style.display='block';
+document.getElementById('resultArea').classList.remove('active');
+});
+function pick(el){
+if(el.parentNode.querySelector('.right')||el.parentNode.querySelector('.wrong'))return;
+var qi=+el.getAttribute('data-q');
+var oi=+el.getAttribute('data-o');
+var q=current[qi];
+var opts=el.parentNode.querySelectorAll('.opt');
+opts[q.a].classList.add('right');
+if(oi!==q.a)el.classList.add('wrong');
+answered[qi]=(oi===q.a);
+var ex=document.getElementById('ex'+qi);
+ex.innerHTML=(oi===q.a?'✅ 回答正确！':'❌ 答错了，正确答案是 '+'ABCD'[q.a]+'。')+'<br>💡 '+q.e;
+ex.classList.add('show');
+document.getElementById('progress').innerText='已作答 '+Object.keys(answered).length+' / '+current.length+' 题';
+}
+document.getElementById('submitBtn').addEventListener('click',function(){
+var total=current.length,done=Object.keys(answered).length;
+if(done<total){if(!confirm('还有 '+(total-done)+' 题未作答，确定交卷？'))return;}
+var right=0;
+for(var k in answered)if(answered[k])right++;
+var rate=Math.round(right/total*100);
+var out='【本轮成绩】\n答对 '+right+' / '+total+' 题，正确率 '+rate+'%\n';
+out+=rate>=90?'评价：非常棒，基本可以直接上考场了！\n':rate>=70?'评价：还不错，错题再刷一遍就稳了。\n':'评价：基础还需巩固，建议重点复习错题知识点。\n';
+out+='\n【错题回顾】\n';
+var wrongList=[];
+for(var i=0;i<total;i++){if(answered[i]===false)wrongList.push((i+1)+'. '+current[i].q+'\n   正确答案：'+'ABCD'[current[i].a]+'. '+current[i].o[current[i].a]+'\n   解析：'+current[i].e+'\n');}
+if(wrongList.length)out+=wrongList.join('\n');else out+='全部答对，没有错题，继续保持！\n';
+out+='\n【复习重点建议】\n· 罚款记分题：记住 12 / 9 / 6 / 3 / 1 分的常见对应违法；\n· 标志题：黄警告、红禁止、蓝指示、绿指路，先记颜色逻辑；\n· 速度题：城市 30/50、公路 40/70、高速最低 60 最高 120；\n· 安全题：一律选“减速、观察、让行、不用手机”这类保守选项。';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+window.scrollTo({top:document.getElementById('resultArea').offsetTop-60,behavior:'smooth'});
+Paywall.countUse('科目一模拟刷题助手 | AgentGongju.com');
+});
+</script>
+</body>
+</html>

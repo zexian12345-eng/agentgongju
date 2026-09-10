@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>宠物疫苗接种时间表 | AgentGongju.com</title>
+<meta name="description" content="输入宠物种类与年龄，生成规范的疫苗接种与驱虫时间表，含狂犬疫苗、联苗、抗体检测提醒，养宠新手必备。">
+<meta name="keywords" content="宠物疫苗,狗狗疫苗,猫疫苗,狂犬疫苗,驱虫,幼犬,养宠,疫苗时间表">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;margin-bottom:12px;font-size:.92rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() { var hm = document.createElement("script"); hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949"; var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(hm, s); })();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🐾 宠物疫苗接种时间表</h1><p>幼犬幼猫该打什么针，一张表说清楚</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>🐶 宠物种类</label>
+<select id="pet">
+<option value="dog">🐕 狗狗</option>
+<option value="cat">🐈 猫咪</option>
+</select></div>
+<div><label>🎂 当前月龄</label>
+<select id="age">
+<option value="1">1-2 月龄</option>
+<option value="2">2-3 月龄</option>
+<option value="3" selected>3-4 月龄</option>
+<option value="5">4-6 月龄</option>
+<option value="8">6-12 月龄</option>
+<option value="12">1 岁以上成年</option>
+</select></div>
+</div>
+<div class="param-row">
+<div><label>🏠 生活环境</label>
+<select id="env">
+<option value="home">纯室内不出门</option>
+<option value="walk" selected>每天遛/出门</option>
+<option value="outdoor">经常户外、接触其他宠物</option>
+</select></div>
+<div><label>🔬 是否做过抗体检测</label>
+<select id="test">
+<option value="no" selected>没做过</option>
+<option value="yes">做过，抗体合格</option>
+<option value="low">做过，抗体不足</option>
+</select></div>
+</div>
+<label>📝 补充情况（可选）</label>
+<input type="text" id="extra" placeholder="例如：刚领养、有皮肤病、正在吃药、已绝育">
+<button class="btn-gen" id="genBtn">💉 生成疫苗时间表</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">💉 专属疫苗与驱虫计划</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制时间表</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('宠物疫苗接种时间表 | AgentGongju.com'))return;
+var pet=document.getElementById('pet').value;
+var age=+document.getElementById('age').value;
+var env=document.getElementById('env').value;
+var test=document.getElementById('test').value;
+var extra=document.getElementById('extra').value.trim();
+var isDog=pet==='dog';
+var out='【接种总原则】\n'+(isDog?'狗狗':'猫咪')+'核心疫苗分联苗与狂犬两类。幼龄期需连打 3 针联苗，每针间隔 21 天左右，之后再打狂犬。\n\n';
+out+='【核心疫苗清单】\n';
+if(isDog){
+out+='· 犬四联/六联/八联：预防犬瘟、细小、腺病毒、副流感等，幼犬必打；\n· 狂犬疫苗：满 3 月龄后接种，是法定要求，办狗证必需；\n· 可选：犬窝咳、莱姆病（常去户外/寄养可加打）。\n';
+}else{
+out+='· 猫三联：预防猫瘟、猫杯状病毒、猫鼻支，幼猫必打；\n· 狂犬疫苗：满 3 月龄后接种，部分城市办证需提供；\n· 可选：猫白血病疫苗（多猫家庭或散养建议打）。\n';
+}
+out+='\n【按你当前月龄的时间安排】\n';
+if(age<=2){
+out+='· 现在：可开始打第 1 针联苗（母源抗体消退后效果最佳）；\n· 3 周后：第 2 针联苗；\n· 再 3 周后：第 3 针联苗；\n· 打完联苗后约 1 周：接种狂犬疫苗；\n';
+}else if(age<=4){
+out+='· 现在：应为第 2 针联苗时间，确认第 1 针是否已完成；\n· 3 周后：第 3 针联苗；\n· 之后 1-2 周：接种狂犬疫苗；\n· 完成全程后建议做一次抗体检测，确认免疫成功。\n';
+}else if(age<=6){
+out+='· 现在：应完成第 3 针联苗 + 狂犬疫苗；\n· 若还没打完，尽快补齐并顺延后续间隔；\n· 注意：接种期间不洗澡、不外出、不换粮，减少应激。\n';
+}else if(age<=12){
+out+='· 现在：幼犬/幼猫基础免疫应已完成；\n· 每年加强：联苗 1 针 + 狂犬 1 针（部分疫苗可每 3 年加强，遵医嘱）；\n';
+}else{
+out+='· 现在：进入成年年度加强阶段；\n· 每年：联苗 1 针 + 狂犬 1 针；\n· 也可先做抗体检测，抗体充足时可适当延长加强间隔（需医生评估）；\n';
+}
+out+='\n【驱虫计划】\n· 体内驱虫：幼龄期 2-4 周一次，成年后 3 个月一次；\n· 体外驱虫：每月一次，夏天或常在草地活动需更勤；\n· 体内外同驱的药要看清说明，别重复用药过量。\n';
+out+='\n【接种前后注意事项】\n· 接种时宠物必须健康，有拉稀、发烧、皮肤病发作先治病；\n· 打完后观察 30 分钟再离开，警惕过敏反应（脸肿、呕吐、呼吸困难）；\n· 接种后 1 周内不洗澡、不剧烈运动、不换环境；\n· 少数宠物会轻微发热、嗜睡，1-2 天缓解属正常。\n';
+if(env==='outdoor')out+='· 你的宠物常接触户外，可考虑加打窝咳/莱姆病疫苗，并加强体外驱虫。\n';
+if(test==='low')out+='· 抗体检测显示不足：建议补打 1-2 针联苗后复检，别直接认为已免疫。\n';
+if(test==='yes')out+='· 抗体合格：按年度计划加强即可，不必过度重复接种。\n';
+if(extra)out+='\n【针对你的情况】\n'+extra+'——接种前请主动告知医生，由医生判断是否适合当天接种。\n';
+out+='\n⚠️ 以上为通用参考，具体疫苗品牌、针次与间隔请以执业兽医面诊建议为准。';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(function(){alert('✅ 已复制！')})}
+</script>
+</body>
+</html>

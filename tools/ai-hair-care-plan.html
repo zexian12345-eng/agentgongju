@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 头皮养护方案 | AgentGongju.com</title>
+<meta name="description" content="根据出油情况、脱发程度与作息，生成个性化的头皮护理与防脱发方案，含洗护节奏、饮食与就医信号提醒。">
+<meta name="keywords" content="头皮养护,防脱发,掉头发,头皮出油,洗发水选择,发际线,护发工具">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;margin-bottom:12px;font-size:.92rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() { var hm = document.createElement("script"); hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949"; var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(hm, s); })();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>💇 AI 头皮养护方案</h1><p>先分清是出油还是脱发，再对症护理</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>💧 头皮出油程度</label>
+<select id="oil">
+<option value="low">一天下来还算清爽</option>
+<option value="mid" selected>第二天就明显出油</option>
+<option value="high">半天就油，头发贴头皮</option>
+</select></div>
+<div><label>🍂 掉发情况</label>
+<select id="hair">
+<option value="low">每天掉几十根，正常</option>
+<option value="mid" selected>洗头时掉发较多</option>
+<option value="high">明显稀疏/发际线后移</option>
+</select></div>
+</div>
+<div class="param-row">
+<div><label>🧴 洗头频率</label>
+<select id="freq">
+<option value="1">每天洗</option>
+<option value="2" selected>隔天洗</option>
+<option value="3">两三天一次</option>
+<option value="4">更久才洗</option>
+</select></div>
+<div><label>😣 伴随状况</label>
+<select id="sym">
+<option value="none">没什么特别</option>
+<option value="itch">头皮痒、有头屑</option>
+<option value="pain">头皮疼、有红点</option>
+<option value="stress">最近压力大、熬夜</option>
+</select></div>
+</div>
+<label>🩺 是否有这些情况（可多选，逗号分隔）</label>
+<input type="text" id="extra" placeholder="例如：烫染过、长期戴帽子、产后、家族遗传脱发">
+<button class="btn-gen" id="genBtn">✨ 生成养护方案</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🧴 你的头皮养护方案</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制方案</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('AI 头皮养护方案 | AgentGongju.com'))return;
+var oil=document.getElementById('oil').value;
+var hair=document.getElementById('hair').value;
+var freq=document.getElementById('freq').value;
+var sym=document.getElementById('sym').value;
+var extra=document.getElementById('extra').value.trim();
+var out='【头皮类型判断】\n';
+if(oil==='high')out+='油性头皮：皮脂分泌旺盛，容易伴随毛囊堵塞，需控油但不建议用强碱皂基。\n';
+else if(oil==='mid')out+='混合偏油：发根出油、发尾干，护理要分区对待。\n';
+else out+='中性/干性：出油少，重点是保湿与减少刺激。\n';
+out+='\n【洗护节奏建议】\n';
+if(oil==='high')out+='· 建议隔天洗，别一天洗两次（越洗越油）；\n· 水温 38℃ 左右，太热会刺激皮脂腺；\n· 洗发水先在手上搓出泡沫再上头；\n';
+else if(oil==='mid')out+='· 隔天洗一次比较合适，出油严重时可用干发喷雾应急；\n· 护发素只涂发尾，别碰头皮；\n';
+else out+='· 2-3 天洗一次即可，别过度清洁；\n· 选择温和的氨基酸洗发水；\n';
+out+='· 吹头发用中低温，先吹干头皮再吹发丝。\n';
+out+='\n【洗护成分怎么选】\n';
+if(oil==='high')out+='· 控油：水杨酸、吡罗克酮乙醇胺盐（去屑）、茶树精油；\n· 避免：皂基、硫磺类长期使用；\n';
+if(sym==='itch')out+='· 去屑止痒：含吡硫翁锌/酮康唑（药用需按说明）；\n· 别用力抓挠，会加重头皮屏障损伤；\n';
+if(sym==='pain')out+='· 有红点、疼痛可能是毛囊炎，建议皮肤科就诊，别自己乱挤；\n';
+out+='· 氨基酸类表活更温和，适合长期使用；\n· 无明显需求不必频繁更换品牌。\n';
+out+='\n【脱发应对】\n';
+if(hair==='high')out+='· 每日掉发超过 100 根并持续，或发缝明显变宽，建议到皮肤科做毛囊检测；\n· 雄激素性脱发越早干预效果越好，别拖；\n· 市面防脱产品认准“国妆特字”批号；\n';
+else if(hair==='mid')out+='· 洗头掉发多，先看是否与季节、熬夜、节食有关；\n· 连续 2-3 个月掉发明显再考虑就医；\n';
+else out+='· 目前掉发量在正常范围（每天 50-100 根），不必焦虑；\n';
+out+='· 别信“生姜擦头皮生发”，可能适得其反。\n';
+out+='\n【生活习惯】\n';
+if(sym==='stress')out+='· 压力与熬夜是脱发加速器，尽量 11 点前入睡；\n';
+out+='· 保证蛋白质摄入（鸡蛋、瘦肉、豆制品），头发主要成分是角蛋白；\n· 补充铁、锌、B 族维生素，节食减肥最容易掉发；\n· 少高糖高油饮食，会加重出油；\n';
+if(extra)out+='\n【针对你的特别提醒】\n'+extra.split(/[，,、]/).join('\n· ')+'——相关因素需重点留意。\n';
+out+='\n⚠️ 本方案为日常养护参考，不能替代医生诊断。若出现成片脱发、头皮溃烂，请及时就医。';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(function(){alert('✅ 已复制！')})}
+</script>
+</body>
+</html>

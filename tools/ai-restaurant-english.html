@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>餐厅点餐英语助手 | AgentGongju.com</title>
+<meta name="description" content="出国点餐不再手足无措：从订位、点单、忌口说明到结账小费，全套场景英语对照，附发音要点，随用随查。">
+<meta name="keywords" content="点餐英语,餐厅英语,出国旅游英语,英文点餐,口语,旅游英语,小费">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;margin-bottom:12px;font-size:.92rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() { var hm = document.createElement("script"); hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949"; var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(hm, s); })();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🍽️ 餐厅点餐英语助手</h1><p>从进门到买单，每一句都有人替你说</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>🍴 用餐场景</label>
+<select id="scene">
+<option value="all">🎲 全流程（推荐）</option>
+<option value="book">📞 电话订位</option>
+<option value="order">📋 点餐</option>
+<option value="special">🥗 忌口与特殊要求</option>
+<option value="pay">💳 结账与小费</option>
+</select></div>
+<div><label>🌏 国家地区</label>
+<select id="area">
+<option value="usa">🇺🇸 美国（需小费）</option>
+<option value="europe">🇪🇺 欧洲</option>
+<option value="japan">🇯🇵 日本</option>
+<option value="uk">🇬🇧 英国</option>
+</select></div>
+</div>
+<label>🚫 你的特殊需求（可选）</label>
+<input type="text" id="need" placeholder="例如：不吃辣、素食、对花生过敏、不要冰">
+<button class="btn-gen" id="genBtn">💬 生成点餐话术</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🗣️ 点餐英语话术</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制话术</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('餐厅点餐英语助手 | AgentGongju.com'))return;
+var scene=document.getElementById('scene').value;
+var area=document.getElementById('area').value;
+var need=document.getElementById('need').value.trim();
+var out='【餐厅点餐英语 · 全场景话术】\n\n';
+function sec(title,items){var s='▍'+title+'\n';items.forEach(function(x){s+='· 中文：'+x[0]+'\n  English: '+x[1]+'\n  发音提示：'+x[2]+'\n';});return s+'\n';}
+if(scene==='all'||scene==='book'){
+out+=sec('电话/现场订位',[
+['两个人，晚上七点有位置吗？','Do you have a table for two at seven?','do you have a tei-bol for two'],
+['我想预订明天晚上的位子','I\'d like to book a table for tomorrow evening.','ai\'d laik tu buk'],
+['需要等多久？','How long is the wait?','hao long iz the wait'],
+['可以靠窗吗？','Could we sit by the window?','kud we sit bai the win-dou']
+]);
+}
+if(scene==='all'||scene==='order'){
+out+=sec('看菜单与点餐',[
+['可以看下菜单吗？','Could I see the menu, please?','kud ai si the men-iu'],
+['你们有什么推荐的？','What do you recommend?','wot du you re-ko-mend'],
+['我要这个，谢谢（指着菜单）','I\'ll have this one, please.','ail hav this wan'],
+['可以分两份吗？','Could you make it two portions?','kud you meik it tu por-shions'],
+['再来一杯水，谢谢','Another glass of water, please.','a-na-ther glas ov wo-ter']
+]);
+}
+if(scene==='all'||scene==='special'){
+out+=sec('忌口与特殊要求',[
+['我不吃辣','I don\'t eat spicy food.','ai dont it spai-si fud'],
+['我是素食者','I\'m vegetarian.','aim ve-ji-te-rian'],
+['我对花生过敏，很严重','I\'m allergic to peanuts. It\'s serious.','ai am a-ler-jik'],
+['请不要放冰','No ice, please.','nou ais pliz'],
+['可以少放点盐吗？','Could you use less salt?','kud you ius les solt']
+]);
+}
+if(scene==='all'||scene==='pay'){
+out+=sec('结账与小费',[
+['麻烦买单','Could we have the bill, please?','kud we hav the bil'],
+['可以分开付吗？','Can we split the bill?','ken we split the bil'],
+['可以刷卡吗？','Do you take card?','du you teik kad'],
+['不用找零了（留小费）','Keep the change.','kip the cheinj'],
+['这顿我来请','It\'s on me.','its on mi']
+]);
+}
+out+='【小费与结账常识】\n';
+if(area==='usa')out+='· 美国餐厅小费通常 15%-20%，服务好给 20%，快餐店可不用；\n· 小费一般刷卡时在账单上手写或现金留在桌上；\n· 有些店已含服务费（Service Charge），注意别重复给。\n';
+else if(area==='europe')out+='· 欧洲多数国家账单已含服务费，满意可留零钱或 5%-10%；\n· 部分国家（如德国）习惯把钱凑整说 “Stimmt so”（不用找）；\n';
+else if(area==='japan')out+='· 日本一般不给小费，给反而可能让对方为难；\n· 结账多在收银台（レジ），说 “お会計お願いします” 即可。\n';
+else out+='· 英国小费通常 10%-12.5%，有的账单已含服务费；\n· 酒吧点酒一般不付小费。\n';
+out+='【结账高频句型】\n· 有服务费吗？— Is service charge included?\n· 账单算错了 — I think there\'s a mistake on the bill.\n· 可以开发票吗？— Could I get a receipt?\n';
+if(need){
+out+='\n【你的特殊需求 · 临场对照句】\n';
+need.split(/[，,、]/).forEach(function(x){
+var m={'不吃辣':'I don\'t eat spicy food.','素食':'I\'m vegetarian.','花生':'I\'m allergic to peanuts.','不要冰':'No ice, please.','过敏':'I have a food allergy.'};
+var hit='I have a special request: '+x+' (please help me with this).';
+for(var k in m){if(x.indexOf(k)>-1){hit=m[k];break;}}
+out+='· '+x+' → '+hit+'\n';
+});
+}
+out+='\n【实用小技巧】\n1. 指着菜单说 “This one, please” 永远好用；\n2. 听不懂就说 “Sorry, could you repeat that?”，没人会笑话你；\n3. 过敏一定要强调 “It\'s serious”，必要时出示翻译卡片。';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(function(){alert('✅ 已复制！')})}
+</script>
+</body>
+</html>

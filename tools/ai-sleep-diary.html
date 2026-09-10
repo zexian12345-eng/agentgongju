@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 睡眠日记分析 | AgentGongju.com</title>
+<meta name="description" content="记录入睡时间、醒来次数与精神状态，自动分析你的睡眠质量，找出影响睡眠的习惯并给出可执行的改善建议。">
+<meta name="keywords" content="睡眠质量,睡眠日记,失眠,睡眠分析,助眠,作息改善,健康工具">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;margin-bottom:12px;font-size:.92rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.score-big{font-size:3rem;font-weight:700;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-align:center;margin:10px 0}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() { var hm = document.createElement("script"); hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949"; var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(hm, s); })();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>😴 AI 睡眠日记分析</h1><p>把昨晚的睡眠情况填进来，看看问题出在哪</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>🛏️ 昨晚入睡时间</label>
+<select id="sleep">
+<option value="22">22:00 前</option>
+<option value="23">22:00 - 23:00</option>
+<option value="24">23:00 - 24:00</option>
+<option value="1">凌晨 0:00 - 1:00</option>
+<option value="2">凌晨 1:00 以后</option>
+</select></div>
+<div><label>⏳ 实际睡了几小时</label>
+<select id="hours">
+<option value="5">不到 5 小时</option>
+<option value="6">5-6 小时</option>
+<option value="7">6-7 小时</option>
+<option value="8" selected>7-8 小时</option>
+<option value="9">8 小时以上</option>
+</select></div>
+</div>
+<div class="param-row">
+<div><label>🌙 夜里醒来次数</label>
+<select id="wake">
+<option value="0">一觉到天亮</option>
+<option value="1">1-2 次</option>
+<option value="3">3 次以上</option>
+</select></div>
+<div><label>☀️ 白天精神状态</label>
+<select id="mood">
+<option value="good" selected>精神不错</option>
+<option value="ok">一般，有点困</option>
+<option value="bad">很累，注意力差</option>
+</select></div>
+</div>
+<label>☕ 睡前习惯（可多选，逗号分隔）</label>
+<input type="text" id="habit" placeholder="例如：刷手机、喝咖啡、加班、运动、喝酒">
+<button class="btn-gen" id="genBtn">🔍 分析我的睡眠</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="text-align:center;color:#94a3b8;font-size:.9rem">你的睡眠得分</div>
+<div class="score-big" id="scoreBig"></div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制建议</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('AI 睡眠日记分析 | AgentGongju.com'))return;
+var s=+document.getElementById('sleep').value;
+var h=+document.getElementById('hours').value;
+var w=+document.getElementById('wake').value;
+var mood=document.getElementById('mood').value;
+var habit=document.getElementById('habit').value.trim();
+var score=100,issues=[],tips=[];
+if(s>=24){score-=15;issues.push('入睡时间过晚，生物钟被推迟');}
+if(h<=5){score-=25;issues.push('睡眠总时长严重不足（建议 7-8 小时）');}
+else if(h<=6){score-=15;issues.push('睡眠时长偏短');}
+if(w>=3){score-=20;issues.push('夜间频繁醒来，深睡眠可能被打断');}
+else if(w>=1){score-=8;issues.push('夜间有醒来，影响睡眠连续性');}
+if(mood==='bad'){score-=15;issues.push('白天明显疲惫，睡眠未恢复精力');}
+else if(mood==='ok'){score-=6;issues.push('白天仍有些困倦');}
+if(habit){
+if(/手机|刷|视频|游戏/.test(habit)){score-=8;tips.push('睡前 1 小时放下手机：蓝光会抑制褪黑素分泌，让大脑以为还是白天');}
+if(/咖啡|茶|奶茶/.test(habit)){score-=6;tips.push('下午 2 点后避免咖啡因，它的半衰期长达 5-6 小时');}
+if(/加班|工作|焦虑|想事/.test(habit)){score-=8;tips.push('睡前写下待办清单，把“记在脑子里”的任务交给纸笔');}
+if(/酒/.test(habit)){score-=6;tips.push('喝酒助眠是错觉，酒精会让后半夜睡眠变浅、易醒');}
+if(/运动|跑步|健身/.test(habit)){tips.push('运动助眠很好，但别在睡前 2 小时内做剧烈运动');}
+}
+if(score<0)score=0;
+var level=score>=85?'优秀':score>=70?'良好':score>=55?'一般':'需要改善';
+document.getElementById('scoreBig').innerText=score+' 分 · '+level;
+var out='【评分结论】\n'+score+' 分（'+level+'）\n\n';
+out+='【发现的问题】\n';
+if(issues.length)issues.forEach(function(x,i){out+=(i+1)+'. '+x+'\n';});
+else out+='暂无明显问题，继续保持当前作息。\n';
+out+='\n【针对性建议】\n';
+if(tips.length)tips.forEach(function(x,i){out+=(i+1)+'. '+x+'\n';});
+out+='· 固定起床时间比固定入睡时间更重要，周末也别赖床超过 1 小时；\n';
+out+='· 卧室只用来睡觉，不办公不刷剧，让大脑建立“床=睡觉”的条件反射；\n';
+out+='· 躺下 20 分钟睡不着就起来走动，别在床上硬躺焦虑。\n';
+out+='\n【今晚就去做的 3 件事】\n1. 睡前 1 小时调暗灯光，放下电子设备；\n2. 把房间温度调到 20-24℃，稍微偏凉更好入睡；\n3. 明早固定时间起床，哪怕昨晚睡得不好。\n';
+out+='\n⚠️ 若长期失眠（超过 3 周）或伴随打鼾憋气，建议到睡眠专科就诊。';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(function(){alert('✅ 已复制！')})}
+</script>
+</body>
+</html>

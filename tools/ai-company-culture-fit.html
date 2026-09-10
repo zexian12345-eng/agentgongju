@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 公司文化适配分析 | AgentGongju.com</title>
+<meta name="description" content="输入你的性格偏好与面试时观察到的细节，分析你和目标公司的文化是否合拍，并给出面试中该怎么判断的问法。">
+<meta name="keywords" content="公司文化,面试,求职,文化适配,职场,offer选择,面试提问">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:70px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;margin-bottom:12px;font-size:.92rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() { var hm = document.createElement("script"); hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949"; var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(hm, s); })();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🏢 AI 公司文化适配分析</h1><p>面试前想清楚：这家公司，适不适合你？</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>😊 你喜欢的工作节奏</label>
+<select id="pace">
+<option value="stable">稳定规律、准点下班</option>
+<option value="fast" selected>快节奏、有挑战</option>
+<option value="mix">弹性自主、看结果</option>
+</select></div>
+<div><label>🎯 你的核心诉求</label>
+<select id="want">
+<option value="growth">成长与学习机会</option>
+<option value="money" selected>薪资与回报</option>
+<option value="balance">工作生活平衡</option>
+<option value="fame">平台与背景光环</option>
+</select></div>
+</div>
+<div class="param-row">
+<div><label>🗣️ 你偏好的沟通方式</label>
+<select id="comm">
+<option value="direct">直接、有话直说</option>
+<option value="polite" selected>温和、讲人情世故</option>
+<option value="dontcare">不太在意，能合作就行</option>
+</select></div>
+<div><label>🏷️ 目标公司类型</label>
+<select id="type">
+<option value="big">大厂/上市公司</option>
+<option value="startup" selected>创业公司</option>
+<option value="soe">国企/事业单位</option>
+<option value="foreign">外企</option>
+<option value="small">中小民企</option>
+</select></div>
+</div>
+<label>👀 面试时观察到的细节（越具体越准）</label>
+<textarea id="obs" placeholder="例如：面试官一直强调要能加班、说团队平均年龄25岁、办公区很安静、HR说考核按季度排名"></textarea>
+<button class="btn-gen" id="genBtn">🔍 分析文化适配度</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:12px">🏢 适配度分析报告</div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制报告</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+var TYPE={'big':{name:'大厂/上市公司',trait:'流程成熟、分工细、节奏快、PUA式管理偶有，看过程也看结果',risk:'大厂偏爱“对齐”和汇报，喜欢独立闷头干的人可能觉得内耗'},
+'startup':{name:'创业公司',trait:'一人多岗、变化快、决策快、资源有限，成长和风险并存',risk:'如果创始人风格强势，你的自主空间可能被压缩'},
+'soe':{name:'国企/事业单位',trait:'稳定、层级分明、看重流程和人际关系，节奏相对慢',risk:'追求快速成长、想颠覆式做事的人容易憋屈'},
+'foreign':{name:'外企',trait:'边界清晰、重视 work-life balance、邮件文化、英语要求高',risk:'晋升可能慢，决策链条长，需要适应“绕一圈才拍板”'},
+'small':{name:'中小民企',trait:'灵活、务实、老板一言堂概率高、制度不全',risk:'制度不完善，很多事情靠人情和老板心情'}};
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('AI 公司文化适配分析 | AgentGongju.com'))return;
+var pace=document.getElementById('pace').value;
+var want=document.getElementById('want').value;
+var comm=document.getElementById('comm').value;
+var type=document.getElementById('type').value;
+var obs=document.getElementById('obs').value.trim();
+var t=TYPE[type];
+var score=70,notes=[],ask=[];
+if(pace==='stable'){
+if(type==='big'||type==='startup'){score-=15;notes.push('你想要准点下班，但'+t.name+'通常节奏偏快、加班较多，作息可能冲突');}
+if(type==='soe'){score+=15;notes.push('国企/事业单位的稳定节奏和你的偏好高度一致');}
+}else if(pace==='fast'){
+if(type==='big'||type==='startup'){score+=10;notes.push('快节奏环境契合你想挑战的预期');}
+if(type==='soe'){score-=10;notes.push('国企节奏偏慢，你可能会觉得不够刺激');}
+}else{
+score+=5;notes.push('弹性自主的诉求，在结果导向的团队里通常能满足');
+}
+if(want==='money'){
+if(type==='startup'){score-=5;notes.push('创业公司现金薪资可能一般，更多是期权和想象空间，要想清楚');}
+if(type==='big'||type==='foreign'){score+=10;notes.push('大厂/外企的薪资体系相对透明规范，回报有保障');}
+}
+if(want==='balance'){
+if(type==='foreign'||type==='soe'){score+=12;notes.push('外企/国企整体更重视边界与平衡');}
+if(type==='startup'||type==='small'){score-=12;notes.push('创业/小微公司往往很难保证工作生活平衡');}
+}
+if(want==='growth'){
+if(type==='startup'){score+=10;notes.push('创业公司一人多岗，是快速成长的高密度训练场');}
+if(type==='soe'){score-=8;notes.push('国企成长路径偏慢，适合沉淀但要耐得住');}
+}
+if(comm==='direct'&&(type==='soe'||type==='small')){
+score-=8;notes.push('你偏好直接沟通，但在层级文化或人情文化重的环境，直来直去容易吃亏');
+}
+if(comm==='polite'&&(type==='big'||type==='foreign')){
+notes.push('大厂/外企沟通相对直接，讲人情世故不是缺点，但别过度拐弯影响效率');
+}
+if(obs){
+if(/加班|996|大小周|晚上|周末/.test(obs)){score-=15;notes.push('面试提到加班/大小周：这是最真实的信号，务必确认加班频率与是否调休');}
+if(/年轻|平均年龄|应届/.test(obs)){notes.push('团队年轻：活力足，但可能缺乏沉淀，老人带新人的机制要问清');}
+if(/考核|排名|绩效|末位/.test(obs)){score-=5;notes.push('有强制排名/末位淘汰：压力大、内卷概率高，看你能否接受');}
+if(/灵活|弹性|远程|结果/.test(obs)){score+=10;notes.push('强调弹性与结果导向：通常更信任员工，适合自律的人');}
+if(/安静|没人说话|加班到很晚/.test(obs)){notes.push('办公氛围压抑：注意观察员工精神状态，这是最不会骗人的地方');}
+}
+if(score>100)score=100;if(score<0)score=0;
+var level=score>=85?'高度契合':score>=70?'比较合适':score>=55?'需要磨合':'大概率不合拍';
+var out='【适配度评分】\n'+score+' 分 · '+level+'\n\n';
+out+='【目标公司画像】\n'+t.name+'：'+t.trait+'\n潜在风险：'+t.risk+'\n\n';
+out+='【匹配分析】\n';
+if(notes.length)notes.forEach(function(x,i){out+=(i+1)+'. '+x+'\n';});
+else out+='暂无特别冲突点，但建议仍按下面的问题核实。\n';
+out+='\n【面试中一定要问清的 6 个问题】\n';
+ask=['团队最近半年的加班情况一般是怎样的？周末和晚上多吗？','这个岗位的绩效考核标准是什么？由谁评估、多久一次？','团队里的人平均待了多久？最近一年有人员流动吗？','如果我入职，前三个月最需要交出什么成果？','遇到意见分歧时，团队一般怎么决策？','你个人最喜欢这家公司的哪一点，最想改的是哪一点？'];
+ask.forEach(function(x,i){out+=(i+1)+'. '+x+'\n';});
+out+='\n【判断信号（面试中偷看）】\n· 看老员工的表情和下班时间，比听 HR 说十句都准；\n· 面试官是否愿意坦诚说缺点，坦诚度≈团队透明度；\n· 反复强调“能吃苦”“抗压”，多半意味着加班文化；\n· 追问细节时含糊其辞，说明内部可能也不清晰。\n';
+out+='\n【一句话结论】\n'+(score>=70?'整体合拍，可以进入下一轮，重点确认加班与成长路径即可。':score>=55?'有一定冲突点，建议把上面问题问清楚再决定。':'文化差异较大，如非薪资明显高于预期，建议谨慎考虑。');
+out+='\n\n⚠️ 分析基于你提供的信息，实际体验还需结合面谈与实地考察，仅供参考。';
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(function(){alert('✅ 已复制！')})}
+</script>
+</body>
+</html>
