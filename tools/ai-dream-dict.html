@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 梦境解析 | AgentGongju.com</title>
+<meta name="description" content="输入你梦到的场景、人物与情绪，解析传统周公解梦意象，并结合心理学视角给出可能的心理映射。">
+<meta name="keywords" content="解梦,梦境解析,周公解梦,做梦,心理学释梦,噩梦,梦境寓意">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:110px;resize:vertical;line-height:1.8}
+select:focus,textarea:focus,input:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;margin-bottom:12px;font-size:.92rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() { var hm = document.createElement("script"); hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949"; var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(hm, s); })();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🌙 AI 梦境解析</h1><p>把昨晚的梦说清楚，看看它在暗示什么</p></div>
+
+<div class="card">
+<label>💭 描述你的梦（越具体越准）</label>
+<textarea id="dream" placeholder="例如：我在一条不认识的街上一直找厕所，怎么也找不到，后来发现自己在考试，试卷一片空白……"></textarea>
+<div class="param-row">
+<div><label>😰 梦里的主要情绪</label>
+<select id="emo">
+<option value="fear" selected>害怕、紧张</option>
+<option value="sad">难过、失落</option>
+<option value="happy">开心、轻松</option>
+<option value="confused">困惑、茫然</option>
+<option value="angry">愤怒、压抑</option>
+<option value="peace">平静、中性</option>
+</select></div>
+<div><label>🔁 这个梦做过几次</label>
+<select id="freq"><option value="1" selected>第一次</option><option value="2">偶尔会重复</option><option value="3">经常重复</option></select></div>
+</div>
+<label>🕐 什么时候做的梦（选填）</label>
+<input type="text" id="when" placeholder="例如：凌晨 3 点醒来的梦 / 午睡时">
+<button class="btn-gen" id="genBtn">🔮 解析我的梦</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制解析</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+var SYMBOLS=[
+{k:/(水|河|海|雨|溺|游泳|洪水)/,name:'水',tra:'水主财与情绪，清水多主顺遂，浊水或溺水常对应被情绪淹没的感觉。',psy:'水在心理学中象征潜意识与情感流动，梦中怕水往往提示你正承受超载的情绪压力。'},
+{k:/(考试|试卷|监考|答题|高考)/,name:'考试',tra:'梦见考试多主操心与责任压力，答不上来则暗含对评价的担忧。',psy:'考试梦是成年人最常见的压力梦，通常出现在面临考核、被审视或重大决策的时期。'},
+{k:/(飞|飞行|飘起来|翱翔)/,name:'飞翔',tra:'飞主上升、变化，自由飞翔多主运势上扬，飞不起来则主受阻。',psy:'飞翔多代表对自由的渴望或掌控感提升，坠落感则与失控焦虑相关。'},
+{k:/(掉牙|牙齿|拔牙|牙掉)/,name:'掉牙',tra:'传统解梦认为掉牙主家人健康或口舌是非，也主成长与身份转变。',psy:'现代观点认为与丧失感、失控感、对外貌或表达能力的焦虑有关。'},
+{k:/(蛇|蟒|龙)/,name:'蛇',tra:'蛇主变化与隐忧，缠身主困扰，被咬主小人，梦见蛇蜕皮主转运。',psy:'蛇常象征潜藏的恐惧或欲望，也可能只是白天接触过的信息在梦里重组。'},
+{k:/(被追|追赶|逃跑|追我)/,name:'被追',tra:'被追多主现实中有悬而未决的压力，跑不动常对应回避心态。',psy:'追逐梦的核心是逃避，追你的东西往往就是白天你不愿面对的事。'},
+{k:/(死|葬礼|去世|棺材)/,name:'死亡',tra:'梦中死人多主旧事终结、新阶段开始，是转化的象征而非凶兆。',psy:'死亡意象常代表某个阶段或关系的结束，是心理在完成告别。'},
+{k:/(厕所|找不到卫生间|憋尿)/,name:'找不到厕所',tra:'多主现实中有憋着的情绪或需求，急需解决却无处释放。',psy:'常出现在压力大、事务缠身且缺乏私人空间的人身上。'},
+{k:/(迟到|赶不上|错过|车开走)/,name:'迟到',tra:'主对时间与机会的焦虑，担心错过重要节点。',psy:'与"害怕不够好、怕被落下"的自我要求高度相关。'},
+{k:/(家|老家|旧房子|搬回)/,name:'老家老宅',tra:'多主念旧与安全感需求，房子状态反映你的身心状态。',psy:'房子常被视作自我的容器，房间越乱越可能对应内心的混乱。'},
+{k:/(钱|钞票|捡到钱|丢钱|钱包)/,name:'钱',tra:'捡钱主意外收获或机会，丢钱主忧虑损失，数钱则主计较得失。',psy:'金钱在梦中多代表自我价值感与被认可的需求。'},
+{k:/(猫|狗|动物|宠物)/,name:'动物',tra:'猫主敏感与人际微妙，狗主忠诚与陪伴，被动物咬主口舌。',psy:'梦中的动物常象征你的本能、直觉或某段关系中的情感投射。'},
+{k:/(血|受伤|伤口|手术)/,name:'血与伤',tra:'主损耗与变动，也主身体在提醒你注意休息。',psy:'多见于体力透支或经历了情感创伤之后的自我修复期。'},
+{k:/(前任|前男友|前女友|旧爱|他\/她)/,name:'旧人',tra:'梦见旧人主对未完结的关系仍有余念，或当下的情感与之有关联。',psy:'常代表某种未被满足的情感需求，而非真想复合。'},
+{k:/(哭|流泪|大哭了)/,name:'哭泣',tra:'梦里哭是情绪的释放，醒来反而轻松则主转运。',psy:'是心理自我调节的信号，说明白天有情绪没有合适的出口。'},
+{k:/(裸|没穿衣服|光着)/,name:'裸露',tra:'主羞耻与自我暴露的焦虑，担心被看穿。',psy:'与自我形象、怕被评价的心理有关，多见于新人或上台前。'},
+{k:/(被困|出不去|锁|关在)/,name:'被困',tra:'主现实受制约，想突破但暂时受限于环境或关系。',psy:'反映自由被压缩，常出现在工作/家庭角色负担较重的阶段。'},
+{k:/(考试通过|成功|升职|加薪|赢)/,name:'成功',tra:'主运势上扬，是信心累积的体现。',psy:'正面梦境往往源于近期完成度较好，是自我肯定在放大。'},
+{k:/(高楼|楼顶|悬崖|桥|隧道)/,name:'高处与桥',tra:'登高主进展，桥主过渡与选择，隧道主走出低谷前的通道。',psy:'多对应人生阶段的过渡期，如换城市、换工作。'}
+];
+function gen(){
+var d=document.getElementById('dream').value.trim();
+var emo=document.getElementById('emo').value;
+var freq=+document.getElementById('freq').value;
+var when=document.getElementById('when').value.trim();
+if(!d){alert('请先描述一下你的梦');return null;}
+var hits=[];
+SYMBOLS.forEach(function(s){ if(s.k.test(d)) hits.push(s); });
+var emoMap={fear:'害怕紧张',sad:'难过失落',happy:'开心轻松',confused:'困惑茫然',angry:'愤怒压抑',peace:'平静中性'};
+var out='════ 梦境解析报告 ════\n';
+out+='梦境：'+(d.length>60?d.slice(0,60)+'……':d)+'\n';
+out+='主要情绪：'+emoMap[emo]+'　|　';
+out+='出现频率：'+({1:'第一次',2:'偶尔重复',3:'经常重复'}[freq])+'\n';
+if(when)out+='时间：'+when+'\n';
+out+='\n──── 关键意象解读 ────\n';
+if(hits.length){
+hits.forEach(function(h,i){
+out+='\n'+(i+1)+'. 【'+h.name+'】\n';
+out+='   传统解梦：'+h.tra+'\n';
+out+='   心理视角：'+h.psy+'\n';
+});
+}else{
+out+='\n这次梦里没有匹配到常见的典型意象，说明梦境更偏向日常记忆的重组。\n';
+out+='你可以回想一下：梦里最强烈的那个画面是什么？把它当作关键词再来一次，结果会更准。\n';
+}
+out+='\n──── 情绪与频率分析 ────\n';
+if(emo==='fear')out+='梦境以恐惧为主，说明近期可能有让你感到失控或不确定的事。恐惧梦的作用是让大脑在安全环境里练习应对威胁，不必过度担心。\n';
+else if(emo==='sad')out+='梦境偏伤感，常与失落、告别或未被满足的期待有关。允许自己在白天给这件事一点情绪空间，梦的强度会下降。\n';
+else if(emo==='happy')out+='梦境情绪积极，通常是现实状态较顺、信心充足的投射，也常见于久违的放松之后。\n';
+else if(emo==='confused')out+='梦境茫然感强，往往对应现实中选项太多或方向不明。可以试着把纠结的事写下来，明确二选一，梦会变清晰。\n';
+else if(emo==='angry')out+='梦中愤怒多源于白天被压抑的表达欲。找个安全的出口（运动、写下来、跟信任的人说）比在梦里爆发更有效。\n';
+else out+='情绪偏中性，说明这更像一次常规的记忆整理，不必额外解读。\n';
+if(freq===3)out+='\n⚠️ 这个梦多次重复出现，值得认真对待。重复梦通常是潜意识在"催办"某件事——想想最近有什么事你一直拖着没处理，处理完它，梦往往自然消失。\n';
+else if(freq===2)out+='\n该梦出现过不止一次，提示这个主题对你还没完全消化，可以持续观察。\n';
+
+out+='\n──── 给你的行动建议 ────\n';
+out+='1. 睡前 30 分钟放下手机，把今天没处理完的念头写在纸上，交给纸笔保管；\n';
+out+='2. 醒来先别急着起床，用一句话记下梦的核心画面，连续记一周会看到规律；\n';
+out+='3. 如果梦与现实压力明显相关，白天主动解决一件拖着的事，比任何解梦都有效；\n';
+out+='4. 噩梦后可以试着在清醒时"改写结局"，想象一个你掌控局面的版本，重复几次。\n';
+out+='\n⚠️ 梦境解析属于文化与心理趣味参考，不能替代心理咨询或医学诊断。若长期噩梦、失眠或情绪困扰影响生活，建议寻求专业帮助。';
+return out;
+}
+</script>
+<script>
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('AI 梦境解析 | AgentGongju.com'))return;
+var out=gen();
+if(!out)return;
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(function(){alert('✅ 已复制！')})}
+</script>
+</body>
+</html>

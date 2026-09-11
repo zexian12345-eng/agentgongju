@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 知乎回答生成 | AgentGongju.com</title>
+<meta name="description" content="输入知乎问题与你的观点素材，生成结构清晰、有理有据的长回答，含开头钩子、分段论证与结尾升华。">
+<meta name="keywords" content="知乎回答,问答创作,长文写作,内容创作,知乎运营,回答框架">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,input[type=text],textarea{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:110px;resize:vertical;line-height:1.8}
+select:focus,input:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;margin-bottom:12px;font-size:.92rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() { var hm = document.createElement("script"); hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949"; var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(hm, s); })();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>💡 AI 知乎回答生成</h1><p>有观点但写不出来？先搭骨架再填内容</p></div>
+
+<div class="card">
+<label>❓ 知乎问题</label>
+<textarea id="q" placeholder="例如：为什么很多人建议年轻人不要轻易裸辞？"></textarea>
+<div class="param-row">
+<div><label>🎯 你的核心观点</label>
+<select id="stance"><option value="support" selected>支持 / 认同</option><option value="against">反对 / 反对主流说法</option><option value="neutral">中立 / 分情况讨论</option><option value="experience">以亲身经历回答</option></select></div>
+<div><label>📚 回答类型</label>
+<select id="type"><option value="reason" selected>说理分析型</option><option value="story">故事经历型</option><option value="list">清单干货型</option><option value="science">数据科普型</option></select></div>
+</div>
+<div class="param-row">
+<div><label>📏 篇幅</label>
+<select id="len"><option value="short">简短（500 字内）</option><option value="mid" selected>中等（1000 字左右）</option><option value="long">长文（2000 字以上）</option></select></div>
+<div><label>🎨 语气</label>
+<select id="tone"><option value="rational" selected>理性克制</option><option value="sharp">犀利直接</option><option value="warm">温和真诚</option><option value="humor">幽默调侃</option></select></div>
+</div>
+<label>📝 你的素材 / 经历（选填，越具体越好）</label>
+<textarea id="mat" placeholder="例如：我裸辞过两次，第一次存款只够三个月，压力大到失眠；第二次提前攒了半年生活费，反而找到更好的机会……"></textarea>
+<button class="btn-gen" id="genBtn">✍️ 生成回答</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制回答</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function gen(){
+var q=document.getElementById('q').value.trim();
+var stance=document.getElementById('stance').value;
+var type=document.getElementById('type').value;
+var len=document.getElementById('len').value;
+var tone=document.getElementById('tone').value;
+var mat=document.getElementById('mat').value.trim();
+if(!q){alert('请先填写知乎问题');return null;}
+
+var stanceText={support:'先说结论：这件事的主流建议是对的，但理由常常被说反了。',against:'先说结论：我不同意大多数高赞回答的立场。',neutral:'先说结论：这个问题没有统一答案，关键看你处在哪种情况。',experience:'先说结论：我用亲身经历来回答这个问题。'}[stance];
+var toneWord={rational:'以下尽量不带情绪地讲清楚逻辑。',sharp:'说得直接一点，可能不好听但有用。',warm:'希望这些想法能帮到正在纠结的你。',humor:'尽量写得轻松点，但事情本身挺严肃的。'}[tone];
+
+var out='════ 知乎回答草稿 ════\n';
+out+='（问题：'+q+'）\n\n';
+out+='【开头钩子 — 前 3 行决定读者要不要往下看】\n';
+out+=stanceText+' '+toneWord+'\n\n';
+
+out+='【正文结构】\n\n';
+if(type==='reason'){
+out+='一、先定义清楚问题\n';
+out+='很多讨论之所以吵不出结果，是因为大家在说不同的东西。先拆一下：这件事的关键变量是什么？边界在哪里？\n';
+out+='→ 写作提示：用 2-3 句话把「你说的这个情况」限定清楚，例如人群、阶段、资源条件。\n\n';
+out+='二、拆解背后的逻辑（3 个层面）\n';
+out+='1. 表层现象：大多数人看到的表象是什么，常见的解释是什么；\n';
+out+='2. 中层机制：真正起作用的规则是什么，为什么表象会误导人；\n';
+out+='3. 个体差异：同样的规则在不同人身上效果为什么完全不同。\n';
+out+='→ 写作提示：每一层给一个具体例子，不用多，一个够真实就行。\n\n';
+out+='三、反驳主流观点的薄弱处\n';
+out+='常见说法是「……」，但它有个隐含前提：……。一旦这个前提不成立，结论就会翻转。\n';
+out+='→ 写作提示：先复述对方观点（显得客观），再指出前提，比直接开喷有说服力。\n\n';
+out+='四、我的建议（可执行版）\n';
+out+='· 如果你处在 A 情况：优先做……；\n';
+out+='· 如果你处在 B 情况：可以考虑……；\n';
+out+='· 无论哪种情况：别做的事是……。\n\n';
+}else if(type==='story'){
+out+='一、事情经过（用时间线讲，别用总结句开头）\n';
+out+='那年我……，当时的情况是……。\n';
+out+='→ 写作提示：从一个具体画面切入（一个时间、一个地点、一句话），比"我曾经……"更容易带入。\n\n';
+out+='二、当时的心理活动\n';
+out+='说实话我那时候是这么想的：……。现在回头看，其实是因为……。\n';
+out+='→ 写作提示：把当时的错误判断也写出来，真实感是故事类回答的生命线。\n\n';
+out+='三、转折点\n';
+out+='真正让我改变的是……。\n\n';
+out+='四、现在回头看，我学到的 3 件事\n';
+out+='1. ……；2. ……；3. ……。\n\n';
+out+='五、回到你的问题\n';
+out+='所以我的答案是：……。但我要补一句，我的经历只代表我这一种情况。\n\n';
+}else if(type==='list'){
+out+='一、一句话结论\n';
+out+='先给答案，下面都是展开：……。\n\n';
+out+='二、完整清单（建议 5-8 条，每条 2-4 行）\n';
+out+='1. 【要点】＋一句解释＋一个例子\n';
+out+='2. 【要点】＋一句解释＋一个例子\n';
+out+='3. 【要点】＋一句解释＋一个例子\n';
+out+='4. 【要点】＋一句解释＋一个例子\n';
+out+='5. 【要点】＋一句解释＋一个例子\n';
+out+='→ 写作提示：每条都用"加粗短语 + 短解释"的格式，手机端阅读体验最好。\n\n';
+out+='三、最容易忽略的第 N 条\n';
+out+='大部分人只关注前面几条，但真正拉开差距的是……。\n\n';
+out+='四、怎么用这份清单\n';
+out+='建议先从第 1 条开始，做一周再回来看第 2 条，别想一次全做到。\n\n';
+}else{
+out+='一、这个问题目前有共识吗？\n';
+out+='学术 / 行业上的主流结论是……，但有几处证据仍然存在分歧：……。\n\n';
+out+='二、关键数据\n';
+out+='· 数据点 1：……（来源与年份）；\n';
+out+='· 数据点 2：……；\n';
+out+='· 数据点 3：……。\n';
+out+='→ 写作提示：给数据务必标出处，这是知乎加分项，也是被质疑时最有力的护盾。\n\n';
+out+='三、机制解释\n';
+out+='为什么会出现这个现象？可以这样理解：……。\n\n';
+out+='四、边界与例外\n';
+out+='这个结论成立的三个前提是：……。超出这些前提就不适用了。\n\n';
+}
+
+if(mat){
+out+='【你的素材如何嵌入】\n';
+out+='你提供的素材：'+(mat.length>80?mat.slice(0,80)+'……':mat)+'\n';
+out+='建议放置位置：'+(type==='story'?'作为"一、事情经过"的主体细节':'作为正文中最有力的例子，放在论证的第二段之后')+'\n';
+out+='处理方式：保留具体数字、时间、对话原话，删掉总结性形容词。\n\n';
+}
+
+out+='【结尾升华（别喊口号）】\n';
+out+='回到最开始那个问题——……。写到这里我想说的是，比"该不该"更重要的，是"你现在的条件是什么"。\n';
+out+='如果你也遇到过类似情况，欢迎在评论区聊聊你的版本。\n\n';
+
+out+='════ 发布前自检 ════\n';
+var words={short:'500 字内',mid:'约 1000 字',long:'2000 字以上'}[len];
+out+='目标篇幅：'+words+'（当前为结构草稿，请按此长度扩写）\n';
+out+='1. 开头 3 行有没有让人想继续读？如果第一段是背景铺垫，删掉重写；\n';
+out+='2. 有没有至少 1 个具体细节（数字、时间、对话）？没有就补一个；\n';
+out+='3. 分段是否够短？每段最好不超过 5 行，手机端更好读；\n';
+out+='4. 加 1-2 张相关图片或表格，长回答的完读率会明显提升；\n';
+out+='5. 检查有没有绝对化表述（"所有""一定"），容易被反驳；\n';
+out+='6. 结尾别硬求赞，一句自然的交流邀请效果更好。\n';
+out+='\n⚠️ 本工具生成的是回答结构骨架，请务必用你自己的真实经历和判断填充，直接复制 AI 内容发布可能被判定为低质。';
+return out;
+}
+</script>
+<script>
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('AI 知乎回答生成 | AgentGongju.com'))return;
+var out=gen();
+if(!out)return;
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(function(){alert('✅ 已复制！')})}
+</script>
+</body>
+</html>

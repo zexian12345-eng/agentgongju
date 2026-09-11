@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 婚礼致辞生成 | AgentGongju.com</title>
+<meta name="description" content="选择身份、场合与风格，生成真挚得体的婚礼致辞、敬酒词与祝福语，含时长控制建议。">
+<meta name="keywords" content="婚礼致辞,结婚祝福,敬酒词,伴娘致辞,证婚人发言,婚礼发言">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,input[type=text],textarea{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:100px;resize:vertical;line-height:1.8}
+select:focus,input:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;margin-bottom:12px;font-size:.92rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() { var hm = document.createElement("script"); hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949"; var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(hm, s); })();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>💒 AI 婚礼致辞生成</h1><p>该说的话写到纸上，上台就不慌了</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>🙋 你的身份</label>
+<select id="role">
+<option value="groom" selected>新郎</option>
+<option value="bride">新娘</option>
+<option value="parent">父母</option>
+<option value="friend">伴郎 / 伴娘</option>
+<option value="leader">领导 / 证婚人</option>
+<option value="guest">普通来宾</option>
+</select></div>
+<div><label>🎨 风格</label>
+<select id="style"><option value="sincere" selected>真挚感人</option><option value="humor">轻松幽默</option><option value="formal">端庄正式</option><option value="poetic">文艺诗意</option></select></div>
+</div>
+<div class="param-row">
+<div><label>⏱ 讲话时长</label>
+<select id="dur"><option value="1">1 分钟以内（短祝酒）</option><option value="3" selected>2-3 分钟（标准）</option><option value="5">5 分钟左右（完整致辞）</option></select></div>
+<div><label>👥 台下主要是</label>
+<select id="crowd"><option value="family" selected>亲戚长辈为主</option><option value="friend">年轻朋友为主</option><option value="mixed">混合宾客</option><option value="work">同事客户为主</option></select></div>
+</div>
+<label>💗 想提到的专属细节（选填：认识多久、难忘小事、对方的优点）</label>
+<textarea id="detail" placeholder="例如：我们在一起五年，第一次约会在学校门口的小面馆；她最打动我的是总是记得我随口说过的喜好"></textarea>
+<button class="btn-gen" id="genBtn">💌 生成致辞</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制致辞</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function gen(){
+var role=document.getElementById('role').value;
+var style=document.getElementById('style').value;
+var dur=+document.getElementById('dur').value;
+var crowd=document.getElementById('crowd').value;
+var detail=document.getElementById('detail').value.trim();
+
+var roleName={groom:'新郎',bride:'新娘',parent:'父母',friend:'伴郎/伴娘',leader:'领导/证婚人',guest:'来宾'}[role];
+var styleName={sincere:'真挚感人',humor:'轻松幽默',formal:'端庄正式',poetic:'文艺诗意'}[style];
+var crowdTip={family:'台下以亲戚长辈为主，语速放慢、多用敬语，称呼长辈时最好点名几位。',friend:'台下年轻人多，可以适当调侃，但别拿新人外貌或家境开玩笑。',mixed:'宾客构成多样，走"真诚+简短"路线最安全，避免内部梗。',work:'有同事客户在场，措辞保持得体，不必过度煽情。'}[crowd];
+var words = dur===1?'约 200 字':dur===3?'约 500 字':'约 900 字';
+
+var out='════ 婚礼致辞草稿 ════\n';
+out+='身份：'+roleName+'　|　风格：'+styleName+'　|　时长：'+({1:'1 分钟内',3:'2-3 分钟',5:'约 5 分钟'}[dur])+'\n';
+out+='目标字数：'+words+'（正常语速每分钟约 180-200 字）\n';
+out+=crowdTip+'\n\n';
+out+='────────── 致辞正文 ──────────\n\n';
+
+if(role==='groom'){
+out+='各位长辈、各位亲友，大家好。\n\n';
+out+='感谢大家今天专程来参加我们的婚礼。站在这里，我脑子里其实闪过很多画面——从我们认识的那天起，到今天。\n\n';
+if(detail)out+='有些事我一直记得。'+detail+'。这些看起来很小的事，慢慢让我确定，我想和这个人过一辈子。\n\n';
+out+='今天最想感谢的是我的父母。谢谢你们把我养大，也谢谢你们从来没有替我安排好所有事，让我学会了自己做选择——包括选择和她在一起。\n\n';
+out+='也想感谢岳父岳母，把这么好的女儿交给一个还不够完美的我。请你们放心，我可能不会说很多漂亮话，但我会把"对她好"这件事，做成一辈子的习惯。\n\n';
+out+='最后，对我身边的这个人说一句：往后柴米油盐、生老病死，我都在。\n\n';
+out+='谢谢大家，请举杯，祝我们，也祝在座每一位——身体健康，一切顺遂。\n';
+}else if(role==='bride'){
+out+='各位长辈、各位亲友，大家好。\n\n';
+out+='今天站在这里，我比想象中更平静，也更确定。\n\n';
+if(detail)out+=''+detail+'。是你的这些细节，让我在很多人里，选择了你。\n\n';
+out+='谢谢我的爸爸妈妈。你们给了我一个从不缺爱的家，所以我才敢在选择婚姻的时候，不将就、也不害怕。\n\n';
+out+='谢谢公婆把这么好的儿子交给我，未来我们一起把这个家经营好。\n\n';
+out+='从今天起，我们不再是"你"和"我"，而是"我们"。愿我们经得起平淡，也扛得住风雨。\n\n';
+out+='谢谢大家来见证这一天，祝大家身体健康，万事胜意。\n';
+}else if(role==='parent'){
+out+='各位亲友、各位来宾，大家好。\n\n';
+out+='今天是我（们）人生里很重要的一天。看着孩子站在这里，有那么多亲友见证，心里说不出的高兴。\n\n';
+if(detail)out+=''+detail+'。看着他们一路走过来，我们做父母的，心里是踏实的。\n\n';
+out+='孩子们，组建家庭不像谈恋爱那么简单。日子是过出来的：要一起算账，一起做家务，一起面对不顺的时候。\n\n';
+out+='我们这辈人常说"家和万事兴"，说的就是这个道理。遇到分歧多商量，遇到难处一起扛，把小家经营好，比什么都重要。\n\n';
+out+='也谢谢亲家培养了这么好的孩子，从今天起咱们就是一家人了。\n\n';
+out+='祝两个孩子幸福美满，也祝在座各位身体健康、家庭和睦。谢谢大家！\n';
+}else if(role==='friend'){
+out+='大家好，我是'+'新郎/新娘'+'的朋友。\n\n';
+out+='认识这么多年，说实话，我从来没想过'+'他/她'+'会结婚——毕竟在我们眼里，'+'他/她'+'一直是那个最不靠谱的人。今天站在这里，我比谁都替他/她高兴。\n\n';
+if(detail)out+='想跟大家说个细节：'+detail+'。从那天起我就知道，这个人完了。\n\n';
+out+='做朋友这么多年，我们见证过彼此最狼狈的时候。今天看到一个人愿意把余生交给另一个人，我真心觉得，' + '这是最好的结局。\n\n';
+out+='往后你们要幸福，也要记得：吵架别憋着，有事找朋友，我们随时在。\n\n';
+out+='来，大家一起举杯，祝新人百年好合，也祝我们都别散！\n';
+}else if(role==='leader'){
+out+='各位来宾、各位亲友，大家好。\n\n';
+out+='很荣幸今天能在这里，为两位新人担任证婚人（送上祝福）。\n\n';
+out+='在工作中，我认识的'+'新郎/新娘'+'是一个认真、可靠、有责任心的人。今天看到'+'他/她'+'组建自己的家庭，我由衷地高兴。\n\n';
+out+='婚姻和事业有相通之处：都需要真诚、需要耐心、需要长期的投入。愿两位在往后的日子里，彼此扶持、共同成长。\n\n';
+if(detail)out+=detail+'。这份心意，值得被好好珍惜。\n\n';
+out+='祝愿两位新人永结同心、白头偕老，也祝在座各位事业顺利、阖家幸福。\n\n';
+out+='请大家举杯！\n';
+}else{
+out+='各位亲友，大家好。\n\n';
+out+='今天很高兴能来到这里，见证两位人生中最重要的时刻。\n\n';
+out+='认识他们不算太久，但每次接触都能感受到他们之间的默契和踏实。在今天这个日子，我只有一句朴素的祝福：愿你们把平凡的日子，过成别人羡慕的样子。\n\n';
+out+='也祝在座各位身体健康、顺心如意。大家一起举杯，祝福新人！\n';
+}
+
+out+='\n────────── 敬酒环节短句（每桌说一句）──────────\n';
+out+='· 谢谢您来见证我们的日子，我敬您一杯，祝您身体健康！\n';
+out+='· 承蒙您一直以来的照顾，今天这杯我先干，您随意。\n';
+out+='· 感谢您专程赶来，路上辛苦了，多吃点多喝点，别客气！\n';
+out+='· 往后还请多多关照，祝您全家顺顺利利！\n';
+out+='（提示：敬酒时杯子要低于长辈，酒量不行就以茶代酒并提前说明，没人会为难新人。）\n';
+
+out+='\n────────── 上台前 5 条提醒 ──────────\n';
+out+='1. 提前打印大字版稿件，字号不小于 24pt，别拿手机念；\n';
+out+='2. 上台前深呼吸三次，第一句慢一点说，稳住就没问题；\n';
+out+='3. 讲完感谢父母后停 1 秒，这是最容易打动人的地方；\n';
+out+='4. 不要背稿，记住每段的第一句，其余自然说出来更真诚；\n';
+out+='5. 控制时长：'+"超过时长会打断婚礼节奏，比讲得不完美更失礼"+'。\n';
+out+='\n（以上为结构模板，请把里面的称呼、细节替换成真实内容，越具体越动人。）\n';
+return out;
+}
+</script>
+<script>
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('AI 婚礼致辞生成 | AgentGongju.com'))return;
+document.getElementById('outputBox').innerText=gen();
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(function(){alert('✅ 已复制！')})}
+</script>
+</body>
+</html>

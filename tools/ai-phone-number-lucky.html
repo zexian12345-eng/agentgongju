@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 手机号数字能量分析 | AgentGongju.com</title>
+<meta name="description" content="输入手机号，分析号码中的数字组合与传统数理寓意，给出号码能量评分与选号建议，娱乐参考。">
+<meta name="keywords" content="手机号测吉凶,数字能量,选号,号码寓意,数字风水,吉利号码">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+select:focus,input:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;margin-bottom:12px;font-size:.92rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.score-big{font-size:3rem;font-weight:700;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-align:center;margin:10px 0}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() { var hm = document.createElement("script"); hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949"; var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(hm, s); })();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📱 AI 手机号数字能量分析</h1><p>看看你的号码里藏着哪些数字组合</p></div>
+
+<div class="card">
+<label>🔢 输入手机号（11 位）</label>
+<input type="text" id="phone" maxlength="11" placeholder="例如：13812345678">
+<div class="param-row">
+<div><label>🎯 主要用途</label>
+<select id="use">
+<option value="biz" selected>商务人脉</option>
+<option value="work">工作沟通</option>
+<option value="life">生活日常</option>
+<option value="love">情感社交</option>
+</select></div>
+<div><label>⭐ 你最看重的</label>
+<select id="care">
+<option value="fortune" selected>财运事业</option>
+<option value="peace">平安顺遂</option>
+<option value="relation">人缘贵人</option>
+<option value="study">学业成长</option>
+</select></div>
+</div>
+<button class="btn-gen" id="genBtn">🔮 分析号码</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="text-align:center;color:#94a3b8;font-size:.9rem">号码能量评分</div>
+<div class="score-big" id="scoreBig"></div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制结果</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+var PAIR={
+'11':['稳重专一','做事有始有终，适合长期深耕一件事'],
+'12':['沟通表达','善于表达与联络，人缘不错'],
+'13':['开拓进取','有闯劲，适合新业务与创业'],
+'14':['贵人扶持','易遇到帮忙的人，但要主动开口'],
+'15':['稳中求进','财务观念好，适合长期积累'],
+'16':['执行力强','说做就做，效率高但易急躁'],
+'17':['人脉资源','社交能力强，朋友多路子广'],
+'18':['责任心重','能扛事，容易被委以重任'],
+'19':['魄力担当','敢决策，适合带团队'],
+'21':['温和体贴','顾家重感情，相处舒服'],
+'22':['双倍耐心','适合需要长期陪伴与坚持的角色'],
+'23':['灵活应变','适应力强，多线并行不吃力'],
+'24':['细腻周到','做事细致，适合服务与协调'],
+'25':['平稳踏实','心态稳，不易大起大落'],
+'26':['思虑较重','想得多，注意别钻牛角尖'],
+'27':['善于协调','人际润滑剂，团队里少不了'],
+'28':['目标明确','知道自己要什么，行动力强'],
+'29':['包容大气','格局大，不计较小事'],
+'31':['积极外向','能量高，适合对外打交道'],
+'32':['亲和力强','容易让人信任，做销售有优势'],
+'33':['创意活跃','点子多，适合内容与设计'],
+'34':['务实稳健','不冒进，一步一个脚印'],
+'35':['进取有度','敢拼也懂收，进退有分寸'],
+'36':['执行到位','交办的事能落实，靠谱型'],
+'37':['学习能力强','上手快，转行适应期短'],
+'38':['事业心强','对成就有追求，适合拼搏期'],
+'39':['抗压力强','越难越能顶住'],
+'41':['善于规划','有条理，适合做项目统筹'],
+'42':['乐于助人','热心肠，口碑好'],
+'43':['行动派','想好了就干，不喜欢拖'],
+'44':['专注稳定','认准了就沉得下心'],
+'45':['理财意识强','对钱有敏感度，适合做财务'],
+'46':['细心谨慎','少出错，适合要严谨的岗位'],
+'47':['思考深入','擅长分析，看得比一般人远'],
+'48':['坚韧耐磨','能熬，长期主义型'],
+'49':['格局开阔','视野广，适合做规划与战略'],
+'51':['顺遂稳健','遇到阻力容易化解'],
+'52':['应变灵活','处理突发状况有办法'],
+'53':['能量充沛','精力好，能同时抓几件事'],
+'54':['有条不紊','安排得清楚，不慌不乱'],
+'55':['气场强','有主见，容易成为核心'],
+'56':['务实高效','讲结果不讲虚的'],
+'57':['善于观察','能看出别人的需求'],
+'58':['财商在线','对机会和钱的嗅觉灵敏'],
+'59':['收放自如','做事有分寸感'],
+'61':['果断高效','决策快，执行快'],
+'62':['善解人意','体察情绪能力强'],
+'63':['行动有度','既敢做又不冒失'],
+'64':['稳扎稳打','基本功扎实'],
+'65':['灵活务实','既懂变通又能落地'],
+'66':['人缘极佳','走到哪都受欢迎'],
+'67':['思路清晰','讲问题时条理清楚'],
+'68':['进取有谋','既拼又有方法'],
+'69':['责任感强','交给他就放心'],
+'71':['钻研精神','喜欢把一件事搞明白'],
+'72':['情感细腻','对人真诚，重情义'],
+'73':['表达出色','适合做沟通与传播'],
+'74':['理性周全','想问题全面，很少漏项'],
+'75':['稳健灵活','既求稳又能应变'],
+'76':['逻辑性强','分析问题一针见血'],
+'77':['专注极致','做一行钻一行'],
+'78':['有企图心','对目标有强烈渴望'],
+'79':['专业度高','容易成为领域专家'],
+'81':['事业能量强','适合挑大梁'],
+'82':['善于整合','能把资源串起来用'],
+'83':['热情有感染','能带动身边人的情绪'],
+'84':['踏实行事','不吹牛，做得到才说'],
+'85':['财路宽广','赚钱渠道多'],
+'86':['经营头脑','适合做生意与管钱'],
+'87':['格局与执行并存','想得远也落得下'],
+'88':['双倍进取','能量强，事业欲旺盛'],
+'89':['综合实力强','各方面都拿得出手'],
+'91':['有领导相','适合带团队或做主导'],
+'92':['情商在线','处理关系游刃有余'],
+'93':['创意与行动兼备','点子能落地'],
+'94':['战略思维','看长期、看大局'],
+'95':['财智双全','既会赚也会守'],
+'96':['沉稳有谋','不张扬但很能成事'],
+'97':['眼光独到','能看到别人忽略的机会'],
+'98':['能量充沛','同时推进多件事也扛得住'],
+'99':['气场全开','有强大的个人魅力']
+};
+var CARE_BONUS={
+fortune:['1','5','8','9'],
+peace:['2','5','6'],
+relation:['2','4','6','7'],
+study:['3','4','7']
+};
+var CARE_BONUS2={
+fortune:['8','9','1','5'],
+peace:['5','6','2'],
+relation:['6','7','2','4'],
+study:['7','3','4']
+};
+function analyze(){
+var p=document.getElementById('phone').value.replace(/\D/g,'');
+if(p.length!==11){alert('请输入 11 位手机号');return null;}
+var use=document.getElementById('use').value;
+var care=document.getElementById('care').value;
+var tail=p.slice(3);
+var pairs=[];
+for(var i=0;i<tail.length-1;i++)pairs.push(tail.substr(i,2));
+var score=60,notes=[];
+var excellent=['13','14','15','16','17','18','19','31','39','41','48','58','61','66','67','68','78','81','83','86','87','88','89','91','94','95','96','98'];
+var caution=['26','44','46','63','74'];
+pairs.forEach(function(pr){
+if(PAIR[pr]){
+if(excellent.indexOf(pr)!==-1){score+=3;notes.push(pr+'　'+PAIR[pr][0]+'：'+PAIR[pr][1]+'（加分项）');}
+else if(caution.indexOf(pr)!==-1){score-=2;notes.push(pr+'　'+PAIR[pr][0]+'：'+PAIR[pr][1]+'（需留意节奏）');}
+else{score+=1;notes.push(pr+'　'+PAIR[pr][0]+'：'+PAIR[pr][1]);}
+}
+});
+CARE_BONUS[care].forEach(function(c){ if(tail.indexOf(c)!==-1)score+=2; });
+CARE_BONUS2[care].forEach(function(c){ if(tail.indexOf(c)!==-1)score-=1; });
+if(/(\d)\1\1/.test(tail))score+=4;
+if(+p.slice(8,11)%2===0)score+=2;
+if(score>98)score=98;
+if(score<35)score=35;
+var level=score>=88?'上佳':score>=75?'良好':score>=60?'中平':'一般';
+document.getElementById('scoreBig').innerText=score+' 分 · '+level;
+var out='════ 号码数字能量报告 ════\n';
+out+='号码：'+p.slice(0,3)+'****'+p.slice(7)+'（已做隐私遮罩）\n';
+out+='后八位：'+tail+'　|　用途：'+({biz:'商务人脉',work:'工作沟通',life:'生活日常',love:'情感社交'}[use])+'\n';
+out+='综合评分：'+score+' 分（'+level+'）\n';
+out+='\n──── 数字组合逐个解读 ────\n';
+if(notes.length)notes.forEach(function(n,i){out+=(i+1)+'. '+n+'\n';});
+else out+='该号码未匹配到常见的双数组合理念，可参考单数字寓意。\n';
+out+='\n──── 针对你的侧重点 ────\n';
+var careName={fortune:'财运事业',peace:'平安顺遂',relation:'人缘贵人',study:'学业成长'}[care];
+out+='你更看重「'+careName+'」：';
+var cg=CARE_BONUS[care].filter(function(c){return tail.indexOf(c)!==-1;});
+if(cg.length)out+='号码中出现了 '+'['+cg.join('、')+']'+' 这类倾向的数字，与你的关注点是契合的。\n';
+else out+='号码中这类倾向的数字偏少，若特别在意，选号时可优先考虑包含 '+'['+CARE_BONUS[care].join('、')+']'+' 的号码。\n';
+out+='\n──── 选号实用建议 ────\n';
+out+='1. 尾号好记比"数字吉利"更实际：连号、ABAB、AABB 都容易被人记住；\n';
+out+='2. 号码主要用于对外联络时，尽量避开满是 4 的尾号，减少对方记忆障碍；\n';
+out+='3. 换号成本很高（要通知所有联系人），别为了数字反复更换；\n';
+out+='4. 所谓数字能量主要影响的是心理暗示，真正决定人脉的是你的可靠度。\n';
+out+='\n⚠️ 本工具基于民间数字文化与传统寓意整理，纯属娱乐参考，不具科学性，请勿据此影响实际决策。';
+return {score:score,out:out};
+}
+</script>
+<script>
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('AI 手机号数字能量分析 | AgentGongju.com'))return;
+var r=analyze();
+if(!r)return;
+document.getElementById('outputBox').innerText=r.out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(function(){alert('✅ 已复制！')})}
+</script>
+</body>
+</html>

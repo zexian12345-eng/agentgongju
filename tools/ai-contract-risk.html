@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 合同风险扫描 | AgentGongju.com</title>
+<meta name="description" content="粘贴劳动合同、租房合同或合作协议条款，自动扫描常见法律风险点，标出模糊表述、不对等条款与需重点确认的细节。">
+<meta name="keywords" content="合同风险,合同审查,劳动合同,租房合同,条款分析,法律风险,签约避坑">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:160px;resize:vertical;line-height:1.8}
+select:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;margin-bottom:12px;font-size:.92rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.warn-badge{display:inline-block;padding:2px 10px;border-radius:6px;font-size:.8rem;margin-right:6px;background:rgba(239,68,68,.15);color:#fca5a5;border:1px solid rgba(239,68,68,.3)}
+.score-big{font-size:2.6rem;font-weight:700;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-align:center;margin:10px 0}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() { var hm = document.createElement("script"); hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949"; var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(hm, s); })();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📑 AI 合同风险扫描</h1><p>粘上合同条款，先把坑找出来再签字</p></div>
+
+<div class="card">
+<label>📄 合同类型</label>
+<select id="ctype">
+<option value="labor">劳动合同</option>
+<option value="rent">房屋租赁合同</option>
+<option value="coop">合作协议 / 商业合同</option>
+<option value="loan">借款 / 分期合同</option>
+<option value="other" selected>其他</option>
+</select>
+<label>✍️ 粘贴合同条款原文（可只贴关键几条）</label>
+<textarea id="ctext" placeholder="例如：试用期为 6 个月；甲方有权根据经营需要调整乙方岗位与工作地点；离职后 2 年内不得从事同行业工作；乙方自愿放弃缴纳社保……"></textarea>
+<label>🎯 你关心的重点（可多选，逗号分隔）</label>
+<input type="text" id="focus" style="width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:.9rem;outline:none;font-family:inherit;margin-bottom:12px" placeholder="例如：违约金、竞业限制、押金退还、社保">
+<button class="btn-gen" id="genBtn">🔍 扫描合同风险</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="text-align:center;color:#94a3b8;font-size:.9rem">风险等级</div>
+<div class="score-big" id="scoreBig"></div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制报告</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+var RULES=[
+{t:'试用期超长/反复约定试用期',k:/(试用期\s*(六|6|五|5|四|4|三|3)\s*个?月|延长试用|再次试用|重新试用)/,lv:'高',msg:'试用期长度与合同期限强相关：3 个月以上不满 1 年的，试用期不得超过 1 个月；1 年以上不满 3 年的不得超过 2 个月；3 年以上及无固定期限的不得超过 6 个月。同一单位与同一员工只能约定一次试用期。',fix:'要求把试用期限改为法定范围内，并写明试用期工资不低于转正工资的 80%。'},
+{t:'单方调岗调薪权',k:/(有权.{0,8}(调整|变更).{0,8}(岗位|工作地点|薪资|工资)|根据.{0,6}(经营|业务).{0,6}需要.{0,8}调整)/,lv:'高',msg:'"甲方有权单方调整岗位/地点/薪资"属于把主动权完全交给对方的条款，实际执行时可能被随意降薪或调去异地。',fix:'改为"调整需经双方协商一致并书面确认"，或明确调整的范围与补偿标准。'},
+{t:'竞业限制无补偿',k:/(竞业限制|竞业禁止|不得从事.{0,6}同行业)/,lv:'高',msg:'竞业限制必须按月支付经济补偿（通常不低于离职前 12 个月平均工资的 30%），且限制期限最长 2 年。只规定你的义务、不提补偿的条款对你不公平。',fix:'要求写明补偿金金额、支付方式，以及违约时双方的对应责任。'},
+{t:'自愿放弃社保/公积金',k:/(放弃.{0,6}(社保|社会保险|五险|公积金)|不.{0,4}缴纳.{0,4}(社保|社会保险|五险|公积金))/,lv:'高',msg:'社保是法定强制义务，员工"自愿放弃"的声明在法律上无效，公司仍需补缴；但你可能因此损失医保、工伤、生育等待遇。',fix:'拒绝签署放弃声明，要求依法足额缴纳。'},
+{t:'违约金条款过重',k:/(违约金|赔偿.{0,6}(损失|费用)|扣除.{0,6}(工资|押金))/,lv:'中',msg:'除专项培训服务期和竞业限制外，用人单位一般不能随意约定员工违约金。金额畸高（如几倍月薪）通常难以获得支持。',fix:'要求写明违约金的具体计算依据，删除与法定情形无关的违约金。'},
+{t:'押金/保证金不退',k:/(押金|保证金|定金)/,lv:'中',msg:'租赁或入职收取押金需明确退还条件、退还时间。常见坑："正常磨损也扣押金""退租需提前 60 天通知否则不退"。',fix:'写明押金金额、退还时限（如交房后 7 个工作日内）、可扣除的具体情形。'},
+{t:'加班/工时模糊',k:/(加班|工时|值班|综合计算工时|不定时工作制)/,lv:'中',msg:'未明确加班费计算基数与审批流程，容易变成"自愿加班无补偿"。',fix:'要求写明工时制度、加班费基数（不低于当地最低工资）与结算周期。'},
+{t:'自动续约/长期绑定',k:/(自动续约|自动顺延|视为续签|自动延期)/,lv:'中',msg:'自动续约条款可能让你在不知情下被绑定，尤其是付费服务、平台合作协议。',fix:'要求增加"续约前 30 日书面提醒 + 需双方确认"的前置条件。'},
+{t:'单方解约权不对等',k:/(有权随时.{0,6}(解除|终止)|无需.{0,6}(通知|理由).{0,4}解除)/,lv:'中',msg:'对方可随时解除、你却不能，属于典型的权利义务不对等。',fix:'增加对等的解除权，并约定提前通知期与相应补偿。'},
+{t:'信息/知识产权归属不清',k:/(知识产权|著作权|成果.{0,6}归.{0,6}(甲方|公司)|肖像权|数据.{0,6}使用)/,lv:'低',msg:'职务成果、创意作品、个人数据的归属若无约定，后续容易产生纠纷。',fix:'明确成果归属与使用范围，个人原创保留署名或授权边界。'},
+{t:'争议解决地不利',k:/(仲裁|诉讼|管辖|争议.{0,6}解决)/,lv:'低',msg:'约定在对方所在地仲裁或诉讼，会显著提高你的维权成本。',fix:'改为"由被告所在地或合同履行地"管辖，或选择你方便的城市。'},
+{t:'空白项 / 手填留白',k:/(空白|另行约定|待定|以.{0,4}为准|详见附件)/,lv:'中',msg:'"另行约定""以公司制度为准"这类开放式表述，实际等于把解释权交给对方。',fix:'把所有留白补全，附件内容要求随合同一并交付留存。'}
+];
+function scan(){
+var tax=+document.getElementById('ctype').value.length;
+var txt=document.getElementById('ctext').value.trim();
+var focus=document.getElementById('focus').value.trim();
+if(!txt){alert('请先粘贴合同条款原文');return false;}
+var hits=[],low=0;
+RULES.forEach(function(r){
+if(r.k.test(txt)){hits.push(r);if(r.lv==='高')low+=25;else if(r.lv==='中')low+=12;else low+=5;}
+});
+if(focus){
+focus.split(/[,，、\s]+/).forEach(function(f){
+if(f&&txt.indexOf(f)!==-1&&!hits.some(function(h){return h.msg.indexOf(f)!==-1;})){
+hits.push({t:'你关注的「'+f+'」',lv:'中',msg:'你标记的重点词在文中出现，但未匹配到标准风险模板，建议逐字确认其具体含义与执行方式。',fix:'把该条的执行细节、责任划分、例外情况全部写清楚。'});
+low+=8;}
+});
+}
+if(!hits.length){
+low=5;
+}
+var lvText = low>=50?'高':low>=22?'中':'低';
+var lvColor = low>=50?'#ef4444':low>=22?'#f59e0b':'#22c55e';
+var out='【扫描结果】共发现 '+hits.length+' 处需重点确认的条款，整体风险等级：'+lvText+'\n\n';
+hits.sort(function(a,b){var o={'高':0,'中':1,'低':2};return o[a.lv]-o[b.lv];});
+hits.forEach(function(h,i){
+out+=(i+1)+'. ['+h.lv+'风险] '+h.t+'\n';
+out+='   ⚠️ 为什么有风险：'+h.msg+'\n';
+out+='   ✅ 建议改法：'+h.fix+'\n\n';
+});
+out+='【签字前必做的 5 件事】\n';
+out+='1. 把所有数字（金额、日期、期限）逐字核对，改动手写内容需双方签字确认；\n';
+out+='2. 让 HR / 对方把口头承诺写成书面条款，写不进去的承诺基本等于没有；\n';
+out+='3. 合同一式两份，务必自己留一份盖骑缝章的原件；\n';
+out+='4. 拍照或扫描留档，重要沟通尽量走文字（微信、邮件）留下证据；\n';
+out+='5. 涉及大额资金或长期绑定的合同，签字前找律师或劳动仲裁部门咨询一次。\n\n';
+out+='⚠️ 本工具基于常见条款模式做规则扫描，仅供参考，不构成法律意见。正式签约请咨询执业律师。';
+return out;
+}
+</script>
+<script>
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('AI 合同风险扫描 | AgentGongju.com'))return;
+var out=scan();
+if(!out)return;
+document.getElementById('outputBox').innerText=out;
+document.getElementById('scoreBig').innerText='扫描完成';
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(function(){alert('✅ 已复制！')})}
+</script>
+</body>
+</html>

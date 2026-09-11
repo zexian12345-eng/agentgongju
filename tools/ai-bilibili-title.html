@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI B站视频标题优化 | AgentGongju.com</title>
+<meta name="description" content="输入视频内容简介，生成符合 B 站调性的高点击标题与封面文案，含分区标签与简介模板。">
+<meta name="keywords" content="B站标题,视频标题,标题优化,封面文案,UP主,涨粉,视频运营">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,input[type=text],textarea{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:100px;resize:vertical;line-height:1.8}
+select:focus,input:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;margin-bottom:12px;font-size:.92rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() { var hm = document.createElement("script"); hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949"; var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(hm, s); })();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📺 AI B站视频标题优化</h1><p>标题决定 80% 的点击，多试几个版本</p></div>
+
+<div class="card">
+<label>🎬 视频内容简介</label>
+<textarea id="desc" placeholder="例如：花 300 块买了一台二手电脑，重新装系统加配置升级，跑分对比某品牌整机，最后发现性价比惊人"></textarea>
+<div class="param-row">
+<div><label>📂 视频分区</label>
+<select id="cat">
+<option value="life" selected>生活 / Vlog</option>
+<option value="tech">数码 / 科技</option>
+<option value="game">游戏</option>
+<option value="knowledge">知识 / 科普</option>
+<option value="food">美食</option>
+<option value="study">学习 / 考研</option>
+<option value="ent">搞笑 / 娱乐</option>
+</select></div>
+<div><label>🎨 标题风格</label>
+<select id="style"><option value="hook" selected>悬念钩子</option><option value="data">数字冲击</option><option value="emotion">情绪共鸣</option><option value="plain">朴实直白</option></select></div>
+</div>
+<div class="param-row">
+<div><label>📝 标题长度</label>
+<select id="len"><option value="short">短（15 字内）</option><option value="mid" selected>中（16-25 字）</option><option value="long">长（26 字以上）</option></select></div>
+<div><label>🔢 生成几个</label>
+<select id="num"><option value="5" selected>5 个</option><option value="8">8 个</option><option value="12">12 个</option></select></div>
+</div>
+<label>🏷 想带的话题标签（选填，逗号分隔）</label>
+<input type="text" id="tags" placeholder="例如：数码、开箱、省钱攻略">
+<button class="btn-gen" id="genBtn">🚀 生成标题</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制标题</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+var CAT_TAG={
+life:['生活记录','vlog日常','沉浸式'],
+tech:['数码测评','科技数码','开箱'],
+game:['游戏实况','单机游戏','游戏解说'],
+knowledge:['知识分享','科普','冷知识'],
+food:['美食探店','在家做饭','美食制作'],
+study:['学习方法','考研','自律打卡'],
+ent:['搞笑','沙雕日常','整活']
+};
+function gen(){
+var desc=document.getElementById('desc').value.trim();
+if(!desc){alert('请先填写视频内容简介');return null;}
+var cat=document.getElementById('cat').value;
+var style=document.getElementById('style').value;
+var len=document.getElementById('len').value;
+var num=+document.getElementById('num').value;
+var tags=document.getElementById('tags').value.trim();
+
+var core=desc.length>30?desc.slice(0,30):desc;
+var kw='';
+var m=desc.match(/([\u4e00-\u9fa5A-Za-z0-9]{2,10}(?:电脑|手机|游戏|菜|面|书|考研|相机|耳机|键盘|咖啡|健身|租房|面试|装修))/);
+if(m)kw=m[1];
+if(!kw){
+var words=desc.replace(/[，。！？、,.!?]/g,' ').split(/\s+/).filter(function(w){return w.length>=2;});
+kw=words[0]||core.slice(0,6);
+}
+
+var patterns;
+if(style==='hook'){
+patterns=[
+'我花了{time}才发现，{kw}根本不是我想的那样',
+'{kw}的真实体验：90% 的人第一步就做错了',
+'别再瞎买{kw}了，看完这条能省一大笔',
+'关于{kw}，网上没人告诉你的 3 件事',
+'本来只想试试，没想到{kw}结果这么离谱',
+'劝退还是真香？{kw}用了一个月后的真实感受',
+'{kw}避坑指南：这 5 个坑我替你踩过了',
+'为什么我不建议你随便碰{kw}？',
+'差点翻车！{kw}踩坑全过程记录',
+'看完这个再决定要不要入{kw}'
+];
+}else if(style==='data'){
+patterns=[
+'花 {money} 块搞定{kw}，实测结果超出预期',
+'{num}天实测{kw}，这才是真实的性价比',
+'{kw}横向对比：{num}款产品谁最能打',
+'省下 {money} 块！{kw}最省钱方案分享',
+'从 0 到 1 做{kw}，全程只用了 {num} 步',
+'{num}分钟讲清楚{kw}的全部关键',
+'实测 {num} 次，{kw}失败原因只有这 3 个',
+'{money}预算内做到{kw}的最优解',
+'{kw}成本清单公开，每一笔都写清楚了',
+'{num} 个细节决定{kw}成败，第 3 个最重要'
+];
+}else if(style==='emotion'){
+patterns=[
+'做完{kw}那一刻，我沉默了',
+'为了{kw}折腾了两周，值不值你们说',
+'如果早点知道{kw}，我不会走这么多弯路',
+'{kw}这件事，真的让我有点上头',
+'一个人做{kw}的第 {num} 天，说说心里话',
+'被{kw}治愈了，生活好像也没那么难',
+'曾经最怕{kw}，现在反而成了我的爱好',
+'关于{kw}，我想认真聊聊我的真实想法',
+'{kw}让我明白了一个很简单的道理',
+'如果你也在纠结{kw}，这条视频是给你看的'
+];
+}else{
+patterns=[
+'{kw}完整教程，跟着做就行',
+'分享一下我做{kw}的全过程',
+'{kw}实测记录，包含全部细节',
+'{kw}怎么做？一次讲明白',
+'{kw}经验总结，适合新手',
+'{kw}踩坑与解决过程记录',
+'关于{kw}的一些实用心得',
+'{kw}从入门到上手，只讲干货',
+'{kw}常见问题解答',
+'{kw}保姆级流程，照着来不迷路'
+];
+}
+var picks=patterns.slice().sort(function(){return Math.random()-0.5;}).slice(0,num);
+var out='════ B站标题方案 ════\n\n';
+picks.forEach(function(p,i){
+var t=p.replace(/\{kw\}/g,kw).replace(/\{time\}/g,'两周').replace(/\{money\}/g,'300').replace(/\{num\}/g,String([3,5,7,10,30][i%5]));
+out+='方案 '+(i+1)+'：'+t+'\n';
+var score=65;
+if(/[？！]/.test(t))score+=8;
+if(/\d/.test(t))score+=8;
+if(t.length>=14&&t.length<=28)score+=10;
+if(/(我|你|没人|90%|别再|居然)/.test(t))score+=6;
+if(score>95)score=95;
+out+='　预估点击潜力：'+score+' 分｜字数：'+t.length+' 字\n\n';
+});
+
+out+='════ 封面对角文案（3-6 字最佳）════\n';
+out+='· '+kw+' 翻车了？\n';
+out+='· 真香警告\n';
+out+='· 花了 '+[300,500,1500][Math.floor(Math.random()*3)]+' 块\n';
+out+='· 劝退 or 冲？\n';
+out+='· 全程实测\n';
+out+='· 避坑指南\n';
+
+out+='════ 简介模板 ════\n';
+out+='本期视频分享了关于「'+kw+'」的完整过程，包含了我遇到的问题、解决办法和最终结果。\n';
+out+='时间轴：\n00:00 开场\n00:30 为什么要做这件事\n02:00 具体过程\n05:00 结果与感受\n07:00 总结建议\n';
+out+='如果这期视频对你有帮助，记得点赞收藏，也欢迎在评论区聊聊你的看法～\n';
+
+var tg=tags?tags.split(/[,，、\s]+/).filter(function(x){return x;}):[];
+var allTags=tg.concat(CAT_TAG[cat]);
+out+='\n════ 推荐标签 ════\n';
+out+=allTags.join('、')+'\n';
+out+='（B站建议 5-10 个标签，前 3 个最重要，尽量带分区强相关词）\n';
+
+out+='\n════ 标题优化底层逻辑 ════\n';
+out+='1. 前 12 个字最关键，手机端列表只会显示到这里；\n';
+out+='2. 有具体数字的标题点击率普遍更高，把"很多""几天"换成准确数字；\n';
+out+='3. 标题和封面要互补而非重复：封面给画面冲击，标题给信息钩子；\n';
+out+='4. 不要用"史上最强""绝对"这类夸张词，容易被限流也容易招黑；\n';
+out+='5. 同一内容可以 A/B 两个标题，发两个短版本观察数据再决定正式方向。\n';
+return out;
+}
+</script>
+<script>
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('AI B站视频标题优化 | AgentGongju.com'))return;
+var out=gen();
+if(!out)return;
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(function(){alert('✅ 已复制！')})}
+</script>
+</body>
+</html>

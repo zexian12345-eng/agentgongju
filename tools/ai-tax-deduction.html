@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 个税专项扣除测算 | AgentGongju.com</title>
+<meta name="description" content="填写收入与各项专项附加扣除，估算全年个税与每月到手工资，看看有哪些扣除项你还没申报。">
+<meta name="keywords" content="个税计算,专项附加扣除,个税起征点,到手工资,税前税后,个人所得税">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+select:focus,input:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;margin-bottom:12px;font-size:.92rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.score-big{font-size:2.4rem;font-weight:700;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-align:center;margin:10px 0}
+.bar{height:10px;border-radius:6px;background:rgba(255,255,255,.08);overflow:hidden;margin:6px 0 16px}
+.bar>i{display:block;height:100%;background:linear-gradient(90deg,#6366f1,#a855f7)}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() { var hm = document.createElement("script"); hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949"; var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(hm, s); })();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>💰 AI 个税专项扣除测算</h1><p>算算全年交多少税、每月到手多少，别漏了能扣的项</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>💵 税前月薪（元）</label><input type="number" id="salary" value="15000" step="500"></div>
+<div><label>🎁 年终奖（元，可填 0）</label><input type="number" id="bonus" value="0" step="1000"></div>
+</div>
+<div class="param-row">
+<div><label>🏦 社保公积金个人缴纳（元/月）</label><input type="number" id="social" value="2200" step="100"></div>
+<div><label>👶 子女教育扣除</label>
+<select id="child"><option value="0" selected>无</option><option value="1000">1 个子女（1000/月）</option><option value="2000">2 个子女（2000/月）</option></select></div>
+</div>
+<div class="param-row">
+<div><label>🏠 住房贷款利息 / 房租</label>
+<select id="house"><option value="0" selected>无</option><option value="1000">房贷利息（1000/月）</option><option value="1500">租房·省会/直辖市（1500/月）</option><option value="1100">租房·地级市（1100/月）</option><option value="800">租房·县镇（800/月）</option></select></div>
+<div><label>👴 赡养老人</label>
+<select id="elder"><option value="0" selected>无</option><option value="2000">独生子女（2000/月）</option><option value="1000">非独生分摊（1000/月）</option></select></div>
+</div>
+<div class="param-row">
+<div><label>📚 继续教育</label>
+<select id="edu"><option value="0" selected>无</option><option value="400">学历（继续教育400/月）</option><option value="300">职业资格（取证当年按年3600）</option></select></div>
+<div><label>💊 大病医疗（年度自付超1.5万部分）</label><input type="number" id="medical" value="0" step="1000"></div>
+</div>
+<button class="btn-gen" id="genBtn">🧮 测算我的个税</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="text-align:center;color:#94a3b8;font-size:.9rem">全年个税合计</div>
+<div class="score-big" id="scoreBig"></div>
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制结果</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+var BRACKET=[
+{max:36000,rate:.03,ded:0},
+{max:144000,rate:.10,ded:2520},
+{max:300000,rate:.20,ded:16920},
+{max:420000,rate:.25,ded:31920},
+{max:660000,rate:.30,ded:52920},
+{max:960000,rate:.35,ded:85920},
+{max:Infinity,rate:.45,ded:181920}
+];
+function taxOf(taxable){
+if(taxable<=0)return 0;
+for(var i=0;i<BRACKET.length;i++){ if(taxable<=BRACKET[i].max) return Math.max(0, taxable*BRACKET[i].rate - BRACKET[i].ded); }
+return 0;
+}
+function fmt(n){return n.toLocaleString('zh-CN',{maximumFractionDigits:2});}
+function calc(){
+var salary=+document.getElementById('salary').value||0;
+var bonus=+document.getElementById('bonus').value||0;
+var social=+document.getElementById('social').value||0;
+var child=+document.getElementById('child').value;
+var house=+document.getElementById('house').value;
+var elder=+document.getElementById('elder').value;
+var eduSel=document.getElementById('edu').value;
+var edu = eduSel==='400'?400:0;
+var eduOnce = eduSel==='300'?3600:0;
+var medical=+document.getElementById('medical').value||0;
+var medDed = medical>15000 ? Math.min(80000, medical-15000) : 0;
+
+var income = salary*12;
+var basic = 60000;
+var socialYear = social*12;
+var special = (child+house+elder+edu)*12;
+var other = eduOnce + medDed;
+var taxable = income - basic - socialYear - special - other;
+if(taxable<0)taxable=0;
+var tax = taxOf(taxable);
+
+var bonusTax = 0, bonusTip='';
+if(bonus>0){
+var bTaxable = bonus/12;
+var rate=0,ded=0;
+for(var i=0;i<BRACKET.length;i++){if(bTaxable<=BRACKET[i].max){rate=BRACKET[i].rate;ded=BRACKET[i].ded;break;}}
+bonusTax = Math.max(0, bonus*rate - ded);
+var merged = taxOf(taxable + bonus);
+var separate = tax + bonusTax;
+bonusTip = merged<separate ? '经测算，年终奖『并入综合所得』更划算，可少缴约 '+fmt(separate-merged)+' 元。' : '经测算，年终奖『单独计税』更划算，可少缴约 '+fmt(merged-separate)+' 元。';
+}
+var totalTax = tax + bonusTax;
+var net = income - socialYear - tax;
+var netBonus = bonus - bonusTax;
+var totalNet = net + netBonus;
+var effective = income+bonus>0 ? (totalTax/(income+bonus)*100) : 0;
+
+document.getElementById('scoreBig').innerText='¥ '+fmt(totalTax);
+
+var out='════ 个税测算明细 ════\n';
+out+='【收入端】\n';
+out+='· 全年工资收入：'+fmt(income)+' 元\n';
+if(bonus>0)out+='· 年终奖：'+fmt(bonus)+' 元\n';
+out+='· 全年总收入：'+fmt(income+bonus)+' 元\n';
+out+='\n【扣除端（合计 '+fmt(basic+socialYear+special+other)+' 元）】\n';
+out+='· 基本减除费用：60,000 元（5000/月 × 12）\n';
+out+='· 社保公积金个人部分：'+fmt(socialYear)+' 元\n';
+out+='· 子女教育：'+fmt(child*12)+' 元\n';
+out+='· 住房（房贷/租房）：'+fmt(house*12)+' 元\n';
+out+='· 赡养老人：'+fmt(elder*12)+' 元\n';
+out+='· 继续教育：'+fmt(edu*12+eduOnce)+' 元\n';
+out+='· 大病医疗：'+fmt(medDed)+' 元\n';
+out+='· 应纳税所得额：'+fmt(taxable)+' 元\n';
+out+='\n【税额】\n';
+out+='· 工资部分个税：'+fmt(tax)+' 元\n';
+if(bonus>0){out+='· 年终奖个税：'+fmt(bonusTax)+' 元\n';out+='· 年终奖优化建议：'+bonusTip+'\n';}
+out+='· 全年个税合计：'+fmt(totalTax)+' 元\n';
+out+='· 综合税负率：'+effective.toFixed(2)+'%\n';
+out+='\n【到手】\n';
+out+='· 全年工资到手（扣社保和个税）：'+fmt(net)+' 元\n';
+out+='· 月均到手：'+fmt(net/12)+' 元\n';
+if(bonus>0)out+='· 年终奖到手：'+fmt(netBonus)+' 元\n';
+out+='· 全年合计到手：'+fmt(totalNet)+' 元\n';
+
+var missing=[];
+if(child===0)missing.push('子女教育：每个子女 1000 元/月，从满 3 岁到博士阶段都能扣');
+if(house===0)missing.push('住房：房贷利息 1000 元/月（首套）或租房 800-1500 元/月，二选一');
+if(elder===0)missing.push('赡养老人：独生 2000 元/月，非独生分摊最多 1000 元/月');
+if(edu===0&&eduOnce===0)missing.push('继续教育：学历提升 400 元/月，职业资格取证当年 3600 元');
+if(medDed===0)missing.push('大病医疗：医保范围内自付超 1.5 万的部分可扣，年度上限 8 万');
+if(missing.length){
+out+='\n【你可能还没申报的扣除项】\n';
+missing.forEach(function(m,i){out+=(i+1)+'. '+m+'；\n';});
+out+='　→ 在「个人所得税」App 里补充填报，之前多缴的部分可在次年汇算清缴时退还。\n';
+}else{
+out+='\n【扣除项检查】\n常见专项附加扣除你已基本填满，继续保持。\n';
+}
+out+='\n════ 重要提示 ════\n';
+out+='1. 本测算按年度综合所得与现行税率表估算，未考虑多地社保差异、企业年金、商业健康险等；\n';
+out+='2. 专项附加扣除需如实申报，税务系统会与教育、住建、医保等部门数据比对；\n';
+out+='3. 每年 3-6 月记得做个人所得税年度汇算清缴，多退少补；\n';
+out+='4. 实际缴税以单位代扣代缴和税务部门核定为准，本结果仅供预算参考。\n';
+return out;
+}
+</script>
+<script>
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('AI 个税专项扣除测算 | AgentGongju.com'))return;
+document.getElementById('outputBox').innerText=calc();
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(function(){alert('✅ 已复制！')})}
+</script>
+</body>
+</html>

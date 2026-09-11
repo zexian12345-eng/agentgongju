@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 朋友圈文案生成 | AgentGongju.com</title>
+<meta name="description" content="选择场景与情绪基调，生成自然不做作的朋友圈文案，含多种风格版本与配图建议。">
+<meta name="keywords" content="朋友圈文案,发朋友圈,说说,文案生成,社交文案,朋友圈配图">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,input[type=text],textarea{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:90px;resize:vertical;line-height:1.8}
+select:focus,input:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;margin-bottom:12px;font-size:.95rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() { var hm = document.createElement("script"); hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949"; var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(hm, s); })();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📷 AI 朋友圈文案生成</h1><p>拍都拍了，配句话再发出去</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>🎬 发圈场景</label>
+<select id="scene">
+<option value="travel" selected>旅行出游</option>
+<option value="food">美食探店</option>
+<option value="work">加班 / 工作感悟</option>
+<option value="daily">日常碎片</option>
+<option value="festival">节日祝福</option>
+<option value="fitness">健身 / 运动</option>
+<option value="pet">宠物萌照</option>
+<option value="study">学习 / 读书</option>
+<option value="family">家人亲子</option>
+<option value="rain">下雨 / 天气</option>
+</select></div>
+<div><label>🎨 语气基调</label>
+<select id="tone"><option value="gentle" selected>温柔文艺</option><option value="fun">幽默自嘲</option><option value="cool">高冷简约</option><option value="warm">温暖治愈</option><option value="real">真实接地气</option></select></div>
+</div>
+<div class="param-row">
+<div><label>📏 文案长度</label>
+<select id="len"><option value="short" selected>一句话</option><option value="mid">两三句</option><option value="long">小段文字</option></select></div>
+<div><label>🔢 生成几条</label>
+<select id="num"><option value="6" selected>6 条</option><option value="10">10 条</option><option value="15">15 条</option></select></div>
+</div>
+<label>✏️ 想提到的细节（选填）</label>
+<textarea id="detail" placeholder="例如：成都的雨、一个人吃了火锅、第一次看到雪山"></textarea>
+<button class="btn-gen" id="genBtn">✨ 生成文案</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制文案</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+var POOL={
+travel:{
+gentle:['路过人间，也路过你','风很温柔，趁我们还有力气出发','把日子过成想去的方向','山高路远，好在步履不停','去看世界的路上，顺路看看自己','远方不远，只要出发'],
+fun:['人挤人，但我快乐','旅游的意义：花光钱，然后想念家里的床','拍照五分钟，走路两小时，值了','腿已废，心已满','出来玩才知道，我的体力只够逛一个小时'],
+cool:['到此一游，仅此而已','风太大，话不多说','在路上。','风景不错，人也还行','已打卡，下一个。'],
+warm:['愿你也有说走就走的勇气','世界很大，值得慢慢看','每一段旅程都在治愈一些什么','出发的人总能遇见好事','谢谢这趟旅程，让我又喜欢上生活'],
+real:['攻略做了一堆，最后全凭感觉走','门票有点贵，但确实好看','第一天兴奋，第二天腿软，第三天想回家','说实话，比照片好看','带着泡面来的，结果吃了三顿饭']
+},
+food:{
+gentle:['人间烟火气，最抚凡人心','好好吃饭，是件很浪漫的事','一口一口，把日子过甜','食物是平凡生活里的确幸','今天也是被美食治愈的一天'],
+fun:['减肥计划，明天再说','好吃的程度足以让我原谅这家店的排队','撑到走不动，但心满意足','医生说少吃，我听了，少吃了两碗','这是最后一顿放纵，第 37 次'],
+cool:['好吃。','就这个。','值得再来。','本店的尊严在于分量。'],
+warm:['记得好好吃饭呀','吃饱了，烦恼就少了一半','愿我们都有热饭热菜和好心情','和喜欢的人吃饭，什么都好吃'],
+real:['排队一小时，吃饭十分钟','味道一般，但氛围很好','拍照十分钟，凉了才吃','真实评价：能吃','下次还来，但不会排这么久的队']
+},
+work:{
+gentle:['慢慢来，认真的人不会被辜负','把每件小事做好，就是了不起','在通往理想的路上加班，也算浪漫','熬过的夜，都会变成光'],
+fun:['头发越来越少，工资没见多','加班使我快乐（不）','和工位的关系，比和对象还稳定','今日份打工已耗尽','上班是为了活着，活着不是为了上班'],
+cool:['忙完再说。','进度 99%。','先干活。'],
+warm:['辛苦了，今天也很棒','希望努力都有回响','愿所有付出都被看见'],
+real:['今天也是硬着头皮上的一天','活干完了，人也差不多没了','明天继续，但今天先下班','钱没多，经验多了点']
+},
+daily:{
+gentle:['日子平淡，好在有光','生活不在别处，就在此刻','慢慢生活，不慌不忙','把今天过好，就很了不起'],
+fun:['没什么大事，就是有点困','今日营业：吃饭睡觉发呆','白天想通了，晚上又emo了','精神状态：还行，但不多'],
+cool:['日常。','嗯。','就这样吧。'],
+warm:['愿你今天也遇到温柔的事','记录一点小小的开心','平凡的日子也值得被认真对待'],
+real:['今天没什么特别的，但还是想发一条','收拾完屋子，心情好了一点','一天又过去了，还行','现实生活，如图']
+},
+festival:{
+gentle:['愿你被世界温柔以待，节日快乐','又一年，愿所念皆所愿','节日快乐，也祝你平安顺遂','月亮很圆，人也在慢慢变好'],
+fun:['节日快乐，红包发起来','又到了假装很热闹的日子','过节的意义：可以多睡一天','节日快乐，但我的体重不快乐'],
+cool:['快乐。','同乐。','节日，然后继续生活。'],
+warm:['祝你和在意的人，都好好的','愿这个节日给你带来一点点甜','节日快乐，记得吃点好的','团圆的日子，想家了'],
+real:['节日快乐，但我还是得上班','收到了祝福，也收到了加班通知','今天吃了顿好的，就算过节了']
+},
+fitness:{
+gentle:['身体和灵魂，都在路上','今天比昨天多走了一步','坚持的样子最好看','慢慢变好，是自己的事'],
+fun:['办卡三个月，去了三次','我不是在健身，我是在赎罪','流的是汗，想的是奶茶','今天练了，奖励自己吃一顿'],
+cool:['练完。','一组。','无话可说，继续。'],
+warm:['照顾好身体，是一切的前提','每一次坚持都值得夸奖','运动是最好的情绪出口'],
+real:['跑步两公里，喘得怀疑人生','健身第一天：热血。第二天：腿疼','效果还没看到，但心情好了']
+},
+pet:{
+gentle:['它什么都不懂，却治愈了我','小小一只，占了心里很大一块','陪伴是一件很安静的事','有它在，家里就是暖的'],
+fun:['我家猫的KPI是睡觉','它负责可爱，我负责铲屎','月薪一半给了它，剩下一半买它的零食','铲屎官第 1000 天，情绪稳定'],
+cool:['我的猫。','它很好。'],
+warm:['希望它一直健康快乐','被它需要的每一天都很幸福','小家伙，谢谢你陪我'],
+real:['今天又咬坏了我的线','它睡得像个小土豆','养了它以后，衣服就没干净过']
+},
+study:{
+gentle:['把时间花在让自己变好的事上','读一页也是一种开始','缓慢而坚定地生长','知识会变成底气'],
+fun:['书买了，还没拆','学习使我快乐（大概）','今天又立志了','图书馆五分钟，困意两小时'],
+cool:['在读。','备考中。'],
+warm:['愿你所有努力都有答案','专注的样子值得被记录','一起加油呀'],
+real:['计划很满，完成一半','笔记做得很漂亮，但没怎么回看','今天学了两小时，值得表扬']
+},
+family:{
+gentle:['家人闲坐，灯火可亲','陪伴是最长情的告白','有家人的地方就是家','最踏实的幸福在这里'],
+fun:['我妈的唠叨是我最熟悉的BGM','家庭群：我发的消息永远没人回','陪爸妈吃饭，被喂到扶墙','带娃一天，比上班累十倍'],
+cool:['家。','在家。'],
+warm:['愿家人平安健康，就是最大的心愿','有你们真好','珍惜每一次聚在一起'],
+real:['陪孩子写作业，血压有点高','回老家三天，胖了两斤','妈妈做的饭永远是最好吃的']
+},
+rain:{
+gentle:['下雨天，适合想一些温柔的事','雨落下来，世界就安静了','听雨是一件浪漫的事','雨会停，天会晴，没什么过不去'],
+fun:['出门忘带伞，天选之子','雨很大，我的伞很小','下雨的意义：给我一个不出门的理由','这雨，是老天在给我洗衣服吗'],
+cool:['下雨了。','带伞。'],
+warm:['雨天记得带伞，别着凉','愿雨天也有人在等你回家','听雨声，睡个好觉'],
+real:['鞋湿了，心情也湿了','打车打不到，走路像渡劫','雨很大，班还得上']
+}
+};
+var IMG={
+travel:'城市远景横构图 / 背影照 / 车窗外的风景',food:'俯拍成品 / 拉丝特写 / 手拿食物的近景',
+work:'工位一角 / 深夜灯光 / 电脑屏幕侧面',daily:'阳光下的物件 / 咖啡杯 / 生活小角落',
+festival:'月亮 / 灯笼 / 全家合照',fitness:'运动后自拍 / 器材特写 / 手环数据',
+pet:'宠物正面特写 / 睡觉萌照 / 爪爪近景',study:'书桌俯拍 / 笔记本特写 / 咖啡与书',
+family:'全家福 / 饭桌全景 / 孩子背影',rain:'窗上的雨珠 / 湿地面倒影 / 撑伞剪影'
+};
+function gen(){
+var scene=document.getElementById('scene').value;
+var tone=document.getElementById('tone').value;
+var len=document.getElementById('len').value;
+var num=+document.getElementById('num').value;
+var detail=document.getElementById('detail').value.trim();
+var pool=POOL[scene][tone]||POOL[scene].gentle;
+var out='════ 朋友圈文案 ════\n';
+out+='场景：'+scene.replace('travel','旅行').replace('food','美食').replace('work','工作').replace('daily','日常').replace('festival','节日').replace('fitness','健身').replace('pet','宠物').replace('study','学习').replace('family','家庭').replace('rain','雨天');
+out+='　|　基调：'+({gentle:'温柔文艺',fun:'幽默自嘲',cool:'高冷简约',warm:'温暖治愈',real:'真实接地气'}[tone])+'\n\n';
+var picks=pool.slice().sort(function(){return Math.random()-0.5;}).slice(0,num);
+picks.forEach(function(p,i){
+var txt=p;
+if(detail){
+var d=detail.length>12?detail.slice(0,12):detail;
+if(len==='long')txt=p+'。'+d+'。';
+else if(len==='mid')txt=p+'，'+d+'。';
+else txt=d+'。'+p;
+}else{
+if(len==='long')txt=p+'。今天也想认真记录一下。';
+else if(len==='mid')txt=p+'，今天也想记下来。';
+}
+out+=(i+1)+'. '+txt+'\n\n';
+});
+out+='════ 配图建议 ════\n';
+out+='主图：'+IMG[scene]+'\n';
+out+='张数：1 张图更有留白感，3 张图更有生活感，9 宫格适合记录流水日常；\n';
+out+='调色：统一色调（暖黄 / 冷调胶片）比单张精修更耐看；\n';
+out+='避雷：别发产品截图、二维码、敏感定位，避免被同事和客户过度解读。\n';
+out+='\n════ 发圈小建议 ════\n';
+out+='1. 一天最多 1-2 条，频率太高容易被折叠或屏蔽；\n';
+out+='2. 文案里少用"求赞求关注"，自然内容更容易获得互动；\n';
+out+='3. 带定位能增加生活感，但家庭住址、孩子学校建议不定位；\n';
+out+='4. 真正的加分项是照片里的情绪，文案只是配角。\n';
+return out;
+}
+</script>
+<script>
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('AI 朋友圈文案生成 | AgentGongju.com'))return;
+document.getElementById('outputBox').innerText=gen();
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(function(){alert('✅ 已复制！')})}
+</script>
+</body>
+</html>

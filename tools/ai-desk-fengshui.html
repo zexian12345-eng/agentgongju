@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 办公桌风水布局 | AgentGongju.com</title>
+<meta name="description" content="根据工位朝向、座位位置与办公习惯，给出办公桌物品摆放与布局建议，提升专注度与工作状态。">
+<meta name="keywords" content="办公桌风水,工位布局,办公风水,桌面摆放,职场运势,工位朝向">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+select:focus,input:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;margin-bottom:12px;font-size:.92rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() { var hm = document.createElement("script"); hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949"; var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(hm, s); })();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🪑 AI 办公桌风水布局</h1><p>工位怎么坐、桌面怎么摆，给一套具体方案</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>🧭 你面朝的方位</label>
+<select id="face">
+<option value="north">朝北</option>
+<option value="east" selected>朝东</option>
+<option value="south">朝南</option>
+<option value="west">朝西</option>
+<option value="window">正对窗户</option>
+<option value="door">正对大门 / 通道</option>
+</select></div>
+<div><label>🪑 座位位置</label>
+<select id="seat">
+<option value="corner" selected>靠墙角落</option>
+<option value="aisle">过道旁</option>
+<option value="open">开放工位中间</option>
+<option value="behind">背后有人走动</option>
+<option value="boss">领导旁边</option>
+</select></div>
+</div>
+<div class="param-row">
+<div><label>💼 工作性质</label>
+<select id="job">
+<option value="focus" selected>需要长时间专注</option>
+<option value="talk">沟通协调为主</option>
+<option value="creative">创意设计类</option>
+<option value="sales">销售客户类</option>
+</select></div>
+<div><label>🎯 当前最想改善</label>
+<select id="goal">
+<option value="focus" selected>注意力总被打断</option>
+<option value="luck">想提升职场运气</option>
+<option value="relation">人际关系紧张</option>
+<option value="health">久坐腰颈不舒服</option>
+<option value="money">业绩收入没起色</option>
+</select></div>
+</div>
+<label>🪴 桌上现有物品（选填，逗号分隔）</label>
+<input type="text" id="items" placeholder="例如：绿萝、加湿器、相框、鱼缸、香薰">
+<button class="btn-gen" id="genBtn">🧭 生成布局方案</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制方案</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+var FACE={
+north:'朝北：传统上主静、主沉淀，适合研究工作。注意冬天背光较冷，桌面补一盏暖光台灯。',
+east:'朝东：主生发与朝气，上午自然光好、精神状态佳，适合需要开场效率的岗位。',
+south:'朝南：主名气与表现，光线充足，但午后易晒，建议加一层浅色遮光帘减少屏幕反光。',
+west:'朝西：主收获与人际，下午西晒明显，注意屏幕防眩光，可把显示器略侧向避免直射。',
+window:'正对窗户：视野开阔利于放松，但强光会削弱屏幕对比度，建议屏幕与窗呈 90 度侧放。',
+door:'正对大门/通道：来人来往容易被打断，属于专注度最受影响的朝向，务必做视觉遮挡。'
+};
+var SEAT={
+corner:'靠墙角落：安全感强、干扰少，是最适合专注的位置。注意别把背完全贴死墙，留出 20cm 散热与伸展空间。',
+aisle:'过道旁：人流带来的侧向干扰多，建议把显示器摆成与通道平行，减少余光捕捉走动。',
+open:'开放工位中间：噪音与视线干扰最多，降噪耳机＋绿植屏风是性价比最高的组合。',
+behind:'背后有人走动：这是最易让人紧张的位置。哪怕只用一个小书架或立牌挡在身后，专注度都会明显提升。',
+boss:'领导旁边：利于被看见，但易有压力。桌面保持整洁、进度可视化，反而能把"被盯着"变成"被信任"。'
+};
+var JOB={
+focus:['显示器居中，与视线齐平，距离一臂长','左手边放待办清单，右手边放水杯','手机正面朝下放在视线外的抽屉里'],
+talk:['桌面留出待客空间，别堆满文件','右手边放电话/耳机，方便快速接起','摆一盆阔叶绿植，缓和沟通气氛'],
+creative:['桌面留白越多思绪越顺','准备一块小白板或便利贴区随手记灵感','可选暖色桌面摆件，刺激联想'],
+sales:['把目标数字写在看得见的地方','桌面保持干净有序，给人可靠感','常备名片、纸巾、一次性水杯，接待不慌']
+};
+var GOAL={
+focus:['把最占注意力的东西移出视线范围（手机、零食、闲聊同事的方向）','设置 45 分钟专注 + 10 分钟起身的节奏','桌面只留当前任务的文件，其余收进抽屉'],
+luck:['保持桌面整洁，尤其是下班前 3 分钟复位','在左前方（青龙位）放一盆常绿植物，象征贵人相助','给自己定一个季度小目标并写出来贴在显示器边'],
+relation:['撤掉带棱角的尖锐摆件，换成圆润造型','工位不要摆放大镜子正对同事方向','主动准备一些共享零食，比任何摆件都管用'],
+health:['显示器顶部与眼睛齐平，键盘让手肘自然呈 90 度','脚下垫一个踏脚凳，缓解久坐腰部压力','每小时起身接一次水，比任何护腰神器都有效'],
+money:['办公桌右侧（白虎位）保持干净不堆杂物','把与业绩相关的凭证或目标可视化','减少桌面的破旧物品，该换的文具就换掉']
+};
+function gen(){
+var face=document.getElementById('face').value;
+var seat=document.getElementById('seat').value;
+var job=document.getElementById('job').value;
+var goal=document.getElementById('goal').value;
+var items=document.getElementById('items').value.trim();
+var jobName={focus:'长时间专注',talk:'沟通协调',creative:'创意设计',sales:'销售客户'}[job];
+var goalName={focus:'注意力被打断',luck:'提升职场运气',relation:'人际关系紧张',health:'久坐腰颈不适',money:'业绩收入没起色'}[goal];
+var out='════ 办公桌布局方案 ════\n';
+out+='朝向：'+face.replace('north','朝北').replace('east','朝东').replace('south','朝南').replace('west','朝西').replace('window','正对窗户').replace('door','正对大门')+'　|　座位：'+seat.replace('corner','靠墙角落').replace('aisle','过道旁').replace('open','开放工位中间').replace('behind','背后有人走动').replace('boss','领导旁边')+'\n';
+out+='工作性质：'+jobName+'　|　当前痛点：'+goalName+'\n';
+out+='\n──── 一、方位与环境 ────\n';
+out+=FACE[face]+'\n';
+out+=SEAT[seat]+'\n';
+out+='\n──── 二、桌面分区摆放 ────\n';
+out+='📐 划分三个区：\n';
+out+='· 核心区（正前方 60cm 内）：只放显示器、键盘、鼠标和当前正在做的事；\n';
+out+='· 左区（青龙位，主贵人事业）：放笔记本、待办清单、绿植；\n';
+out+='· 右区（白虎位，主执行与小人）：放水杯、笔筒、常用文具，保持简洁不堆杂物。\n';
+out+='\n按你的工作性质，具体建议：\n';
+JOB[job].forEach(function(x,i){out+=(i+1)+'. '+x+'\n';});
+out+='\n──── 三、针对你的痛点 ────\n';
+GOAL[goal].forEach(function(x,i){out+=(i+1)+'. '+x+'\n';});
+if(items){
+out+='\n──── 四、现有物品处理建议 ────\n';
+var arr=items.split(/[,，、\s]+/).filter(function(x){return x;});
+arr.forEach(function(it){
+if(/鱼缸|水景|加湿/.test(it))out+='· '+it+'：水性物品宜放在左前方，但别超过巴掌大，桌面水景过大反而容易分心。\n';
+else if(/镜|相框|摆件/.test(it))out+='· '+it+'：避免镜子正对人或通道；相框朝自己摆在左前方，看着舒服就是好位置。\n';
+else if(/绿植|绿萝|多肉/.test(it))out+='· '+it+'：常绿植物放左前方为佳，选叶片圆润的品种，避开带刺的仙人掌类。\n';
+else if(/香薰|精油|蜡烛/.test(it))out+='· '+it+'：气味能影响状态，柑橘类提神、木质调安神，选淡香并注意通风。\n';
+else if(/零食|食物/.test(it))out+='· '+it+'：收进抽屉，桌面露出食物容易招虫也影响专业形象。\n';
+else out+='· '+it+'：判断标准只有一个——它是否帮助你专注或让你看着舒服，否则就收起来。\n';
+});
+}
+out+='\n──── 五、3 分钟立刻能做的整理 ────\n';
+out+='1. 把桌面所有东西先清空，只放回最近一周真正用过的；\n';
+out+='2. 线材用理线夹归拢，视觉清爽度提升最明显；\n';
+out+='3. 屏幕垫高到与眼睛齐平，颈椎会立刻舒服；\n';
+out+='4. 下班前花 60 秒把桌面复位，第二天坐下就是好状态。\n';
+out+='\n⚠️ 本工具融合传统办公布局经验与现代人体工学整理，供参考。真正决定职场状态的是能力与沟通，摆件只是辅助。';
+return out;
+}
+</script>
+<script>
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('AI 办公桌风水布局 | AgentGongju.com'))return;
+document.getElementById('outputBox').innerText=gen();
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(function(){alert('✅ 已复制！')})}
+</script>
+</body>
+</html>

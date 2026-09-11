@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 古典对联合成 | AgentGongju.com</title>
+<meta name="description" content="输入主题、风格与字数，自动生成工整对仗的古典对联，含横批，适用于春节、开业、婚庆、乔迁等场合。">
+<meta name="keywords" content="对联生成,春联,横批,开业对联,婚庆对联,乔迁对联,古典对仗">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+select:focus,input:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2.4;white-space:pre-wrap;margin-bottom:12px;font-size:1.02rem;text-align:center}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() { var hm = document.createElement("script"); hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949"; var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(hm, s); })();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🏮 AI 古典对联合成</h1><p>给个主题，写一副对仗工整的对联</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>🎯 使用场合</label>
+<select id="scene">
+<option value="spring" selected>春节春联</option>
+<option value="open">开业庆典</option>
+<option value="wedding">婚庆喜联</option>
+<option value="move">乔迁新居</option>
+<option value="birthday">祝寿贺岁</option>
+<option value="study">书房励志</option>
+</select></div>
+<div><label>📏 联句字数</label>
+<select id="len"><option value="7" selected>七言</option><option value="5">五言</option><option value="8">八言</option><option value="9">九言</option></select></div>
+</div>
+<div class="param-row">
+<div><label>🖋 风格</label>
+<select id="style"><option value="classic" selected>典雅庄重</option><option value="simple">通俗喜庆</option><option value="literary">文人雅致</option></select></div>
+<div><label>🔢 生成几副</label>
+<select id="num"><option value="3" selected>3 副</option><option value="5">5 副</option><option value="8">8 副</option></select></div>
+</div>
+<label>✏️ 想嵌入的字 / 主题词（选填）</label>
+<input type="text" id="kw" placeholder="例如：家和、餐饮店、姓李">
+<button class="btn-gen" id="genBtn">🏮 生成对联</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制对联</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+var POOL={
+spring:[
+["天增岁月人增寿","春满乾坤福满门","万象更新"],
+["爆竹声中一岁除","春风送暖入屠苏","辞旧迎新"],
+["福旺财旺运气旺","家兴人兴事业兴","喜气盈门"],
+["一年四季春常在","万紫千红永开花","欢度佳节"],
+["和顺一门有百福","平安二字值千金","吉祥如意"],
+["春风得意马蹄疾","旭日东升事业兴","前程似锦"],
+["梅开五福迎春到","竹报平安接福来","新春大吉"],
+["岁岁平安日平安","年年如意春如意","五福临门"],
+["喜居宝地千年旺","福照家门万事兴","家业兴旺"],
+["万水千山尽得辉","五湖四海皆春色","春满人间"]
+],
+open:[
+["生意兴隆通四海","财源茂盛达三江","开业大吉"],
+["门迎晓日财源广","户纳春风吉庆多","财源广进"],
+["宏图大展兴隆业","泰运长行如意春","生意兴隆"],
+["一帆风顺年年好","万事如意步步高","吉星高照"],
+["开张笑纳四方客","立业喜聚八面财","鸿运当头"],
+["货通南北皆称赞","客满东西尽欢颜","宾客盈门"],
+["春风得意创伟业","旭日东升展宏图","事业腾飞"],
+["路通八方财源广","店纳四海客如云","通商惠客"],
+["诚信经营财源旺","和气生财顾客多","和气生财"],
+["一马当先创大业","万象更新展宏图","大展宏图"]
+],
+wedding:[
+["百年恩爱双心结","千里姻缘一线牵","天作之合"],
+["花好月圆情意浓","珠联璧合喜气盈","永结同心"],
+["并蒂花开连理枝","同心永结幸福花","百年好合"],
+["良缘由夙缔良缘","佳偶自天成佳偶","天赐良缘"],
+["喜今日心心相印","看来年宝宝逗人","喜结良缘"],
+["红梅吐芳喜成连理","绿柳含笑永结同心","佳偶天成"],
+["一阳初动喜逢良辰","二姓联姻共祝百年","白首偕老"],
+["相亲相爱幸福永","同德同心日月长","相敬如宾"],
+["今日喜结百年好","来年共栽理想花","同心永结"],
+["缘定三生情意重","情牵一线幸福长","情投意合"]
+],
+move:[
+["居之安四时吉庆","平为福八节康宁","吉庆有余"],
+["新居落成心欢喜","喜迁华屋福满堂","乔迁之喜"],
+["门对青山年年好","户纳祥光岁岁新","安居乐业"],
+["向阳庭院春常在","勤劳人家福自来","幸福人家"],
+["华堂建就六亲齐贺","新居落成四邻同欢","金玉满堂"],
+["迁入新居事事顺","住进吉宅年年兴","家宅平安"],
+["屋满春风春满屋","门盈喜气喜盈门","福星高照"],
+["吉日迁居万事如意","良辰安宅百年顺心","紫气东来"]
+],
+birthday:[
+["福如东海长流水","寿比南山不老松","福寿双全"],
+["岁月常新人不老","春秋迭易寿弥高","松柏长春"],
+["寿星高照福星临","吉庆有余岁月长","福寿康宁"],
+["九如天保人康健","万福云集寿绵长","人寿年丰"],
+["德高望重人称颂","福厚寿长众所尊","德寿双辉"],
+["儿孙满堂皆孝贤","福禄寿喜聚一堂","天伦之乐"],
+["麻姑献寿千年果","王母开园万里桃","延年益寿"],
+["喜逢盛世享高寿","乐见儿孙绕膝前","颐养天年"]
+],
+study:[
+["书山有路勤为径","学海无涯苦作舟","勤学笃行"],
+["宝剑锋从磨砺出","梅花香自苦寒来","苦尽甘来"],
+["读书破万卷有益","下笔如有神助成","博学多才"],
+["有志者事竟成也","苦心人天不负焉","自强不息"],
+["宁静致远心常泰","淡泊明志志愈坚","宁静致远"],
+["万卷诗书消永日","一窗昏晓送流年","翰墨飘香"],
+["立志欲坚不欲锐","成功在久不在速","持之以恒"],
+["黑发不知勤学早","白首方悔读书迟","惜时如金"]
+]
+};
+var KW_LINES=['家','和','春','福','财','兴','安','乐','顺','吉'];
+function gen(){
+var scene=document.getElementById('scene').value;
+var len=+document.getElementById('len').value;
+var style=document.getElementById('style').value;
+var num=+document.getElementById('num').value;
+var kw=document.getElementById('kw').value.trim();
+var base=POOL[scene];
+var list=[];
+var shuffled=base.slice().sort(function(){return Math.random()-0.5;});
+for(var i=0;i<num;i++)list.push(shuffled[i%shuffled.length]);
+var sceneName={spring:'春节春联',open:'开业庆典',wedding:'婚庆喜联',move:'乔迁新居',birthday:'祝寿贺岁',study:'书房励志'}[scene];
+var styleName={classic:'典雅庄重',simple:'通俗喜庆',literary:'文人雅致'}[style];
+var out='═══ '+sceneName+' · '+styleName+' · '+({5:'五',7:'七',8:'八',9:'九'}[len])+'言 ═══\n\n';
+list.forEach(function(p,i){
+var up=p[0],dn=p[1],hp=p[2];
+if(kw){
+var k=kw;
+if(up.indexOf(k)===-1)up=up.slice(0,len-k.length>0?len-k.length:len-1)+k;
+if(dn.indexOf(k)===-1)dn=dn.slice(0,len-k.length>0?len-k.length:len-1)+k;
+}
+out+='【第 '+(i+1)+' 副】\n';
+out+='　　　　'+up+'　　\n';
+out+='　　　　'+dn+'　　\n';
+out+='　　横批：'+hp+'\n\n';
+if(i<list.length-1)out+='─ ─ ─ ─ ─ ─ ─ ─\n\n';
+});
+out+='═══ 使用贴士 ═══\n';
+out+='1. 传统贴法：面向大门，上联在右、下联在左（横批从左往右读的现代写法则相反）；\n';
+out+='2. 上下联区分：看末字声调，上联多为仄声（三、四声），下联多为平声（一、二声）；\n';
+out+='3. 字数为奇数的联句更显活泼，偶数庄重，正式场合可选七言或九言；\n';
+out+='4. 嵌入店铺名或姓氏时，建议放在上下联同一位置，读起来更整齐；\n';
+out+='5. 手写比印刷更有年味，找书法爱好者写一副，比买现成的更有心意。\n';
+return out;
+}
+</script>
+<script>
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('AI 古典对联合成 | AgentGongju.com'))return;
+document.getElementById('outputBox').innerText=gen();
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(function(){alert('✅ 已复制！')})}
+</script>
+</body>
+</html>
