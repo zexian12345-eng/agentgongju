@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 发票信息生成 | AgentGongju.com</title>
+<meta name="description" content="输入购买信息，自动生成规范的发票开票信息清单与备注说明，支持个人、企业抬头，含税号校验提示。">
+<meta name="keywords" content="发票信息,开票信息,发票抬头,税号,报销,发票备注,办公效率">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:140px;resize:vertical;line-height:1.8}
+select:focus,textarea:focus,input:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;margin-bottom:12px;font-size:.92rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() { var hm = document.createElement("script"); hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949"; var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(hm, s); })();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🧾 AI 发票信息生成</h1><p>整理开票信息、校验税号、生成标准报销备注</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>🏷 抬头类型</label>
+<select id="type" onchange="toggleType()"><option value="company">企业单位</option><option value="person">个人</option><option value="gov">政府/事业单位</option></select></div>
+<div><label>💳 发票类型</label>
+<select id="invType"><option value="normal">增值税普通发票</option><option value="special">增值税专用发票</option><option value="electronic">电子发票</option></select></div>
+</div>
+<div class="param-row">
+<div><label>🏢 名称 / 姓名</label><input type="text" id="name" placeholder="例如：深圳市某某科技有限公司"></div>
+<div><label>🔢 纳税人识别号</label><input type="text" id="taxno" placeholder="18位统一社会信用代码"></div>
+</div>
+<div class="param-row">
+<div><label>🏠 地址电话（专票必填）</label><input type="text" id="addr" placeholder="例如：深圳市南山区XX路1号 0755-88888888"></div>
+<div><label>🏦 开户行及账号（专票必填）</label><input type="text" id="bank" placeholder="例如：中国银行深圳分行 1234****5678"></div>
+</div>
+<label>📦 购买明细（一行一项，格式：名称 | 金额）</label>
+<textarea id="items" placeholder="例如：&#10;办公用品 | 1200&#10;技术服务费 | 5000&#10;运费 | 30"></textarea>
+<button class="btn-gen" id="genBtn">🧾 生成开票信息</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制信息</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function toggleType(){
+var t=document.getElementById('type').value;
+if(t==='person'){document.getElementById('taxno').placeholder='个人抬头可留空';}
+else if(t==='gov'){document.getElementById('taxno').placeholder='事业单位法人证书号或统一社会信用代码';}
+else{document.getElementById('taxno').placeholder='18位统一社会信用代码';}
+}
+function checkTax(no){
+if(!no)return{ok:false,msg:'未填写（个人抬头可忽略）'};
+var s=no.toUpperCase().replace(/[^0-9A-Z]/g,'');
+if(s.length!==18)return{ok:false,msg:'长度不是 18 位，当前 '+s.length+' 位，请核对'};
+if(!/^[0-9A-Z]{18}$/.test(s))return{ok:false,msg:'含非法字符（仅允许数字和大写字母）'};
+var valid='0123456789ABCDEFGHJKLMNPQRTUWXY';
+for(var i=0;i<s.length;i++){if(valid.indexOf(s[i])<0)return{ok:false,msg:'第'+(i+1)+'位字符不规范，统一社会信用代码不含 I、O、S、V、Z'};}
+return{ok:true,msg:'格式校验通过 ✓'};
+}
+function gen(){
+var type=document.getElementById('type').value;
+var invType=document.getElementById('invType').value;
+var name=document.getElementById('name').value.trim();
+var taxno=document.getElementById('taxno').value.trim();
+var addr=document.getElementById('addr').value.trim();
+var bank=document.getElementById('bank').value.trim();
+var raw=document.getElementById('items').value.trim();
+if(!name){alert('请填写发票抬头名称');return null;}
+
+var items=[],total=0;
+if(raw){
+raw.split(/\n+/).forEach(function(l){
+var p=l.split('|').map(function(x){return x.trim();}).filter(function(x){return x;});
+if(!p.length)return;
+var nm=p[0],amt=parseFloat((p[1]||'0').replace(/[^\d.]/g,''))||0;
+items.push({name:nm,amt:amt});total+=amt;
+});
+}
+var typeName={company:'企业单位',person:'个人',gov:'政府/事业单位'}[type];
+var invName={normal:'增值税普通发票',special:'增值税专用发票',electronic:'电子发票'}[invType];
+var chk=checkTax(taxno);
+
+var out='════════ 开票信息单 ════════\n\n';
+out+='【抬头类型】'+typeName+'\n';
+out+='【发票种类】'+invName+'\n';
+out+='【发票抬头】'+name+'\n';
+out+='【纳税人识别号】'+(taxno||'（未填写）')+'\n';
+out+='　└ 校验结果：'+chk.msg+'\n';
+if(invType==='special'){
+out+='【注册地址】'+(addr||'⚠ 专票必填，请补充')+'\n';
+out+='【开户行及账号】'+(bank||'⚠ 专票必填，请补充')+'\n';
+}else if(addr||bank){
+out+='【地址电话】'+(addr||'—')+'\n';
+out+='【开户行及账号】'+(bank||'—')+'\n';
+}
+out+='\n———— 购买明细 ————\n';
+if(items.length){
+items.forEach(function(it,i){
+out+=(i+1)+'. '+it.name+'　金额：¥'+it.amt.toFixed(2)+'\n';
+});
+out+='\n合计金额（含税）：¥'+total.toFixed(2)+'\n';
+if(invType!=='special'){
+var rate=0.06,gross=total,net=gross/(1+rate),taxv=gross-net;
+out+='　├ 不含税金额：¥'+net.toFixed(2)+'（按 '+ (rate*100) +'% 税率示意）\n';
+out+='　├ 税额：¥'+taxv.toFixed(2)+'\n';
+out+='　└ 价税合计：¥'+gross.toFixed(2)+'\n';
+}
+}else{
+out+='（未填写明细，可只提供抬头信息）\n';
+}
+out+='\n【报销备注建议】\n';
+out+='用途：'+(items.length?items.map(function(i){return i.name;}).join('、'):'办公相关支出')+'\n';
+out+='备注：请开具'+invName+'，抬头见上，谢谢！\n';
+out+='\n════ 提交前检查清单 ════\n';
+out+='□ 抬头名称是否与营业执照/身份证完全一致（多字少字都会被退回）；\n';
+out+='□ 税号是否为 18 位统一社会信用代码；\n';
+out+='□ 专票必须同时提供地址电话 + 开户行账号；\n';
+out+='□ 电子发票要确认收票邮箱填写正确；\n';
+out+='□ 明细名称尽量具体，避免只写"办公用品"被财务打回；\n';
+out+='□ 金额是否含税、是否含运费，提前和商家确认清楚。\n';
+return out;
+}
+</script>
+<script>
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('AI 发票信息生成 | AgentGongju.com'))return;
+var out=gen();
+if(!out)return;
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(function(){alert('✅ 已复制！')})}
+</script>
+</body>
+</html>

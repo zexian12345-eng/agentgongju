@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 睡眠改善计划 | AgentGongju.com</title>
+<meta name="description" content="根据你的作息、失眠类型和日常习惯，自动生成两周睡眠改善计划，含入睡技巧、光照建议与作息表。">
+<meta name="keywords" content="失眠,睡眠改善,入睡困难,睡眠质量,助眠,作息调整,睡眠计划">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:110px;resize:vertical;line-height:1.8}
+select:focus,textarea:focus,input:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;margin-bottom:12px;font-size:.92rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() { var hm = document.createElement("script"); hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949"; var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(hm, s); })();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>😴 AI 睡眠改善计划</h1><p>找出失眠原因，生成两周可执行的作息方案</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>🛏 主要问题</label>
+<select id="problem"><option value="fall">入睡困难（躺下1小时睡不着）</option><option value="wake">半夜易醒</option><option value="early">早醒再难入睡</option><option value="quality">睡够时间但很累</option><option value="late">习惯性熬夜</option></select></div>
+<div><label>⏰ 期望入睡时间</label>
+<select id="target"><option value="22:30">22:30</option><option value="23:00" selected>23:00</option><option value="23:30">23:30</option><option value="00:00">00:00</option></select></div>
+</div>
+<div class="param-row">
+<div><label>🌙 目前实际入睡</label><input type="text" id="now" placeholder="例如：01:30"></div>
+<div><label>🕖 起床时间</label><input type="text" id="wake" placeholder="例如：07:30"></div>
+</div>
+<div class="param-row">
+<div><label>☕ 每天咖啡/茶</label>
+<select id="coffee"><option value="0">基本不喝</option><option value="1">1 杯</option><option value="2" selected>2 杯</option><option value="3">3 杯以上</option></select></div>
+<div><label>📱 睡前刷手机</label>
+<select id="phone"><option value="0">几乎不刷</option><option value="30">30 分钟以内</option><option value="60" selected>1 小时左右</option><option value="120">2 小时以上</option></select></div>
+</div>
+<label>📝 其他情况（可选）</label>
+<textarea id="note" placeholder="例如：最近工作压力大、晚上会运动、房间临街有噪音、睡前会想工作的事……"></textarea>
+<button class="btn-gen" id="genBtn">😴 生成改善计划</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制计划</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function gen(){
+var problem=document.getElementById('problem').value;
+var target=document.getElementById('target').value;
+var now=document.getElementById('now').value.trim()||'01:00';
+var wakeT=document.getElementById('wake').value.trim()||'07:30';
+var coffee=parseInt(document.getElementById('coffee').value,10);
+var phone=parseInt(document.getElementById('phone').value,10);
+var note=document.getElementById('note').value.trim();
+var probName=document.getElementById('problem').selectedOptions[0].text;
+
+function t2m(t){var p=t.split(':');var h=parseInt(p[0],10),m=parseInt(p[1]||'0',10);if(h<6)h+=24;return h*60+m;}
+var targetM=t2m(target),nowM=t2m(now),wakeM=t2m(wakeT);
+var shift=nowM-targetM;
+var sleepLen=((wakeM+1440)-nowM)/60;
+
+var out='════════ 两周睡眠改善计划 ════════\n';
+out+='主要问题：'+probName+'\n';
+out+='目标作息：'+target+' 入睡　→　'+wakeT+' 起床\n';
+out+='当前作息：'+now+' 入睡　→　'+wakeT+' 起床\n';
+out+='当前时长：约 '+sleepLen.toFixed(1)+' 小时　|　需要提前：'+(shift>0?shift+' 分钟':'无需提前，作息已达标')+'\n\n';
+
+out+='———— 一、问题诊断 ————\n';
+if(problem==='fall'){
+out+='你的核心问题是「入睡困难」，这通常不是"不困"，而是大脑还处于活跃状态。\n';
+out+='关键点：不要在床上硬躺。躺 20 分钟睡不着就起来，做点无聊的事，困了再回床上。\n';
+out+='这样做的目的是重建"床=睡觉"的条件反射，而不是"床=焦虑"。\n';
+}else if(problem==='wake'){
+out+='你的核心问题是「半夜易醒」，常见诱因是环境干扰（光、声、温度）和睡前摄入（酒精、咖啡因、大量水）。\n';
+out+='关键点：醒了不要看时间、不要看手机，看了只会更焦虑，更容易彻底清醒。\n';
+}else if(problem==='early'){
+out+='你的核心问题是「早醒」，常见于压力大、情绪低落或作息紊乱。\n';
+out+='关键点：早醒后不要强行补觉，起床做点轻松的事，白天避免长午睡，晚上自然容易入睡。\n';
+}else if(problem==='quality'){
+out+='你睡得够但很累，说明睡眠质量而非时长出了问题，要找深睡被打断的原因。\n';
+out+='关键点：很可能是打鼾、呼吸暂停或卧室二氧化碳浓度过高。试着开窗、侧睡，观察是否改善。\n';
+}else{
+out+='你的核心问题是「习惯性熬夜」，生物钟已经整体后移。\n';
+out+='关键点：不要一夜之间提前 3 小时，要每天提前 15-20 分钟，两周逐步拉回来。\n';
+}
+if(coffee>=2)out+='⚠ 咖啡因是重点怀疑对象：你每天 '+coffee+' 杯，咖啡因半衰期约 5 小时，下午 2 点后喝会影响夜间入睡。\n';
+if(phone>=60)out+='⚠ 睡前刷手机 '+phone+' 分钟，蓝光+信息刺激是入睡困难的直接原因之一。\n';
+if(note)out+='📌 结合你的补充：'+note+'\n';
+out+='\n';
+
+out+='———— 二、作息表（第一周）————\n';
+function sub(t,mins){var mm=t2m(t)-mins;while(mm>=1440)mm-=1440;var h=Math.floor(mm/60)%24,mi=mm%60;return (h<10?'0':'')+h+':'+(mi<10?'0':'')+mi;}
+out+='· 起床：'+wakeT+'（固定，周末最多晚 1 小时）\n';
+out+='· 晒太阳：起床后 30 分钟内，到窗边或户外 10-15 分钟\n';
+out+='· 最后一次咖啡因：'+(coffee>0?'13:00 前':'任意，但建议还是控制')+'\n';
+out+='· 午睡：13:00-14:00 之间，不超过 20 分钟\n';
+out+='· 晚餐：19:00 前完成，不吃太饱\n';
+out+='· 停止工作/学习：'+sub(target,90)+'\n';
+out+='· 调暗灯光：'+sub(target,60)+'\n';
+out+='· 放下手机：'+sub(target,45)+'\n';
+out+='· 放松活动：'+sub(target,40)+' 开始（泡脚/拉伸/听轻音乐/纸质书）\n';
+out+='· 上床时间：'+target+'\n';
+out+='· 关灯睡觉：'+(shift>0?sub(target,-15):target)+'（比目标稍早躺下，留出入睡时间）\n\n';
+
+out+='———— 三、两周进度安排 ————\n';
+var steps=[];
+if(shift>0){
+var per=Math.min(20,Math.max(5,Math.ceil(shift/14)));
+for(var i=1;i<=14;i++){
+var off=Math.max(0,shift-per*i);
+var mm=targetM+off;var h=Math.floor(mm/60)%24,mi=mm%60;
+steps.push('第 '+i+' 天：目标入睡 '+((h<10?'0':'')+h+':'+(mi<10?'0':'')+mi));
+}
+}else{
+for(var j=1;j<=14;j++)steps.push('第 '+j+' 天：保持 '+target+' 入睡');
+}
+steps.slice(0,7).forEach(function(s){out+=s+'\n';});
+out+='…（第 8-14 天延续同样节奏，每 3 天稳定一次）\n\n';
+out+='———— 四、睡前 30 分钟流程（照着做）————\n';
+out+='① 洗漱 + 泡脚（40℃ 温水，10 分钟，脚暖了更容易入睡）\n';
+out+='② 把明天要做的事写在纸上，写下来大脑就不用一直记着\n';
+out+='③ 拉伸 5 分钟：颈部、肩膀、大腿后侧\n';
+out+='④ 关灯，做 4-7-8 呼吸：吸气 4 秒、憋气 7 秒、呼气 8 秒，做 4 组\n';
+out+='⑤ 想不睡着怎么办：把注意力放在呼吸上，走神了就拉回来，不要责怪自己\n\n';
+out+='———— 五、白天要做的事 ————\n';
+out+='1. 早上晒够光，这是调整生物钟最有效的手段，比褪黑素管用；\n';
+out+='2. 白天运动很好，但睡前 3 小时内不要剧烈运动；\n';
+out+='3. 床只用来睡觉，不要在床上办公、吃饭、刷手机；\n';
+out+='4. 睡前一小时不看工作消息，情绪波动比蓝光更伤睡眠；\n';
+out+='5. 卧室温度 18-22℃、全黑、安静，三个条件缺一不可；\n';
+out+='6. 白天不要补长觉，补觉会削弱晚上的睡意。\n\n';
+out+='———— 六、什么时候该看医生 ————\n';
+out+='· 连续 3 周以上严重失眠，且已影响白天工作生活；\n';
+out+='· 睡觉时被家人发现呼吸暂停、憋醒、鼾声极大；\n';
+out+='· 伴随明显情绪低落、兴趣丧失，可能是抑郁/焦虑引发；\n';
+out+='· 自行调整两周完全没有改善。\n\n';
+out+='⚠ 本计划为生活习惯建议，不能代替医疗诊断。如症状严重请到睡眠专科就诊。\n';
+return out;
+}
+</script>
+<script>
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('AI 睡眠改善计划 | AgentGongju.com'))return;
+var out=gen();
+if(!out)return;
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(function(){alert('✅ 已复制！')})}
+</script>
+</body>
+</html>

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 营销标语生成 | AgentGongju.com</title>
+<meta name="description" content="输入产品与卖点，一次性生成多组营销标语、Slogan 与宣传短句，覆盖种草、促销、品牌调性多种风格。">
+<meta name="keywords" content="标语生成,Slogan,广告语,营销文案,宣传语,品牌标语,口号">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:120px;resize:vertical;line-height:1.8}
+select:focus,textarea:focus,input:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;margin-bottom:12px;font-size:.92rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() { var hm = document.createElement("script"); hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949"; var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(hm, s); })();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📣 AI 营销标语生成</h1><p>输入卖点，批量产出可用的广告标语</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>🛍 产品/品牌名</label><input type="text" id="brand" placeholder="例如：小满咖啡"></div>
+<div><label>🏷 行业</label>
+<select id="industry"><option value="food">餐饮食品</option><option value="beauty">美妆护肤</option><option value="tech">数码科技</option><option value="edu">教育培训</option><option value="fitness">健身健康</option><option value="home">家居生活</option><option value="fashion">服饰鞋包</option><option value="service">服务行业</option></select></div>
+</div>
+<div class="param-row">
+<div><label>🎨 调性</label>
+<select id="tone"><option value="warm">温暖走心</option><option value="cool">极简高级</option><option value="young">年轻活泼</option><option value="pro">专业可信</option><option value="fun">幽默有趣</option><option value="cn">国潮中式</option></select></div>
+<div><label>📏 字数偏好</label>
+<select id="len"><option value="short">短（4-8字）</option><option value="mid" selected>中（8-14字）</option><option value="long">长（15-25字）</option><option value="mix">混合</option></select></div>
+</div>
+<label>💡 核心卖点（一行一个）</label>
+<textarea id="points" placeholder="例如：&#10;现磨手冲&#10;9.9元起&#10;3分钟出餐&#10;办公室楼下"></textarea>
+<button class="btn-gen" id="genBtn">📣 生成营销标语</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制全部</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+var industryWord={
+food:{thing:'一口',scene:'每一餐',sense:'香'},beauty:{thing:'一抹',scene:'每一天',sense:'美'},
+tech:{thing:'一步',scene:'每一个细节',sense:'快'},edu:{thing:'一课',scene:'每一次成长',sense:'稳'},
+fitness:{thing:'一次',scene:'每一滴汗',sense:'强'},home:{thing:'一屋',scene:'每一个清晨',sense:'暖'},
+fashion:{thing:'一件',scene:'每一面',sense:'好看'},service:{thing:'一次',scene:'每一次托付',sense:'放心'}};
+
+var tonePatterns={
+warm:['{brand}，{scene}都想陪着你','把{sense}留给生活，把琐碎交给我们','{point}，是{brand}想说的温柔'],
+cool:['{brand}　少即是多','{point}。仅此而已','回归本质，只留{point}'],
+young:['{brand}在手，{point}我有','拒绝将就！就要{point}','这波{point}，{brand}拿捏了'],
+pro:['{brand}｜{point}，经得起检验','{point}，我们用数据说话','专业之选：{brand}，{point}'],
+fun:['别问，问就是{point}','{brand}：{point}，钱包表示还能撑住','{point}这件事，交给我们准没错'],
+cn:['{brand}·{point}，自有东方气','一念{point}，人间值得','匠心{point}，方得始终']};
+
+var shortP=[['{brand}','{point}','就够了'],['就','{point}',''],['{brand}·{point}',''],['','{point}','一下']];
+function pick(a){return a[Math.floor(Math.random()*a.length)];}
+
+function gen(){
+var brand=document.getElementById('brand').value.trim();
+var industry=document.getElementById('industry').value;
+var tone=document.getElementById('tone').value;
+var len=document.getElementById('len').value;
+var pts=document.getElementById('points').value.split(/\n+/).map(function(s){return s.replace(/^[-•*\d.、)\s]+/,'').trim();}).filter(function(s){return s;});
+if(!brand){alert('请填写产品或品牌名');return null;}
+var iw=industryWord[industry];
+var out='════════ 营销标语方案 ════════\n';
+out+='品牌：'+brand+'　|　行业：'+document.getElementById('industry').selectedOptions[0].text+'　|　调性：'+document.getElementById('tone').selectedOptions[0].text+'\n\n';
+
+if(len==='short'||len==='mix'){
+out+='———— 一、短句式标语（适合 LOGO 旁、包装、门头）————\n';
+var sh=[brand+'，'+iw.sense+'一点',iw.thing+'就上瘾','不止'+iw.sense+'，更是省心',
+brand+'·'+iw.thing+'搞定','越简单，越'+iw.sense,'好'+(iw.sense)+'，不将就'];
+sh.slice(0,len==='short'?6:3).forEach(function(s,i){out+=(i+1)+'. '+s+'\n';});
+out+='\n';
+}
+
+if(len==='mid'||len==='mix'||len==='short'){
+out+='———— 二、主标语（适合海报主视觉、电梯广告）————\n';
+var pats=tonePatterns[tone];
+var idx=0;
+pats.forEach(function(p){
+var p0=pts.length?pts[idx%pts.length]:('更'+iw.sense);
+out+=(++idx)+'. '+p.replace(/{brand}/g,brand).replace(/{point}/g,p0).replace(/{scene}/g,iw.scene).replace(/{thing}/g,iw.thing).replace(/{sense}/g,iw.sense)+'\n';
+});
+pts.forEach(function(p){
+out+=(++idx)+'. '+(tone==='cool'?'':brand+'｜')+p+'，'+iw.thing+'就懂'+'\n';
+});
+out+='\n';
+}
+
+if(len==='long'||len==='mix'){
+out+='———— 三、长句场景文案（适合详情页首屏、短视频口播）————\n';
+var scenes={
+food:'忙到顾不上吃饭的下午，'+brand+'用'+iw.thing+iw.sense+'，把你拉回生活的节奏。',
+beauty:'不是为了取悦谁，只是想照镜子时，对自己笑一下——'+brand+'，'+iw.sense+'得刚刚好。',
+tech:'你不用懂原理，也不用看参数。'+brand+'做的所有复杂，都是为了让你觉得'+iw.sense+'。',
+edu:'孩子的进步从来不是突然发生的，而是'+iw.scene+'，被认真对待了一点点。',
+fitness:'没人一开始就喜欢流汗，但每个人都喜欢变强的自己。'+brand+'，陪你从第一次开始。',
+home:'下班推开家门的那一秒，世界终于安静了。'+brand+'，把'+iw.sense+'留在家里。',
+fashion:'衣服会过季，风格不会。'+brand+'，让你'+iw.thing+'都像自己。',
+service:'每一次托付背后，都是一份信任。'+brand+'，把这份信任当成最重要的事。'};
+out+='1. '+scenes[industry]+'\n';
+out+='2. 大家选'+brand+'的理由其实很朴素：'+pts.join('、')+'。没有花哨的概念，只是每一处都替你想到了。\n';
+out+='3. 我们不太会说漂亮话，只做了一件事——把「'+(pts[0]||iw.sense)+'」做到位，然后等你回来第二次。\n\n';
+}
+
+out+='———— 四、促销冲刺标语（限时/上新）————\n';
+out+='1. 仅此一次！'+brand+'+'+ (pts[0]||iw.sense) +'，错过再等一年\n';
+out+='2. 上新啦｜'+brand+' '+ (pts[1]||pts[0]||iw.sense) +' 现在体验最划算\n';
+out+='3. 今天不买没关系，先记住'+brand+'，想买的时候别找错地方\n\n';
+out+='———— 五、标语使用建议 ————\n';
+out+='1. 门头/包装只放最短的一句，字越少越高级；\n';
+out+='2. 主标语和卖点不要重复，一个是情绪，一个是事实；\n';
+out+='3. 标语里出现数字最好用阿拉伯数字，更抓眼；\n';
+out+='4. 同一标语连续用 3 个月以上才会有效果，别频繁换；\n';
+out+='5. 选定后小范围测试（朋友圈/门头），看哪句被问得最多。\n';
+return out;
+}
+</script>
+<script>
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('AI 营销标语生成 | AgentGongju.com'))return;
+var out=gen();
+if(!out)return;
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(function(){alert('✅ 已复制！')})}
+</script>
+</body>
+</html>

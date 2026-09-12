@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 合同条款风险识别 | AgentGongju.com</title>
+<meta name="description" content="粘贴合同条款，自动识别付款、违约、知识产权、解约等风险点，给出修改建议与谈判要点，签字前先过一遍。">
+<meta name="keywords" content="合同风险,合同审查,合同条款,违约条款,合同陷阱,签约注意事项">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:200px;resize:vertical;line-height:1.8}
+select:focus,textarea:focus,input:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;margin-bottom:12px;font-size:.92rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() { var hm = document.createElement("script"); hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949"; var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(hm, s); })();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>⚖️ AI 合同条款风险识别</h1><p>签字前先扫一遍，把坑找出来</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>📑 合同类型</label>
+<select id="ctype"><option value="service">服务/外包合同</option><option value="labor">劳动合同</option><option value="house">房屋租赁合同</option><option value="sales">买卖合同</option><option value="coop">合作协议</option><option value="freelance">自由职业接单</option></select></div>
+<div><label>🙋 我方身份</label>
+<select id="side"><option value="jia">甲方（付款方）</option><option value="yi">乙方（收款方）</option><option value="worker">劳动者/个人</option><option value="tenant">承租方</option></select></div>
+</div>
+<label>📄 粘贴合同条款（可直接复制全文，或只贴可疑条款）</label>
+<textarea id="text" placeholder="例如：&#10;甲方应在项目验收合格后 180 日内支付尾款。&#10;乙方需对合作期间知悉的一切信息永久保密，违约金 50 万元。&#10;甲方有权随时单方面终止合同，无需说明理由。&#10;本项目产生的所有知识产权归甲方所有，包括乙方通用方法论。"></textarea>
+<button class="btn-gen" id="genBtn">⚖️ 开始风险扫描</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制报告</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+var rules=[
+{dim:'付款条件',level:'高',re:/(尾款|付款|结算)[^。；\n]{0,40}(验收|收到|之后|后)[^。；\n]{0,20}(\d{2,3})\s*[日天]/,note:'付款周期过长，容易形成资金占用甚至拖欠',sug:'建议把付款周期压到 30-60 天内，并约定逾期付款利息（如日万分之五）',kv:'付款周期'},
+{dim:'付款条件',level:'中',re:/(付款|结算)[^。；\n]{0,30}(视|根据)[^。；\n]{0,20}(进度|情况|需要)/,note:'付款条件表述模糊，给了对方拖延空间',sug:'把付款条件写成客观节点（如"交付并书面确认后 X 日"），避免主观判断',kv:'付款模糊'},
+{dim:'付款条件',level:'高',re:/(先开票|先开发票)[^。；\n]{0,30}(后付|再付|之后付款)/,note:'先票后款，存在开了票收不到钱的风险',sug:'尽量改为"款到开票"，或至少约定开票后极短的付款期限',kv:'先票后款'},
+{dim:'违约责任',level:'高',re:/(违约金|赔偿)[^。；\n]{0,30}(总价|合同金额|合同总金额)[^。；\n]{0,10}([3-9]\d|100)\s*%/,note:'违约金比例过高，可能超出合理范围',sug:'建议违约金不超过实际损失的 30%，并设置上限；过高部分可以主张调整',kv:'违约金高'},
+{dim:'违约责任',level:'中',re:/(仅|只)[^。；\n]{0,20}(乙|甲)方[^。；\n]{0,20}(承担|负责)[^。；\n]{0,20}(违约|责任)/,note:'责任单向承担，权利义务不对等',sug:'争取双向违约条款，双方违反义务都承担相应责任',kv:'单向责任'},
+{dim:'解除权',level:'高',re:/(随时|任意|无需说明理由)[^。；\n]{0,20}(解除|终止|取消)(合同|协议)?/,note:'单方任意解除权，我方投入可能随时归零',sug:'约定解除需提前通知（如 30 日）并补偿已完成工作量，或删除该条',kv:'任意解除'},
+{dim:'解除权',level:'中',re:/(解除合同|终止合同)[^。；\n]{0,30}(不退|不予退还|不退还)/,note:'解除后预付款不退，风险分配不利于我方',sug:'改为按实际完成比例退还，或明确列出不可退费用的计算方式',kv:'解除不退'},
+{dim:'知识产权',level:'高',re:/(知识产权|著作权|成果)[^。；\n]{0,40}(全部|所有|一切)[^。；\n]{0,20}归[^。；\n]{0,10}(甲|乙)?方/,note:'知识产权全归一方，可能搭上我方通用成果',sug:'限定为"本项目定制交付成果"，明确我方既有技术、方法、模板不转让',kv:'IP全归属'},
+{dim:'知识产权',level:'中',re:/(知识产权|著作权)[^。；\n]{0,30}(永久|无限期|不受限制)/,note:'授权期限无边界，影响后续复用',sug:'授权范围限定用途、地域、期限，超出范围需另行付费',kv:'授权无边界'},
+{dim:'保密条款',level:'中',re:/(永久|无限期)[^。；\n]{0,20}(保密|不得披露)/,note:'保密期限永久，义务过重',sug:'建议保密期限设为合作结束后 2-3 年，且保密信息应有明确范围',kv:'保密永久'},
+{dim:'保密条款',level:'高',re:/保密[^。；\n]{0,40}违约金[^。；\n]{0,10}(\d{2,})[万]/,note:'保密违约金金额偏高，远超一般信息价值',sug:'违约金应与实际损失挂钩，设置合理上限，并明确"已公开信息"不属保密范围',kv:'保密违约金'},
+{dim:'竞业/排他',level:'高',re:/(竞业限制|不得从事|不得为第三方|独家|排他)/,note:'竞业或排他条款可能限制我方主要收入来源',sug:'如必须接受，应要求竞业补偿；排他范围限定品类、地域和期限',kv:'竞业排他'},
+{dim:'争议解决',level:'中',re:/(仲裁|诉讼)[^。；\n]{0,30}(对方所在地|甲方所在地|乙方所在地)/,note:'争议解决地在一方所在地，增加异地维权成本',sug:'争取改为"被告所在地"或"合同履行地"法院管辖，更公平',kv:'管辖不利'},
+{dim:'交付/验收',level:'中',re:/(验收)[^。；\n]{0,40}(视|根据)[^。；\n]{0,20}(满意|认可)/,note:'验收标准主观，对方可以"不满意"为由拒付',sug:'把验收标准量化（功能清单、指标数值、书面确认时限），超期不回复视为通过',kv:'验收主观'},
+{dim:'交付/验收',level:'高',re:/(无限次|不限次数)[^。；\n]{0,20}(修改|返工|调整)/,note:'无限次修改义务，成本不可控',sug:'约定免费修改轮次（如 2-3 轮），超出部分按工时另行计费',kv:'无限修改'},
+{dim:'期限',level:'中',re:/(自动续约|自动续期)[^。；\n]{0,20}(一年|12个月|1年)/,note:'自动续约，容易忘记解约而被锁定',sug:'改为到期前双方书面确认续约，或至少约定提前 X 日可无责退出',kv:'自动续约'},
+{dim:'税费',level:'低',re:/(税费|税金)[^。；\n]{0,20}(各自承担|由乙方承担)/,note:'税费承担需提前测算是否含税报价',sug:'明确报价是否含税、发票类型（专票/普票）及税率',kv:'税费归属'},
+{dim:'不可抗力',level:'低',re:/(不可抗力)/,note:'已含不可抗力条款，注意范围是否合理',sug:'确认不可抗力通知义务、举证责任与后续处理方式是否对等',kv:'不可抗力'}
+];
+
+function gen(){
+var ctype=document.getElementById('ctype').value;
+var side=document.getElementById('side').value;
+var text=document.getElementById('text').value.trim();
+if(!text){alert('请先粘贴合同条款内容');return null;}
+var ctypeName=document.getElementById('ctype').selectedOptions[0].text;
+var sideName=document.getElementById('side').selectedOptions[0].text;
+
+var segs=text.split(/[。；;\n]+/).map(function(s){return s.trim();}).filter(function(s){return s.length>3;});
+var found=[];
+rules.forEach(function(r){
+var hits=segs.filter(function(s){return r.re.test(s);});
+hits.forEach(function(h){
+if(found.some(function(f){return f.kv===r.kv&&f.hit===h;}))return;
+found.push({dim:r.dim,level:r.level,note:r.note,sug:r.sug,kv:r.kv,hit:h});
+});
+});
+
+var hi=found.filter(function(f){return f.level==='高';});
+var mid=found.filter(function(f){return f.level==='中';});
+var low=found.filter(function(f){return f.level==='低';});
+
+var out='════════ 合同风险扫描报告 ════════\n';
+out+='合同类型：'+ctypeName+'　|　我方身份：'+sideName+'\n';
+out+='扫描条款：'+segs.length+' 条　|　发现问题：'+found.length+' 处\n';
+out+='风险评估：🔴 高风险 '+hi.length+' 处　🟡 中风险 '+mid.length+' 处　🟢 低风险 '+low.length+' 处\n';
+var score=Math.max(0,100-hi.length*15-mid.length*7-low.length*3);
+out+='综合安全分：'+score+' / 100　'+ (score>=80?'（整体可控，注意细节）':(score>=60?'（存在明显不利条款，建议修改后再签）':'（风险较高，强烈建议逐条协商或寻求法律意见）')) +'\n\n';
+
+function sec(title,arr){
+out+='———— '+title+'（'+arr.length+' 处）————\n';
+if(!arr.length){out+='未发现明显问题\n\n';return;}
+arr.forEach(function(f,i){
+out+=(i+1)+'. 【'+f.dim+'】'+(f.level==='高'?'🔴高风险':(f.level==='中'?'🟡中风险':'🟢低风险'))+'\n';
+out+='　原文：'+f.hit.slice(0,80)+(f.hit.length>80?'…':'')+'\n';
+out+='　问题：'+f.note+'\n';
+out+='　建议：'+f.sug+'\n';
+});
+out+='\n';
+}
+sec('一、高风险条款',hi);
+sec('二、中风险条款',mid);
+sec('三、提示类条款',low);
+
+out+='———— 四、通用签约建议 ————\n';
+out+='1. 凡是"另行协商""视情况而定"的地方，都要在签约前落成具体文字；\n';
+out+='2. 所有口头承诺写进合同或微信确认，口头承诺在纠纷中很难举证；\n';
+out+='3. 金额、日期、比例的小写数字后补大写，避免被篡改；\n';
+out+='4. 关注"甲方有权""乙方须"这类单方面表述，尽量改成对等约定；\n';
+out+='5. 签字前确认对方主体资格（营业执照/身份证），盖的章是否与主体一致；\n';
+out+='6. 保留合同原件或完整电子件，涉及大额或复杂条款建议咨询执业律师。\n\n';
+out+='⚠ 免责说明：本报告由规则库自动匹配生成，仅作风险提示参考，不构成法律意见书。\n';
+return out;
+}
+</script>
+<script>
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('AI 合同条款风险识别 | AgentGongju.com'))return;
+var out=gen();
+if(!out)return;
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(function(){alert('✅ 已复制！')})}
+</script>
+</body>
+</html>

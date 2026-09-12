@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI PPT演讲备注生成 | AgentGongju.com</title>
+<meta name="description" content="输入PPT大纲，自动为每一页生成演讲备注与讲稿，含开场、过渡语和收尾，帮你把PPT讲得自然流畅。">
+<meta name="keywords" content="PPT备注,演讲讲稿,汇报讲稿,PPT逐页讲稿,演讲备注,办公效率">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:180px;resize:vertical;line-height:1.8}
+select:focus,textarea:focus,input:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;margin-bottom:12px;font-size:.92rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() { var hm = document.createElement("script"); hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949"; var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(hm, s); })();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🎤 AI PPT演讲备注生成</h1><p>输入每页标题，自动生成逐页讲稿与过渡语</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>📌 PPT主题</label><input type="text" id="topic" placeholder="例如：Q3 增长复盘汇报"></div>
+<div><label>🎯 场合</label>
+<select id="scene"><option value="work">工作汇报</option><option value="product">产品发布</option><option value="class">课堂讲授</option><option value="invest">融资路演</option><option value="train">内部培训</option><option value="pitch">项目答辩</option></select></div>
+</div>
+<div class="param-row">
+<div><label>⏱ 预计时长</label>
+<select id="duration"><option value="5">5 分钟（约 5-6 页）</option><option value="10" selected>10 分钟（约 10-15 页）</option><option value="20">20 分钟</option><option value="30">30 分钟</option></select></div>
+<div><label>🗣 演讲风格</label>
+<select id="tone"><option value="natural" selected>自然口语</option><option value="formal">正式严谨</option><option value="story">故事感强</option><option value="passion">有感染力</option></select></div>
+</div>
+<label>📄 每页标题（一行一页，可带要点用「|」分隔）</label>
+<textarea id="slides" placeholder="例如：&#10;封面：Q3增长复盘&#10;数据总览 | GMV增长32% | 新客占比提升&#10;问题诊断 | 转化率下滑 | 复购不足&#10;下季度策略&#10;需要的资源支持"></textarea>
+<button class="btn-gen" id="genBtn">🎤 生成演讲备注</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制备注</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function gen(){
+var topic=document.getElementById('topic').value.trim()||'本次汇报';
+var scene=document.getElementById('scene').value;
+var duration=document.getElementById('duration').value;
+var tone=document.getElementById('tone').value;
+var raw=document.getElementById('slides').value.trim();
+if(!raw){alert('请先输入 PPT 每页标题');return null;}
+
+var slides=raw.split(/\n+/).map(function(l){return l.trim();}).filter(function(l){return l;});
+var sceneName={work:'工作汇报',product:'产品发布',class:'课堂讲授',invest:'融资路演',train:'内部培训',pitch:'项目答辩'}[scene];
+var toneName={natural:'自然口语',formal:'正式严谨',story:'故事感强',passion:'有感染力'}[tone];
+
+var openings={
+work:'各位好，今天我用大概'+duration+'分钟，把「'+topic+'」的情况和大家同步一下，先讲结论，再讲原因，最后讲下一步计划。',
+product:'感谢大家今天的到来。接下来我要用一个产品人的视角，带大家看看「'+topic+'」到底解决了什么问题，为什么值得你关注。',
+class:'同学们好，这节课我们围绕「'+topic+'」展开。希望大家学完之后，不只是记住知识点，更能用它去分析真实问题。',
+invest:'感谢各位投资人抽出时间。今天我想用'+duration+'分钟讲清楚三件事：我们在做什么、已经做到什么程度、以及这笔钱我们将怎么花。',
+train:'大家好，今天这段培训的核心是「'+topic+'」。我会尽量少讲概念，多讲能直接上手用的方法和案例。',
+pitch:'各位老师好，我汇报的项目是「'+topic+'」。下面从背景、方案、验证结果三个方面向各位做汇报。'};
+
+var transitions=['这一页讲清楚之后，很自然地就引出了下一个问题——','把上面的信息串起来看，其实答案已经比较清楚了，我们接着往下看。','那问题既然找到了，接下来最重要的就是怎么办。','这里我想多停留一下，因为这是整份汇报里最关键的一环。','顺着这个逻辑，我们可以得出一个判断。','说到这，可能有人会问，那具体怎么做？别急，下一页就是。'];
+
+var closings={
+work:'以上就是「'+topic+'」的整体情况。结论已经很明确：方向对、节奏稳、接下来重点抓执行。感谢大家，欢迎提问。',
+product:'总的来说，「'+topic+'」想做的事情很简单——把复杂留给我们，把简单留给你。感谢聆听，欢迎交流。',
+class:'今天的内容就到这里。请大家课后思考一个问题：这些方法，你会怎么用在自己身上？下课。',
+invest:'最后总结一句：我们不是讲故事，而是把每一步都跑通了。期待和各位一起，把这件事做得更大。谢谢。',
+train:'好的，今天的培训就到这里。记住，方法不用多，用熟一个就够。回去之后先从最小的一步开始试。谢谢大家。',
+pitch:'汇报完毕，恳请各位老师批评指正，谢谢。'};
+
+var tips=['这一页的备注建议控制在 60-90 秒，超时就说明内容太密。','讲数据时先给结论，再给数字，听众更容易记住。','不要把每一页的字都念出来，讲备注里没写在 PPT 上的部分。','遇到关键页可以稍作停顿，给听众反应时间。','手势和眼神比措辞更重要，看人说话，不要看屏幕。'];
+
+var out='════════ 演讲备注 · '+topic+' ════════\n';
+out+='场合：'+sceneName+'　|　时长：约 '+duration+' 分钟　|　风格：'+toneName+'\n';
+out+='总页数：'+slides.length+' 页　|　平均每页：'+Math.max(1,Math.round(duration*60/slides.length))+' 秒\n\n';
+out+='———— 开场白（约 30 秒）————\n'+openings[scene]+'\n\n';
+
+slides.forEach(function(s,i){
+var parts=s.split('|').map(function(p){return p.trim();}).filter(function(p){return p;});
+var title=parts[0]||('第'+(i+1)+'页');
+var bullets=parts.slice(1);
+var isFirst=(i===0),isLast=(i===slides.length-1);
+out+='———— 第 '+(i+1)+' 页：'+title+' ————\n';
+if(isFirst){
+out+='【备注】这是开场页，不用急着讲内容。先做一个自我介绍或背景铺垫，把听众的注意力拉过来，再自然过渡到后面的内容。\n';
+out+='【讲法】"在正式开始之前，我先花一分钟说明一下今天为什么要讲这个。"\n';
+}else{
+out+='【讲法】'+transitions[i%transitions.length]+'\n';
+var lead={natural:'这一页我想说的核心就一句话：',formal:'本页主要说明如下要点：',story:'这里有个细节特别值得一提：',passion:'这一页，是最想让大家记住的一页：'}[tone];
+out+='【备注】'+lead+title+'。\n';
+}
+if(bullets.length){
+out+='【要点讲解】\n';
+bullets.forEach(function(b,k){
+out+='  '+(k+1)+'. '+b+'——不要只念标题，补一句"这意味着什么"，比如对业务、对团队、对听众自己的影响。\n';
+});
+}
+out+='【时长建议】约 '+Math.max(1,Math.round(duration*60/slides.length))+' 秒\n';
+out+='【小提示】'+tips[i%tips.length]+'\n';
+if(isLast){out+='【收尾】这是最后一页，语速放慢，停顿两秒再说话，把结论说完整。\n';}
+out+='\n';
+});
+
+out+='———— 结束语 ————\n'+closings[scene]+'\n\n';
+out+='════ 演讲准备提示 ════\n';
+out+='1. 备注写好之后，一定要出声读一遍，读起来别扭的地方就是需要改的地方；\n';
+out+='2. 不要背稿，记住每页的"一句话核心"就够了，其余临场发挥；\n';
+out+='3. 提前演练 2 遍，重点练转场，转场顺了整场就顺了；\n';
+out+='4. 把每页备注压缩到 3 行以内，太多了看不过来；\n';
+out+='5. 留出提问时间，不要把所有时间都讲满。\n';
+return out;
+}
+</script>
+<script>
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('AI PPT演讲备注生成 | AgentGongju.com'))return;
+var out=gen();
+if(!out)return;
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(function(){alert('✅ 已复制！')})}
+</script>
+</body>
+</html>

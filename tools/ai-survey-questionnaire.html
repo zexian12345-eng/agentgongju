@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 问卷设计生成 | AgentGongju.com</title>
+<meta name="description" content="输入调研目的，自动生成结构化问卷题目，含单选、多选、量表与开放题，附带排版建议和数据回收提示。">
+<meta name="keywords" content="问卷设计,调查问卷,满意度调查,问卷模板,调研,用户调研,题目设计">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:140px;resize:vertical;line-height:1.8}
+select:focus,textarea:focus,input:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;margin-bottom:12px;font-size:.92rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() { var hm = document.createElement("script"); hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949"; var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(hm, s); })();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📋 AI 问卷设计生成</h1><p>说清调研目的，直接给你能发的问卷</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>🎯 调研目的</label>
+<select id="goal"><option value="satisfy">客户/用户满意度</option><option value="product">产品需求调研</option><option value="staff">员工满意度</option><option value="event">活动反馈</option><option value="market">市场认知调查</option><option value="course">课程/培训反馈</option></select></div>
+<div><label>📏 问卷长度</label>
+<select id="len"><option value="short">短（8-10 题）</option><option value="mid" selected>中（13-16 题）</option><option value="long">长（20 题以上）</option></select></div>
+</div>
+<div class="param-row">
+<div><label>🏷 调研对象</label><input type="text" id="who" placeholder="例如：老客户、App新用户、公司员工"></div>
+<div><label>🔬 调研主题/产品名</label><input type="text" id="topic" placeholder="例如：小满咖啡小程序"></div>
+</div>
+<label>📝 特别想了解的点（可选，一行一个）</label>
+<textarea id="focus" placeholder="例如：&#10;价格接受度&#10;最常用功能&#10;是否愿意推荐给朋友"></textarea>
+<button class="btn-gen" id="genBtn">📋 生成问卷</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制问卷</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function gen(){
+var goal=document.getElementById('goal').value;
+var len=document.getElementById('len').value;
+var who=document.getElementById('who').value.trim()||'目标用户';
+var topic=document.getElementById('topic').value.trim()||'我们的产品';
+var focus=document.getElementById('focus').value.split(/\n+/).map(function(s){return s.replace(/^[-•*\d.、)\s]+/,'').trim();}).filter(function(s){return s;});
+var goalName=document.getElementById('goal').selectedOptions[0].text;
+
+var scale5='1=非常不满意　2=不满意　3=一般　4=满意　5=非常满意';
+var qs=[];
+var n=0;
+function single(title,opts){n++;qs.push({n:n,t:'单选',q:title,o:opts});}
+function multi(title,opts){n++;qs.push({n:n,t:'多选',q:title,o:opts});}
+function scale(title){n++;qs.push({n:n,t:'量表',q:title,o:[scale5]});}
+function open(title,ph){n++;qs.push({n:n,t:'开放题',q:title,o:[ph||'请简单写下你的想法（选填）']});}
+function rank(title,opts){n++;qs.push({n:n,t:'排序',q:title,o:opts});}
+
+// 通用背景题
+single('您的身份是？',goal==='staff'?['基层员工','中层管理','高层管理','其他']:['新用户（1个月内）','老用户（1年以上）','已流失用户','从未使用过']);
+single('您了解「'+topic+'」的渠道是？',['朋友推荐','社交媒体','短视频平台','搜索引擎','线下看到','其他']);
+
+if(goal==='satisfy'){
+scale('总的来说，您对「'+topic+'」的满意程度如何？');
+multi('您最常使用/体验哪些功能或服务？（可多选）',['核心功能','价格/优惠','服务态度','使用便捷性','售后支持','外观设计']);
+scale('与您的预期相比，实际体验如何？');
+rank('以下几方面，请按您最看重的程度排序',['产品质量','价格','服务态度','响应速度','品牌口碑']);
+open('您觉得「'+topic+'」最需要改进的一点是什么？');
+scale('您有多大可能把「'+topic+'」推荐给朋友？（0-10分）');
+}else if(goal==='product'){
+single('您目前是否在使用类似产品或服务？',['正在使用，很满意','正在使用，不太满意','用过但已放弃','没用过，想了解']);
+multi('您最希望「'+topic+'」具备哪些能力？（可多选）',['操作更简单','价格更便宜','功能更全','速度更快','数据更安全','支持多端同步']);
+scale('这个需求对您来说的迫切程度？');
+single('如果价格是 ____，您会考虑购买吗？',['低于心理价位，立刻买','合理范围内，会考虑','需要再看看','不会，太贵了']);
+multi('您能接受的价格区间是？',['0-50元','50-100元','100-300元','300-500元','500元以上']);
+open('如果您不使用，最主要的原因是什么？');
+rank('以下功能按您的需求优先级排序',['自动生成','一键导出','团队协作','模板库','数据分析','移动端']);
+}else if(goal==='staff'){
+scale('总的来说，您对目前工作的满意程度如何？');
+multi('您对以下哪些方面比较满意？（可多选）',['薪资福利','工作内容','团队氛围','成长空间','领导管理','办公环境','工作强度']);
+multi('您认为公司最需要改善的是？（多选，最多选 2 项）',['薪资福利','晋升机制','培训机会','沟通效率','加班情况','管理层决策','福利关怀']);
+scale('您认为自己的付出与回报是否匹配？');
+single('未来一年您是否有离职打算？',['完全没有','偶尔想过','正在考虑','已在找机会']);
+open('如果公司能做一件事提升您的满意度，您希望是什么？');
+}else if(goal==='event'){
+single('您是通过什么方式知道本次活动的？',['主办方邀请','朋友推荐','社交媒体','线下海报','其他']);
+scale('这次活动整体体验如何？');
+multi('您最喜欢活动的哪些环节？（可多选）',['嘉宾分享','互动环节','场地环境','餐饮茶歇','礼品周边','社交机会']);
+scale('活动的时间安排是否合适？');
+scale('活动的组织与流程是否清晰？');
+single('您是否愿意参加下一次活动？',['非常愿意','可能会','不确定','不会']);
+open('您希望下次活动增加什么内容？');
+}else if(goal==='market'){
+single('在此之前，您是否听说过「'+topic+'」？',['了解并使用过','听说过，没用过','完全没听过']);
+multi('提到这个品类，您会想到哪些品牌？（可多选）',['品牌A','品牌B','品牌C','都不太熟悉']);
+multi('您选择这类产品时最看重什么？（最多选 3 项）',['价格','品牌','口碑','成分/材质','服务','外观']);
+scale('您对「'+topic+'」的第一印象如何？（1=差 5=好）');
+single('您愿意尝试新品牌的意愿有多强？',['很愿意，喜欢尝鲜','视情况而定','比较保守，用熟的','不愿意换']);
+open('提到这个产品，您最先想到的一个词是什么？');
+}else{
+single('您参加本次培训的主要目的是？',['公司要求','个人兴趣','技能提升','工作需要','其他']);
+scale('课程内容对您实际工作的帮助程度？');
+scale('讲师的讲解是否清晰易懂？');
+scale('课程节奏与时长是否合适？');
+multi('您觉得哪些部分最有价值？（可多选）',['理论讲解','实操演练','案例分析','互动讨论','资料发放','课后练习']);
+multi('您希望下次增加哪些内容？（可多选）',['更多实操','更多案例','答疑时间','一对一辅导','配套资料']);
+open('请留下您对课程的具体建议：');
+}
+
+// 补充自定义关注点
+focus.forEach(function(f){
+single('关于「'+f+'」，您的看法是？',['非常认同','比较认同','一般','不太认同','完全不认同']);
+});
+
+// 通用收尾
+open('还有什么想告诉我们的吗？');
+if(len!=='short'){
+single('您愿意接受后续深度访谈吗？',['愿意，稍后联系我','暂不','看情况']);
+}
+
+var out='════════ 问卷设计稿 ════════\n';
+out+='调研目的：'+goalName+'　|　调研对象：'+who+'\n';
+out+='主题：'+topic+'　|　题目数量：'+n+' 题\n';
+out+='预计填写时长：约 '+Math.max(1,Math.round(n*0.4))+' 分钟\n\n';
+out+='———— 问卷正文 ————\n';
+out+='【问卷标题】关于「'+topic+'」的'+goalName+'调查\n';
+out+='【问卷说明】\n';
+out+='您好！我们正在进行一项关于「'+topic+'」的'+goalName+'调查，大约需要 '+Math.max(1,Math.round(n*0.4))+' 分钟。问卷采用匿名方式，所有数据仅用于内部分析改进，不会对外泄露，也不会用于推销。感谢您的支持！\n\n';
+
+qs.forEach(function(item){
+out+=item.n+'. 【'+item.t+'】'+item.q+'\n';
+item.o.forEach(function(o,i){
+if(item.t==='量表'){out+='　'+o+'\n';}
+else if(item.t==='开放题'){out+='　______\n';}
+else{out+='　'+String.fromCharCode(65+i)+'. '+o+'\n';}
+});
+out+='\n';
+});
+
+out+='———— 设计说明 ————\n';
+out+='1. 题目顺序遵循"易→难、客观→主观"，敏感题（收入、离职）放在中间偏后，开头结尾放简单题；\n';
+out+='2. 量表题统一用 5 分制，方向一致（1 差 5 好），避免正反向混用导致填写混乱；\n';
+out+='3. 多选最多限制 2-3 项，选项太多会导致数据分散、无法分析；\n';
+out+='4. 开放题全卷控制在 2-3 道，太多会让填写者直接放弃；\n';
+out+='5. 所有题目都给了"其他"或中性选项，避免强迫填写；\n';
+out+='6. 避免双重提问（如"你觉得价格合理且服务好吗"），一道题只问一件事。\n\n';
+out+='———— 发放与回收建议 ————\n';
+out+='· 样本量：满意类调查建议至少 100 份，需求类至少 200 份才有参考价值；\n';
+out+='· 发放渠道：用户群/客服触达 + 小额激励（小红包、优惠券），回收率能提升 2-3 倍；\n';
+out+='· 最佳时机：体验完成后立刻发（当天回收率最高），不要隔天；\n';
+out+='· 数据清洗：填写时间低于 30 秒的、全选同一选项的，建议剔除；\n';
+out+='· 结果解读：满意度看均分，需求看排序和占比，开放题看高频词。\n';
+return out;
+}
+</script>
+<script>
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('AI 问卷设计生成 | AgentGongju.com'))return;
+var out=gen();
+if(!out)return;
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(function(){alert('✅ 已复制！')})}
+</script>
+</body>
+</html>

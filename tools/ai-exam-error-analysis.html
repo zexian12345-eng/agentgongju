@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 错题分析与提分计划 | AgentGongju.com</title>
+<meta name="description" content="输入错题记录，自动分析错因类型、找出知识漏洞，生成针对性提分计划与同类题练习建议。">
+<meta name="keywords" content="错题分析,错题本,提分计划,知识漏洞,学习方法,考试复盘,复习计划">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:200px;resize:vertical;line-height:1.8}
+select:focus,textarea:focus,input:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;margin-bottom:12px;font-size:.92rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() { var hm = document.createElement("script"); hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949"; var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(hm, s); })();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📚 AI 错题分析与提分计划</h1><p>不是抄错题，而是找出错题背后的真问题</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>📖 学科</label>
+<select id="subject"><option value="math">数学</option><option value="physics">物理</option><option value="chem">化学</option><option value="bio">生物</option><option value="chinese">语文</option><option value="english">英语</option><option value="history">历史/政治</option></select></div>
+<div><label>🎓 学段</label>
+<select id="grade"><option value="primary">小学</option><option value="junior" selected>初中</option><option value="senior">高中</option></select></div>
+</div>
+<div class="param-row">
+<div><label>📊 本次成绩</label><input type="text" id="score" placeholder="例如：78/120"></div>
+<div><label>📅 距下次考试</label>
+<select id="days"><option value="30">1 个月</option><option value="60" selected>2 个月</option><option value="90">3 个月</option><option value="180">半年</option></select></div>
+</div>
+<label>❌ 错题记录（一行一题，格式：题目简述 | 你的答案 | 正确答案 | 失分）</label>
+<textarea id="errors" placeholder="例如：&#10;二次函数求最值 | 用顶点式但代入算错 | x=2时取最小值-1 | 6&#10;电路串联电阻计算 | 用了并联公式 | R总=R1+R2 | 8&#10;英语完形第15题 | 选了B | C（词义辨析） | 2&#10;语文默写 | 少写一个字 | 完整句子 | 3"></textarea>
+<button class="btn-gen" id="genBtn">📚 分析错题并生成计划</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制报告</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function gen(){
+var subject=document.getElementById('subject').value;
+var grade=document.getElementById('grade').value;
+var score=document.getElementById('score').value.trim()||'—';
+var days=parseInt(document.getElementById('days').value,10);
+var raw=document.getElementById('errors').value.trim();
+if(!raw){alert('请先输入错题记录');return null;}
+var subName=document.getElementById('subject').selectedOptions[0].text;
+var gradeName=document.getElementById('grade').selectedOptions[0].text;
+
+var items=[];
+raw.split(/\n+/).forEach(function(l){
+l=l.trim();if(!l)return;
+var p=l.split('|').map(function(x){return x.trim();});
+var q=p[0]||'',mine=p[1]||'',right=p[2]||'',loss=parseFloat((p[3]||'0').replace(/[^\d.]/g,''))||0;
+// 错因分类
+var wrong='';
+var text=q+' '+mine+' '+right;
+if(/算错|计算|粗心|看错|抄错|符号|漏写/.test(text))wrong='计算粗心';
+else if(/公式|定理|记错|用错/.test(text))wrong='公式记忆错误';
+else if(/词义|单词|词汇|辨析|语法/.test(text))wrong='知识点不牢';
+else if(/审题|理解|没看清|题意|条件/.test(text))wrong='审题失误';
+else if(/时间|来不及|没做|空着/.test(text))wrong='时间不够';
+else if(/默写|背诵|记不住/.test(text))wrong='记忆不牢';
+else wrong='概念理解不清';
+items.push({q:q,mine:mine,right:right,loss:loss,wrong:wrong});
+});
+
+var totalLoss=items.reduce(function(a,b){return a+b.loss;},0);
+var byWrong={};
+items.forEach(function(it){(byWrong[it.wrong]=byWrong[it.wrong]||[]).push(it);});
+
+var out='════════ 错题分析报告 ════════\n';
+out+='学科：'+subName+'　|　学段：'+gradeName+'　|　成绩：'+score+'\n';
+out+='错题数：'+items.length+' 道　|　累计失分：'+totalLoss+' 分\n\n';
+
+out+='———— 一、错因分布 ————\n';
+Object.keys(byWrong).sort(function(a,b){return byWrong[b].length-byWrong[a].length;}).forEach(function(k){
+var arr=byWrong[k];
+var pct=Math.round(arr.length/items.length*100);
+var bar='█'.repeat(Math.max(1,Math.round(pct/5)));
+out+='· '+k+'：'+arr.length+' 道（'+pct+'%）'+bar+'\n';
+});
+out+='\n';
+
+out+='———— 二、逐题分析 ————\n';
+items.forEach(function(it,i){
+out+=(i+1)+'. '+it.q+'\n';
+out+='　你的答案：'+(it.mine||'未作答')+'　|　正确：'+(it.right||'—')+'　|　失分：'+it.loss+'\n';
+out+='　错因判定：'+it.wrong+'\n';
+var fix={};
+fix['计算粗心']='不是不会，是过程失控。做题时把每一步写清楚，不要在草稿纸上跳步；做完留 1 分钟回代验算。';
+fix['公式记忆错误']='属于"记混了"，建议把相关公式做成一张对照表，每天早读看 1 分钟，连看 7 天。';
+fix['知识点不牢']='属于真漏洞，需要回到课本/笔记把这个点重新学一遍，然后做 5-10 道同类题巩固。';
+fix['审题失误']='做题前用笔圈出题干条件，尤其注意"不正确""除了""至少"这类词，圈一个就不容易漏。';
+fix['时间不够']='说明熟练度不足。限时训练是关键，按考试时间的 80% 练，逼自己提速。';
+fix['记忆不牢']='用间隔重复：当天背、隔天复习、3 天后再复习、一周后第四次，比连续背 10 遍有效得多。';
+fix['概念理解不清']='不要只记结论，问自己"为什么是这样"，能给别人讲明白才算真懂。';
+out+='　改进动作：'+fix[it.wrong]+'\n\n';
+});
+
+out+='———— 三、'+days+'天提分计划 ————\n';
+var weeks=Math.ceil(days/7);
+out+='总周期：'+weeks+' 周\n\n';
+out+='【第 1 周：补漏】\n';
+out+='· 每天 30 分钟，专攻错题涉及的'+Object.keys(byWrong).slice(0,2).join('、')+'问题；\n';
+out+='· 把上面的错题全部重做一遍，不看答案，做对了打勾，做错了标星；\n';
+out+='· 周末把星标题再重做一次。\n\n';
+out+='【第 2-'+(weeks-1)+' 周：同类题强化】\n';
+out+='· 每个知识漏洞配 10-15 道同类题，做完立刻对答案；\n';
+out+='· 每周日花 40 分钟做一次小测（用新题，不是做过的题）；\n';
+out+='· 小测错题当天解决，不隔夜。\n\n';
+out+='【最后 1 周：整卷模拟】\n';
+out+='· 完整做 2-3 套真题，严格计时，包括涂卡；\n';
+out+='· 重点复盘"会做但做错"的题，这类题提分最快；\n';
+out+='· 考前两天不刷新题，只回顾错题本和高频公式。\n\n';
+
+out+='———— 四、错题本正确用法 ————\n';
+out+='1. 不要抄题！剪下来或拍照打印，省下的时间用来做题；\n';
+out+='2. 每题必写三样：错在哪、为什么错、正确思路是什么；\n';
+out+='3. 用不同颜色标记：红色=完全不会，黄色=会但做错，绿色=已掌握；\n';
+out+='4. 每周复习一次，只复习红黄题，绿色题不用再看；\n';
+out+='5. 考试前只看红黄题，这才是最高效的复习方式。\n\n';
+
+out+='———— 五、提分优先级建议 ————\n';
+out+='优先级从高到低：\n';
+out+='① 会做但做错（计算粗心、审题失误）——最快见分，1-2 周就能改善；\n';
+out+='② 记混的知识点——集中突破，3-5 天可解决；\n';
+out+='③ 完全不会的难题——占分高但耗时，放在最后攻克，别死磕；\n';
+out+='④ 反复错的老题——说明方法没改，需要换一种练习方式。\n\n';
+out+='💡 一句话总结：先修水管（减少粗心失分），再扩大蓄水池（补知识漏洞），性价比最高。\n';
+return out;
+}
+</script>
+<script>
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('AI 错题分析与提分计划 | AgentGongju.com'))return;
+var out=gen();
+if(!out)return;
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(function(){alert('✅ 已复制！')})}
+</script>
+</body>
+</html>

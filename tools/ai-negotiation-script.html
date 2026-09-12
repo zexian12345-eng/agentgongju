@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 谈判话术生成 | AgentGongju.com</title>
+<meta name="description" content="输入谈判场景、目标与底线，自动生成开场、报价、让步、应对拒绝的完整话术脚本，帮你把话说到点上。">
+<meta name="keywords" content="谈判话术,砍价话术,薪资谈判,商务谈判,沟通技巧,让步策略">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:130px;resize:vertical;line-height:1.8}
+select:focus,textarea:focus,input:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;margin-bottom:12px;font-size:.92rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() { var hm = document.createElement("script"); hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949"; var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(hm, s); })();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🤝 AI 谈判话术生成</h1><p>说出场景和目标，帮你把每句话都说到点上</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>🎯 谈判场景</label>
+<select id="scene"><option value="price">买东西砍价</option><option value="salary">薪资谈判</option><option value="rent">租房谈价</option><option value="biz">商务合作条件</option><option value="refund">退款/售后维权</option><option value="raise">申请加薪</option><option value="vendor">供应商压价</option></select></div>
+<div><label>🔥 对方风格</label>
+<select id="opp"><option value="hard">强硬不让步</option><option value="slow">拖延打太极</option><option value="nice">客气但坚持</option><option value="pro">专业爱讲道理</option></select></div>
+</div>
+<div class="param-row">
+<div><label>🙋 我的身份</label><input type="text" id="me" placeholder="例如：工作2年的运营 / 想买车的人"></div>
+<div><label>⚖️ 我的强势程度</label>
+<select id="power"><option value="low">弱势（很想要）</option><option value="mid" selected>均势（可谈）</option><option value="high">强势（有替代方案）</option></select></div>
+</div>
+<div class="param-row">
+<div><label>💰 我的目标</label><input type="text" id="goal" placeholder="例如：降价3000元 / 月薪涨到15000"></div>
+<div><label>🚧 我的底线</label><input type="text" id="bottom" placeholder="例如：最低接受降1500 / 最少14000"></div>
+</div>
+<label>📝 情况说明（可选）</label>
+<textarea id="desc" placeholder="补充背景，比如：对方还有别的客户在看；我已经收到另一家offer；这个课程我真的很想上……"></textarea>
+<button class="btn-gen" id="genBtn">🤝 生成谈判话术</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制话术</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function gen(){
+var scene=document.getElementById('scene').value;
+var opp=document.getElementById('opp').value;
+var me=document.getElementById('me').value.trim()||'我方';
+var power=document.getElementById('power').value;
+var goal=document.getElementById('goal').value.trim()||'争取更有利的条件';
+var bottom=document.getElementById('bottom').value.trim()||'暂未设定';
+var desc=document.getElementById('desc').value.trim();
+var sceneName=document.getElementById('scene').selectedOptions[0].text;
+var oppName=document.getElementById('opp').selectedOptions[0].text;
+var powName={low:'偏弱势',mid:'均势',high:'偏强势'}[power];
+
+var leverage={low:'你目前可选的替代方案不多，因此核心策略是：不谈"我要什么"，只谈"这个方案对你有什么好处"。',
+mid:'你和对方各有需求，核心策略是：把条件拆开谈，用非核心项换核心项。',
+high:'你有替代方案，核心策略是：把替代方案摆到台面上（但不要威胁），让对方自己算账。'}[power];
+
+var opener={
+price:'我关注这个挺久了，今天确实想定下来。不过在这之前，咱们先把价格聊清楚，合适的话我现在就签。',
+salary:'感谢您抽时间。今天主要想聊一下我目前的工作内容和市场情况，希望能有一个更合理的薪酬安排。',
+rent:'房子我挺满意的，主要看价格能不能再合适一点，如果可以我这两天就能交定金。',
+biz:'我们很看好这次合作，前期也做了不少准备。今天想把合作模式、价格和结算方式这几块一起对齐一下。',
+refund:'我不是来吵架的，我是想解决问题。我们把事实捋一遍，看看怎么处理双方都能接受。',
+raise:'我想跟您同步一下我这一年的工作成果，也想聊聊接下来的职责和对应的回报。',
+vendor:'我们接下来的量会比现在大不少，所以想重新聊一下单价和账期。'}[scene];
+
+var reject=[
+{tag:'对方说"这个价没得谈"',reply:'我理解您的成本压力。这样，价格先不动，那我们看看能不能在'+(scene==='price'?'赠品和售后':'账期或服务范围')+'上补一补？'},
+{tag:'对方说"再等等看"',reply:'没问题。不过我这边的资源是有限的，您希望大概什么时候能有答复？我好安排后面的计划。'},
+{tag:'对方说"别人都没这个价"',reply:'我理解。不过我的情况可能和"别人"不太一样——'+(desc?desc.slice(0,30):'我这边有一些别人没有的条件')+'，咱们就事论事谈这一单可以吗？'},
+{tag:'对方说"我已经给你最低价了"',reply:'如果这确实是底价，那价格我不纠结了。那我们聊点别的——能不能'+(scene==='salary'?'把年终奖或调薪次数写进合同':'把发票、运费或安装这些包含进去')+'？'},
+{tag:'对方说"爱要不要"',reply:'（停顿两秒）那我们今天先到这。我的联系方式您留着，如果后面条件有变化，随时可以找我。'}];
+
+var out='════════ 谈判话术脚本 ════════\n';
+out+='场景：'+sceneName+'　|　对方风格：'+oppName+'　|　我方位置：'+powName+'\n';
+out+='目标：'+goal+'\n底线：'+bottom+'\n\n';
+out+='———— 一、谈判前 3 分钟准备 ————\n';
+out+='1. 把目标和底线写下来，底线之上任何条件都可以谈，触及底线立刻收手；\n';
+out+='2. 找出对方最在意的东西（成交/业绩/现金流/面子），这是你的筹码；\n';
+out+='3. 准备 2 个"不要钱的好处"（未来介绍客户、帮忙转发、长期合作意向）；\n';
+out+='4. 提前想好如果谈崩，你的 Plan B 是什么。\n\n';
+out+='———— 二、策略要点 ————\n'+leverage+'\n\n';
+out+='———— 三、开场（占主动权）————\n';
+out+='"'+opener+'"\n';
+out+='✓ 要点：先给信号（我要成交），再抛条件，让对方有动力往下听。\n\n';
+out+='———— 四、第一次出价 / 提要求 ————\n';
+out+='我方主张："'+goal+'"\n';
+out+='话术：「我这边算了一下，如果按 [目标条件] 来做，我完全可以马上确定。您看怎么调整一下？」\n';
+out+='注意：第一次一定要高于目标（留让步空间），但不要离谱到谈不下去。\n\n';
+out+='———— 五、应对对方拒绝 ————\n';
+reject.forEach(function(r,i){
+out+=(i+1)+'. '+r.tag+'\n　→ 回应："'+r.reply+'"\n';
+});
+out+='\n———— 六、让步节奏（关键）————\n';
+out+='• 千万不要一次让到底。让步要递减：让 3 → 让 2 → 让 1 → 再不让；\n';
+out+='• 每次让步都要换东西：让价格就换数量、换账期、换合同长度；\n';
+out+='• 让到接近底线时说："这已经是我能给的最大诚意了，再往下我自己就做不了主了"；\n';
+out+='• 用"沉默"当武器：说完条件后不要急着补话，谁先沉不住气谁先让步。\n\n';
+out+='———— 七、锁定成交 ————\n';
+out+='1. 一旦对方口头松口，立刻复述确认："那我们就定 [具体条件]，我这边 [今天/明天] 给您回话。"\n';
+out+='2. 当场争取书面确认（微信文字也算），避免对方反悔；\n';
+out+='3. 留一句后路："合作顺利的话，后面还有第二单/明年还有类似需求。"\n\n';
+out+='———— 八、红线提醒 ————\n';
+out+='✗ 不要撒谎编造事实，被拆穿后谈判直接崩盘；\n';
+out+='✗ 不要情绪化，不要人身攻击，就事论事；\n';
+out+='✗ 不要在你信息不足的时候拍板；\n';
+out+='✗ 不要在对方主动找你的时候表现得太急切；\n';
+out+='✓ 记住：谈判不是赢对方，是找到一个双方都能执行的结果。\n';
+return out;
+}
+</script>
+<script>
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('AI 谈判话术生成 | AgentGongju.com'))return;
+var out=gen();
+if(!out)return;
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(function(){alert('✅ 已复制！')})}
+</script>
+</body>
+</html>

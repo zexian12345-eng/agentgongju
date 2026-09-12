@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 歌词创作 | AgentGongju.com</title>
+<meta name="description" content="输入主题与情绪，自动生成完整歌词，包含主歌、副歌、桥段结构，押韵自然，适合流行、民谣、说唱等风格。">
+<meta name="keywords" content="AI写歌词,歌词创作,原创歌词,写歌,音乐创作,民谣歌词,流行歌词">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:140px;resize:vertical;line-height:1.8}
+select:focus,textarea:focus,input:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;margin-bottom:12px;font-size:.92rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() { var hm = document.createElement("script"); hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949"; var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(hm, s); })();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🎵 AI 歌词创作</h1><p>给个主题和情绪，生成结构完整的原创歌词</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>🎯 歌曲主题</label><input type="text" id="topic" placeholder="例如：毕业分别、城市孤独、暗恋"></div>
+<div><label>🎼 曲风</label>
+<select id="style"><option value="pop">流行</option><option value="folk">民谣</option><option value="rock">摇滚</option><option value="rap">说唱</option><option value="ballad">抒情慢歌</option><option value="campus">校园</option></select></div>
+</div>
+<div class="param-row">
+<div><label>💗 情绪基调</label>
+<select id="mood"><option value="warm">温暖治愈</option><option value="sad">伤感遗憾</option><option value="hope">热血希望</option><option value="lonely">孤独清冷</option><option value="love">甜蜜心动</option><option value="nostalgia">怀旧回忆</option></select></div>
+<div><label>🏷 歌名（可留空）</label><input type="text" id="title" placeholder="留空则自动起名"></div>
+</div>
+<label>✍️ 想表达的意象/关键词（可选，逗号分隔）</label>
+<textarea id="keywords" placeholder="例如：晚自习的灯光、旧单车、最后一班地铁、没寄出的信"></textarea>
+<button class="btn-gen" id="genBtn">🎵 开始创作歌词</button>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制歌词</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+var dict={
+warm:{adj:['暖暖的','柔软的','安静的','微亮的','轻轻的'],noun:['风','光','黄昏','春天','手心'],verb:['拥抱','靠紧','慢慢走','笑着','等'],line:['我把心事叠成一只纸船','阳光落在你睫毛的边角','你说的每句话我都记得']},
+sad:{adj:['空荡的','褪色的','沉默的','冰冷的','破碎的'],noun:['雨','夜','影子','旧信','站台'],verb:['删掉','忘掉','转身','消失','放手'],line:['我把你的名字写进了风里','那天的雨一直下到今天','我们之间隔了一整个夏天']},
+hope:{adj:['滚烫的','明亮的','无畏的','发光的','崭新的'],noun:['远方','山海','朝阳','少年','旷野'],verb:['奔跑','燃起','向上','出发','追'],line:['我要把黑夜熬成黎明','哪怕只有一寸光也要往前走','年少的梦从不怕被谁笑']},
+lonely:{adj:['安静的','无人问的','长长的','灰色的','微凉的'],noun:['路灯','末班车','天台','孤岛','罐头'],verb:['发呆','刷着屏','独自走','听歌','失眠'],line:['城市有八百万盏灯却没有一盏为我留','我在人群里练习着不孤单','深夜的路口只剩我和我的影子']},
+love:{adj:['心跳的','脸红的','甜甜的','慌张的','柔软的'],noun:['奶茶','情书','星星','操场','耳麦'],verb:['偷看','靠近','牵手','傻笑','约定'],line:['你的名字是我藏在口袋里的小秘密','风吹过刘海你抬头的那一秒','想和你把所有的路都走一遍']},
+nostalgia:{adj:['斑驳的','旧旧的','泛黄的','熟悉的','回不去的'],noun:['老照片','毕业照','小巷','磁带','蝉鸣'],verb:['翻开','哼起','想起','回望','收藏'],line:['那年夏天的风扇还在转','教室后墙还留着我们的字','再也没人和我抢最后一块橡皮']}};
+
+var styleMeta={
+pop:{b:'流行',tip:'副歌要抓耳，重复一句口号式的句子最容易记'},
+folk:{b:'民谣',tip:'多用画面和细节，少用形容词，像讲故事'},
+rock:{b:'摇滚',tip:'语气要冲，主歌压抑、副歌爆发，形成反差'},
+rap:{b:'说唱',tip:'短句多、节奏密，注意每句字数接近好踩拍'},
+ballad:{b:'抒情慢歌',tip:'句子拉长，留白多，适合钢琴和弦乐'},
+campus:{b:'校园',tip:'抓住一个具体场景，比如课桌、操场、晚自习'}};
+
+function pick(a,n){var r=[],c=a.slice();while(r.length<n&&c.length){r.push(c.splice(Math.floor(Math.random()*c.length),1)[0]);}return r;}
+function gen(){
+var topic=document.getElementById('topic').value.trim();
+if(!topic){alert('请先输入歌曲主题');return null;}
+var st=document.getElementById('style').value;
+var md=document.getElementById('mood').value;
+var title=document.getElementById('title').value.trim();
+if(!title){var keys=dict[md].noun;title=keys[Math.floor(Math.random()*keys.length)]+'的'+topic.slice(0,4);}
+var kws=document.getElementById('keywords').value.split(/[,，、\n]+/).map(function(s){return s.trim();}).filter(function(s){return s;});
+var d=dict[md],meta=styleMeta[st];
+var imgs=kws.length?kws:d.noun.map(function(n){return d.adj[0]+n;});
+
+function verse(seed){
+var l1=pick(d.line,1)[0];
+var l2=imgs[seed%imgs.length];
+var l3=d.verb[seed%d.verb.length]+'着'+(d.noun[(seed+1)%d.noun.length]);
+var l4='关于'+topic+' 我'+(seed%2?'还是':'终于')+'学会了'+d.verb[(seed+2)%d.verb.length];
+return [l1,l2.replace(/^.{0,0}/,''),'我看见'+l3,l4];
+}
+function chorus(times){
+return [
+'如果'+topic+'是一种'+d.noun[0]+' 我愿'+(md==='sad'||md==='lonely'?'一直记得':'一直抱着'),
+'哪怕'+(d.noun[1]||'时间')+'把我们都吹散',
+'我也要'+(md==='sad'?'笑着说再见':'大声唱出来'),
+'因为那是我们'+(md==='sad'?'回不去的':(md==='nostalgia'?'最好的':'最真的'))+'模样'
+];
+}
+
+var out='════════ 《'+title+'》 ════════\n';
+out+='主题：'+topic+'　|　曲风：'+meta.b+'　|　情绪：'+document.getElementById('mood').selectedOptions[0].text+'\n';
+out+='★ 创作提示：'+meta.tip+'\n\n';
+out+='【主歌一】\n';
+verse(0).forEach(function(l){out+=l+'\n';});
+out+='\n【预副歌】\n';
+out+='越是想藏 越是藏不住\n越是要忘 越是记得清楚\n风吹过来的时候\n我听见'+topic+'在叫我\n';
+out+='\n【副歌】\n';
+chorus().forEach(function(l){out+=l+'\n';});
+out+='\n【主歌二】\n';
+verse(2).forEach(function(l){out+=l+'\n';});
+out+='\n【副歌】\n';
+chorus().forEach(function(l){out+=l+'\n';});
+out+='\n【桥段】\n';
+out+=(d.adj[2]||'安静')+'的夜里 我问过自己\n';
+out+='是不是所有故事都该有个结局\n';
+out+='可我'+d.verb[0]+'的那些细节\n';
+out+='拼起来 就是整个'+topic+'\n';
+out+='\n【尾声】\n';
+out+='（轻声）'+(d.adj[0]||'轻轻')+'的\u2026\u2026\n';
+out+=topic+'\u2026\u2026\n';
+out+='嗯\u2026\u2026'+d.verb[1]+'\n';
+out+='\n════ 后续建议 ════\n';
+out+='1. 副歌是全曲的记忆点，先定副歌，再写主歌；\n';
+out+='2. 每句 7-12 字最容易唱，太长就拆成两句；\n';
+out+='3. 主歌讲故事，副歌讲情绪，不要混在一起；\n';
+out+='4. 押韵可以隔句押，不必每句都押，否则会像顺口溜；\n';
+out+='5. 写完试着清唱一遍，拗口的地方顺一下再定稿。\n';
+return out;
+}
+</script>
+<script>
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('AI 歌词创作 | AgentGongju.com'))return;
+var out=gen();
+if(!out)return;
+document.getElementById('outputBox').innerText=out;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(function(){alert('✅ 已复制！')})}
+</script>
+</body>
+</html>
