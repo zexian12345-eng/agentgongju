@@ -2039,6 +2039,145 @@ function careerInfo(bazi){
   return {mainWx, altWx, reasonZh, reasonEn, noteZh, noteEn, tiaohouWx};
 }
 
+// ==================== 六亲宫位关系（子平宫位法 + 十神六亲取象）====================
+// 依据：年柱祖上根基·少年；月柱父母兄弟·青年；日支配偶·中年；时柱子女·晚年（子平宫位通说）
+// 十神六亲：正印为母、偏财为父（男命正财为妻·女命正官为夫）、比劫为兄弟、男命官杀为子女·女命食伤为子女（百度百科·十神词条）
+const QIN_REL = {
+  // 长辈（父母 / 祖上）
+  elder: {
+    正印:["长辈厚道顾家、愿意为你付出，是你最实在的靠山。","Elders are kind and devoted — your most solid backing."],
+    偏印:["长辈想法多、照顾方式偏另类，关爱不那么直白。","Elders are unconventional — care shown in indirect ways."],
+    正官:["长辈讲规矩、有责任感，家教偏严，但为你铺的是正路。","Elders are principled and strict — a proper path is paved for you."],
+    七杀:["长辈强势、要求高，早年压力大，却也磨出了你的韧性。","Elders are forceful and demanding — early pressure forged your resilience."],
+    正财:["长辈务实会过日子，能在经济上给你实在支持。","Elders are practical and frugal — real financial support."],
+    偏财:["长辈能干活络、出手大方，走动多、门路广。","Elders are capable and generous — well connected and mobile."],
+    食神:["长辈温和有才、待人和气，家庭氛围宽松。","Elders are gentle and talented — a relaxed family atmosphere."],
+    伤官:["长辈聪明有才、心直口快，闲聊易拌嘴但无大碍。","Elders are clever and outspoken — banter aside, no real harm."],
+    比肩:["长辈如伙伴，平等互助，也爱拿你跟人比。","Elders act like peers — mutual help, with some comparison."],
+    劫财:["长辈个性强、有主见，家产钱财上要早讲清楚。","Elders are strong-willed — settle family finances early."]
+  },
+  // 配偶（日支）
+  spouse: {
+    正印:["配偶顾家厚道、像家人一样照顾你，性格偏稳重、也可能偏年长。","Your spouse is homely and caring — steady, possibly older."],
+    偏印:["配偶想法独特、需要个人空间，相处要多一份包容。","Your spouse is unconventional and needs space — be tolerant."],
+    正官:["配偶有责任感、讲规矩，事业心强，是能撑事的人。","Your spouse is responsible and ambitious — a capable partner."],
+    七杀:["配偶个性强、有魄力，婚姻里要学着平等沟通。","Your spouse is forceful and bold — practice equal communication."],
+    正财:["配偶务实能干、会过日子，是理财持家的好手。","Your spouse is practical and good with money — a solid homemaker."],
+    偏财:["配偶活络大方、社交广，婚姻生活有情趣也多变。","Your spouse is sociable and generous — lively but changeable."],
+    食神:["配偶温和有才艺、懂生活情趣，相处轻松愉快。","Your spouse is gentle and artistic — easy and pleasant to live with."],
+    伤官:["配偶聪明有个性、爱表达，注意别为几句话伤了和气。","Your spouse is clever and expressive — mind words that wound."],
+    比肩:["配偶像战友伙伴，平等并肩，也各有各的主见。","Your spouse is a comrade — equal footing, each with own views."],
+    劫财:["配偶个性鲜明、有竞争感，钱财上宜分清界限。","Your spouse is strong-willed and competitive — keep finances clear."]
+  },
+  // 子女（时柱）
+  child: {
+    正印:["子女贴心孝顺、重感情，晚景安稳有靠。","Children are caring and devoted — a secure old age."],
+    偏印:["子女独立、想法独特，沟通要顺着来。","Children are independent and unconventional — go with their flow."],
+    正官:["子女有责任心、有出息，多半走正途或稳当职业。","Children are responsible and accomplished — likely proper careers."],
+    七杀:["子女个性强、有闯劲，小时候管教要讲究方法。","Children are bold and strong-willed — guide them wisely."],
+    正财:["子女务实能干，晚年财禄不缺。","Children are practical — your later years are financially easy."],
+    偏财:["子女活络大方、有生意头脑，走动多。","Children are sociable with business sense — often on the move."],
+    食神:["子女温和有才华、懂享受，跟你贴心。","Children are gentle and talented — close to you."],
+    伤官:["子女聪明叛逆、才华外露，多鼓励少打压。","Children are brilliant and rebellious — encourage, don't suppress."],
+    比肩:["子女像朋友，平等交流，朋友缘也好。","Children are friend-like — equal talkers with wide social ties."],
+    劫财:["子女个性鲜明、开销大，从小理财教育要跟上。","Children are strong-willed and spend freely — teach money skills early."]
+  }
+};
+const QIN_PALACE = [
+  {key:"year", kind:"elder", palace:"年柱·祖上根基（少年运）", palaceEn:"Year Pillar · Ancestry (youth)"},
+  {key:"month", kind:"elder", palace:"月柱·父母兄弟（青年运）", palaceEn:"Month Pillar · Parents & Siblings (young adulthood)"},
+  {key:"day", kind:"spouse", palace:"日支·配偶婚姻（中年运）", palaceEn:"Day Branch · Spouse (midlife)"},
+  {key:"hour", kind:"child", palace:"时柱·子女晚年", palaceEn:"Hour Pillar · Children & later years"}
+];
+// 六亲宫位关系：返回四宫（年/月/日/时）的星、喜忌、亲缘白话与命局冲合提示
+function sixQinPalace(bazi){
+  const dg = bazi.pillars.day.g;
+  const P = bazi.pillars;
+  const sa = strengthAnalysis(bazi);
+  const xiSet = sa.strong ? ["正财","偏财","正官","七杀","食神","伤官"] : ["正印","偏印","比肩","劫财"];
+  const branches = [["年支",P.year.z],["月支",P.month.z],["日支",P.day.z],["时支",P.hour.z]];
+  const nameEn = {"年支":"year branch","月支":"month branch","日支":"day branch","时支":"hour branch"};
+  const out = [];
+  for(const def of QIN_PALACE){
+    let star, z;
+    if(def.key==="day"){ z = P.day.z; star = shishen(dg, (CANG[z]||[])[0]); }
+    else { const col = def.key==="year"?P.year:(def.key==="month"?P.month:P.hour); star = shishen(dg, col.g); z = col.z; }
+    const rel = (QIN_REL[def.kind]||{})[star] || ["", ""];
+    const isXi = xiSet.includes(star);
+    const rels = [];
+    for(const [name, b] of branches){
+      if(!b || b===z) continue;
+      if(LIUCHONG[z]===b) rels.push({zh:"与"+name+"相冲：这段亲缘易有聚散波动、意见不合，多沟通能化解。", en:"Clashes the "+nameEn[name]+" — bonds may fluctuate; talk it through."});
+      else if(LIUHE[z]===b) rels.push({zh:"与"+name+"相合：关系亲近、彼此能帮上忙。", en:"Combines the "+nameEn[name]+" — close and mutually supportive."});
+      else if((XING[z]||"").includes(b)) rels.push({zh:"与"+name+"相刑：相处易别别扭扭，少计较、多体谅。", en:"Punishes the "+nameEn[name]+" — friction-prone; be understanding."});
+    }
+    out.push({
+      palace: def.palace, palaceEn: def.palaceEn, star,
+      xi: isXi, xiji: isXi ? "喜用·是你的助力" : "忌神·需多磨合",
+      xijiEn: isXi ? "favorable — a support" : "unfavorable — needs patience",
+      plain: rel[0], plainEn: rel[1],
+      xijiHint: isXi ? "此星在命里是喜用，这门亲缘是你的助力：多走动、多依靠，关系越亲越旺你。" : "此星在命里是忌神，这门亲缘要多花心思经营，期望值放平，别计较得失，理解比索取重要。",
+      xijiHintEn: isXi ? "This star is favorable in your chart — this bond supports you; stay close and lean on it." : "This star is unfavorable here — invest patience; keep expectations realistic and value understanding over demands.",
+      rel: rels.map(r=>r.zh).join(" "), relEn: rels.map(r=>r.en).join(" ")
+    });
+  }
+  return out;
+}
+
+// ==================== 四线运势评分（事业·财运·感情·健康，简化示意）====================
+// 取法：按大运天干/地支本气十神的五类本性给四线加权，再按命局喜忌定极性（喜用为正、忌神为负）；
+// 另按性别（男命财为妻星、女命官杀为夫星）与命局冲合微调；仅作本命盘内的相对兴衰节奏参考。
+const FOURLINE_W = {
+  "正官":{career:2.5, wealth:0.6, love:0.4, health:-0.4},
+  "七杀":{career:2.0, wealth:0.4, love:0.0, health:-1.8},
+  "正财":{career:0.4, wealth:2.6, love:1.2, health:0.4},
+  "偏财":{career:0.4, wealth:2.6, love:0.9, health:0.0},
+  "正印":{career:1.2, wealth:0.4, love:0.4, health:1.4},
+  "偏印":{career:0.4, wealth:0.0, love:-0.4, health:0.4},
+  "食神":{career:1.2, wealth:1.8, love:0.4, health:1.2},
+  "伤官":{career:1.2, wealth:1.4, love:-0.9, health:0.4},
+  "比肩":{career:0.4, wealth:-1.2, love:-0.4, health:0.4},
+  "劫财":{career:0.4, wealth:-1.8, love:-0.8, health:-0.4}
+};
+const FL_CAT = [["career","事业","Career"],["wealth","财运","Wealth"],["love","感情","Love"],["health","健康","Health"]];
+function fourLineByDayun(bazi){
+  const dayG = bazi.pillars.day.g;
+  const gender = bazi.gender;
+  const sa = strengthAnalysis(bazi);
+  const xiSet = sa.strong ? ["正财","偏财","正官","七杀","食神","伤官"] : ["正印","偏印","比肩","劫财"];
+  const dz = bazi.pillars.day.z, mz = bazi.pillars.month.z;
+  const out = [];
+  for(const step of bazi.dayun.steps){
+    const g = step.gz[0], z = step.gz[1];
+    const ssG = shishen(dayG, g);
+    const ssZ = shishen(dayG, (CANG[z]||[])[0]);
+    const pol = xiSet.includes(ssG) ? 1 : -1;
+    const raw = {career:0, wealth:0, love:0, health:0};
+    for(const [c] of FL_CAT) raw[c] = 0.6*((FOURLINE_W[ssG]||{})[c]||0) + 0.4*((FOURLINE_W[ssZ]||{})[c]||0);
+    if(gender==="male" && [ssG,ssZ].some(s=>s==="正财"||s==="偏财")) raw.love += 1.2;
+    if(gender==="female" && [ssG,ssZ].some(s=>s==="正官"||s==="七杀")) raw.love += 1.2;
+    if(LIUCHONG[z]===dz) raw.love -= 1.4;
+    if(LIUCHONG[z]===mz) raw.career -= 1.2;
+    if((XING[z]||"").includes(dz)) raw.health -= 0.8;
+    const scores = {};
+    for(const [c] of FL_CAT) scores[c] = Math.max(20, Math.min(95, Math.round(50 + pol*raw[c]*7)));
+    let hi = "career", lo = "career";
+    for(const [c] of FL_CAT){ if(scores[c]>scores[hi]) hi=c; if(scores[c]<scores[lo]) lo=c; }
+    const hiN = {career:"事业",wealth:"财运",love:"感情",health:"健康"}[hi];
+    const loN = {career:"事业",wealth:"财运",love:"感情",health:"健康"}[lo];
+    const hiNE = {career:"career",wealth:"wealth",love:"love",health:"health"}[hi];
+    const loNE = {career:"career",wealth:"wealth",love:"love",health:"health"}[lo];
+    let tipZh, tipEn;
+    if(lo==="health"){ tipZh = hiN+"线最旺可发力，健康线偏弱：这十年别硬拼，注意休息与体检。"; tipEn = "Strongest on "+hiNE+" — push there; weakest on health: don't burn out, rest and get checkups."; }
+    else if(lo==="love"){ tipZh = hiN+"线最旺可发力，感情线偏弱：事业再忙也别冷落家人伴侣。"; tipEn = "Strongest on "+hiNE+" — push there; weakest on love: don't neglect family and partner."; }
+    else if(lo==="career"){ tipZh = "事业线相对平淡，"+hiN+"线更旺：这十年把重心放在"+hiN+"上更顺。"; tipEn = "Career is moderate; "+hiNE+" is stronger — put your weight there."; }
+    else { tipZh = hiN+"线最旺，是这十年的主战场；"+loN+"线相对平淡，顺其自然。"; tipEn = "Strongest on "+hiNE+" — your main arena this decade; "+loNE+" is quieter."; }
+    const range = Math.round(step.start)+"–"+Math.round(step.end);
+    out.push({gz:g+z, ssG, ssZ, scores, range, tipZh, tipEn});
+  }
+  return out;
+}
+
 // 事件→类别
 const CAT_GROUP = {
   "升职加薪":"事业","工作变动":"事业","创业契机":"事业","口舌官非":"事业","当兵入伍":"事业","转业":"事业","二次择业":"事业",
@@ -2866,6 +3005,24 @@ function renderReport(bazi, input){
     h.push(`<div style="color:#94a3b8;font-size:.72rem;margin-top:6px">${T("调候依据：《穷通宝鉴》以月令气候定寒暖燥湿，先调候后扶抑；十干各月用神表为通行版本，流派间略有出入，本卡仅作命局特点提示，不作硬性断吉凶。")}</div>`);
     h.push(`</div>`);
   }
+  // 六亲宫位关系卡（年柱祖上/月柱父母兄弟/日支配偶/时柱子女）
+  {
+    const qin = sixQinPalace(bazi);
+    if(qin && qin.length){
+      h.push(`<div class="section-title">${zh?"👪 六亲缘分（祖上·父母兄弟·配偶·子女）":"👪 Kinship (ancestry · parents & siblings · spouse · children)"}</div>`);
+      h.push(`<div class="gua-box" style="font-size:.9rem">`);
+      for(const q of qin){
+        h.push(`<div style="padding:9px 0;border-bottom:1px dashed rgba(148,163,184,.25)">`);
+        h.push(`<div class="gua-name" style="font-size:.92rem">${zh?q.palace:q.palaceEn} <span class="tag">${zh?q.star:ssName(q.star)}</span> <span class="tag" style="color:${q.xi?"#4ade80":"#fbbf24"}">${zh?q.xiji:q.xijiEn}</span></div>`);
+        h.push(`<div style="line-height:1.9;color:#334155;margin-top:4px">🧭 ${zh?q.plain:q.plainEn}</div>`);
+        if(q.rel) h.push(`<div style="line-height:1.8;color:#64748b;font-size:.83rem;margin-top:2px">↔ ${zh?q.rel:q.relEn}</div>`);
+        h.push(`<div style="line-height:1.8;color:#0f766e;font-size:.83rem;margin-top:2px">💡 ${zh?q.xijiHint:q.xijiHintEn}</div>`);
+        h.push(`</div>`);
+      }
+      h.push(`<div style="color:#94a3b8;font-size:.72rem;margin-top:6px">${zh?"六亲依据：子平宫位法（年柱祖上根基·少年，月柱父母兄弟·青年，日支配偶·中年，时柱子女·晚年），结合十神六亲取象（正印为母、偏财为父、男命正财为妻·女命正官为夫、比劫为兄弟；子女星传统取男命官杀、女命食伤，另有流派以食伤通论，据百度百科·十神词条）与喜忌、地支冲合。亲缘为传统取象提示，不作生死断定，重在与家人相处时多一份理解与用心。":"Kinship basis: the classical palace method (year = ancestry & youth; month = parents & siblings & young adulthood; day branch = spouse & midlife; hour = children & later years), combined with Ten-God kinship imagery (Direct Resource = mother, Indirect Wealth = father, Direct Wealth = wife for men / Direct Officer = husband for women, Peers = siblings, Officer/Killings = children for men, Output = children for women in the traditional reading, though some schools use Output for all; per Baidu Baike 'Ten Gods') plus favorability and branch clash/combination. Kinship is traditional imagery — no life-or-death claims; meet family with empathy and care."}</div>`);
+      h.push(`</div>`);
+    }
+  }
   // 职业方向卡（用神五行 → 行业，知识库§六）
   const cd = careerInfo(bazi);
   if(cd){
@@ -2899,6 +3056,29 @@ function renderReport(bazi, input){
     h.push(`<tr><td class="gz-cell">${gzDisplay(s.gz)}</td><td>${ssShort(ss)}</td><td>${zh?`${s.start}—${s.end}岁`:`Age ${s.start}–${s.end}`}</td><td>${zh?`${sy}—${ey}年`:sy+"–"+ey}</td><td style="font-size:.78rem;color:#94a3b8">${zh?theme.split("：")[0]:theme}</td></tr>`);
   }
   h.push(`</table></div>`);
+
+  // 四线运势评分卡（事业·财运·感情·健康；按大运）
+  {
+    const fl = fourLineByDayun(bazi);
+    if(fl && fl.length){
+      const col = s => s>=72?"#4ade80":s>=60?"#2dd4bf":s>=45?"#94a3b8":"#fbbf24";
+      h.push(`<div class="section-title">${zh?"📊 四线运势评分（事业·财运·感情·健康）":"📊 Four-Line Scoring (career · wealth · love · health)"} <span class="tag">${zh?"简化示意":"simplified"}</span></div>`);
+      h.push(`<div class="gua-box" style="font-size:.88rem">`);
+      h.push(`<div style="color:#475569;margin-bottom:8px;line-height:1.8">${zh?"把每一步大运按「事业线、财运线、感情线、健康线」四条线各打个分：50 分是基准，越高越顺，只在本命盘内相对比较，用来看一生的兴衰节奏。":"Each luck cycle is scored on four lines — career, wealth, love, health. 50 is the baseline; higher is smoother. Scores are relative within one chart, showing the rhythm of rise and fall."}</div>`);
+      h.push(`<table class="dayun-table" style="font-size:.82rem"><tr><th>${zh?"大运":"Cycle"}</th><th>${zh?"年龄段":"Age"}</th><th>💼 ${zh?"事业":"Career"}</th><th>💰 ${zh?"财运":"Wealth"}</th><th>❤️ ${zh?"感情":"Love"}</th><th>🏥 ${zh?"健康":"Health"}</th><th>${zh?"一句话":"Read"}</th></tr>`);
+      for(const r of fl){
+        h.push(`<tr><td class="gz-cell">${gzDisplay(r.gz)}</td><td>${zh?r.range+"岁":r.range}</td>`+
+          FL_CAT.map(([c]) => `<td style="font-weight:700;color:${col(r.scores[c])}">${r.scores[c]}</td>`).join("")+
+          `<td style="font-size:.76rem;color:#94a3b8">${zh?r.tipZh:r.tipEn}</td></tr>`);
+      }
+      h.push(`</table>`);
+      const best = fl.reduce((a,b)=>(b.scores.career+b.scores.wealth)>(a.scores.career+a.scores.wealth)?b:a, fl[0]);
+      const weak = fl.reduce((a,b)=>b.scores.health<a.scores.health?b:a, fl[0]);
+      h.push(`<div style="line-height:1.9;color:#0f766e;margin-top:8px">${zh?`🏆 综合来看：事业财运最旺的十年是「${best.gz}」运（约 ${best.range} 岁），是发力的黄金期；健康线最需留意的是「${weak.gz}」运（约 ${weak.range} 岁），那十年劳逸结合、定期体检。`:`🏆 Overall: your strongest career-and-wealth decade is the ${best.gz} cycle (about age ${best.range}) — your golden window; watch your health most in the ${weak.gz} cycle (about age ${weak.range}) — rest well and get checkups.`}</div>`);
+      h.push(`<div style="color:#94a3b8;font-size:.72rem;margin-top:6px">${zh?"四线依据：以每步大运天干/地支本气十神的五类本性给四线加权，再按命局喜忌定正负（喜用为正、忌神为负），另按性别（男命财为妻星、女命官杀为夫星）与命局冲合微调。评分是简化示意，用于比较本命盘内各步大运的相对节奏，非精算吉凶，仅供文化娱乐参考。":"Scoring basis: each cycle's stem and branch hidden-stem Ten God weights the four lines, signed by the chart's favorable/unfavorable elements, then nudged by gender (Wealth = wife star for men; Officer/Killings = husband star for women) and branch clash/combination. A simplified relative indicator, not precision fortune-telling — cultural reference only."}</div>`);
+      h.push(`</div>`);
+    }
+  }
 
   // ===== 您的一生大事（年份精准·贴合本人） =====
   const userEvents = parseUserEvents(input.userEvents);
