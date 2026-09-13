@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 猫咪起名器 | AgentGongju.com</title>
+<meta name="description" content="AI猫咪起名器，根据猫咪毛色、性格与你的喜好，生成好听好叫的猫名字，附名字寓意与昵称变体">
+<meta name="keywords" content="猫咪起名,猫名字,猫取名,宠物起名,萌宠名字">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+select:focus,input:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.name-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.name-card{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.25);border-radius:12px;padding:14px;cursor:pointer}
+.name-t{font-size:1.1rem;color:#a5b4fc;font-weight:700;margin-bottom:4px}
+.name-d{color:#94a3b8;font-size:.82rem;line-height:1.7}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.tip{color:#94a3b8;font-size:.8rem;margin-top:8px}
+@media(max-width:600px){.param-row,.name-grid{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🐱 AI 猫咪起名器</h1><p>好名字要叫得顺口，也得配得上主子的气质</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>🎨 毛色</label><select id="color">
+<option value="橘色">橘猫</option><option value="黑白">黑白 / 奶牛</option><option value="白色">纯白</option>
+<option value="黑色">纯黑</option><option value="狸花">狸花 / 虎斑</option><option value="三花">三花 / 玳瑁</option>
+<option value="布偶">布偶 / 长毛</option>
+</select></div>
+<div><label>😼 性格</label><select id="person">
+<option value="黏人">黏人 / 爱撒娇</option><option value="高冷">高冷 / 有脾气</option>
+<option value="调皮">调皮 / 拆家</option><option value="吃货">吃货 / 胖乎乎</option>
+<option value="胆小">胆小 / 文静</option>
+</select></div>
+</div>
+<div class="param-row">
+<div><label>🏷 起名风格</label><select id="style">
+<option value="可爱萌系">可爱萌系</option><option value="食物系">食物系</option>
+<option value="古风雅致">古风雅致</option><option value="中英结合">中英结合</option>
+</select></div>
+<div><label>📊 数量</label><select id="num"><option value="6">6 个</option><option value="10" selected>10 个</option><option value="14">14 个</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">🐾 生成猫名</button>
+<div class="tip">💡 起名小贴士：双音节最好叫（如"豆豆""团子"），避免和"不""来"等指令音同音。</div>
+</div>
+<div class="result-area" id="resultArea"><div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 猫名灵感（点击复制）</div>
+<div class="name-grid" id="out"></div>
+</div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function gen(){
+if(!Paywall.countUse('AI 猫咪起名器 | AgentGongju.com'))return;
+var color=document.getElementById('color').value,person=document.getElementById('person').value;
+var style=document.getElementById('style').value,num=parseInt(document.getElementById('num').value,10);
+var COLOR={
+橘色:['橘子','大福','布丁','小橘','南瓜','阳阳','金宝','奶黄'],
+黑白:['奶牛','花卷','芝麻','奥利奥','煤球','花花','斑斑','阴阳'],
+白色:['雪球','棉花','小白','牛奶','云朵','汤圆','白白','银耳'],
+黑色:['煤球','黑豆','夜宵','乌乌','黑影','墨墨','小黑','玄米'],
+狸花:['狸狸','斑斑','虎子','条纹','小灰','灰灰','虎妞','花花'],
+三花:['三花','彩彩','咪咪','花花','花花','锦鲤','彩霞','小彩'],
+布偶:['布丁','奶油','蓝宝','公主','糖糖','棉花糖','仙仙','毛球']
+};
+var FOOD=['布丁','汤圆','年糕','麻薯','芋圆','豆沙','芝士','包子','饺子','桃子','葡萄','芒果','蛋挞','泡芙','奶茶','拿铁'];
+var OLD=['云舒','墨言','拾光','青团','白露','知夏','忘忧','岁安','听风','月见','流苏','归晚','惊蛰','浮生'];
+var EN=['Luna','Mochi','Pixel','Coco','Milo','Nori','Tofu','Pepper','Biscuit','Zuzu','Kiwi','Boba','Pumpkin','Neko','Yuzu','Momo'];
+var PERSON={'黏人':'——取名带"粘、糖、糯、团"，念起来软软的最适合它','高冷':'——越简单越有格调的短名字，配得上它的气场','调皮':'——名字可以俏皮一点，叫起来有节奏感好喊','吃货':'——直接上食物系，喊了它就来','胆小':'——温柔的好叫的音节，建立安全感'};
+var pool;
+if(style==='可爱萌系')pool=COLOR[color];
+else if(style==='食物系')pool=FOOD;
+else if(style==='古风雅致')pool=OLD;
+else pool=EN;
+var base=pool.slice(0,num);
+var out=document.getElementById('out');out.innerHTML='';
+base.forEach((n,i)=>{
+var d=document.createElement('div');d.className='name-card';
+var nick=n+(i%3===0?'/小'+(n.slice(0,1)):(i%3===1?'/宝':''));
+d.innerHTML='<div class="name-t">'+n+'</div><div class="name-d">昵称：'+nick+'<br>'+(i<3?PERSON[person]:'好叫好记，适合'+color+'猫')+'</div>';
+d.addEventListener('click',()=>navigator.clipboard.writeText(n).then(()=>alert('✅ 已复制：'+n)));
+out.appendChild(d);
+});
+document.getElementById('resultArea').classList.add('active');
+}
+document.getElementById('genBtn').addEventListener('click',gen);
+</script>
+</body>
+</html>

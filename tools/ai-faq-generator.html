@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 客服 FAQ 生成器 | AgentGongju.com</title>
+<meta name="description" content="AI客服FAQ生成器，输入产品信息，自动生成常见问题与标准答复，适用于电商客服、SaaS帮助中心、社群答疑">
+<meta name="keywords" content="FAQ生成,客服话术,常见问题,帮助中心,客服问答">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:100px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;min-height:60px;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{color:#94a3b8;font-size:.8rem;margin-top:8px}
+.faq-item{background:rgba(255,255,255,0.02);border-left:3px solid #6366f1;border-radius:8px;padding:12px 14px;margin-bottom:10px}
+.faq-q{color:#a5b4fc;font-weight:600;margin-bottom:6px}
+.faq-a{color:#cbd5e1;font-size:.9rem;line-height:1.8}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>💬 AI 客服 FAQ 生成</h1><p>输入产品信息，自动生成常见问题与标准答复</p></div>
+
+<div class="card">
+<label>🏪 产品 / 店铺名称</label>
+<input type="text" id="prod" placeholder="例如：鲜炖燕窝 / 云记账SaaS / 手工皮具店">
+<label>📦 产品类型</label>
+<select id="type">
+<option value="电商实物">电商实物商品</option>
+<option value="虚拟服务">虚拟服务 / 软件</option>
+<option value="教育培训">教育培训课程</option>
+<option value="本地门店">本地生活门店</option>
+</select>
+<label>🔍 你希望FAQ重点覆盖哪些方面（可选）</label>
+<textarea id="focus" placeholder="例如：\n发货时效\n退换货规则\n是否支持定制\n怎么开发票\n质量怎么保证"></textarea>
+<div class="param-row">
+<div><label>📋 FAQ数量</label><select id="num"><option value="6">6 条（精简）</option><option value="10" selected>10 条（标准）</option><option value="15">15 条（全面）</option></select></div>
+<div><label>💬 回答风格</label><select id="tone"><option value="亲切专业">亲切专业</option><option value="简洁直接">简洁直接</option><option value="耐心详细">耐心详细</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">✨ 生成 FAQ</button>
+<div class="tip">💡 优质FAQ＝真实用户问法 + 打消疑虑 + 引导下一步（下单/咨询/看说明）。</div>
+</div>
+<div class="result-area" id="resultArea"><div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ FAQ 已生成</div>
+<div id="out"></div>
+<button class="copy-btn" onclick="copyResult()" style="margin-top:12px">📋 复制全部（纯文本）</button>
+</div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function copyResult(){var t=Array.from(document.querySelectorAll('.faq-item')).map(e=>e.querySelector('.faq-q').textContent+'\n'+e.querySelector('.faq-a').textContent).join('\n\n');navigator.clipboard.writeText(t).then(()=>alert('✅ 已复制！'))}
+var COMMON={
+电商实物:[['多久发货？','付款后 48 小时内发出，节假日顺延。发货后会短信通知单号，可实时查询物流。'],['支持退换货吗？','支持 7 天无理由退换，商品不影响二次销售即可。质量问题我们承担来回运费。'],['怎么保证质量？','每批货出库前都经过人工质检，如收到破损请拍照联系客服，我们优先补发。'],['可以开发票吗？','支持开具电子发票，下单备注或联系客服提供抬头即可。'],['包邮吗？','全国大部分地区包邮，偏远地区需补少量运费，下单页会明确提示。']],
+虚拟服务:[['怎么开通服务？','支付成功后系统自动开通，账号密码会发送到你的手机/邮箱，一般 5 分钟内到账。'],['支持退款吗？','数字服务一经开通不支持无理由退款。如遇功能异常，我们承诺修复或按剩余时长折算退款。'],['数据安全吗？','我们采用加密传输，绝不向第三方出售你的数据，可随时导出或删除。'],['可以多人使用吗？','标准版为单人账号，如需多人协作请选择团队版，支持成员管理。'],['有售后支持吗？','7×12 小时在线客服，工作日平均响应时间 5 分钟。']],
+教育培训:[['课程有效期多久？','自购买日起 12 个月内可无限次回看，到期前会提醒续期。'],['学不会能退款吗？','开课 7 天内且观看不超过 20% 可申请全额退款。'],['有讲师答疑吗？','有，学习群内随问随答，每晚固定时段进行直播答疑。'],['有证书吗？','完成全部课程并通过结业测试，可获得电子结业证书。'],['支持分期吗？','支持 3/6 期免息分期，具体以支付页面为准。']],
+本地门店:[['需要预约吗？','建议提前预约，高峰期可优先安排。临时到店视排队情况安排。'],['营业时间？','每日 10:00–21:00，节假日正常营业，具体以门店公告为准。'],['可以退改吗？','预约到店前 2 小时可免费改期，当天取消需收取一定违约金。'],['停车方便吗？','门店周边有合作停车场，消费满额可免费停车 2 小时。'],['有会员优惠吗？','有，充值会员享专属折扣与生日礼，详情可到店咨询。']]};
+function gen(){
+if(!Paywall.countUse('AI 客服 FAQ 生成器 | AgentGongju.com'))return;
+var prod=document.getElementById('prod').value.trim()||'本店';
+var type=document.getElementById('type').value,tone=document.getElementById('tone').value;
+var num=parseInt(document.getElementById('num').value,10);
+var focus=document.getElementById('focus').value.split('\n').map(s=>s.trim()).filter(s=>s);
+var base=COMMON[type].slice();
+var extra=[];
+focus.forEach(f=>{
+extra.push(['关于「'+f+'」怎么规定的？','关于'+f+'，'+prod+'有明确说明：请以商品页/服务条款为准，如仍有疑问可直接咨询在线客服，我们会第一时间为你解答并给出解决方案。']);
+});
+var all=base.concat(extra).slice(0,num);
+var prefix={亲切专业:'感谢你的关注～',简洁直接:'',耐心详细:'很高兴为你解答：'}[tone];
+var html=all.map(it=>'<div class="faq-item"><div class="faq-q">❓ '+it[0]+'</div><div class="faq-a">'+(prefix?prefix:'')+it[1]+'</div></div>').join('');
+document.getElementById('out').innerHTML=html;
+document.getElementById('resultArea').classList.add('active');
+}
+document.getElementById('genBtn').addEventListener('click',gen);
+</script>
+</body>
+</html>

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 产品命名器 | AgentGongju.com</title>
+<meta name="description" content="AI产品命名器，输入产品定位与关键词，批量生成有辨识度的产品名、项目名与英文名，附命名思路解析">
+<meta name="keywords" content="产品命名,起名,项目命名,英文名,品牌取名">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.name-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.name-card{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.25);border-radius:12px;padding:16px}
+.name-t{font-size:1.15rem;color:#a5b4fc;font-weight:700;margin-bottom:6px}
+.name-e{color:#64748b;font-size:.8rem;margin-bottom:8px}
+.name-d{color:#cbd5e1;font-size:.85rem;line-height:1.7}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.tip{color:#94a3b8;font-size:.8rem;margin-top:8px}
+@media(max-width:600px){.param-row,.name-grid{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>💡 AI 产品命名器</h1><p>给产品、项目、功能起一个记得住的名字</p></div>
+
+<div class="card">
+<label>📦 产品是什么</label>
+<textarea id="what" placeholder="例如：\n一款帮小团队自动整理会议纪要的AI工具，主打快和准"></textarea>
+<label>🔑 想要的气质关键词（逗号分隔）</label>
+<input type="text" id="kw" placeholder="例如：轻快,智能,可靠,年轻">
+<div class="param-row">
+<div><label>🏷 命名风格</label><select id="style"><option value="中文有意境">中文有意境</option><option value="中文直白好记">中文直白好记</option><option value="中英双语">中英双语</option><option value="科技感">科技感 / 极简</option></select></div>
+<div><label>📊 生成数量</label><select id="num"><option value="6">6 个</option><option value="10" selected>10 个</option><option value="16">16 个</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">✨ 生成名字</button>
+<div class="tip">💡 好名字三个标准：好念、好记、易传播。别追求生僻字，用户喊不出来就传播不了。</div>
+</div>
+<div class="result-area" id="resultArea"><div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 命名灵感已生成（点击卡片复制）</div>
+<div class="name-grid" id="out"></div>
+</div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function gen(){
+if(!Paywall.countUse('AI 产品命名器 | AgentGongju.com'))return;
+var what=document.getElementById('what').value.trim();
+if(!what){alert('请描述一下你的产品');return}
+var kws=document.getElementById('kw').value.split(/[,，\s]+/).filter(s=>s);
+var style=document.getElementById('style').value;
+var num=parseInt(document.getElementById('num').value,10);
+var core=what.replace(/\n+/g,' ');
+var P={
+中文有意境:[['拾光','ShiGuang','把零散的瞬间拾起来——适合记录、整理类产品'],['云枢','YunShu','云端的中枢，稳重又有控制感'],['观止','GuanZhi','出自"叹为观止"，寓意做到极致'],['无界','WuJie','打破边界，适合工具型、平台型产品'],['明澈','MingChe','清晰透亮，适合效率、信息类工具'],['知微','ZhiWei','见微知著，适合AI分析、洞察类'],['川流','ChuanLiu','信息如川流，适合数据、协作类'],['砚台','YanTai','温润有力，适合写作、创意类']],
+中文直白好记:[['快整理','KuaiZhengLi','一眼知道干嘛的，传播成本最低'],['小助手','XiaoZhuShou','亲切无距离，适合面向大众的工具'],['搞定它','GaoDingTa','口号式命名，行动感强'],['开会记','KaiHuiJi','场景直给，目标用户秒懂'],['秒懂','MiaoDong','核心价值前置，适合学习、解读类'],['省心盒','ShengXinHe','突出省心，适合服务、托管类'],['轻办','QingBan','轻量+办公，适合效率工具'],['好用集','HaoYongJi','朴素但有效，降低理解门槛']],
+中英双语:[['速记 Flow','Flow','Flow代表顺畅的信息流动'],['明诀 Clearkey','Clearkey','Clear + Key，清晰的关键'],['轻舟 Lightboat','Lightboat','轻快前行，适合效率工具'],['知了 Zeno','Zeno','音近"知了"，简洁洋气'],['维思 Weave','Weave','编织信息，适合协作类'],['原力 Primo','Primo','第一、源头，有起点感'],['星火 Sparks','Sparks','点燃灵感，适合创意类'],['简界 Simpleo','Simpleo','Simple的变体，极简国际范']],
+科技感:[['Nexa','Nexa','Next的变体，未来感强'],['Lumo','Lumo','Light + Lumen，光感'],['Kiro','Kiro','短促有力，好记'],['Volta','Volta','来自电压单位，能量感'],['Zeno','Zeno','哲学感+科技感兼具'],['Orbi','Orbi','Orbit轨道，环绕协作'],['Quill','Quill','羽毛笔，写作类工具'],['Axio','Axio','Axis轴线，结构感强']]
+};
+var pool=P[style].slice();
+var k=h=>kws.length?('（贴合"'+kws[0]+'"定位）'):'';
+var chosen=pool.slice(0,num);
+var out=document.getElementById('out');out.innerHTML='';
+chosen.forEach((it,i)=>{
+var d=document.createElement('div');d.className='name-card';d.style.cursor='pointer';
+d.innerHTML='<div class="name-t">'+(i+1)+'. '+it[0]+'</div><div class="name-e">'+it[1]+'</div><div class="name-d">'+it[2]+(i<3?k():'')+'</div>';
+d.addEventListener('click',()=>navigator.clipboard.writeText(it[0]).then(()=>alert('✅ 已复制：'+it[0])));
+out.appendChild(d);
+});
+document.getElementById('resultArea').classList.add('active');
+}
+document.getElementById('genBtn').addEventListener('click',gen);
+</script>
+</body>
+</html>

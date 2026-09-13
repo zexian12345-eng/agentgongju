@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 邮件主题行优化器 | AgentGongju.com</title>
+<meta name="description" content="AI邮件主题行优化器，输入邮件内容，一键生成高打开率的主题行，适用于商务邮件、开发信、通知邮件的标题优化">
+<meta name="keywords" content="邮件主题,标题优化,开发信,商务邮件,打开率">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:110px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.subj{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.25);border-radius:10px;padding:14px 16px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.subj span{color:#e2e8f0}
+.tag{font-size:.7rem;color:#a5b4fc;background:rgba(99,102,241,0.15);border-radius:20px;padding:2px 10px;white-space:nowrap}
+.tip{color:#94a3b8;font-size:.8rem;margin-top:8px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📧 AI 邮件主题行优化</h1><p>好主题决定开信率，一句话让人想点开</p></div>
+
+<div class="card">
+<label>✉️ 邮件正文 / 核心内容</label>
+<textarea id="body" placeholder="粘贴你的邮件内容或核心想表达的事，例如：\n我们是做企业级AI客服的，想约你下周做个15分钟的产品演示。"></textarea>
+<label>🎯 邮件类型</label>
+<select id="type">
+<option value="开发信">开发信 / 陌生拜访</option>
+<option value="商务沟通">商务合作沟通</option>
+<option value="求职应聘">求职应聘邮件</option>
+<option value="内部通知">内部通知 / 团队公告</option>
+<option value="活动邀约">活动邀请 / 会议邀约</option>
+<option value="跟进催办">跟进催办 / 二次触达</option>
+</select>
+<div class="param-row">
+<div><label>📏 长度偏好</label><select id="len"><option value="short">短（≤15字）</option><option value="mid" selected>中（15-30字）</option><option value="long">长（含说明）</option></select></div>
+<div><label>🎨 风格</label><select id="tone"><option value="直给价值">直给价值</option><option value="好奇悬念">好奇悬念</option><option value="简洁正式">简洁正式</option><option value="轻松友好">轻松友好</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">✨ 生成 8 个主题行</button>
+<div class="tip">💡 打开率高的主题行：具体、有数字、说清对收件人的好处，避免“重要”“通知”这类空词。</div>
+</div>
+<div class="result-area" id="resultArea"><div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 已生成，点击即可复制</div>
+<div id="out"></div>
+</div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function fill(el,t){el.addEventListener('click',()=>navigator.clipboard.writeText(t).then(()=>alert('✅ 已复制：'+t)))}
+function gen(){
+if(!Paywall.countUse('AI 邮件主题行优化器 | AgentGongju.com'))return;
+var body=document.getElementById('body').value.trim();
+if(!body){alert('请输入邮件正文或核心内容');return}
+var type=document.getElementById('type').value,tone=document.getElementById('tone').value,len=document.getElementById('len').value;
+var rawK=body.replace(/\s+/g,'').replace(/^(你好|您好|我们是|我们|我是|我想|想|有个|关于|打扰|冒昧|其实|这次)/,'').replace(/[，。,.；;：:、？！!?"']/g,'');
+var kw=(rawK.length>=6?rawK:body.replace(/\s+/g,'').replace(/[，。,.；;：:、？！!?"']/g,'')).slice(0,14);
+var num=(body.match(/\d+/g)||[]).find(n=>n.length>0)||'';
+var list=[];
+var tail=type==='跟进催办'?'（第2封）':'';
+if(len==='short'){
+list=[[type==='开发信'?'AI客服｜省50%人力':'关于'+kw,'直给价值'],['15分钟，帮你搞定'+kw,'好奇悬念'],[kw+'，我们有解','简洁正式'],['冒昧打扰，一句话说清','轻松友好'],['你还手动'+kw+'吗？','好奇悬念'],[kw.slice(0,8)+'·方案请查收','直给价值'],['[提议]'+kw,'简洁正式'],['若打扰，请忽略此封','轻松友好']];
+}else if(len==='long'){
+list=[['【建议】关于'+kw+'，我们有个15分钟就能看懂的方案','直给价值'],['帮你把'+kw+'从3小时缩短到15分钟｜附案例','直给价值'],['一个可能帮你省'+kw+'成本的做法（不推销）','好奇悬念'],['关于'+kw+'的沟通：想约个时间对齐一下','简洁正式'],['看到你在做'+kw+'，我想到一个可能有用的点','轻松友好'],['上周聊到的'+kw+'，整理成方案发你','直给价值'],['[x月x日]'+kw+'沟通邀约'+tail,'简洁正式'],['不好意思打扰，关于'+kw+'最后问一句','轻松友好']];
+}else{
+list=[['关于'+kw+'，想约 15 分钟','直给价值'],[type==='开发信'?'让'+kw+'省一半人力的方法':'想和你聊聊'+kw,'好奇悬念'],[kw+'方案 · 可直接落地','简洁正式'],['你好，关于'+kw+'有个小建议','轻松友好'],['把'+kw+'做得更省事的3个思路','直给价值'],[kw+'：我们帮同行做过的','好奇悬念'],[type==='求职应聘'?'应聘'+kw+'｜附作品集':'关于'+kw+'的合作提议','简洁正式'],['打扰了，'+kw+'这事想请教你','轻松友好']];
+}
+if(tone==='直给价值')list.sort(()=>0.5-Math.random());
+var out=document.getElementById('out');out.innerHTML='';
+list.forEach(item=>{var d=document.createElement('div');d.className='subj';d.innerHTML='<span>'+item[0]+'</span><span class="tag">'+item[1]+'</span>';fill(d,'[主题] '+item[0]);out.appendChild(d);});
+document.getElementById('resultArea').classList.add('active');
+}
+document.getElementById('genBtn').addEventListener('click',gen);
+</script>
+</body>
+</html>

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 道歉信生成器 | AgentGongju.com</title>
+<meta name="description" content="AI道歉信生成器，输入对象与事情经过，生成真诚得体的道歉信，适用于感情、职场、亲友、客户等场景">
+<meta name="keywords" content="道歉信,道歉话术,如何道歉,挽回,道歉文案">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:110px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;min-height:60px;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{color:#94a3b8;font-size:.8rem;margin-top:8px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🙏 AI 道歉信生成</h1><p>真诚不卑微，把该说的话说到心坎里</p></div>
+
+<div class="card">
+<label>👤 道歉对象</label>
+<select id="target">
+<option value="恋人">恋人 / 伴侣</option>
+<option value="父母">父母 / 家人</option>
+<option value="朋友">朋友 / 闺蜜</option>
+<option value="同事">同事 / 领导</option>
+<option value="客户">客户 / 合作伙伴</option>
+</select>
+<label>📝 事情经过（发生了什么，为什么错了）</label>
+<textarea id="what" placeholder="例如：\n昨天答应陪她看电影，结果临时加班放了鸽子，还很敷衍地回了消息。她生气是应该的。"></textarea>
+<label>💗 你希望达到的效果（可选）</label>
+<input type="text" id="goal" placeholder="例如：希望她能原谅我，重新给我一次机会">
+<div class="param-row">
+<div><label>💌 语气</label><select id="tone"><option value="真诚走心">真诚走心</option><option value="理性道歉">理性道歉</option><option value="温柔撒娇">温柔撒娇</option><option value="正式郑重">正式郑重</option></select></div>
+<div><label>📄 形式</label><select id="form"><option value="短消息">短消息版</option><option value="信">书信版</option><option value="口头">口头表达版</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">✨ 生成道歉</button>
+<div class="tip">💡 有效道歉公式：承认错误（不找借口）→ 理解对方感受 → 说明补救 → 表达在乎。别用"但是"。</div>
+</div>
+<div class="result-area" id="resultArea"><div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 道歉内容已生成</div>
+<div class="result-box" id="out"></div>
+<div style="display:flex;gap:10px"><button class="copy-btn" onclick="copyResult()">📋 复制</button><button class="copy-btn" onclick="gen()">🔄 换个说法</button></div>
+</div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function copyResult(){navigator.clipboard.writeText(document.getElementById('out').textContent).then(()=>alert('✅ 已复制！'))}
+function gen(){
+if(!Paywall.countUse('AI 道歉信生成器 | AgentGongju.com'))return;
+var target=document.getElementById('target').value;
+var what=document.getElementById('what').value.trim();
+if(!what){alert('请输入事情经过');return}
+var goal=document.getElementById('goal').value.trim();
+var tone=document.getElementById('tone').value,form=document.getElementById('form').value;
+var call={恋人:'亲爱的',父母:'爸妈',朋友:'老友',同事:'你好',客户:'您好'}[target];
+var core=what.replace(/\n+/g,' ').trim();
+var feel={恋人:'我知道你这几天心里肯定特别不好受，一想到是我让你失望的，我也很难受。',父母:'我知道你们嘴上不说，心里肯定又担心又生气，是我不懂事。',朋友:'我知道这事让你为难了，换我我也会觉得被怠慢。',同事:'我明白这事给你添了麻烦，也影响了你的节奏，确实是我不对。',客户:'我完全理解您的不满，这确实是我们工作上的疏忽，给您造成了困扰。'}[target];
+var head='';
+if(form==='信'){head=call+'：';}
+var body='关于'+core.slice(0,40).replace(/[，。,.；;]/g,' ')+'这件事，我想认真跟你道个歉。\n\n'+feel+'\n\n这次确实是我做得不好，我不想找任何借口，错了就是错了。'+(goal?('\n\n'+goal+'。'):'');
+var fix={恋人:'接下来我会提前规划好时间，如果真的要加班，一定第一时间跟你说清楚，而不是让你干等。',父母:'以后遇事我会多跟你们商量，不让你们再为我操心。',朋友:'欠你的这次我一定补上，你说时间地点我来安排。',同事:'后续我会把相关资料补齐，尽量把影响降到最低。',客户:'我们会立刻复盘流程并给出改进措施，确保不再发生。'}[target];
+var tail={真诚走心:'你对我很重要，比任何事都重要。给我一个弥补的机会好吗？',理性道歉:'希望我们能继续好好相处，有问题我随时愿意沟通。',温柔撒娇:'别生我气了好不好，气坏了自己我会心疼的～',正式郑重:'再次向您致以诚挚的歉意，恳请您谅解。'}[tone];
+var out;
+if(form==='口头'){out='【口头表达参考】\n'+head+'\n\n"'+feel+'"\n\n"这次我确实做错了，不找借口。"\n\n"'+fix+'"\n\n"'+tail+'"\n\n💡 说的时候语气放软，看着对方眼睛，说完停一下，把话留给对方。';}
+else if(form==='信'){out=head+'\n\n　　'+body.replace(/\n\n/g,'\n\n　　')+'\n\n　　'+fix+'\n\n　　'+tail+'\n\n'+'（署名）';}
+else{out=body+'\n\n'+fix+'\n\n'+tail;}
+document.getElementById('resultArea').classList.add('active');
+document.getElementById('out').textContent=out;
+}
+document.getElementById('genBtn').addEventListener('click',gen);
+</script>
+</body>
+</html>

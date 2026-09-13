@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 美甲款式推荐生成器 | AgentGongju.com</title>
+<meta name="description" content="AI美甲款式推荐生成器，根据手型、肤色、场合与预算推荐合适的美甲款式，附配色与保养建议">
+<meta name="keywords" content="美甲,美甲款式,美甲推荐,配色,显白美甲">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+select:focus,input:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.rec{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.25);border-radius:12px;padding:16px;margin-bottom:12px}
+.rec-h{font-size:1.1rem;color:#a5b4fc;font-weight:700;margin-bottom:6px}
+.rec-b{color:#cbd5e1;font-size:.88rem;line-height:1.9}
+.swatch{display:inline-block;width:16px;height:16px;border-radius:50%;margin-right:4px;vertical-align:-3px;border:1px solid rgba(255,255,255,.2)}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.tip{color:#94a3b8;font-size:.8rem;margin-top:8px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>💅 AI 美甲款式推荐</h1><p>找到最衬你肤色和手型的那一款</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>🤲 手型</label><select id="hand"><option value="细长手指">手指细长</option><option value="短圆手指" selected>手指偏短</option><option value="骨节明显">骨节明显</option><option value="肉肉手">肉肉手</option></select></div>
+<div><label>🌞 肤色基调</label><select id="skin"><option value="冷白皮">冷白皮</option><option value="黄白皮" selected>黄白皮（偏暖）</option><option value="小麦色">小麦色 / 偏深</option></select></div>
+</div>
+<div class="param-row">
+<div><label>🎯 使用场合</label><select id="scene"><option value="日常通勤">日常通勤</option><option value="约会聚会">约会 / 聚会</option><option value="婚礼伴娘">婚礼 / 正式场合</option><option value="拍照打卡">拍照 / 度假</option></select></div>
+<div><label>💰 预算</label><select id="budget"><option value="100元以内">100 元以内</option><option value="100-200元" selected>100-200 元</option><option value="200元以上">200 元以上</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">✨ 推荐款式</button>
+<div class="tip">💡 显白秘诀：黄皮避开荧光橘、正黄；选带灰调的豆沙、酒红、雾霾蓝最稳。</div>
+</div>
+<div class="result-area" id="resultArea"><div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 推荐方案</div>
+<div id="out"></div>
+<button class="copy-btn" onclick="copyResult()" style="margin-top:12px">📋 复制给美甲师</button>
+</div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function copyResult(){navigator.clipboard.writeText(document.getElementById('out').innerText).then(()=>alert('✅ 已复制！'))}
+function gen(){
+if(!Paywall.countUse('AI 美甲款式推荐生成器 | AgentGongju.com'))return;
+var hand=document.getElementById('hand').value,skin=document.getElementById('skin').value,scene=document.getElementById('scene').value,budget=document.getElementById('budget').value;
+var colorBySkin={冷白皮:'几乎所有颜色都友好，推荐奶白、正红、蓝调紫更显气质。',黄白皮:'选带灰调的红棕、豆沙、酒红、雾霾蓝，避开荧光橘和正黄。',小麦色:'深色系更高级：酒红、墨绿、深棕、黑金；亮白和亮色更吸睛。'}[skin];
+var shapeByHand={细长手指:'手型本身优越，可尝试尖圆、杏仁形加长款，做渐变和雕花都好看。',短圆手指:'适合方形或小圆头，甲面留短一些，用纵向线条和单色拉长视觉比例。',骨节明显:'选圆润的椭圆甲形，避免尖锐；用柔和色系柔化手部线条。',肉肉手:'适合偏短的方形甲，深色系有收缩效果，修饰感强。'}[hand];
+var styles={
+日常通勤:[['裸色法式','裸粉/奶白打底+白色微笑线，低调精致，配西装和衬衫都好看'],['豆沙纯色','哑光豆沙色，职场安全款，显手白又不出挑'],['雾霾蓝猫眼','微闪猫眼，光线下若隐若现，通勤也能有小心机']],
+约会聚会:[['车厘子红渐变','从甲根到甲尖渐变，气场全开，配小黑裙绝配'],['粉调猫眼+碎钻','闪闪的但不廉价，夜晚灯光下超好看'],['法式+亮片点缀','经典法式加几颗亮片，甜而不腻']],
+婚礼伴娘:[['雾面粉+珍珠','和婚纱、伴娘裙百搭，温柔不抢新娘风头'],['奶白法式+金边','优雅正式，拍照特别干净'],['裸粉渐变+微雕','细节精致，近看惊艳']],
+拍照打卡:[['黑白棋盘格','ins风经典，拍照辨识度高'],['奶油黄+笑脸手绘','活泼可爱，出片率高'],['镜面金属色','反光质感，手上怎么拍都亮']]
+};
+var priceTip=budget==='100元以内'?'纯色或简单法式，选择基础款式性价比最高。':budget==='100-200元'?'可以做猫眼、渐变或简单的款式叠加，性价比区间。':'可以尝试延长甲、手绘雕花、多种工艺组合，效果最惊艳。';
+var list=styles[scene].slice();
+var out=document.getElementById('out');out.innerHTML='';
+out.innerHTML='<div style="color:#94a3b8;font-size:.85rem;margin-bottom:14px">🤲 '+hand+' ｜ 🌞 '+skin+' ｜ 🎯 '+scene+' ｜ 💰 '+budget+'</div>';
+list.forEach((it,i)=>{
+var d=document.createElement('div');d.className='rec';
+d.innerHTML='<div class="rec-h">'+(i+1)+'. '+it[0]+' '+(i===0?'<span style="font-size:.7rem;color:#22c55e;background:rgba(34,197,94,.12);border-radius:20px;padding:2px 10px">首选</span>':'')+'</div><div class="rec-b">'+it[1]+'</div>';
+out.appendChild(d);
+});
+out.insertAdjacentHTML('beforeend','<div class="rec" style="border-color:rgba(34,197,94,.3)"><div class="rec-h">🎨 配色建议</div><div class="rec-b">'+colorBySkin+'</div></div>');
+out.insertAdjacentHTML('beforeend','<div class="rec" style="border-color:rgba(34,197,94,.3)"><div class="rec-h">🤲 手型适配</div><div class="rec-b">'+shapeByHand+'</div></div>');
+out.insertAdjacentHTML('beforeend','<div class="rec" style="border-color:rgba(34,197,94,.3)"><div class="rec-h">💰 预算选择</div><div class="rec-b">'+priceTip+'</div></div>');
+out.insertAdjacentHTML('beforeend','<div class="rec"><div class="rec-h">💡 和美甲师怎么说</div><div class="rec-b">"我想要'+(list[0][0])+'，甲型按我的'+(hand.indexOf('短')>-1?'方形做短一点':'自然形状')+'，颜色按我的肤色帮我调，不要太夸张。"<br>👉 做之前确认：是否含卸甲、是否可补甲、材料是什么品牌。<br>👉 保养：每 2 周补一次，做家务戴手套，用护甲油防干裂。</div></div>');
+document.getElementById('resultArea').classList.add('active');
+}
+document.getElementById('genBtn').addEventListener('click',gen);
+</script>
+</body>
+</html>

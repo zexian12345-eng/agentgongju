@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 播客标题与简介生成器 | AgentGongju.com</title>
+<meta name="description" content="AI播客标题与简介生成器，输入节目主题，一键生成吸引点击的播客标题、节目简介与单集文案">
+<meta name="keywords" content="播客标题,播客简介,节目文案,小宇宙,播客运营">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:100px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;min-height:60px;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.tip{color:#94a3b8;font-size:.8rem;margin-top:8px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🎙 AI 播客标题 & 简介</h1><p>好标题让人点进来，好简介让人订阅</p></div>
+
+<div class="card">
+<label>📻 节目 / 单集主题</label>
+<textarea id="topic" placeholder="例如：\n聊聊为什么年轻人越来越不想上班，从职场倦怠到副业探索"></textarea>
+<label>🎧 播客定位</label>
+<select id="cat">
+<option value="职场成长">职场成长</option>
+<option value="情感生活">情感生活</option>
+<option value="商业财经">商业财经</option>
+<option value="科技数码">科技数码</option>
+<option value="文化读书">文化读书</option>
+<option value="健康生活">健康生活</option>
+</select>
+<div class="param-row">
+<div><label>📝 生成内容</label><select id="kind"><option value="both" selected>标题 + 简介</option><option value="title">仅标题</option><option value="desc">仅简介</option></select></div>
+<div><label>🎯 风格</label><select id="style"><option value="钩子吸睛">钩子吸睛</option><option value="理性深度">理性深度</option><option value="轻松聊天">轻松聊天</option><option value="文艺气质">文艺气质</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">✨ 生成</button>
+<div class="tip">💡 播客标题技巧：用具体场景+情绪痛点，避免空洞的"聊聊XX"。简介要讲清"听众能得到什么"。</div>
+</div>
+<div class="result-area" id="resultArea"><div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 已生成</div>
+<div class="result-box" id="out"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制全部</button>
+</div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function copyResult(){navigator.clipboard.writeText(document.getElementById('out').textContent).then(()=>alert('✅ 已复制！'))}
+function gen(){
+if(!Paywall.countUse('AI 播客标题与简介生成器 | AgentGongju.com'))return;
+var topic=document.getElementById('topic').value.trim();
+if(!topic){alert('请输入节目或单集主题');return}
+var cat=document.getElementById('cat').value,kind=document.getElementById('kind').value,style=document.getElementById('style').value;
+var core=topic.replace(/\n+/g,' ').trim();
+var cleaned=core.replace(/^(聊聊|说说|谈谈|讲讲|分享|吐槽|关于|为什么|如何|怎么|今天|这次|我们来|我想)/,'').replace(/[，。,.；;：:、？！!?"']/g,'').trim();
+var kw=(cleaned.length>=6?cleaned:core.replace(/[，。,.；;：:、？！!?"']/g,'')).slice(0,16);
+var titles={
+钩子吸睛:['为什么'+kw.slice(0,10)+'？我有不同看法',''+kw+'：别再被忽悠了','听完这期，我对'+kw.slice(0,8)+'彻底改观','关于'+kw.slice(0,10)+'，说点掏心窝的',''+kw.slice(0,8)+'的真相，比你想的更复杂'].map(x=>x.replace('为什么为什么','为什么')),
+理性深度:['深度拆解：'+kw,'从底层逻辑看'+kw.slice(0,12),''+kw+'：一次系统性的梳理','关于'+kw.slice(0,12)+'，我们聊了3小时',''+kw.slice(0,10)+'的本质与误区'],
+轻松聊天:['随便聊聊：'+kw,'这期我们又把话题聊飞了｜'+kw.slice(0,10),'边喝咖啡边聊'+kw.slice(0,10),'两个外行聊'+kw.slice(0,10),'不装专业，就聊'+kw.slice(0,10)],
+文艺气质:['当我们在谈论'+kw.slice(0,10)+'时',''+kw.slice(0,8)+'，以及那些说不出口的事','在'+kw.slice(0,8)+'里寻找答案',''+kw.slice(0,8)+'：一种温柔的抵抗','关于'+kw.slice(0,8)+'的漫长告白']
+};
+var desc=['【本期内容】\n这期节目我们围绕「'+core.slice(0,40)+'」展开，从真实经历出发，聊了聊背后的原因、常见的误区和可以落地的做法。\n\n【时间线】\n02:15 为什么这个话题值得我们聊\n08:40 一个被忽略的关键点\n18:20 常见的三个误区\n29:05 普通人可以怎么做\n42:00 本期小结\n\n【适合谁听】\n对'+cat+'感兴趣、想要一点不同视角的你。','【这期聊了什么】\n'+core.slice(0,50)+'。我们不谈空洞的大道理，只说具体的人和事。\n\n【你会听到】\n• 一个真实的故事和它的启示\n• 大多数人都搞错的地方\n• 3 个今天就能用上的方法\n\n【关于本节目】\n一档关于'+cat+'的播客，每周更新，陪你把日子过得明白一点。','【本期简介】\n'+core.slice(0,45)+'。这次我们请来了有实战经验的朋友，聊透了那些没人愿意直说的部分。\n\n【高能片段】\n"其实问题从来不在你以为的地方。"\n\n【听友互动】\n听完欢迎在评论区说说你的看法，我们会挑留言在下一期回应。'];
+var t=titles[style];
+if(kind==='title'){
+document.getElementById('out').textContent='【标题候选 5 个】\n\n'+t.map((x,i)=>(i+1)+'. '+x).join('\n');
+}else if(kind==='desc'){
+document.getElementById('out').textContent='【节目简介】\n\n'+desc[Math.floor(Math.random()*desc.length)];
+}else{
+document.getElementById('out').textContent='【标题候选】\n'+t.map((x,i)=>(i+1)+'. '+x).join('\n')+'\n\n【推荐标题】\n★ '+t[0]+'\n\n【节目简介】\n\n'+desc[Math.floor(Math.random()*desc.length)];
+}
+document.getElementById('resultArea').classList.add('active');
+}
+document.getElementById('genBtn').addEventListener('click',gen);
+</script>
+</body>
+</html>

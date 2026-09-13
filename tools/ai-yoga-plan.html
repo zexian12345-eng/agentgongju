@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 居家瑜伽计划生成器 | AgentGongju.com</title>
+<meta name="description" content="AI居家瑜伽计划生成器，根据身体状态、时长与目标，生成零基础友好的居家瑜伽序列，含体式安排与呼吸提示">
+<meta name="keywords" content="瑜伽,居家瑜伽,瑜伽计划,零基础瑜伽,拉伸放松">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+select:focus,input:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.pose{background:rgba(255,255,255,0.03);border-left:3px solid #6366f1;border-radius:8px;padding:12px 14px;margin-bottom:10px}
+.pose-h{color:#a5b4fc;font-weight:600;margin-bottom:4px}
+.pose-b{color:#cbd5e1;font-size:.88rem;line-height:1.8}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.tip{color:#94a3b8;font-size:.8rem;margin-top:8px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🧘 AI 居家瑜伽计划</h1><p>一张垫子，10 分钟，把身体松开</p></div>
+
+<div class="card">
+<label>🎯 主要目标</label>
+<select id="goal">
+<option value="放松减压">放松减压 / 助眠</option>
+<option value="久坐救腰">缓解久坐腰酸背痛</option>
+<option value="塑形核心">塑形 / 练核心</option>
+<option value="晨间唤醒">晨间唤醒提神</option>
+<option value="肩颈放松">肩颈僵硬放松</option>
+</select>
+<div class="param-row">
+<div><label>⏱ 可用时长</label><select id="dur"><option value="10">10 分钟</option><option value="15" selected>15 分钟</option><option value="25">25 分钟</option><option value="40">40 分钟</option></select></div>
+<div><label>💪 基础水平</label><select id="level"><option value="零基础">零基础</option><option value="有点基础">有点基础</option><option value="常练习">经常练习</option></select></div>
+</div>
+<label>🚫 需要避开的部位 / 状况（可选）</label>
+<input type="text" id="avoid" placeholder="例如：腰椎间盘突出 / 膝盖不好 / 孕期">
+<button class="btn-gen" id="genBtn">✨ 生成瑜伽序列</button>
+<div class="tip">💡 练习原则：不追求幅度，呼吸顺畅为准。任何动作有刺痛感请立即停止。</div>
+</div>
+<div class="result-area" id="resultArea"><div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 序列已生成</div>
+<div id="out"></div>
+<button class="copy-btn" onclick="copyResult()" style="margin-top:14px">📋 复制序列</button>
+</div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function copyResult(){navigator.clipboard.writeText(document.getElementById('out').innerText).then(()=>alert('✅ 已复制！'))}
+var SEQ={
+放松减压:[['婴儿式','3分钟｜跪坐，额头贴地，双臂前伸，深呼吸放松腰背'],['猫牛式','2分钟｜四足跪姿，配合呼吸弓背塌腰，活动脊柱'],['仰卧束角式','3分钟｜躺下，脚掌相对，膝盖自然下沉，双手放腹部'],['靠墙抬腿','5分钟｜双腿靠墙抬高，缓解下肢疲劳'],['尸躺式','3分钟｜完全躺平，闭眼，扫描身体逐部位放松']],
+久坐救腰:[['猫牛式','2分钟｜温热脊柱，唤醒背部'],['下犬式','2分钟｜拉伸整条后侧链，脚跟不必着地'],['低弓步','3分钟（左右各1.5分钟）｜打开髋屈肌，缓解久坐紧绷'],['桥式','3分钟｜抬臀，激活臀肌与下背'],['仰卧扭转','3分钟（左右各1.5分钟）｜放松腰椎'],['婴儿式','2分钟｜收尾放松']],
+塑形核心:[['平板支撑','3组×30秒｜腹部收紧，不要塌腰'],['船式','3组×20秒｜坐姿抬腿，核心发力'],['侧平板','2组×20秒/侧｜练侧腹'],['桥式','3组×15次｜夹紧臀部落起'],['仰卧卷腹','3组×15次｜缓慢控制，别用脖子发力'],['婴儿式','2分钟｜放松']],
+晨间唤醒:[['山式站立','1分钟｜站直，感受脚掌扎根'],['拜日式（简化）','5分钟｜手臂上举+前屈+平板循环'],['战士二式','3分钟（左右各1.5分钟）｜打开胸腔和髋部'],['三角式','3分钟｜侧向拉伸，唤醒身体'],['扭转三角','2分钟｜温和扭转脊柱'],['站立前屈','1分钟｜放松收尾']],
+肩颈放松:[['颈部绕环','2分钟｜缓慢画圈，不要甩头'],['鹰式手臂','2分钟｜手臂交叉，拉伸肩胛'],['牛面式手臂','3分钟（左右各1.5分钟）｜上下手背后相扣'],['穿针式','3分钟（左右各1.5分钟）｜四足跪姿，肩部穿过身体下方'],['猫牛式','2分钟｜配合呼吸活动肩颈'],['摊尸式','3分钟｜肩颈完全放松']]
+};
+function gen(){
+if(!Paywall.countUse('AI 居家瑜伽计划生成器 | AgentGongju.com'))return;
+var goal=document.getElementById('goal').value,dur=parseInt(document.getElementById('dur').value,10),level=document.getElementById('level').value;
+var avoid=document.getElementById('avoid').value.trim();
+var seq=SEQ[goal].slice();
+var out=document.getElementById('out');out.innerHTML='';
+var total='';
+out.innerHTML='<div style="color:#94a3b8;font-size:.85rem;margin-bottom:12px">🎯 目标：'+goal+' ｜ 时长：约 '+dur+' 分钟 ｜ 水平：'+level+'</div>';
+seq.forEach((s,i)=>{
+var d=document.createElement('div');d.className='pose';
+var note='';
+if(avoid){
+if(avoid.indexOf('腰')>-1&&(s[0].indexOf('前屈')>-1||s[0].indexOf('卷腹')>-1))note='<span style="color:#f59e0b">⚠️ 腰部不适者减小幅度或跳过</span>';
+if(avoid.indexOf('膝')>-1&&(s[0].indexOf('弓步')>-1||s[0].indexOf('战士')>-1||s[0].indexOf('婴儿')>-1))note='<span style="color:#f59e0b">⚠️ 膝盖不适者在膝下垫毛巾</span>';
+if(avoid.indexOf('孕')>-1)note='<span style="color:#f59e0b">⚠️ 孕期请避免俯卧与深度扭转，咨询医生</span>';
+}
+d.innerHTML='<div class="pose-h">'+(i+1)+'. '+s[0]+'</div><div class="pose-b">'+s[1]+(note?('<br>'+note):'')+'</div>';
+out.appendChild(d);
+});
+var tip='<div class="pose" style="border-left-color:#22c55e"><div class="pose-h">🎈 呼吸与注意</div><div class="pose-b">• 全程用鼻呼吸，吸气延展，呼气深入<br>• 动作配合呼吸节奏，不要憋气<br>• '+level+'建议：每个体式以"舒适拉伸"为度，不追求标准<br>• 空腹或饭后1.5小时练习，备一张防滑垫<br>• 结束后喝温水，别马上冲冷水澡</div></div>';
+out.insertAdjacentHTML('beforeend',tip);
+document.getElementById('resultArea').classList.add('active');
+}
+document.getElementById('genBtn').addEventListener('click',gen);
+</script>
+</body>
+</html>

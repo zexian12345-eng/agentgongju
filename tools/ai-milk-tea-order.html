@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 奶茶点单搭配推荐 | AgentGongju.com</title>
+<meta name="description" content="AI奶茶点单搭配推荐，根据口味偏好、甜度、预算与场景，帮你选出最合适的一杯，告别选择困难">
+<meta name="keywords" content="奶茶点单,奶茶推荐,点单搭配,糖度冰度,奶茶攻略">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+select:focus,input:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.rec{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:18px;margin-bottom:12px}
+.rec-h{font-size:1.15rem;color:#a5b4fc;font-weight:700;margin-bottom:8px}
+.rec-b{color:#cbd5e1;font-size:.9rem;line-height:1.9}
+.badge{display:inline-block;font-size:.72rem;color:#22c55e;background:rgba(34,197,94,0.12);border-radius:20px;padding:2px 10px;margin-right:6px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.tip{color:#94a3b8;font-size:.8rem;margin-top:8px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🧋 AI 奶茶点单推荐</h1><p>选不出来的那一刻，交给我</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>😋 口味偏好</label><select id="fav"><option value="清爽茶感">清爽茶感（不腻）</option><option value="浓郁奶香">浓郁奶香</option><option value="果味酸甜">果味酸甜</option><option value="醇厚咖啡">咖啡 / 拿铁系</option><option value="料多满足">料多 / 有嚼头</option></select></div>
+<div><label>🍬 甜度</label><select id="sugar"><option value="不另外加糖">不另外加糖（0糖）</option><option value="三分糖">三分糖</option><option value="五分糖" selected>五分糖</option><option value="七分糖">七分糖</option></select></div>
+</div>
+<div class="param-row">
+<div><label>🧊 冰度</label><select id="ice"><option value="去冰">去冰</option><option value="少冰" selected>少冰</option><option value="正常冰">正常冰</option><option value="热饮">热饮</option></select></div>
+<div><label>💰 预算</label><select id="budget"><option value="15元以内">15 元以内</option><option value="15-25元" selected>15-25 元</option><option value="25元以上">25 元以上</option></select></div>
+</div>
+<label>🎯 场景（可选）</label>
+<input type="text" id="scene" placeholder="例如：下午提神 / 和朋友一起 / 饭后解腻 / 减肥中">
+<button class="btn-gen" id="genBtn">🧋 帮我选一杯</button>
+<div class="tip">💡 小技巧：控糖选"不另外加糖+去冰"，果茶比奶茶热量低；想提神加一份浓缩。</div>
+</div>
+<div class="result-area" id="resultArea"><div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 推荐方案</div>
+<div id="out"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制点单话术</button>
+</div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function copyResult(){navigator.clipboard.writeText(document.getElementById('out').innerText).then(()=>alert('✅ 已复制！'))}
+var DB={
+清爽茶感:[['茉莉奶绿','茉莉花香打底，茶味突出奶味轻，清爽不腻'],['四季春茶+奶盖','纯茶加咸奶盖，层次感强热量低'],['栀子绿茶','回甘明显，夏天首选'],['鸭屎香柠檬茶','茶香浓郁配柠檬，解腻一绝']],
+浓郁奶香:[['厚乳拿铁（奶茶版）','厚乳比例高，入口绵密'],['黑糖珍珠鲜奶','黑糖挂壁，甜香浓厚'],['咸蛋黄奶盖绿茶','咸甜交织，口感独特'],['芝士奶盖乌龙','奶盖厚实，配乌龙解腻']],
+果味酸甜:[['满杯百香果','酸甜清爽，VC满满'],['杨枝甘露','芒果+西柚+西米，经典港式'],['葡萄冻冻','果肉感强，颜值高'],['草莓芝士','酸甜配咸奶盖，少女心']],
+醇厚咖啡:[['生椰拿铁','椰香+咖啡，清爽不苦'],['丝绒拿铁','奶感更足，苦味柔和'],['燕麦拿铁','植物奶，低负担'],['浓缩+奶茶（脏脏咖啡）','一颗浓缩提神，下午救星']],
+料多满足:[['芋泥波波奶茶','芋泥+波波，热量也是满足感'],['青稞奶茶','青稞有嚼劲，饱腹感强'],['烧仙草全料','料足到可以当加餐'],['珍珠椰果双拼','QQ弹弹，口感丰富']]
+};
+function gen(){
+if(!Paywall.countUse('AI 奶茶点单搭配推荐 | AgentGongju.com'))return;
+var fav=document.getElementById('fav').value,sugar=document.getElementById('sugar').value,ice=document.getElementById('ice').value,budget=document.getElementById('budget').value;
+var scene=document.getElementById('scene').value.trim();
+var list=DB[fav].slice();
+var out=document.getElementById('out');out.innerHTML='';
+var budgetNote=budget==='15元以内'?'建议选纯茶+小料组合，性价比最高。':budget==='15-25元'?'这个价位可以放心加一份小料。':'25元以上可直接冲限定款或大杯，喝得舒服最重要。';
+list.forEach((it,i)=>{
+var d=document.createElement('div');d.className='rec';
+var add=[];
+if(scene.indexOf('提神')>-1||scene.indexOf('下午')>-1)add.push('加一份浓缩/双倍茶底');
+if(scene.indexOf('减肥')>-1||scene.indexOf('控糖')>-1)add.push('不另外加糖+去冰，少喝一半热量');
+if(scene.indexOf('饭')>-1)add.push('选茶底清爽的，别加奶盖');
+if(!add.length)add.push('按口味加珍珠/椰果一份');
+d.innerHTML='<div class="rec-h">'+(i+1)+'. '+it[0]+' '+(i===0?'<span class="badge">最推荐</span>':'')+'</div>'+
+'<div class="rec-b">'+it[1]+'<br>👉 点单方式：'+sugar+' / '+ice+' / '+it[0]+(add[0]?(' / '+add[0]):'')+'<br>💡 '+budgetNote+'</div>';
+out.appendChild(d);
+});
+document.getElementById('resultArea').classList.add('active');
+}
+document.getElementById('genBtn').addEventListener('click',gen);
+</script>
+</body>
+</html>

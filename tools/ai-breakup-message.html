@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 体面分手文案生成器 | AgentGongju.com</title>
+<meta name="description" content="AI体面分手文案生成器，输入情况，生成不伤人、有分寸的关系结束表达，适用于和平分手、断联告别、友情淡化">
+<meta name="keywords" content="分手文案,分手话术,体面告别,断联,情感文案">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:110px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;min-height:60px;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{color:#94a3b8;font-size:.8rem;margin-top:8px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>💔 AI 体面告别文案</h1><p>好好说再见，也是一种温柔</p></div>
+
+<div class="card">
+<label>🤝 关系类型</label>
+<select id="rel">
+<option value="恋人">恋人 / 伴侣</option>
+<option value="暧昧">暧昧未确定关系</option>
+<option value="朋友">渐行渐远的朋友</option>
+<option value="亲友">亲戚 / 家人</option>
+</select>
+<label>📝 想结束 / 告别的真实原因（写给自己看）</label>
+<textarea id="why" placeholder="例如：\n在一起一年，越来越没有共同话题，价值观也不太合，继续下去只会互相消耗。"></textarea>
+<label>💭 想对对方说的心里话（可选）</label>
+<textarea id="heart" placeholder="例如：其实很感谢这段日子的陪伴，只是我们都变了。"></textarea>
+<div class="param-row">
+<div><label>💌 语气</label><select id="tone"><option value="温和体面">温和体面</option><option value="简洁干脆">简洁干脆</option><option value="深情克制">深情克制</option></select></div>
+<div><label>📏 长度</label><select id="len"><option value="short">一句话</option><option value="mid" selected>一段话</option><option value="long">长文告别</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">✨ 生成告别文案</button>
+<div class="tip">💡 体面告别三原则：不指责、不纠缠、不画饼。把话说清楚，把门关好，也把对方的好留住。</div>
+</div>
+<div class="result-area" id="resultArea"><div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 已生成</div>
+<div class="result-box" id="out"></div>
+<div style="display:flex;gap:10px"><button class="copy-btn" onclick="copyResult()">📋 复制</button><button class="copy-btn" onclick="gen()">🔄 换个版本</button></div>
+</div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function copyResult(){navigator.clipboard.writeText(document.getElementById('out').textContent).then(()=>alert('✅ 已复制！'))}
+function gen(){
+if(!Paywall.countUse('AI 体面分手文案生成器 | AgentGongju.com'))return;
+var rel=document.getElementById('rel').value;
+var why=document.getElementById('why').value.trim();
+if(!why){alert('请先写下想结束的原因（仅自己可见）');return}
+var heart=document.getElementById('heart').value.trim();
+var tone=document.getElementById('tone').value,len=document.getElementById('len').value;
+var name={恋人:'你',暧昧:'你',朋友:'你',亲友:'你'}[rel];
+var reason=why.replace(/\n+/g,' ').replace(/[，。,.；;]/g,'，').slice(0,60);
+var short={温和体面:['很高兴遇见你，就到这里吧，祝你以后都好。','我们在一起的日子我都很珍惜，只是缘分到这儿了。','谢谢你陪我走过这一段，往后各自安好。'],简洁干脆:['就到这吧，谢谢你，也照顾好自己。','缘分尽了，不勉强。祝你顺利。'],深情克制:['我很喜欢你，但我们走不下去了。放过彼此，是最后的体面。']};
+var mid={温和体面:['其实我想了很久，还是决定跟你说清楚。',reason+'。这不是谁的错，只是我们真的不太合适。',''+heart,'很感谢这段时间的陪伴，这些回忆我会好好收着。希望你以后遇到的人，能给你想要的生活。'],简洁干脆:['我想把话说清楚：'+reason+'。','不想拖着，也不想让你猜。就到这儿吧。',''+heart,'祝你一切顺利，我们各自往前走。'],深情克制:['我想了很久，还是鼓起勇气告诉你。',''+reason+'。我很难过，但我知道继续下去对我们都不公平。',''+heart,'是我先说出口的，所以更希望你以后过得好。再见，也谢谢你。']};
+var long={温和体面:'我想了很久，还是决定认真跟你说清楚这件事。\n\n'+reason+'。这不是一时冲动，也不是因为你哪里不好，你一直都很好，只是我们想要的东西越来越不一样了。\n\n'+(heart?heart+'\n\n':'')+'我不想用冷暴力，也不想突然消失，因为我觉得我们之间值得一个清楚的交代。\n\n谢谢你曾经出现在我的生活里，那些真诚的瞬间我都记得。\n\n希望未来的你，平安喜乐，被好好爱着。',简洁干脆:'有些话想说清楚，免得你猜。\n\n'+reason+'。\n\n'+(heart?heart+'\n\n':'')+'我认真想过，与其消耗彼此，不如及时打住。\n\n不用回我，也不用觉得遗憾。我们就到这儿。\n\n祝你顺利。',深情克制:'这封信我写了又删，删了又写。\n\n'+reason+'。我承认我很舍不得，但我也知道，再拖下去只会让我们都更难受。\n\n'+(heart?heart+'\n\n':'')+'我曾经真的很认真地喜欢过你，这一点不会因为结局改变。\n\n所以我想体面地跟你告别，不吵不闹，把最好的那部分留在回忆里。\n\n以后你要好好的。真的。'};
+var pick;
+if(len==='short')pick=short[tone];else if(len==='mid')pick=mid[tone];else pick=[long[tone]];
+var v=pick[Math.floor(Math.random()*pick.length)];
+document.getElementById('resultArea').classList.add('active');
+document.getElementById('out').textContent=v;
+}
+document.getElementById('genBtn').addEventListener('click',gen);
+</script>
+</body>
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 孩子表扬话术生成器 | AgentGongju.com</title>
+<meta name="description" content="AI孩子表扬话术生成器，输入孩子的具体行为，生成不空洞的鼓励与表扬话术，帮孩子建立内驱力">
+<meta name="keywords" content="表扬孩子,鼓励话术,正面管教,亲子沟通,内驱力">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:100px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;min-height:60px;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.tip{color:#94a3b8;font-size:.8rem;margin-top:8px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🌟 AI 表扬孩子话术</h1><p>夸到点上，才能养出内驱力</p></div>
+
+<div class="card">
+<label>👶 孩子年龄</label>
+<select id="age">
+<option value="3-6岁">3-6 岁</option>
+<option value="7-9岁" selected>7-9 岁</option>
+<option value="10-12岁">10-12 岁</option>
+<option value="13岁以上">13 岁以上（青春期）</option>
+</select>
+<label>✨ 孩子做了什么值得表扬的事</label>
+<textarea id="act" placeholder="例如：\n今天写作业没有催，自己主动拿出来写完了，虽然错了两道题。"></textarea>
+<div class="param-row">
+<div><label>💗 想强化的品质</label><select id="quality"><option value="努力坚持">努力 / 坚持</option><option value="主动自律">主动 / 自律</option><option value="善良共情">善良 / 共情</option><option value="勇敢尝试">勇气 / 尝试</option><option value="创意想法">创意 / 思考</option></select></div>
+<div><label>🎯 表扬重点</label><select id="focus"><option value="过程">夸过程（推荐）</option><option value="结果">夸结果</option><option value="品质">夸品质</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">✨ 生成表扬话术</button>
+<div class="tip">💡 少说"你真聪明"（固定型思维），多说"我看到你很努力"（成长型思维）。具体描述＞笼统评价。</div>
+</div>
+<div class="result-area" id="resultArea"><div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 话术已生成</div>
+<div class="result-box" id="out"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制</button>
+</div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function copyResult(){navigator.clipboard.writeText(document.getElementById('out').textContent).then(()=>alert('✅ 已复制！'))}
+function gen(){
+if(!Paywall.countUse('AI 孩子表扬话术生成器 | AgentGongju.com'))return;
+var age=document.getElementById('age').value;
+var act=document.getElementById('act').value.trim();
+if(!act){alert('请描述孩子做了什么');return}
+var quality=document.getElementById('quality').value,focus=document.getElementById('focus').value;
+var core=act.replace(/\n+/g,' ').trim();
+var short=core.slice(0,20).replace(/[，。,.；;]/g,'');
+var q={努力坚持:['坚持','不放弃'],主动自律:['主动','管住自己'],善良共情:['体贴','替别人想'],勇敢尝试:['敢试','不怕出错'],创意想法:['想法','动脑筋']}[quality];
+var open={
+'3-6岁':'宝贝，妈妈/爸爸看到你'+short+'了！',
+'7-9岁':'我看到你'+short+'，这件事我想跟你说说。',
+'10-12岁':'有件事我注意到了——'+short+'，我挺欣赏你的。',
+'13岁以上':'我想认真跟你说一句：'+short+'这件事，做得挺好的。'
+}[age];
+var mid={过程:'我特别喜欢你做事的过程：你没有急，也没有找借口，而是一点点把它做完了。这种态度比结果重要得多。',结果:'结果是好的，但我更在意你是怎么做到的——说明你用对了方法。',品质:'这说明你是一个'+q[0]+'的人，这个'+q[1]+'，会跟着你一辈子。'}[focus];
+var deep='你知道吗，很多大人遇到同样的事，都做不到像你这样。'+core.slice(0,30)+'，真的不容易。';
+var anti='（顺便说一句，这次错了%d题也没关系，愿意改就是进步。）'.replace('%d',(core.match(/\d+/g)||['两'])[0]);
+var tail={努力坚持:'继续加油，我会一直在旁边看着你。',主动自律:'下次也不用我提醒，我相信你做得到。',善良共情:'能替别人着想的人，走到哪里都会被喜欢。',勇敢尝试:'以后也大胆试，错了我们一起想办法。',创意想法:'这个想法很妙，我们把它做出来看看？'}[quality];
+var out=open+'\n\n'+mid+'\n\n'+deep+'\n\n'+(focus==='结果'?anti+'\n\n':'')+tail+'\n\n—— 小贴士：说的时候蹲下来，看着孩子的眼睛，语气要真诚，不要一边看手机一边说。';
+document.getElementById('resultArea').classList.add('active');
+document.getElementById('out').textContent=out;
+}
+document.getElementById('genBtn').addEventListener('click',gen);
+</script>
+</body>
+</html>

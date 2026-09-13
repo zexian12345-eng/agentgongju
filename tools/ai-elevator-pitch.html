@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 电梯演讲生成器 | AgentGongju.com</title>
+<meta name="description" content="AI电梯演讲生成器，30秒说清你是谁、能做什么、为什么选你，适用于社交破冰、求职面试、创业路演">
+<meta name="keywords" content="电梯演讲,30秒自我介绍,自我推销,路演话术,求职自我介绍">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:800px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,textarea,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+textarea{min-height:100px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.result-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;min-height:60px;margin-bottom:12px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.tip{color:#94a3b8;font-size:.8rem;margin-top:8px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🛗 AI 电梯演讲生成</h1><p>30 秒讲清「你是谁 + 能做什么 + 为什么选你」</p></div>
+
+<div class="card">
+<label>👤 你的身份 / 职业</label>
+<input type="text" id="who" placeholder="例如：独立开发者 / 产品经理 / 应届生">
+<label>💪 你的核心能力或产品亮点</label>
+<textarea id="skill" placeholder="例如：\n做过3款百万下载的小程序\n擅长把复杂的AI能力做成简单工具\n帮客户平均节省50%的运营成本"></textarea>
+<label>🎯 这次演讲的场景</label>
+<select id="scene">
+<option value="社交破冰">社交活动破冰</option>
+<option value="求职面试">求职面试自我介绍</option>
+<option value="创业路演">创业路演 / 融资</option>
+<option value="客户拓展">客户拜访 / 商务拓展</option>
+<option value="同行交流">行业同行交流</option>
+</select>
+<div class="param-row">
+<div><label>⏱ 时长</label><select id="dur"><option value="15">15秒（一句版）</option><option value="30" selected>30秒（标准）</option><option value="60">60秒（完整版）</option></select></div>
+<div><label>🎙 语气</label><select id="tone"><option value="专业自信">专业自信</option><option value="轻松幽默">轻松幽默</option><option value="亲和真诚">亲和真诚</option><option value="热情有感染力">热情有感染力</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">✨ 生成电梯演讲</button>
+<div class="tip">💡 公式：钩子开头 → 价值主张 → 差异化亮点 → 行动号召。说人话，别背简历。</div>
+</div>
+<div class="result-area" id="resultArea"><div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 演讲话术已生成</div>
+<div class="result-box" id="out"></div>
+<div style="display:flex;gap:10px;flex-wrap:wrap">
+<button class="copy-btn" onclick="copyResult()">📋 复制话术</button>
+<button class="copy-btn" onclick="gen()">🔄 换个版本</button>
+</div>
+</div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function copyResult(){navigator.clipboard.writeText(document.getElementById('out').textContent).then(()=>alert('✅ 已复制！'))}
+var HOOKS={社交破冰:['你好，我是[WHO]，一句话概括——我把[亮点]这件事做成了。','遇到一个挺巧的事，我最近正好在做[亮点]……'],求职面试:['面试官好，我用一句话介绍自己：[WHO]，核心优势是[亮点]。','您好，我是[WHO]，过去最有成就感的一件事，就是[亮点]。'],创业路演:['大家好，我是[WHO]，我们在解决一个很多人都有但没人认真解决的问题。','一句话说清我们在做什么：让[亮点]变成普通人也能用上的能力。'],客户拓展:['您好，我是[WHO]，我们专门帮像您这样的团队做[亮点]这件事。','占用您30秒，我是[WHO]，我们能让[亮点]变得更简单、更省钱。'],同行交流:['我是[WHO]，圈子内的朋友可能知道，我在[亮点]这块折腾了挺久。','我是[WHO]，主要专注在[亮点]方向。']};
+var CTA={社交破冰:'加个微信，改天一起聊聊？',求职面试:'希望有机会证明，我能为团队带来这些价值。',创业路演:'我们现在正在推进下一阶段，欢迎找我深聊。',客户拓展:'方便的话，我给您演示一下，10分钟就够。',同行交流:'有机会可以合作，也欢迎交流踩过的坑。'};
+function gen(){
+if(!Paywall.countUse('AI 电梯演讲生成器 | AgentGongju.com'))return;
+var who=document.getElementById('who').value.trim()||'一个普通人';
+var skill=document.getElementById('skill').value.trim();
+if(!skill){alert('请输入你的核心能力或亮点');return}
+var scene=document.getElementById('scene').value,tone=document.getElementById('tone').value,dur=document.getElementById('dur').value;
+var pts=skill.split('\n').map(s=>s.trim()).filter(s=>s);
+var hl=pts.slice(0,3).join('、');
+var hooks=HOOKS[scene].map(h=>h.replace('[WHO]',who).replace('[亮点]',pts[0]||'这件事'));
+var hook=hooks[Math.floor(Math.random()*hooks.length)];
+var bridge={专业自信:'我做的事情很聚焦：把一件事做到专业。',轻松幽默:'说人话就是：别人觉得麻烦的事，我做得还挺顺手。',亲和真诚:'我不算天才型选手，但特别愿意把事情做扎实。',热情有感染力:'我特别享受把想法变成真正能用的东西的过程！'}[tone];
+var out='';
+if(dur==='15'){
+out=hook+'\n\n核心一句话：'+bridge;
+}else if(dur==='30'){
+out=hook+'\n\n'+bridge+'\n\n具体来说，我主要能做到这几件事：\n'+pts.map(p=>'• '+p).join('\n')+'\n\n'+CTA[scene];
+}else{
+out=hook+'\n\n'+bridge+'\n\n我具体能带来的价值：\n'+pts.map((p,i)=>('• 第'+(i+1)+'点：'+p)).join('\n')+'\n\n为什么选我：相比同类，我更懂'+pts[0]+'背后的真实场景，也更能落地。\n\n收尾：'+CTA[scene];
+}
+document.getElementById('resultArea').classList.add('active');
+document.getElementById('out').textContent=out;
+}
+document.getElementById('genBtn').addEventListener('click',gen);
+</script>
+</body>
+</html>
