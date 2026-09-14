@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 婚礼预算分配表 | AgentGongju.com</title>
+<meta name="description" content="输入总预算与桌数，自动分配婚宴、婚纱、摄影、婚庆、三金等各项费用占比，附省钱技巧与超支预警。">
+<meta name="keywords" content="婚礼预算,结婚花费,婚礼费用清单,婚礼省钱,婚宴桌数,备婚">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,input[type=text],input[type=number],textarea{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px;box-sizing:border-box}
+textarea{min-height:110px;resize:vertical;line-height:1.7}
+select:focus,input:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;margin-bottom:12px;font-size:.92rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.tips{color:#64748b;font-size:.8rem;line-height:1.7;margin-top:6px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() { var hm = document.createElement("script"); hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949"; var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(hm, s); })();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>💐 AI 婚礼预算分配表</h1><p>按总预算自动分配各项开销＋省钱建议</p></div>
+<div class="card">
+<div class="param-row">
+<div><label>💰 婚礼总预算（万元）</label>
+<input type="text" id="total" placeholder="例如：15"></div>
+<div><label>🍽 预计桌数</label>
+<input type="text" id="tables" placeholder="例如：20"></div>
+</div>
+<div class="param-row">
+<div><label>🏙 城市档位</label>
+<select id="city"><option value="tier1">一线（北上广深）</option><option value="tier2" selected>新一线 / 二线</option><option value="tier3">三四线</option><option value="county">县城 / 乡镇</option></select></div>
+<div><label>🎨 风格偏好</label>
+<select id="style"><option value="simple" selected>简约务实</option><option value="standard">标准体面</option><option value="luxury">高定奢华</option><option value="travel">旅行结婚 / 小型仪式</option></select></div>
+</div>
+<div class="param-row">
+<div><label>📸 最在意哪块</label>
+<select id="focus"><option value="food">菜品酒水（客人体验）</option><option value="photo">婚纱摄影</option><option value="decor">现场布置</option><option value="dress">婚纱礼服</option><option value="balance">均衡分配</option></select></div>
+<div><label>💍 是否含三金/彩礼</label>
+<select id="gold"><option value="no" selected>不含（另算）</option><option value="yes">含在预算内</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">💒 生成预算分配</button>
+</div>
+<div class="result-area" id="resultArea">
+<div class="card"><div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制预算表</button></div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+var BASE={
+tier1:{name:'一线城市',meal:[6000,12000],hotel:'五星/高端酒店：8000-15000 元/桌',tip:'人工与服务费高，布置与摄影报价也明显高于其他城市。'},
+tier2:{name:'新一线/二线',meal:[3000,6000],hotel:'中高端酒店：3000-6000 元/桌',tip:'性价比最高的档位，选择余地大。'},
+tier3:{name:'三四线',meal:[1800,3500],hotel:'本地知名酒店：1800-3500 元/桌',tip:'场地成本可控，把钱花在菜品和摄影上更值。'},
+county:{name:'县城/乡镇',meal:[800,1800],hotel:'本地酒楼/自家办：800-1800 元/桌',tip:'人情往来比重高，酒水与烟是重要支出项。'}
+};
+var STYLE={
+simple:[['婚宴酒水',40],['婚纱礼服',10],['婚纱摄影',12],['婚庆布置',12],['三金首饰',15],['婚车与杂项',5],['备用金',6]],
+standard:[['婚宴酒水',38],['婚纱礼服',10],['婚纱摄影',14],['婚庆布置',16],['三金首饰',13],['婚车与杂项',5],['备用金',4]],
+luxury:[['婚宴酒水',34],['婚纱礼服',12],['婚纱摄影',14],['婚庆布置',22],['三金首饰',12],['婚车与杂项',4],['备用金',2]],
+travel:[['旅行与仪式',45],['婚纱摄影',15],['婚纱礼服',10],['三金首饰',18],['答谢宴',8],['备用金',4]]
+};
+function gen(){
+var total=parseFloat(document.getElementById('total').value)||0;
+var tables=parseInt(document.getElementById('tables').value)||0;
+var c=BASE[document.getElementById('city').value];
+var st=document.getElementById('style').value;
+var focus=document.getElementById('focus').value;
+var gold=document.getElementById('gold').value;
+if(!total){alert('请填写婚礼总预算');return '';}
+var out='════ 婚礼预算分配表 ════\n\n';
+out+='总预算：'+total+' 万元　｜　桌数：'+tables+' 桌　｜　城市：'+c.name+'\n';
+if(tables)out+='每桌可支配均价：约 '+Math.round(total*10000/tables)+' 元/桌（含所有项目摊分）\n';
+out+='参考价位：'+c.hotel+'\n\n';
+var items=STYLE[st];
+out+='──── 建议分配 ────\n';
+var sum=0;
+items.forEach(function(it){
+var amt=total*it[1]/100;
+sum+=it[1];
+out+='· '+it[0]+'：'+it[1]+'%　→　约 '+amt.toFixed(2)+' 万元'+(tables&&it[0]==='婚宴酒水'?'（约 '+Math.round(amt*10000/tables)+' 元/桌）':'')+'\n';
+});
+out+='合计：'+sum+'%\n\n';
+out+='──── 婚宴算细账 ────\n';
+if(tables){
+var mealLow=c.meal[0]*tables/10000, mealHigh=c.meal[1]*tables/10000;
+out+='· 按'+c.name+'餐标 '+c.meal[0]+'-'+c.meal[1]+' 元/桌 × '+tables+' 桌\n';
+out+='· 餐费约 '+mealLow.toFixed(1)+'-'+mealHigh.toFixed(1)+' 万元\n';
+out+='· 加上酒水（通常另计或含服务费）：再预留 10%-15%\n';
+if(mealLow>total*0.45)out+='⚠️ 仅餐费已超过总预算 45%，建议减少桌数或下调餐标，否则其他项目会被严重挤压。\n';
+if(mealHigh>total)out+='🚨 按最高餐标已超总预算，务必提前和酒店谈套餐或选平日档期。\n';
+}
+out+='\n──── 你的侧重建议 ────\n';
+if(focus==='food')out+='把婚宴占比提到 45% 左右，缩减布置与婚车，客人最记得的是"菜好不好吃"。';
+else if(focus==='photo')out+='摄影/摄像建议占 15%-18%，多花在摄影师本人而不是套餐数量上，务必看真实客片。';
+else if(focus==='decor')out+='现场布置提到 20% 左右，重点是主舞台与通道花艺，背景板和签到台可以简化。';
+else if(focus==='dress')out+='礼服占 12%-15%，建议买主纱＋租敬酒服，或选择高性价比设计师品牌。';
+else out+='均衡分配是新手最稳的选择，各项都不掉队，也不会在某一项被宰。';
+out+='\n\n──── 💰 省钱技巧 ────\n';
+out+='1. 避开节假日与"黄道吉日"高峰，平日档期通常便宜 20%-40%；\n';
+out+='2. 桌数报"8 折预估"，酒店可加不可减，宁可后补也别多订；\n';
+out+='3. 酒水自带（提前问清是否收开瓶费），通常能省 30%；\n';
+out+='4. 布置用仿真花替代鲜花，视觉差别不大但便宜一半；\n';
+out+='5. 摄影摄像看摄影师本人作品，而不是看公司宣传片；\n';
+out+='6. 三金提前在淡季或金价回落时购买；\n';
+out+='7. 一定要留 5% 备用金，超支几乎必然发生。\n';
+out+='\n──── ⚠️ 常见隐形消费 ────\n';
+out+='· 酒店：服务费 10%-15%、开瓶费、场地超时费、背景板使用费\n';
+out+='· 摄影：精修张数超量、加急费、外景车马费、化妆师跟妆费\n';
+out+='· 婚庆：灯光音响、T 台、签到区、追光、鲜花加量\n';
+out+='· 车队：超时费、超里程费、装饰费\n';
+out+='→ 所有口头承诺必须写进合同！\n';
+if(gold==='yes')out+='\n💍 三金/彩礼已含在预算内，建议单独设一个账户，避免与婚礼开销混在一起导致超支。\n';
+return out;
+}
+</script>
+<script>
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('AI 婚礼预算分配表 | AgentGongju.com'))return;
+document.getElementById('outputBox').innerText=gen();
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(function(){alert('✅ 已复制！')})}
+</script>
+</body>
+</html>

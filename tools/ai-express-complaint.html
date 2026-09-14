@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 快递投诉文案生成器 | AgentGongju.com</title>
+<meta name="description" content="快递丢了、坏了、被放驿站不送货上门？生成有理有据的投诉文案，含沟通话术与申诉路径，一次说清诉求。">
+<meta name="keywords" content="快递投诉,快递丢件,快递破损,快递不送货上门,菜鸟驿站投诉,物流申诉">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,input[type=text],input[type=number],textarea{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px;box-sizing:border-box}
+textarea{min-height:110px;resize:vertical;line-height:1.7}
+select:focus,input:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;margin-bottom:12px;font-size:.92rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.tips{color:#64748b;font-size:.8rem;line-height:1.7;margin-top:6px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() { var hm = document.createElement("script"); hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949"; var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(hm, s); })();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📦 AI 快递投诉文案生成器</h1><p>丢件 / 破损 / 不送上门，一键生成投诉话术</p></div>
+<div class="card">
+<div class="param-row">
+<div><label>📌 问题类型</label>
+<select id="type">
+<option value="lost">快递丢失 / 显示签收没收到</option>
+<option value="damage">包裹破损 / 商品损坏</option>
+<option value="nostation">未通知直接放驿站</option>
+<option value="delay">长时间不派送 / 严重延误</option>
+<option value="attitude">快递员态度恶劣</option>
+<option value="refuse">拒绝上门 / 要求自取</option>
+</select></div>
+<div><label>🚚 快递公司</label>
+<select id="company">
+<option>顺丰</option><option>中通</option><option>圆通</option><option>申通</option><option>韵达</option><option>极兔</option><option>京东物流</option><option>邮政 EMS</option><option>德邦</option><option>其他</option>
+</select></div>
+</div>
+<label>💰 商品金额（元）</label>
+<input type="text" id="amount" placeholder="例如：289">
+<label>📝 事情经过（简单描述，选填）</label>
+<textarea id="detail" placeholder="例如：9月10日显示已签收，但我本人没收到任何电话和短信，去驿站找也没找到"></textarea>
+<label>🎯 你希望的处理结果</label>
+<select id="demand">
+<option value="compensate">照价赔偿</option>
+<option value="redeliver">重新派送上门</option>
+<option value="apology">道歉＋赔偿</option>
+<option value="investigate">查明原因并书面回复</option>
+</select>
+<button class="btn-gen" id="genBtn">✍️ 生成投诉文案</button>
+<div class="tips">💡 建议先给快递员/网点打电话，无果再向总公司投诉，仍未解决可向国家邮政局申诉（12305）。</div>
+</div>
+<div class="result-area" id="resultArea">
+<div class="card">
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制文案</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+var PROBLEM={
+lost:{name:'快递丢失',law:'《快递暂行条例》第二十七条：快件延误、丢失、损毁或者内件短少的，用户可要求赔偿。',key:'未收到却标记签收，属于虚假签收，责任在快递方。'},
+damage:{name:'包裹破损',law:'《快递暂行条例》第二十七条 + 《民法典》第八百三十三条：承运人对运输中货物毁损承担赔偿责任。',key:'外包装破损属运输环节责任，签收前拍照是关键证据。'},
+nostation:{name:'未通知放驿站',law:'《快递暂行条例》第二十五条：快递企业应当将快件投递到约定收件地址，未经同意不得代为确认签收。',key:'未经同意放驿站属于未按约定投递。'},
+delay:{name:'严重延误',law:'《快递服务国家标准》：同城快递超过 3 天、异地超过 7 天可视为延误。',key:'超出承诺时效，可要求说明原因并赔偿。'},
+attitude:{name:'服务态度问题',law:'《快递服务国家标准》服务规范条款。',key:'可要求公司对涉事人员处理并书面回复。'},
+refuse:{name:'拒绝上门',law:'《快递暂行条例》第二十五条：按约定地址投递是法定义务。',key:'上门派送是义务，不是"帮忙"。'}
+};
+var DEMAND={
+compensate:'按商品实际价值全额赔偿',
+redeliver:'24 小时内重新派送并送到指定地址',
+apology:'正式道歉并赔偿相应损失',
+investigate:'7 个工作日内查明原因并书面回复处理结果'
+};
+function gen(){
+var t=PROBLEM[document.getElementById('type').value];
+var co=document.getElementById('company').value;
+var amt=document.getElementById('amount').value.trim();
+var detail=document.getElementById('detail').value.trim();
+var dm=DEMAND[document.getElementById('demand').value];
+var out='════ 投诉文案（可直接复制发送）════\n\n';
+out+='【我的诉求】\n';
+out+='本人于近日通过'+co+'寄送/接收的快递出现「'+t.name+'」问题，现提出以下诉求：'+dm+'。\n';
+if(amt)out+='涉及商品金额：'+amt+' 元。\n';
+out+='\n【情况说明】\n';
+if(detail)out+=detail+'\n';
+else out+='该快件出现'+t.name+'情况，本人已尝试联系快递员与网点，未能妥善解决。\n';
+out+='\n【依据：法律与规范】\n'+t.law+'\n';
+out+='要点：'+t.key+'\n';
+out+='\n【请于 48 小时内回复处理方案】\n';
+out+='如未获妥善处理，本人将向' + co + '总部客服投诉，并向国家邮政局申诉平台（电话 12305 / 官微"邮政业消费者申诉"）正式投诉。\n';
+out+='\n请提供工单号以便跟进，谢谢。\n\n';
+out+='════ 升级投诉话术 ════\n';
+out+='第一步｜打 '+co+' 客服：\n';
+out+='"你好，我的运单号是 XXXX，遇到"'+t.name+'"问题，之前联系网点未解决，现在正式提交投诉工单，请给我工单号，并告知处理时限。"\n\n';
+out+='第二步｜要求升级：\n';
+out+='"如果 48 小时内没有答复，我会向国家邮政局申诉，请帮我把工单升级为投诉件。"（"申诉"是最有效的关键词）\n\n';
+out+='第三步｜12305 申诉要点：\n';
+out+='· 需先向企业投诉满 7 天未解决，或对企业答复不满意；\n';
+out+='· 提供运单号、投诉时间、企业答复情况；\n';
+out+='· 邮政局受理后企业必须在规定时限内回复。\n\n';
+out+='════ 证据清单（越全越有利）════\n';
+out+='1. 物流截图（含签收时间、地点）\n2. 与快递员/客服的通话录音或聊天记录\n3. 商品订单页与实付金额截图\n4. 破损/缺少的现场照片（带时间水印）\n5. 驿站取件码短信、监控调取请求记录\n';
+return out;
+}
+</script>
+<script>
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('AI 快递投诉文案生成器 | AgentGongju.com'))return;
+document.getElementById('outputBox').innerText=gen();
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(function(){alert('✅ 已复制！')})}
+</script>
+</body>
+</html>

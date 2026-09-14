@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 职业倦怠自测与恢复计划 | AgentGongju.com</title>
+<meta name="description" content="工作提不起劲、周日晚就焦虑？12 题自测倦怠程度，生成恢复计划与行动清单，含离职决策参考。">
+<meta name="keywords" content="职业倦怠,工作倦怠,burnout自测,职场焦虑,心理测评,工作压力">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,input[type=text],input[type=number],textarea{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px;box-sizing:border-box}
+textarea{min-height:110px;resize:vertical;line-height:1.7}
+select:focus,input:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;margin-bottom:12px;font-size:.92rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.tips{color:#64748b;font-size:.8rem;line-height:1.7;margin-top:6px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() { var hm = document.createElement("script"); hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949"; var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(hm, s); })();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🕯 AI 职业倦怠自测与恢复计划</h1><p>12 题自测＋倦怠程度分析＋恢复计划</p></div>
+<div class="card">
+<label>🙋 请按最近 2 周的真实感受作答（0=从不，4=几乎每天）</label>
+<div id="qbox"></div>
+<div class="param-row">
+<div><label>💼 你的行业</label>
+<select id="ind"><option value="tech">互联网/IT</option><option value="fin">金融/咨询</option><option value="edu">教育/医疗</option><option value="gov">体制内/国企</option><option value="sales">销售/服务业</option><option value="free">自由职业/创业</option><option value="other">其他</option></select></div>
+<div><label>⏳ 持续多久了</label>
+<select id="dur"><option value="1">不到 1 个月</option><option value="3" selected>1-3 个月</option><option value="6">半年左右</option><option value="12">一年以上</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">🔍 开始自测</button>
+<div class="tips">⚠️ 本工具仅供自我觉察参考，不能替代专业心理诊断。如有持续情绪低落或有伤害自己的念头，请拨打心理援助热线 400-161-9995。</div>
+</div>
+<div class="result-area" id="resultArea">
+<div class="card"><div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制报告</button></div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+var QS=[
+"早上醒来想到要上班，就感到疲惫或抗拒",
+"工作的时候很难集中注意力，效率明显下降",
+"对工作成果变得冷漠，觉得做得好不好都无所谓",
+"下班后依然无法放松，脑子里全是工作的事",
+"对同事或客户变得容易烦躁、没耐心",
+"觉得自己再怎么努力也没什么改变",
+"周末或周日晚就开始为周一焦虑",
+"睡眠变差：入睡困难、早醒或多梦",
+"身体出现信号：头痛、胃不舒服、肩颈僵硬、容易累",
+"以前喜欢的事（爱好、运动、聚会）现在提不起兴趣",
+"经常怀疑这份工作的意义，想辞职",
+"感觉自己在硬撑，像是在演一个状态还行的自己"
+];
+var QOPT=['0 · 从不','1 · 偶尔','2 · 有时','3 · 经常','4 · 几乎每天'];
+function buildQuiz(){
+var box=document.getElementById('qbox');
+var h='';
+QS.forEach(function(q,i){
+h+='<div style="margin-bottom:14px"><div style="color:#cbd5e1;font-size:.88rem;margin-bottom:6px">'+(i+1)+'. '+q+'</div>';
+h+='<select id="q'+i+'">';
+QOPT.forEach(function(o){
+var v=o.charAt(0);
+h+='<option value="'+v+'">'+o+'</option>';
+});
+h+='</select></div>';
+});
+h+='<div id="qerr" style="color:#f87171;font-size:.82rem;display:none">请完成全部 12 题后再提交</div>';
+box.innerHTML=h;
+}
+buildQuiz();
+var IND={tech:'互联网/IT：项目周期快、加班多，永远在线是倦怠高发因素。',fin:'金融/咨询：高压＋高强度，容易进入高绩效—高耗竭循环。',edu:'教育/医疗：情绪劳动重，长期共情输出会消耗大量心理资源。',gov:'体制内/国企：倦怠常来自低变化＋低反馈，价值感稀缺比劳累更伤人。',sales:'销售/服务：业绩压力＋情绪管理，容易形成下班后情绪真空。',free:'自由职业/创业：边界模糊，随时都在工作是头号杀手。',other:'通用建议：先找出最消耗你的那一类具体事件，而不是笼统地讨厌工作。'};
+function gen(){
+var total=0,answered=0;
+for(var i=0;i<QS.length;i++){
+var el=document.getElementById('q'+i);
+if(!el)continue;
+total+=parseInt(el.value);answered++;
+}
+if(answered<QS.length){document.getElementById('qerr').style.display='block';return '';}
+document.getElementById('qerr').style.display='none';
+var max=QS.length*4, pct=Math.round(total/max*100);
+var dur=+document.getElementById('dur').value;
+var ind=IND[document.getElementById('ind').value];
+var level,desc;
+if(pct<25){level='🟢 状态健康（轻度压力）';desc='你的状态基本 OK，偶有疲惫属于正常范围，注意别让小压力积累。';}
+else if(pct<45){level='🟡 轻度倦怠预警';desc='已经出现一些信号，属于可逆阶段，现在调整成本最低，别硬扛到崩。';}
+else if(pct<65){level='🟠 中度职业倦怠';desc='典型倦怠区间：情绪耗竭＋去人格化＋效能感下降同时出现，需要主动干预。';}
+else if(pct<80){level='🔴 重度倦怠';desc='你的身心在强烈报警。此时继续靠意志力硬撑，通常只会换来一次彻底崩盘或身体出问题。';}
+else {level='🚨 严重倦怠（建议尽快寻求专业支持）';desc='分数很高，建议尽快就医或寻求心理咨询。工作的问题可以慢慢解决，身体和情绪不能等。';}
+var out='════ 职业倦怠自测报告 ════\n\n';
+out+='总分：'+total+' / '+max+'（'+pct+'%）\n';
+out+='评估结果：'+level+'\n';
+out+=desc+'\n\n';
+out+='──── 各维度得分 ────\n';
+var dims=[['情绪耗竭',[0,3,8]],['工作冷漠/去人格化',[2,4,5]],['效能感降低',[1,10]],['躯体化与睡眠',[7,8]],['兴趣退缩',[9]]];
+dims.forEach(function(d){
+var s=0;d[1].forEach(function(idx){s+=parseInt(document.getElementById('q'+idx).value);});
+var mx=d[1].length*4;
+var bar='';var n=Math.round(s/mx*10);
+for(var i=0;i<10;i++)bar+=(i<n?'█':'░');
+out+='· '+d[0]+'：'+s+'/'+mx+'　'+bar+'\n';
+});
+out+='\n──── 行业特征 ────\n'+ind+'\n';
+out+='\n──── 持续时间 ────\n';
+if(dur===1)out+='不到 1 个月：刚进入预警期，很好调整，先做休假＋作息修复即可。';
+else if(dur===3)out+='1-3 个月：倦怠成型期，抓紧干预，重点是把工作边界重新划出来。';
+else if(dur===6)out+='半年：已形成稳定模式，需要结构性改变（换团队、换岗位或换节奏），单靠休息很难根治。';
+else out+='一年以上：长期倦怠，往往伴随价值观与生活方式的重估，建议认真做一次职业规划复盘。';
+out+='\n\n──── 🩹 恢复计划（按优先级）────\n';
+out+='第一周｜止损\n';
+out+='· 每天保证 7 小时睡眠，比任何补品都有效；\n';
+out+='· 设定下班时间硬边界：关电脑、关工作群消息提醒；\n';
+out+='· 每天 20 分钟户外快走，光照对情绪改善有明确效果；\n';
+out+='· 咖啡减到下午 2 点前，酒精尽量不碰（会破坏深度睡眠）。\n\n';
+out+='第二周｜补充能量\n';
+out+='· 恢复一件你以前喜欢的事（运动、乐器、做饭都行）；\n';
+out+='· 每周至少一次不带目的的社交（纯粹聊天，不谈工作）；\n';
+out+='· 每天写 3 件小确幸，重建正向反馈；\n';
+out+='· 减少无效信息输入（刷手机不等于休息）。\n\n';
+out+='第三、四周｜重建掌控感\n';
+out+='· 把工作拆成小任务，完成就打勾，找回进度感；\n';
+out+='· 学会说不：先拒一件不重要的事，练习边界；\n';
+out+='· 和直属领导做一次坦诚沟通（工作量、支持、期望）；\n';
+out+='· 重新分配精力，把 20% 时间投在成长而非救火。\n\n';
+out+='──── 🤔 要不要离职？────\n';
+out+='先问自己三个问题：\n';
+out+='1. 换一家公司，同样的问题会不会重复出现？（若是，问题可能在模式不在公司）\n';
+out+='2. 如果工作内容不变但压力减半，我还愿意做吗？（愿意＝问题在工作方式）\n';
+out+='3. 我现在有精力做有效的求职吗？（没有的话，先恢复再跳，别裸辞硬跳）\n';
+out+='结论建议：'+(pct<45?'状态尚可，先用边界管理调整，不必急于做重大决定。':pct<65?'建议先休整 2-4 周再评估，同时悄悄更新简历保持选择权。':'建议把恢复放在第一位；如条件允许，可考虑申请长假或调整岗位，避免在耗竭状态下做不可逆的选择。')+'\n';
+out+='\n☎️ 如持续情绪低落超过 2 周并影响生活，请寻求专业帮助。全国心理援助热线：400-161-9995\n';
+return out;
+}
+</script>
+<script>
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('AI 职业倦怠自测与恢复计划 | AgentGongju.com'))return;
+document.getElementById('outputBox').innerText=gen();
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(function(){alert('✅ 已复制！')})}
+</script>
+</body>
+</html>

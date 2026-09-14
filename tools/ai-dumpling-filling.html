@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 饺子馅配比计算器 | AgentGongju.com</title>
+<meta name="description" content="白菜猪肉、韭菜鸡蛋、三鲜馅…按人数算出肉菜调料精确用量，附打馅顺序与不出水技巧。">
+<meta name="keywords" content="饺子馅,饺子馅配方,白菜猪肉馅,韭菜鸡蛋,馅料比例,包饺子">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,input[type=text],input[type=number],textarea{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px;box-sizing:border-box}
+textarea{min-height:110px;resize:vertical;line-height:1.7}
+select:focus,input:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;margin-bottom:12px;font-size:.92rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.tips{color:#64748b;font-size:.8rem;line-height:1.7;margin-top:6px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() { var hm = document.createElement("script"); hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949"; var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(hm, s); })();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🥟 AI 饺子馅配比计算器</h1><p>按人数算准肉菜调料用量，附打馅技巧</p></div>
+<div class="card">
+<div class="param-row">
+<div><label>🥟 馅料种类</label>
+<select id="kind">
+<option value="cabbage">白菜猪肉（经典）</option>
+<option value="chive">韭菜猪肉</option>
+<option value="chiveegg">韭菜鸡蛋（素）</option>
+<option value="three">三鲜馅（虾仁猪肉）</option>
+<option value="beef">牛肉大葱</option>
+<option value="mushroom">香菇青菜（素）</option>
+<option value="lamb">羊肉胡萝卜</option>
+<option value="celery">芹菜猪肉</option>
+</select></div>
+<div><label>👥 吃几个人（约）</label>
+<select id="people"><option value="2">2 人</option><option value="3" selected>3 人</option><option value="4">4 人</option><option value="5">5 人</option><option value="6">6 人</option><option value="8">8 人</option></select></div>
+</div>
+<div class="param-row">
+<div><label>🍽 吃多少（人均）</label>
+<select id="level"><option value="15">尝鲜，约 15 个</option><option value="20" selected>正常，约 20 个</option><option value="28">大胃王，约 28 个</option></select></div>
+<div><label>🧂 口味</label>
+<select id="taste"><option value="normal" selected>家常</option><option value="light">清淡少盐</option><option value="rich">重口多汁</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">📐 计算配比</button>
+</div>
+<div class="result-area" id="resultArea">
+<div class="card"><div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制配方</button></div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+var KIND={
+cabbage:{name:'白菜猪肉馅',main:'猪肉馅（前腿肉，三肥七瘦）',veg:'大白菜',ratio:'肉:菜 = 1:1',season:'生抽、蚝油、香油、葱姜水、白胡椒、盐',
+water:'白菜切碎后加 1 小勺盐腌 10 分钟，挤干水分再拌，挤出的水别倒，可留着打肉馅。'},
+chive:{name:'韭菜猪肉馅',main:'猪肉馅（五花或前腿）',veg:'韭菜',ratio:'肉:菜 = 1:1',season:'生抽、蚝油、香油、姜末、盐（韭菜不加葱）',
+water:'韭菜洗净后一定要晾干再切，切好先拌油（油封住切口不出水），最后再放盐。'},
+chiveegg:{name:'韭菜鸡蛋馅',main:'鸡蛋（炒成蛋碎）',veg:'韭菜',ratio:'蛋:菜 = 2:1.5',season:'香油、盐、少量白胡椒、虾皮提鲜',
+water:'素馅易出水，拌好后尽快包，包前把馅料放冰箱冷藏 20 分钟更好包。'},
+three:{name:'三鲜馅',main:'猪肉馅＋虾仁（切丁）',veg:'韭菜（或白菜）',ratio:'肉:虾:菜 = 2:1:1',season:'生抽、蚝油、香油、白胡椒、姜末、盐',
+water:'虾仁切丁不要剁碎，保留颗粒感更鲜；虾仁先用料酒和白胡椒腌 10 分钟。'},
+beef:{name:'牛肉大葱馅',main:'牛肉馅（牛上脑）',veg:'大葱',ratio:'肉:菜 = 3:1',season:'生抽、老抽、蚝油、五香粉、香油、姜末、花椒水',
+water:'牛肉偏瘦肉，必须"打水"：分 3 次加花椒水搅打上劲，否则馅会很柴。'},
+mushroom:{name:'香菇青菜馅',main:'香菇＋鸡蛋（或豆腐）',veg:'油菜/小白菜',ratio:'菜:菇:蛋 = 3:1:1',season:'香油、盐、白胡椒、生抽少许、姜末',
+water:'香菇先干煸去水汽更香；青菜焯水后挤干再切。'},
+lamb:{name:'羊肉胡萝卜馅',main:'羊肉馅',veg:'胡萝卜',ratio:'肉:菜 = 2:1',season:'生抽、花椒水、香油、姜末、孜然少许',
+water:'胡萝卜擦丝后略炒软再拌，口感更甜更融合；羊肉同样需要打花椒水去膻增嫩。'},
+celery:{name:'芹菜猪肉馅',main:'猪肉馅',veg:'芹菜（嫩）',ratio:'肉:菜 = 1:1',season:'生抽、蚝油、香油、姜末、白胡椒、盐',
+water:'芹菜焯水 10 秒过冷水，切碎挤干，保留清香味又不呛。'}
+};
+function gen(){
+var k=KIND[document.getElementById('kind').value];
+var p=+document.getElementById('people').value;
+var lv=+document.getElementById('level').value;
+var taste=document.getElementById('taste').value;
+var per=p*lv;
+var totalDough=per*12; // 每个饺子皮约12g
+var filling=per*18;    // 每个馅约18g
+var isVeg=!k.main.indexOf('鸡蛋')&&k.main.indexOf('蛋')>-1;
+var out='════ '+k.name+' 配方 ════\n\n';
+out+='👥 '+p+' 人 × '+lv+' 个 = 约 '+per+' 个饺子\n';
+out+='需要馅料总量：约 '+filling+' 克（'+ (filling/500).toFixed(1) +' 斤）\n';
+out+='如买现成饺子皮：约 '+per+' 张（买多 10% 备用）\n';
+out+='自制面团：面粉约 '+totalDough+' 克 + 水约 '+Math.round(totalDough*0.5)+' 克\n\n';
+out+='──── 🥩 馅料配比（'+k.ratio+'）────\n';
+var mainG,vegG;
+if(isVeg){mainG=Math.round(filling*0.55);vegG=Math.round(filling*0.45);}
+else {mainG=Math.round(filling*0.5);vegG=Math.round(filling*0.5);}
+out+='· '+k.main+'：约 '+mainG+' 克（'+(mainG/500).toFixed(1)+' 斤）\n';
+out+='· '+k.veg+'：约 '+vegG+' 克（'+(vegG/500).toFixed(1)+' 斤）\n\n';
+out+='──── 🧂 调料（按 '+filling+' 克馅）────\n';
+var salt=filling*0.012;
+var f=function(x){return taste==='light'?x*0.75:taste==='rich'?x*1.25:x;};
+out+='· 盐：约 '+f(Math.round(salt))+' 克（'+(taste==='light'?'清淡档':taste==='rich'?'重口档':'家常档')+'）\n';
+out+='· 生抽：约 '+f(Math.round(filling*0.03))+' 毫升\n';
+out+='· 蚝油：约 '+f(Math.round(filling*0.02))+' 毫升\n';
+out+='· 香油：约 '+f(Math.round(filling*0.015))+' 毫升（最后放）\n';
+out+='· 白胡椒粉：约 '+f(2)+' 克\n';
+out+='· 姜末：约 '+Math.round(filling*0.02)+' 克｜葱花适量\n';
+if(k.main.indexOf('牛')>-1||k.main.indexOf('羊')>-1)out+='· 花椒水：约 '+Math.round(filling*0.25)+' 毫升（分 3 次打入）\n';
+out+='\n☝️ 调料说明：'+k.season+'\n';
+out+='\n──── 🥣 关键技巧 ────\n';
+out+=k.water+'\n';
+out+='\n【打馅顺序，别搞错】\n';
+if(!isVeg){
+out+='① 肉馅先加盐、生抽、蚝油，顺一个方向搅拌至发黏；\n';
+out+='② 分 3 次加葱姜水/花椒水，每次都搅到完全吸收再加下一次（关键！上劲就靠这步）；\n';
+out+='③ 加白胡椒、姜末，继续顺同一方向搅 1-2 分钟；\n';
+out+='④ 处理蔬菜：切碎 → 挤干水分（素菜先拌油封水）；\n';
+out+='⑤ 包之前再把菜和肉混合，先拌油后加盐，避免出水；\n';
+out+='⑥ 最后淋香油锁住香气，拌好后冷藏 20 分钟更入味好包。\n';
+}else{
+out+='① 鸡蛋炒成细碎、放凉；\n';
+out+='② 蔬菜切碎，挤干水分，先用香油拌一下封住切口；\n';
+out+='③ 所有材料混合，最后放盐，拌好立即包；\n';
+out+='④ 馅料冷藏 20 分钟会更紧实好包。\n';
+}
+out+='\n──── 🍲 煮饺子 ────\n';
+out+='· 水大开后下锅，用勺背轻推防粘底；\n';
+out+='· 水沸后点一次凉水，反复 3 次（约 6-8 分钟）；\n';
+out+='· 饺子全部鼓起、漂浮在水面即可出锅；\n';
+out+='· 素馅煮的时间短一些，点 2 次水即可。\n';
+out+='\n──── 🧊 包多了怎么办 ────\n';
+out+='· 生饺子摆盘（不重叠）先冷冻 1 小时定型，再装袋密封，可存 1 个月；\n';
+out+='· 煮的时候不用解冻，直接下开水锅，多煮 1-2 分钟；\n';
+out+='· 也可以做成煎饺：平底锅少油，加水没过 1/3，盖盖焖 6 分钟收干即可。\n';
+return out;
+}
+</script>
+<script>
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('AI 饺子馅配比计算器 | AgentGongju.com'))return;
+document.getElementById('outputBox').innerText=gen();
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(function(){alert('✅ 已复制！')})}
+</script>
+</body>
+</html>

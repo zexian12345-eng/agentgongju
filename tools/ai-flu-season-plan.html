@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 流感季家庭防护计划 | AgentGongju.com</title>
+<meta name="description" content="按家庭成员情况生成疫苗、消毒、用药、就医判断的防护方案，含老人孩子重点人群建议。">
+<meta name="keywords" content="流感防护,流感疫苗,家庭消毒,流感用药,奥司他韦,冬季感冒">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,input[type=text],input[type=number],textarea{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px;box-sizing:border-box}
+textarea{min-height:110px;resize:vertical;line-height:1.7}
+select:focus,input:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;margin-bottom:12px;font-size:.92rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.tips{color:#64748b;font-size:.8rem;line-height:1.7;margin-top:6px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() { var hm = document.createElement("script"); hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949"; var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(hm, s); })();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🦠 AI 流感季家庭防护计划</h1><p>疫苗＋消毒＋用药＋就医判断的全家方案</p></div>
+<div class="card">
+<div class="param-row">
+<div><label>👨‍👩‍👧 家庭成员</label>
+<select id="member"><option value="baby">有 3 岁以下宝宝</option><option value="kid" selected>有学龄儿童</option><option value="elder">有 60 岁以上老人</option><option value="preg">有孕妇</option><option value="adult">都是成年健康人</option><option value="chronic">有慢性病/免疫力低</option></select></div>
+<div><label>🏫 感染风险来源</label>
+<select id="risk"><option value="school" selected>孩子在学校／幼儿园</option><option value="office">大人通勤上班</option><option value="hospital">常去医院</option><option value="home">主要在家</option></select></div>
+</div>
+<div class="param-row">
+<div><label>📍 地区季节</label>
+<select id="season"><option value="winter" selected>冬季高发期</option><option value="spring">春季</option><option value="autumn">秋冬交替</option><option value="summer">夏季（流感低发）</option></select></div>
+<div><label>😷 当前情况</label>
+<select id="status"><option value="prevent" selected>还没人得病，想预防</option><option value="one">家里有一人发烧</option><option value="several">多人陆续出现症状</option><option value="recover">刚病愈想防复发</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">🛡 生成防护计划</button>
+<div class="tips">⚠️ 本工具为一般性防护建议，不构成医疗建议。出现高热不退、呼吸困难等请立即就医。</div>
+</div>
+<div class="result-area" id="resultArea">
+<div class="card"><div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制计划</button></div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function gen(){
+var m=document.getElementById('member').value;
+var risk=document.getElementById('risk').value;
+var season=document.getElementById('season').value;
+var status=document.getElementById('status').value;
+var out='════ 流感季家庭防护计划 ════\n\n';
+out+='──── 💉 第一步：疫苗（最有效）────\n';
+out+='· 流感疫苗每年都要打，因为病毒每年变异，去年的抗体今年基本无效；\n';
+out+='· 最佳接种时间：9-11 月，抗体约需 2-4 周建立；\n';
+out+='· 错过也可以补种，整个流行季接种都有效；\n';
+if(m==='baby')out+='· 3 岁以下宝宝：6 个月以上可以接种，需遵医嘱；家人接种可形成"保护圈"；\n';
+else if(m==='kid')out+='· 学龄儿童：优先接种，学校是主要传播场所；\n';
+else if(m==='elder')out+='· 60 岁以上老人：优先接种，且建议同时接种肺炎疫苗；\n';
+else if(m==='preg')out+='· 孕妇：可以接种灭活流感疫苗（不能接种减毒活疫苗），孕期感染流感风险更高，建议咨询产科医生；\n';
+else if(m==='chronic')out+='· 慢性病患者：属于高危人群，强烈建议接种，接种前告知医生基础病情况；\n';
+else out+='· 健康成年人：接种可减少患病与传播，家中有老人孩子的更建议全家接种；\n';
+out+='\n──── 🧼 日常防护 ────\n';
+out+='· 洗手：流水＋肥皂搓 20 秒，尤其外出回家、饭前、接触门把手后；\n';
+out+='· 口罩：' + (risk==='school'?'孩子上学建议备两个口罩，人多密闭场所佩戴；':risk==='office'?'通勤地铁公交建议佩戴口罩；':risk==='hospital'?'去医院务必戴 N95/KN95；':'家人外出回家先洗手换衣再抱孩子；') + '\n';
+out+='· 通风：每天开窗通风 2-3 次，每次 20-30 分钟，冬天可分时段短开；\n';
+out+='· 少去人多密闭场所，尤其是流感高发期；\n';
+out+='· 咳嗽打喷嚏用手肘遮挡，不共用毛巾水杯；\n';
+out+='· 保证睡眠、均衡饮食，免疫力是最好的防线。\n';
+out+='\n──── 🧴 家庭消毒 ────\n';
+out+='· 高频接触面：门把手、开关、遥控器、手机、水龙头每天擦拭；\n';
+out+='· 消毒剂：75% 酒精（擦拭，不喷洒空气）或含氯消毒液（按说明稀释）；\n';
+out+='· 餐具：煮沸 15 分钟或消毒柜；\n';
+out+='· 衣物床品：阳光下晾晒或 60℃ 以上水温清洗；\n';
+out+='· 玩具：可水洗的用消毒液擦拭后冲净晾干；\n';
+out+='· 注意：酒精和含氯消毒剂不可混用，会产生有毒气体。\n';
+out+='\n──── 💊 用药常识（重要）────\n';
+out+='· 流感是病毒，抗生素无效，不要自行吃头孢/阿莫西林；\n';
+out+='· 抗病毒药（奥司他韦等）需在发病 48 小时内使用效果最好，且需医生处方；\n';
+out+='· 退烧药：对乙酰氨基酚或布洛芬，二选一，不要交替乱用，间隔至少 4-6 小时；\n';
+out+='· 儿童禁用阿司匹林（可能引发瑞氏综合征）；\n';
+out+='· 复方感冒药不要叠加吃，避免同成分过量伤肝；\n';
+out+='· 多喝水、多休息比一堆药更管用。\n';
+out+='\n──── 🌡 什么时候必须就医 ────\n';
+out+='出现以下任一情况，立即就医：\n';
+out+='· 持续高热超过 3 天不退，或退烧后又反复；\n';
+out+='· 呼吸困难、胸闷、气促；\n';
+out+='· 精神萎靡、嗜睡、意识模糊；\n';
+out+='· 抽搐、剧烈头痛、颈项强直；\n';
+out+='· 严重呕吐腹泻导致脱水；\n';
+out+='· 儿童拒食、尿量明显减少、口唇发紫；\n';
+out+='· 老人原有慢性病明显加重。\n';
+out+='\n──── 🚪 居家隔离方案 ────\n';
+if(status==='prevent')out+='目前无人患病，重点做好预防：疫苗＋洗手＋通风，家里备好体温计、退烧药和口罩。';
+else if(status==='one')out+='一人发病：\n· 尽量单独房间休息，使用独立餐具；\n· 照顾者佩戴口罩，接触后勤洗手；\n· 患者房间每天通风，门把手等重点消毒；\n· 其他家庭成员减少近距离接触，尤其是老人孩子；\n· 患者退烧后仍需观察 24-48 小时再恢复日常接触。';
+else if(status==='several')out+='多人发病：\n· 分房休息，避免交叉感染（不同类型病毒可能叠加）；\n· 集中采购物资，减少外出；\n· 症状严重者优先就医，家中留人照顾；\n· 注意观察是否有人出现重症信号。';
+else out+='刚病愈防复发：\n· 病后 1-2 周免疫力仍较低，注意休息别立刻恢复高强度工作；\n· 继续做好手卫生与通风；\n· 咳嗽可能持续 2-3 周属正常，但加重需就医。';
+out+='\n\n──── 🎒 家庭应急物资清单 ────\n';
+out+='□ 电子体温计（建议备两支）\n□ 退烧药：对乙酰氨基酚／布洛芬（儿童备混悬液）\n□ 医用口罩、N95\n□ 75% 酒精、含氯消毒片\n□ 血氧仪（有老人必备）\n□ 口服补液盐（防脱水）\n□ 生理盐水鼻喷／洗鼻器\n□ 独立餐具与垃圾袋\n';
+out+='\n👨‍⚕️ 用药请遵医嘱，尤其是儿童和老人剂量需按体重/年龄调整。\n';
+return out;
+}
+</script>
+<script>
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('AI 流感季家庭防护计划 | AgentGongju.com'))return;
+document.getElementById('outputBox').innerText=gen();
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(function(){alert('✅ 已复制！')})}
+</script>
+</body>
+</html>

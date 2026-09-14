@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 丢东西找回攻略生成器 | AgentGongju.com</title>
+<meta name="description" content="手机、钱包、钥匙、证件丢了怎么办？按场景生成找回步骤、挂失顺序和补办清单，附黄金 2 小时行动表。">
+<meta name="keywords" content="丢东西怎么办,手机丢了,身份证丢了,钱包丢了,挂失补办,贵重物品找回">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,input[type=text],input[type=number],textarea{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px;box-sizing:border-box}
+textarea{min-height:110px;resize:vertical;line-height:1.7}
+select:focus,input:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;margin-bottom:12px;font-size:.92rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.tips{color:#64748b;font-size:.8rem;line-height:1.7;margin-top:6px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() { var hm = document.createElement("script"); hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949"; var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(hm, s); })();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🔍 AI 丢东西找回攻略生成器</h1><p>黄金 2 小时行动表＋挂失补办全流程</p></div>
+<div class="card">
+<div class="param-row">
+<div><label>🎒 丢了什么</label>
+<select id="item">
+<option value="phone">手机</option>
+<option value="wallet">钱包 / 银行卡</option>
+<option value="idcard">身份证</option>
+<option value="key">钥匙 / 门禁卡</option>
+<option value="laptop">笔记本电脑 / 平板</option>
+<option value="bike">电动车 / 自行车</option>
+<option value="bag">背包 / 手提包（含证件）</option>
+<option value="pet">宠物走失</option>
+</select></div>
+<div><label>📍 大概在哪丢的</label>
+<select id="place">
+<option value="street">马路上 / 小区周边</option>
+<option value="transit">地铁公交 / 出租车网约车</option>
+<option value="mall">商场 / 餐厅 / 电影院</option>
+<option value="office">公司 / 学校</option>
+<option value="travel">外地 / 旅游途中</option>
+<option value="home">找不到了，不确定在哪</option>
+</select></div>
+</div>
+<div class="param-row">
+<div><label>⏱ 丢了多久</label>
+<select id="when"><option value="1">1 小时内</option><option value="6">几小时内</option><option value="24">1 天内</option><option value="long">超过 1 天</option></select></div>
+<div><label>🚨 是否有被盗嫌疑</label>
+<select id="stolen"><option value="no">应该只是遗失</option><option value="yes">怀疑被偷</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">🧭 生成找回攻略</button>
+</div>
+<div class="result-area" id="resultArea">
+<div class="card">
+<div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制攻略</button>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+var INFO={
+phone:{name:'手机',urgent:['立即用另一台设备登录「查找我的 iPhone」/「查找设备」，开启丢失模式并远程锁定','拨打运营商客服挂失 SIM 卡，防止验证码被用来盗刷账号','冻结微信/支付宝（支付宝 95188，微信支付 95017）','修改微信、支付宝、银行 App 密码'],
+suspect:'若怀疑被盗：保留「查找设备」定位截图，直接报警，警方可凭定位协助查找。',
+done:['补办 SIM 卡（运营商营业厅，本人持身份证，可原号补办）','恢复通讯录与照片（iCloud / 华为云 / 小米云备份）','解绑/重新登录常用 App']},
+wallet:{name:'钱包/银行卡',urgent:['立即电话挂失所有银行卡（工行95588、建行95533、招行95555…）','支付宝→安全中心→账户挂失；微信→支付→钱包→帮助中心','挂失社保卡（12333）与信用卡（防止闪付盗刷）'],
+suspect:'若被盗：立即报警，银行调取盗刷记录可作为证据。',
+done:['银行网点补办银行卡（部分支持当场取卡）','补办社保卡、会员卡、交通卡','如含身份证，同步走身份证补办流程']},
+idcard:{name:'身份证',urgent:['先在「国家政务服务平台」小程序或当地公安 App 办理「身份证挂失」','微信/支付宝搜索「电子身份证」查看是否能临时应急','如涉及贷款风险，可到派出所备案'],
+suspect:'身份证被冒用注册公司/网贷风险较高，建议到派出所备案留记录。',
+done:['到户籍地或现居住地派出所办理补领（异地可办）','一般 15-20 个工作日，加急约 5-7 天','同时补办驾驶证、社保卡等相关证件']},
+key:{name:'钥匙/门禁卡',urgent:['联系物业或房东，确认是否需要立即换锁','若为车钥匙，联系 4S 店或汽修厂做钥匙注销'],
+suspect:'若怀疑被偷：钥匙与住址一起丢失，务必当天换锁芯。',
+done:['配新钥匙 / 补办门禁卡','换锁芯（成本几十到几百元不等）','登记备用钥匙交给可信赖的人']},
+laptop:{name:'电脑/平板',urgent:['登录 Apple ID / 微软账户 / 华为云，开启查找与远程锁定','远程擦除本地数据（前提是有备份）','修改已登录的邮箱、网盘、工作账号密码'],
+suspect:'若被盗：立即报警，提供序列号（SN）与购买发票，二手市场可查。',
+done:['用序列号在官方渠道挂失登记','联系保险公司（如投保了设备险）','重置所有重要账号密码']},
+bike:{name:'电动车/自行车',urgent:['回忆最后停放位置，检查周边监控摄像头位置','联系物业/商户调取监控（越早越好，监控通常只存 7-30 天）','电动车上牌的可查询 GPS 定位（部分品牌 App 支持）'],
+suspect:'若被盗：报警立案，提供车辆照片、车架号、购车发票。',
+done:['到派出所补录车辆信息','关注本地二手平台是否有同款低价出售','后续加装 GPS 定位器']},
+bag:{name:'背包/手提包',urgent:['按包内物品逐项挂失：银行卡、手机、证件','冻结支付账户','如有重要文件，联系相关单位说明'],
+suspect:'若被盗：报警并调监控，注意包内身份证被冒用风险。',
+done:['补办所有证件','更换家门钥匙','重要文件重新开具']},
+pet:{name:'宠物',urgent:['在走失地点 1 公里内贴寻宠启事（附清晰照片、特征、联系方式）','在小区群、宠物群、朋友圈、抖音同城发布','走失点放置带有主人气味的衣物与食物，诱导回家'],
+suspect:'若怀疑被抱走：调监控、报警，并在宠物平台（如"找宠网"）登记。',
+done:['到附近宠物医院、救助站留信息','联系同城宠物博主扩散','给宠物佩戴定位项圈']}
+};
+var PLACE={
+street:'沿原路返回仔细找＋问周边商户/环卫工人（环卫工人常捡到遗失物）',
+transit:'地铁：找车站客服中心或拨打地铁失物招领电话；公交：拨 12345 或公交集团客服；出租车：凭发票上的车牌号联系；网约车：App 内「行程」→ 联系客服→报失',
+mall:'联系商场服务台登记失物，留下联系方式；餐厅/影院找店长调监控',
+office:'问前台、保洁、同事群，查看公司监控',
+travel:'拨打全国失物招领热线 12345，或通过 12306（火车）/ 机场失物招领处查询；住宿地联系酒店前台',
+home:'按"最后见到→接触过的地方→常放位置→夹层与包包内侧"顺序地毯式搜索，重点找：洗衣机、沙发缝、外套口袋、车里'
+};
+function gen(){
+var i=INFO[document.getElementById('item').value];
+var place=PLACE[document.getElementById('place').value];
+var when=document.getElementById('when').value;
+var st=document.getElementById('stolen').value;
+var out='════ 找回行动表：'+i.name+' ════\n\n';
+out+='⏰ 黄金时间提醒：'+(when==='1'?'刚丢不久，找回概率最高，立刻行动！':when==='6'?'几小时内，仍在黄金窗口，抓紧联系相关方。':when==='24'?'已过 1 天，重点是挂失止损＋持续追踪。':'时间较久，主要靠挂失补办与监控追查，别放弃登记。')+'\n\n';
+out+='──── 第一步：立即要做（0-30 分钟）────\n';
+i.urgent.forEach(function(x,n){out+=(n+1)+'. '+x+'\n';});
+out+='\n──── 第二步：现场找回线索 ────\n';
+out+=place+'\n';
+out+='\n──── 第三步：报警与责任 ────\n';
+out+=st==='yes'?('【怀疑被盗】'+i.suspect+'\n报案材料：本人身份证、物品购买凭证/发票、物品照片、监控线索。\n'):('目前看是遗失，暂无需报警；但若涉及身份证被冒用或金额较大，仍建议到派出所备案。\n'+i.suspect+'\n');
+out+='\n──── 第四步：补办与善后 ────\n';
+i.done.forEach(function(x,n){out+=(n+1)+'. '+x+'\n';});
+out+='\n──── 防丢小贴士 ────\n';
+out+='· 手机开启「查找设备」并记住账号密码，是最有效的找回手段；\n';
+out+='· 证件与银行卡分开放，不要全塞一个钱包；\n';
+out+='· 出门给随身包拍照，丢了能快速描述；\n';
+out+='· 重要证件留电子扫描件存云盘，补办时省事；\n';
+out+='· 电动车、宠物加装定位设备，找回率大幅提高。\n';
+return out;
+}
+</script>
+<script>
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('AI 丢东西找回攻略生成器 | AgentGongju.com'))return;
+document.getElementById('outputBox').innerText=gen();
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(function(){alert('✅ 已复制！')})}
+</script>
+</body>
+</html>

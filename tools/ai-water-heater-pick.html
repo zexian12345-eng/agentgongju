@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 热水器选购助手 | AgentGongju.com</title>
+<meta name="description" content="燃气、电热、空气能怎么选？按家庭人数、户型和预算算出容量与类型推荐，附安装避坑要点。">
+<meta name="keywords" content="热水器选购,燃气热水器,电热水器,空气能,升数选择,装修家电">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,input[type=text],input[type=number],textarea{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px;box-sizing:border-box}
+textarea{min-height:110px;resize:vertical;line-height:1.7}
+select:focus,input:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;margin-bottom:12px;font-size:.92rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.tips{color:#64748b;font-size:.8rem;line-height:1.7;margin-top:6px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() { var hm = document.createElement("script"); hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949"; var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(hm, s); })();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🚿 AI 热水器选购助手</h1><p>按人数和户型推荐类型、容量与预算</p></div>
+<div class="card">
+<div class="param-row">
+<div><label>👨‍👩‍👧 家庭人数</label>
+<select id="people"><option value="1">1-2 人</option><option value="3" selected>3 人</option><option value="4">4 人</option><option value="5">5 人以上</option></select></div>
+<div><label>🏠 户型</label>
+<select id="house"><option value="small">小户型一厨一卫</option><option value="mid" selected>两卫 / 三居</option><option value="big">大平层 / 别墅</option></select></div>
+</div>
+<div class="param-row">
+<div><label>🔥 有无燃气管道</label>
+<select id="gas"><option value="yes" selected>有天然气</option><option value="no">没有，只能用瓶装/通电</option><option value="unknown">不清楚</option></select></div>
+<div><label>🛁 使用习惯</label>
+<select id="habit"><option value="shower" selected>淋浴为主</option><option value="bath">常泡澡 / 大浴缸</option><option value="multi">多卫生间同时用</option><option value="kitchen">同时用热水洗菜</option></select></div>
+</div>
+<div class="param-row">
+<div><label>💰 预算</label>
+<select id="budget"><option value="low">1500 元以内</option><option value="mid" selected>1500-3500 元</option><option value="high">3500 元以上</option></select></div>
+<div><label>🧱 安装条件</label>
+<select id="cond"><option value="balcony">阳台/厨房可外墙排气</option><option value="inner">只能装在卫生间内</option><option value="nocond">还没确定</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">🔥 生成选购方案</button>
+</div>
+<div class="result-area" id="resultArea">
+<div class="card"><div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制方案</button></div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function gen(){
+var p=+document.getElementById('people').value;
+var house=document.getElementById('house').value;
+var gas=document.getElementById('gas').value;
+var habit=document.getElementById('habit').value;
+var budget=document.getElementById('budget').value;
+var cond=document.getElementById('cond').value;
+var out='════ 热水器选购方案 ════\n\n';
+out+='──── 🔍 类型怎么选 ────\n';
+if(gas==='yes'){
+out+='✅ 推荐：燃气热水器（恒温型）\n';
+out+='理由：即开即热、不用等、不用储水，适合大多数城市家庭，是首选方案。\n';
+out+='· 你的条件有天然气，优先考虑燃气；\n';
+out+='· 注意必须是强排式或平衡式（可装室内但需外墙排气）；\n';
+out+='· 别买直排式（国家已禁止销售，有中毒风险）。\n';
+}else if(gas==='no'){
+out+='✅ 推荐：储水式电热水器 或 空气能热水器\n';
+out+='理由：无天然气条件下，电热最稳妥；如阳台空间大有预算，空气能更省电。\n';
+out+='· 电热：安装简单、价格低，但要提前加热，需要预留容量；\n';
+out+='· 空气能：一次投入高（5000+），但省电约 70%，适合长期居住；\n';
+out+='· 即热式电热水器功率 6-8kW，老房子电线通常带不动，慎选。\n';
+}else{
+out+='⚠️ 先确认是否已通天然气（看厨房有没有燃气表/管道）。\n· 有 → 燃气热水器\n· 无 → 储水式电热水器\n';
+}
+out+='\n──── 📐 升数怎么选 ────\n';
+var l,el;
+if(habit==='bath'||habit==='multi'){l=16;el=80;}
+else if(p>=4){l=16;el=80;}
+else if(p===3){l=13;el=60;}
+else {l=12;el=50;}
+if(house==='big'){l=Math.max(l,20);el=Math.max(el,100);}
+out+='· 燃气热水器推荐：'+l+' 升（升数=升温 25℃ 时每分钟出水量）\n';
+out+='· 电热水器推荐：'+el+' 升容量\n';
+out+='· 参考：单人淋浴 8-10 升/次，泡澡 150 升以上，多卫同时用要加 3-5 升\n';
+out+='· 若两个卫生间同时洗澡，燃气建议 16 升以上，否则水温会忽冷忽热\n';
+out+='\n──── 💰 预算匹配 ────\n';
+if(budget==='low')out+='1500 元内：可选基础款燃气（12-13 升）或 50 升电热。够用但恒温精度一般，冬季可能忽冷忽热。';
+else if(budget==='mid')out+='1500-3500 元：主流价位，可以买到带水量伺服器的恒温燃气机（13-16 升），或 60-80 升带速热的电热。这是性价比最高的区间。';
+else out+='3500 元以上：可以上高端恒温燃气（零冷水、智能联动）、进口品牌电热，或空气能。建议优先把钱花在"恒温能力"而不是花哨功能上。';
+out+='\n\n──── 🔧 安装条件检查 ────\n';
+if(cond==='balcony')out+='阳台/厨房可排气：太好了，燃气热水器随便选，注意烟管出口要避开邻居窗户和新风口。';
+else if(cond==='inner')out+='只能装卫生间内：⚠️ 燃气热水器必须选"平衡式"（双层烟管，同轴进排气），否则禁止装在浴室内，有中毒风险。更稳妥的选择是电热水器。';
+else out+='还没确定安装位置：优先规划在阳台或厨房外墙可排气的墙面，燃气机型选择面最广。';
+out+='\n\n──── ⚠️ 避坑要点 ────\n';
+out+='1. 燃气热水器必须找有资质的师傅安装，切勿自己接燃气管；\n';
+out+='2. 老房子加装燃气机，要先确认燃气公司和物业是否允许；\n';
+out+='3. 冬天水温上不去，往往是"升数不够"，而不是机器坏了；\n';
+out+='4. 电热水器要定期更换镁棒（1-2 年一次），否则内胆腐蚀漏水；\n';
+out+='5. 恒温能力看"是否带水量伺服器"，比"几段火力"重要得多；\n';
+out+='6. 别忽略电费：电热一年电费可能比燃气高几百到上千；\n';
+out+='7. 零冷水机型方便但耗气，且需要预埋回水管，装修前要规划。\n';
+out+='\n──── 🛒 下单前确认清单 ────\n';
+out+='□ 燃气类型（天然气12T / 液化气20Y）是否匹配\n';
+out+='□ 安装位置是否允许排气\n';
+out+='□ 是否包安装、包辅材（烟管、角阀、软管常另收费）\n';
+out+='□ 保几年、上门维修是否免费\n';
+out+='□ 是否有以旧换新补贴（很多地区有）\n';
+return out;
+}
+</script>
+<script>
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('AI 热水器选购助手 | AgentGongju.com'))return;
+document.getElementById('outputBox').innerText=gen();
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(function(){alert('✅ 已复制！')})}
+</script>
+</body>
+</html>

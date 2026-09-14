@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 老人防跌倒改造清单 | AgentGongju.com</title>
+<meta name="description" content="按房间逐项列出防滑、扶手、照明、通道改造要点，含预算估算与优先级，帮父母住得更安全。">
+<meta name="keywords" content="老人防跌倒,适老化改造,防摔倒,居家安全,老人扶手,无障碍改造">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,input[type=text],input[type=number],textarea{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px;box-sizing:border-box}
+textarea{min-height:110px;resize:vertical;line-height:1.7}
+select:focus,input:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;margin-bottom:12px;font-size:.92rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.tips{color:#64748b;font-size:.8rem;line-height:1.7;margin-top:6px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() { var hm = document.createElement("script"); hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949"; var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(hm, s); })();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🏠 AI 老人防跌倒改造清单</h1><p>按房间生成改造清单＋预算与优先级</p></div>
+<div class="card">
+<div class="param-row">
+<div><label>👴 老人情况</label>
+<select id="who"><option value="alone">独居</option><option value="couple" selected>老两口同住</option><option value="family">和子女同住</option></select></div>
+<div><label>🦯 行动能力</label>
+<select id="able"><option value="good">基本自理，腿脚还行</option><option value="mid" selected>走路慢，需扶东西</option><option value="bad">需拐杖/助行器</option><option value="wheel">坐轮椅</option></select></div>
+</div>
+<div class="param-row">
+<div><label>🏠 房屋类型</label>
+<select id="house"><option value="old" selected>老小区 / 无电梯</option><option value="elev">带电梯小区</option><option value="village">自建房</option></select></div>
+<div><label>💰 预算档位</label>
+<select id="budget"><option value="low">精简版（500 元内）</option><option value="mid" selected>实用版（500-3000 元）</option><option value="high">全面版（3000 元以上）</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">🛠 生成改造清单</button>
+</div>
+<div class="result-area" id="resultArea">
+<div class="card"><div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制清单</button></div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+var ROOM=[
+{name:'🚿 卫生间（重点中的重点）',items:[
+['地面铺防滑垫或做防滑处理','30-200','必做'],
+['马桶旁装 L 型扶手或加装马桶增高架','80-300','必做'],
+['淋浴区装折叠浴凳＋手持花洒','100-400','必做'],
+['装垂直扶手（淋浴区、马桶区各一个）','100-300','建议'],
+['地面门槛做平或加缓坡，不用抬脚','50-300','建议'],
+['装小夜灯（人体感应），夜间起夜不摸黑','30-80','必做']]},
+{name:'🛏 卧室',items:[
+['床边加装扶手（起身借力）','80-250','建议'],
+['床高调整到坐下时膝盖约 90 度','0-200','必做'],
+['床到卫生间通道清空杂物','0','必做'],
+['床边放感应夜灯＋常用物品','30-80','必做'],
+['地面不放小地毯（易滑易绊）','0','必做']]},
+{name:'🚪 通道与客厅',items:[
+['清除地面所有电线、地毯边、杂物','0','必做'],
+['所有门槛做平或加斜坡','50-500','建议'],
+['沿墙装连续扶手（走廊）','150-600','建议'],
+['换防滑拖鞋（后跟包裹式，不穿拖鞋式）','30-100','必做'],
+['沙发高度调到好起身，别太软','0-1500','可选']]},
+{name:'🍳 厨房',items:[
+['常用物品下移到腰部高度','0','必做'],
+['地面防滑处理＋及时擦干','30-150','必做'],
+['备一个带轮小推车搬东西','50-200','可选'],
+['避免踩凳子取物，改用取物夹','20-50','建议']]},
+{name:'🪜 楼梯 / 门口',items:[
+['楼梯两侧都装扶手','100-500','必做'],
+['台阶边缘贴防滑条或亮色警示条','30-100','必做'],
+['门口放稳固的换鞋凳＋扶手','80-300','建议'],
+['玄关照明加强，进门不摸黑','50-200','必做']]}
+];
+var ABLE={
+good:'目前行动尚可，重点在"防患于未然"：防滑、照明、清障三项先做，成本低收益高。',
+mid:'已有走路不稳的情况，扶手与夜灯必须优先，卫生间是改造第一优先级。',
+bad:'需使用助行器，通道宽度建议保留 80cm 以上，门槛全部做平，并配防滑袜。',
+wheel:'轮椅使用，门槛必须做坡道，卫生间建议改成淋浴区无障碍＋可移动浴凳，扶手承重要达标（≥100kg）。'
+};
+var HOUSE={
+old:'老小区无电梯：上下楼梯是最大风险点，扶手、防滑条、照明必须全做；条件允许可考虑低楼层换房或申请加装电梯。',
+elev:'带电梯：重点转到家中卫生间与通道，电梯口到门口的照明与地面也要检查。',
+village:'自建房：注意楼梯坡度与原有扶手是否牢固，院落地面积水与台阶边缘要重点处理。'
+};
+var BUDGET={
+low:'精简版（≤500 元）：只做"必做项中的低成本项"——防滑垫、夜灯、扶手（选装简易款）、防滑拖鞋、清障。',
+mid:'实用版（500-3000 元）：必做项全覆盖，卫生间系统改造＋扶手＋照明，效果最明显。',
+high:'全面版（3000 元+）：可做整体适老化改造，含地面防滑处理、无障碍淋浴间、智能监测（跌倒报警手环）。'
+};
+function gen(){
+var a=ABLE[document.getElementById('able').value];
+var h=HOUSE[document.getElementById('house').value];
+var b=BUDGET[document.getElementById('budget').value];
+var who=document.getElementById('who').value;
+var out='════ 老人防跌倒改造清单 ════\n\n';
+out+='🏠 居住情况：'+({alone:'独居',couple:'老两口同住',family:'与子女同住'}[who])+'｜'+a+'\n';
+out+='\n📊 数据提醒：跌倒是我国 65 岁以上老人伤害死亡的首位原因，其中约一半发生在家中，卫生间和卧室是重灾区。\n\n';
+var total=0;
+ROOM.forEach(function(r){
+out+='──── '+r.name+' ────\n';
+r.items.forEach(function(it){
+out+='['+(it[2]==='必做'?'必做':it[2])+'] '+it[0]+'　（'+it[1]+' 元）\n';
+});
+out+='\n';
+});
+out+='──── 房屋类型提示 ────\n'+h+'\n';
+out+='\n──── 预算方案 ────\n'+b+'\n';
+out+='\n──── 优先级排序（先做这 5 件）────\n';
+out+='1. 卫生间防滑垫 ＋ 地面保持干燥\n2. 起夜感应小夜灯（卧室到卫生间路径）\n3. 马桶旁扶手\n4. 清空所有地面障碍与松动地毯\n5. 换成包裹式防滑拖鞋\n';
+out+='\n──── 附加建议 ────\n';
+out+='· 老人随身带手机或装跌倒报警手环；\n';
+out+='· 浴室水温提前调好，避免忽冷忽热导致头晕；\n';
+out+='· 降压药、安眠药服用后 1 小时内减少走动；\n';
+out+='· 每半年检查一次扶手是否松动、防滑垫是否老化；\n';
+out+='· 视力、听力、骨密度定期检查，配好老花镜。\n';
+return out;
+}
+</script>
+<script>
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('AI 老人防跌倒改造清单 | AgentGongju.com'))return;
+document.getElementById('outputBox').innerText=gen();
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(function(){alert('✅ 已复制！')})}
+</script>
+</body>
+</html>

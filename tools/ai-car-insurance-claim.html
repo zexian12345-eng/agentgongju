@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 车险出险处理指引 | AgentGongju.com</title>
+<meta name="description" content="出事故了先做什么？按事故类型生成报案、拍照、定责、理赔全流程，附拍照清单与话术，避免吃亏。">
+<meta name="keywords" content="车险理赔,出险流程,交通事故处理,报保险,拍照取证,责任认定">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,input[type=text],input[type=number],textarea{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px;box-sizing:border-box}
+textarea{min-height:110px;resize:vertical;line-height:1.7}
+select:focus,input:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;margin-bottom:12px;font-size:.92rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.tips{color:#64748b;font-size:.8rem;line-height:1.7;margin-top:6px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() { var hm = document.createElement("script"); hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949"; var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(hm, s); })();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🚗 AI 车险出险处理指引</h1><p>事故现场步骤＋拍照清单＋理赔话术</p></div>
+<div class="card">
+<div class="param-row">
+<div><label>💥 事故类型</label>
+<select id="type">
+<option value="minor">小刮蹭（双方都在场）</option>
+<option value="hitrun">对方逃逸 / 找不到人</option>
+<option value="parking">停车被撞，车主不在</option>
+<option value="person">撞到人 / 有人受伤</option>
+<option value="single">单车事故（撞护栏、翻沟）</option>
+<option value="water">涉水 / 水淹车</option>
+<option value="theft">车辆被盗 / 被砸</option>
+</select></div>
+<div><label>🛡 保险配置</label>
+<select id="ins">
+<option value="all">交强险＋三者＋车损＋不计免赔</option>
+<option value="basic">只买了交强险＋三者</option>
+<option value="ciz">只有交强险</option>
+<option value="unknown">不太清楚</option>
+</select></div>
+</div>
+<div class="param-row">
+<div><label>📍 地点</label>
+<select id="place"><option value="city">市区道路</option><option value="highway">高速 / 快速路</option><option value="parking">小区 / 停车场</option><option value="remote">郊区 / 乡道</option></select></div>
+<div><label>👥 有无人员受伤</label>
+<select id="hurt"><option value="no">无人受伤</option><option value="light">轻微擦碰/不适</option><option value="yes">有人明显受伤</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">📞 生成处理指引</button>
+<div class="tips">⚠️ 有人受伤必须第一时间打 120，救人永远排在理赔前面。</div>
+</div>
+<div class="result-area" id="resultArea">
+<div class="card"><div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制指引</button></div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+var TYPE={
+minor:{steps:['打开双闪，在车后 50-100 米放三角警示牌（高速 150 米）','确认无人受伤 → 用手机全方位拍照取证','双方协商或报警由交警定责','拨打保险公司客服报案（48 小时内，越快越好）','按客服指引到快处中心或指定修理厂'],
+note:'小刮蹭如果双方都认可责任，可以走"快处快赔"，不用等交警，拍照后挪车别堵路。'},
+hitrun:{steps:['记住或拍下对方车牌、车型、颜色、逃逸方向','立即报警（122）说明肇事逃逸','打自己保险公司报案，说明对方逃逸','调取行车记录仪、周边监控','报警立案后可走自身车损险（部分需附加"无法找到第三方特约险"）'],
+note:'没买"无法找到第三方特约险"的话，车损险可能只赔 70%，这是很多人的盲区。'},
+parking:{steps:['拍照记录车辆受损部位与现场环境','查看周边监控位置，联系物业/商户调取','报警备案（122），拿到报案回执','48 小时内向保险公司报案','若能找到肇事车，按正常双方事故处理'],
+note:'找不到肇事方时，同样涉及"无法找到第三方特约险"，否则自付比例会提高。'},
+person:{steps:['立即停车、开双闪、设警示牌','第一时间拨打 120 救人，再打 122 报警','不要擅自移动伤者（除非有起火等危险）','保护现场，拍照但不破坏痕迹','拨打保险公司报案并说明有人受伤','不要私下承诺赔偿金额，一切走保险与交警'],
+note:'⚠️ 切记不要逃逸！撞人后逃逸属于刑事犯罪，保险也会拒赔。'},
+single:{steps:['确认自身安全，开双闪设警示','拍照记录车辆位置、受损部位、周边环境','拨打保险公司报案（部分公司支持 App 自助报案）','交警需要到场出具事故证明的话拨打 122','拖车可联系保险公司免费道路救援'],
+note:'单车事故常见有：撞护栏、撞树、翻车、掉沟。若撞坏公共设施，需报警并赔偿公共损失。'},
+water:{steps:['⚠️ 涉水熄火后绝！对！不！要！再！次！点！火','立即断开电瓶、撤离到安全地带','拨打保险公司报案，说明水淹情况','联系救援拖车（不要自己推车）','涉水险（发动机特别损失险）才能赔发动机进水'],
+note:'二次点火导致发动机损坏，绝大多数保险条款都会拒赔，这是最容易被忽略的一条。'},
+theft:{steps:['立即报警（110），取得立案证明','通知保险公司，提供行驶证、购车发票、报案回执','等待警方侦查（一般 60-90 天无果后进入理赔）','向保险公司提交理赔材料','盗抢险需单独投保（2020 年后并入车损险）'],
+note:'车辆被砸（玻璃、车漆）属于车损险范围，若只砸不盗，走车损险即可。'}
+};
+var HURT={
+no:'无人受伤，按正常流程处理即可。',
+light:'有人表示不适，务必留下联系方式并建议就医检查，车内人员也登记信息，避免事后扯皮。',
+yes:'🚨 有人明显受伤：先打 120，再打 122，最后通知保险公司。绝对不要垫付大额费用给对方个人，一切通过保险和交警处理。'
+};
+var PLACE={
+city:'市区道路：打开双闪、设警示牌后，快速拍照并移至不阻碍交通处，避免二次事故。',
+highway:'高速：人员立即撤离到护栏外！在车后 150 米设警示牌。高速上不要站在车旁或车道上，二次事故极其致命。',
+parking:'停车场：联系物业协助，调监控，保管好停车凭证与监控截图。',
+remote:'郊区乡道：先确保安全并报警，记录 GPS 坐标或路牌，方便保险公司定位。'
+};
+function gen(){
+var t=TYPE[document.getElementById('type').value];
+var ins=document.getElementById('ins').value;
+var place=PLACE[document.getElementById('place').value];
+var hurt=HURT[document.getElementById('hurt').value];
+var out='════ 事故处理指引 ════\n\n';
+out+='⚡ 现在立刻做的事（按顺序）\n';
+t.steps.forEach(function(x,n){out+=(n+1)+'. '+x+'\n';});
+out+='\n📌 关键提示\n'+t.note+'\n';
+out+='\n📍 地点注意事项\n'+place+'\n';
+out+='\n🩸 人员情况\n'+hurt+'\n';
+out+='\n──── 📸 拍照取证清单（至少 6 张）────\n';
+out+='1. 全景：站在车头前方 5-10 米拍两车相对位置＋道路标线\n';
+out+='2. 全景：车尾方向再来一张，看清车道\n';
+out+='3. 两车接触部位特写（各自拍一张）\n';
+out+='4. 对方车牌特写（清晰可辨）\n';
+out+='5. 路面痕迹：刹车印、散落物、信号灯状态\n';
+out+='6. 周边参照物：路牌、门店招牌、监控位置\n';
+out+='7. 双方行驶证、驾驶证拍照留档\n';
+out+='8. 行车记录仪视频立刻导出保存（循环录像会被覆盖！）\n';
+out+='\n──── 🗣 报案话术（打保险公司客服）────\n';
+out+='"你好，我在 XX 路 XX 附近发生交通事故，时间是 X 点 X 分，事故类型是' + ({minor:'双方轻微刮蹭',hitrun:'对方肇事逃逸',parking:'停车被撞',person:'有人受伤',single:'单车事故',water:'车辆涉水',theft:'车辆被盗/被砸'}[document.getElementById('type').value]) + '，目前' + ({no:'无人受伤',light:'有人轻微不适',yes:'有人受伤已叫救护车'}[document.getElementById('hurt').value]) + '，需要报案登记，我的车牌是 XXX，保单号是 XXX。"\n';
+out+='\n──── 🛡 你的保险配置足以覆盖吗 ────\n';
+if(ins==='all')out+='配置较全，车损、三者、不计免赔都有，绝大多数情况可正常理赔。';
+else if(ins==='basic')out+='⚠️ 没有车损险：自己车辆的维修费需要自掏腰包，对方损失由三者险赔付。建议下次续保加买车损险。';
+else if(ins==='ciz')out+='⚠️ 只有交强险：交强险赔付额度很低（死亡伤残 18 万、医疗 1.8 万、财产 2000 元），超出部分全部自付。强烈建议补充三者险。';
+else out+='建议打保险公司客服或看保单首页，确认是否有：车损险、三者险、不计免赔。这是最关键的三个险种。';
+out+='\n\n──── ⏰ 时间红线 ────\n';
+out+='· 一般需在事故发生后 48 小时内报案（部分公司要求 24 小时）；\n';
+out+='· 有人受伤的，出院后尽快提交医疗材料；\n';
+out+='· 定损后才能修车，先修后报可能被拒赔；\n';
+out+='· 理赔材料：保单、行驶证、驾驶证、身份证、交警责任认定书、维修发票、定损单。\n';
+return out;
+}
+</script>
+<script>
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('AI 车险出险处理指引 | AgentGongju.com'))return;
+document.getElementById('outputBox').innerText=gen();
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(function(){alert('✅ 已复制！')})}
+</script>
+</body>
+</html>

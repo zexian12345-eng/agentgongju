@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 英语跟读素材生成器 | AgentGongju.com</title>
+<meta name="description" content="按场景和水平生成英语跟读对话＋中文对照＋发音要点，附影子跟读训练法，每天 15 分钟练口语。">
+<meta name="keywords" content="英语跟读,影子跟读,英语口语练习,英语对话素材,英语学习,口语训练">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,input[type=text],input[type=number],textarea{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px;box-sizing:border-box}
+textarea{min-height:110px;resize:vertical;line-height:1.7}
+select:focus,input:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;margin-bottom:12px;font-size:.92rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.tips{color:#64748b;font-size:.8rem;line-height:1.7;margin-top:6px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() { var hm = document.createElement("script"); hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949"; var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(hm, s); })();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🎧 AI 英语跟读素材生成器</h1><p>生成跟读对白＋发音要点＋训练计划</p></div>
+<div class="card">
+<div class="param-row">
+<div><label>🎬 场景</label>
+<select id="scene">
+<option value="daily">日常寒暄 / 打招呼</option>
+<option value="office">职场沟通 / 开会</option>
+<option value="restaurant">餐厅点餐</option>
+<option value="travel">旅行问路 / 机场</option>
+<option value="shopping">购物砍价</option>
+<option value="phone">电话 / 视频会议</option>
+<option value="interview">面试</option>
+<option value="smalltalk">电梯闲聊</option>
+</select></div>
+<div><label>📈 英语水平</label>
+<select id="level"><option value="a2">初级（能说简单句）</option><option value="b1" selected>中级（能日常交流）</option><option value="b2">进阶（想说地道）</option></select></div>
+</div>
+<div class="param-row">
+<div><label>💬 每句长度</label>
+<select id="len"><option value="short">短句（5-8 词）</option><option value="mid" selected>中等（8-14 词）</option><option value="long">长句（14 词以上）</option></select></div>
+<div><label>⏱ 每天练多久</label>
+<select id="time"><option value="10">10 分钟</option><option value="15" selected>15 分钟</option><option value="30">30 分钟</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">🎤 生成跟读素材</button>
+</div>
+<div class="result-area" id="resultArea">
+<div class="card"><div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制素材</button></div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+var SCENE={
+daily:{name:'日常寒暄',lines:[
+["Hey, how is it going?","嘿，最近怎么样？"],
+["Pretty good, thanks. How about you?","挺好的，谢谢。你呢？"],
+["Not bad. Busy week though.","还行，就是这周挺忙的。"],
+["Same here. Anything fun planned for the weekend?","我也是。周末有什么好玩的安排吗？"],
+["Probably just chilling at home. You?","估计就在家休息吧。你呢？"],
+["I might go hiking if the weather holds up.","如果天气好的话我可能去爬山。"]],
+focus:'连读重点：how is it going 连成 /haʊzɪtˈgoʊɪŋ/；Not bad 几乎读成一个词 /nɑːbæd/。'},
+office:{name:'职场沟通',lines:[
+["Do you have a minute? I would like to run something by you.","你现在有空吗？我想跟你商量个事。"],
+["Sure, what is on your mind?","当然，什么事？"],
+["I think we should push the deadline back by a week.","我觉得我们应该把截止日期往后推一周。"],
+["That might be tough. The client is expecting it Friday.","这恐怕有点难，客户希望周五就能拿到。"],
+["I understand, but the quality is not there yet.","我理解，但质量还没达到要求。"],
+["Fair enough. Let me check with the client and get back to you.","有道理。我问下客户再回复你。"]],
+focus:'语调重点：Do you have a minute? 是礼貌请求，末尾要上扬；Fair enough 表示可以接受，语气要缓。'},
+restaurant:{name:'餐厅点餐',lines:[
+["Hi, are you ready to order?","你好，可以点餐了吗？"],
+["Yes, I will have the grilled salmon, please.","可以，我要一份烤三文鱼。"],
+["Would you like any sides with that?","需要配什么副菜吗？"],
+["What do you recommend?","有什么推荐吗？"],
+["The roasted vegetables are really popular.","烤蔬菜很受欢迎。"],
+["Sounds good, I will take that.","听起来不错，就要这个。"],
+["And to drink?","喝点什么？"],
+["Just sparkling water, thanks.","气泡水就行，谢谢。"]],
+focus:'礼貌用语：点餐一定说 I will have... 或 I would like...，别说 I want；please 放在句尾最自然。'},
+travel:{name:'旅行问路',lines:[
+["Excuse me, could you tell me how to get to the train station?","打扰一下，请问火车站怎么走？"],
+["Sure. Go straight for two blocks, then turn left.","没问题。直走两个路口，然后左转。"],
+["Is it within walking distance?","走路能到吗？"],
+["Yeah, about ten minutes on foot.","能，大概走十分钟。"],
+["Great. Is there a bus that goes there too?","太好了。有公交到那里吗？"],
+["You can take the number 12 bus from that stop over there.","你可以在那边那个站坐 12 路。"]],
+focus:'连读重点：could you 连读成 /kʊdʒə/；within walking distance 是固定表达，整块记住。'},
+shopping:{name:'购物砍价',lines:[
+["How much is this one?","这个多少钱？"],
+["It is eighty yuan.","八十块。"],
+["That is a bit more than I wanted to spend.","比我预算高了一点。"],
+["I can do seventy-five if you take two.","你买两件的话，七十五。"],
+["What if I pay cash?","如果付现金呢？"],
+["Cash? I could do seventy.","现金的话，七十可以。"],
+["Deal. I will take both.","成交，两件我都要了。"]],
+focus:'语气重点：砍价要笑着说，That is a bit more than I wanted to spend 比 too expensive 更礼貌有效。'},
+phone:{name:'电话会议',lines:[
+["Hi everyone, can you hear me okay?","大家好，能听清我说话吗？"],
+["Loud and clear.","很清楚。"],
+["Sorry, you are breaking up a little. Could you repeat that?","抱歉，你那边有点卡。能再说一遍吗？"],
+["Sure, I said we are moving the launch to next Monday.","好的，我说我们把上线时间改到下周一。"],
+["Got it. Can you share the updated timeline?","明白了。能把更新的时间表发一下吗？"],
+["I will send it right after this call.","我会议结束后马上发。"]],
+focus:'会议万能句：Sorry, you are breaking up（信号不好）；Got it（收到）；Let me follow up（我来跟进）。'},
+interview:{name:'面试',lines:[
+["Tell me a bit about yourself.","简单介绍一下你自己。"],
+["I have been working in digital marketing for five years.","我从事数字营销五年了。"],
+["What made you interested in this role?","是什么让你对这个职位感兴趣？"],
+["Your team approach to product really impressed me.","你们团队做产品的方式让我印象很深。"],
+["What would you say is your biggest weakness?","你觉得自己最大的缺点是什么？"],
+["I used to take on too much at once, so I have learned to prioritize.","我以前什么都想揽，后来学会了排优先级。"]],
+focus:'面试核心：用过去-现在-未来结构回答；缺点要说真实缺点＋改进动作，不要假谦虚。'},
+smalltalk:{name:'电梯闲聊',lines:[
+["Morning! How was your weekend?","早！周末过得怎么样？"],
+["Pretty relaxing, actually. Went to a new cafe.","挺放松的，去了一家新开的咖啡馆。"],
+["Nice. Any good?","不错啊，好喝吗？"],
+["Yeah, great coffee, but a bit pricey.","好喝，就是有点贵。"],
+["I will have to check it out. Where is it?","那我得去试试。在哪儿？"],
+["Right around the corner from the office.","就在公司拐角那儿。"]],
+focus:'闲聊黄金法则：回应＋反问（Any good? / You?），让对方有话接，不要只回一句就结束。'}
+};
+function gen(){
+var s=SCENE[document.getElementById('scene').value];
+var lv=document.getElementById('level').value;
+var len=document.getElementById('len').value;
+var time=+document.getElementById('time').value;
+var out='════ 英语跟读素材：'+s.name+' ════\n\n';
+out+='水平：'+({a2:'初级',b1:'中级',b2:'进阶'}[lv])+'　｜　句长：'+({short:'短句',mid:'中等',long:'长句'}[len])+'　｜　每日 '+time+' 分钟\n\n';
+out+='──── 📖 跟读文本 ────\n';
+s.lines.forEach(function(l,n){
+out+=(n+1)+'. '+l[0]+'\n   → '+l[1]+'\n';
+});
+out+='\n──── 🎯 发音与语调要点 ────\n'+s.focus+'\n';
+out+='\n──── 🗣 影子跟读五步法 ────\n';
+out+='① 盲听两遍：不看文本，只听节奏和语调；\n';
+out+='② 看稿跟读：听一句暂停，模仿跟读一句，注意重音位置；\n';
+out+='③ 同步跟读：不掉队地跟着音频说，延迟约 1 秒（这就是影子）；\n';
+out+='④ 录音对比：用手机录自己，和原声比语调起伏；\n';
+out+='⑤ 无稿复述：关掉文本，用自己的话把意思说出来。\n';
+out+='\n──── ⏱ '+time+' 分钟训练计划 ────\n';
+var seg=Math.round(time/5);
+out+='· 第 1 段（约 '+seg+' 分钟）：盲听＋对照翻译，搞懂意思；\n';
+out+='· 第 2 段（约 '+seg+' 分钟）：看稿跟读，逐句纠正发音；\n';
+out+='· 第 3 段（约 '+seg+' 分钟）：影子跟读，全程不停顿；\n';
+out+='· 第 4 段（约 '+seg+' 分钟）：录音＋回听，找出 2 个问题点；\n';
+out+='· 第 5 段（约 '+(time-seg*4)+' 分钟）：无稿复述＋把句子改成自己的版本。\n';
+out+='\n──── 💡 提升要点 ────\n';
+out+='1. 跟读练的是肌肉记忆，每天 15 分钟好过周末练 2 小时；\n';
+out+='2. 宁可一篇练 5 遍，也不要 5 篇各练 1 遍；\n';
+out+='3. 重点模仿语调起伏，不是每个单词的发音；\n';
+out+='4. 把今天学到的句子当天用出去一次（哪怕自言自语）。\n';
+out+='\n──── ✅ 今日打卡目标 ────\n';
+out+='· 能不看稿说出前 4 句；\n';
+out+='· 能用自己的话复述整段对话；\n';
+out+='· 找出并纠正 2 个自己的发音问题。\n';
+return out;
+}
+</script>
+<script>
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('AI 英语跟读素材生成器 | AgentGongju.com'))return;
+document.getElementById('outputBox').innerText=gen();
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(function(){alert('✅ 已复制！')})}
+</script>
+</body>
+</html>
