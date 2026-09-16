@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 体检报告解读助手 | AgentGongju.com</title>
+<meta name="description" content="AI体检报告解读助手，输入各项指标数值，自动标注偏高偏低、解释含义并给生活方式建议，看懂自己的体检单">
+<meta name="keywords" content="体检报告解读,体检指标,血常规,血脂,肝功能,尿酸">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:880px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+select:focus,input:focus{border-color:#6366f1}
+.row{display:grid;grid-template-columns:2fr 1fr 1fr;gap:10px;align-items:center;margin-bottom:8px}
+.row span{color:#94a3b8;font-size:.85rem}
+.row input{margin-bottom:0}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s;margin-top:16px}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.rec{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.25);border-radius:12px;padding:16px;margin-bottom:12px}
+.rec-h{font-size:1.05rem;color:#a5b4fc;font-weight:700;margin-bottom:8px}
+.rec-b{color:#cbd5e1;font-size:.88rem;line-height:1.95}
+.tag{display:inline-block;font-size:.72rem;border-radius:20px;padding:2px 10px;margin-left:6px;vertical-align:2px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem;margin-top:12px}
+.tip{color:#94a3b8;font-size:.8rem;margin-top:8px;line-height:1.7}
+@media(max-width:600px){.row{grid-template-columns:1.6fr 1fr 1fr;font-size:.85rem}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🩺 AI 体检报告解读</h1><p>把体检单上的箭头，翻译成人话</p></div>
+
+<div class="card">
+<div style="color:#e2e8f0;font-weight:600;margin-bottom:14px">🧪 填上你的数值（没有的留空即可，参考范围已按常见成人标准预设）</div>
+<div class="row"><span>空腹血糖 (mmol/L)</span><input type="number" step="0.1" id="glu" placeholder="5.2"><span style="font-size:.75rem">3.9-6.1</span></div>
+<div class="row"><span>总胆固醇 TC (mmol/L)</span><input type="number" step="0.01" id="tc" placeholder="4.8"><span style="font-size:.75rem">&lt;5.2</span></div>
+<div class="row"><span>甘油三酯 TG (mmol/L)</span><input type="number" step="0.01" id="tg" placeholder="1.3"><span style="font-size:.75rem">&lt;1.7</span></div>
+<div class="row"><span>低密度脂蛋白 LDL (mmol/L)</span><input type="number" step="0.01" id="ldl" placeholder="2.8"><span style="font-size:.75rem">&lt;3.4</span></div>
+<div class="row"><span>尿酸 UA (μmol/L)</span><input type="number" id="ua" placeholder="360"><span style="font-size:.75rem">男&lt;420 女&lt;360</span></div>
+<div class="row"><span>谷丙转氨酶 ALT (U/L)</span><input type="number" id="alt" placeholder="25"><span style="font-size:.75rem">0-40</span></div>
+<div class="row"><span>血红蛋白 HGB (g/L)</span><input type="number" id="hgb" placeholder="140"><span style="font-size:.75rem">男130-175 女115-150</span></div>
+<div class="row"><span>白细胞 WBC (×10⁹/L)</span><input type="number" step="0.1" id="wbc" placeholder="6.2"><span style="font-size:.75rem">3.5-9.5</span></div>
+<div class="row"><span>收缩压 SBP (mmHg)</span><input type="number" id="sbp" placeholder="118"><span style="font-size:.75rem">&lt;130</span></div>
+<div class="row"><span>舒张压 DBP (mmHg)</span><input type="number" id="dbp" placeholder="75"><span style="font-size:.75rem">&lt;85</span></div>
+<div class="row"><span>BMI 体重指数</span><input type="number" step="0.1" id="bmi" placeholder="23"><span style="font-size:.75rem">18.5-24</span></div>
+<label>🚻 性别（部分指标参考值不同）</label>
+<select id="sex"><option value="男" selected>男</option><option value="女">女</option></select>
+<button class="btn-gen" id="genBtn">✨ 解读体检报告</button>
+<div class="tip">⚠️ 本工具仅做常识性解读和生活方式建议，不能替代医生诊断。指标异常请携带原始报告面诊。</div>
+</div>
+<div class="result-area" id="resultArea"><div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 解读结果</div>
+<div id="out"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制解读</button>
+</div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function copyResult(){navigator.clipboard.writeText(document.getElementById('out').innerText).then(()=>alert('✅ 已复制！'))}
+var DEFS=[
+ {id:'glu',n:'空腹血糖',lo:3.9,hi:6.1,unit:'mmol/L',
+  high:'餐后血糖偏高提示胰岛素抵抗。先从「主食减 1/4 + 每餐先吃菜」开始，3 个月后复查。',
+  low:'偏低可能和空腹太久、进食不足有关，出现头晕出冷汗要随身带点糖。'},
+ {id:'tc',n:'总胆固醇',lo:0,hi:5.2,unit:'mmol/L',
+  high:'少吃动物内脏、肥肉、油炸，每天加 20g 坚果和 300g 蔬菜，多做有氧。',
+  low:'偏低一般无需担心，若长期很低可查营养和甲状腺。'},
+ {id:'tg',n:'甘油三酯',lo:0,hi:1.7,unit:'mmol/L',
+  high:'甘油三酯和「酒+糖+精制碳水」关系最大。先戒酒、少喝含糖饮料、晚饭少吃主食，通常能降得很快。',
+  low:'偏低多与饮食过清淡有关，正常饮食即可。'},
+ {id:'ldl',n:'低密度脂蛋白（坏胆固醇）',lo:0,hi:3.4,unit:'mmol/L',
+  high:'这是心血管风险的关键指标。减少反式脂肪（饼干、奶精、油炸），增加燕麦、豆类、深海鱼。',
+  low:'偏低通常是好事。'},
+ {id:'ua',n:'尿酸',lo:0,hi:420,unit:'μmol/L',sexHi:{男:420,女:360},
+  high:'尿酸高先做三件事：每天喝够 2000ml 水、不喝酒（尤其啤酒）、少喝肉汤和海鲜汁。动物内脏和浓汤最要命。',
+  low:'偏低少见，多与饮食清淡或药物有关。'},
+ {id:'alt',n:'谷丙转氨酶',lo:0,hi:40,unit:'U/L',
+  high:'转氨酶升高常见原因：熬夜、饮酒、脂肪肝、药物。先保证连续 2 周早睡戒酒，再复查。若超过 2 倍需就医。',
+  low:'偏低一般无意义。'},
+ {id:'hgb',n:'血红蛋白',lo:115,hi:175,unit:'g/L',sexLo:{男:130,女:115},sexHi:{男:175,女:150},
+  high:'偏高可能和吸烟、脱水、长期高原生活有关，多喝水复查。',
+  low:'偏低提示贫血。女性常见缺铁，多吃红肉、猪肝、动物血，配维C 促进吸收；男性贫血要查明原因。'},
+ {id:'wbc',n:'白细胞',lo:3.5,hi:9.5,unit:'×10⁹/L',
+  high:'升高提示可能有感染或炎症，最近感冒？先治原发病，2 周后复查。',
+  low:'偏低可见于病毒感染期或药物影响，持续偏低建议血液科就诊。'},
+ {id:'bmi',n:'体重指数 BMI',lo:18.5,hi:24,unit:'',
+  high:'超重阶段。别节食，先做两件事：每天走 8000 步、把含糖饮料换成水，一个月能掉 1-2kg。',
+  low:'偏瘦。保证每天蛋白质摄入（1.2g/kg 体重），加点力量训练。'}
+];
+function gen(){
+ if(!Paywall.countUse('AI 体检报告解读助手 | AgentGongju.com'))return;
+ var sex=document.getElementById('sex').value;
+ var results=[],normal=0,mild=0,need=0;
+ DEFS.forEach(function(d){
+   var el=document.getElementById(d.id);
+   var v=el&&el.value!==''?parseFloat(el.value):null;
+   if(v===null||isNaN(v))return;
+   var lo=d.lo,hi=d.hi;
+   if(d.sexHi&&d.sexHi[sex]!==undefined)hi=d.sexHi[sex];
+   if(d.sexLo&&d.sexLo[sex]!==undefined)lo=d.sexLo[sex];
+   if(d.id==='sbp'||d.id==='dbp')return;
+   var st='正常',msg='指标在正常范围内，继续保持。';
+   if(v>hi){st=v>hi*1.5?'明显偏高':'偏高';msg=d.high;}
+   else if(v<lo){st=v<lo*0.7?'明显偏低':'偏低';msg=d.low;}
+   if(st==='正常')normal++; else if(st.indexOf('明显')>-1)need++; else mild++;
+   results.push({n:d.n,v:v,unit:d.unit,st:st,msg:msg,lo:lo,hi:hi});
+ });
+ // 血压单独处理
+ var sbp=parseFloat(document.getElementById('sbp').value),dbp=parseFloat(document.getElementById('dbp').value);
+ if(!isNaN(sbp)&&!isNaN(dbp)){
+   var st='正常',msg='血压正常，保持低盐饮食和规律作息。';
+   if(sbp>=140||dbp>=90){st='偏高';need++;msg='达到高血压范畴（≥140/90）。少盐（每天<5g）、减重、限酒，并尽快去医院测量确认，必要时用药。';}
+   else if(sbp>=130||dbp>=85){st='偏高';mild++;msg='处于正常高值（130-139/85-89）。现在调整还来得及：减盐、每天快走 30 分钟、控制体重。';}
+   else if(sbp<90||dbp<60){st='偏低';mild++;msg='血压偏低。若无头晕乏力通常无需处理，起床时慢一点，多喝水。';}
+   else normal++;
+   results.push({n:'血压',v:sbp+'/'+dbp,unit:'mmHg',st:st,msg:msg,lo:90,hi:140});
+ }
+ var out=document.getElementById('out');out.innerHTML='';
+ if(!results.length){alert('至少填一项指标吧～');return;}
+ var total=results.length;
+ var verdict=need>0?'<b style="color:#ef4444">有需要重视的指标</b>，建议尽快就医复核':'';
+ if(need===0&&mild>0)verdict='<b style="color:#f59e0b">有轻度异常</b>，生活方式调整后复查';
+ if(need===0&&mild===0)verdict='<b style="color:#22c55e">整体不错</b>，继续保持';
+ out.innerHTML='<div style="color:#94a3b8;font-size:.85rem;margin-bottom:14px">🩺 共解读 '+total+' 项指标 ｜ ✅ 正常 '+normal+' 项 ｜ ⚠️ 轻度异常 '+mild+' 项 ｜ 🔴 需重视 '+need+' 项</div>';
+ out.insertAdjacentHTML('beforeend','<div class="rec"><div class="rec-h">📋 总体结论</div><div class="rec-b">'+verdict+'</div></div>');
+ var html=results.map(function(r){
+   var color=r.st==='正常'?'#22c55e':(r.st.indexOf('明显')>-1?'#ef4444':'#f59e0b');
+   var bg=r.st==='正常'?'rgba(34,197,94,.12)':(r.st.indexOf('明显')>-1?'rgba(239,68,68,.12)':'rgba(245,158,11,.12)');
+   return '<div style="margin-bottom:14px;padding-bottom:12px;border-bottom:1px dashed rgba(255,255,255,.08)"><div style="color:#e2e8f0;font-weight:600">'+r.n+'：'+r.v+r.unit+'<span class="tag" style="color:'+color+';background:'+bg+'">'+r.st+'</span></div><div style="color:#94a3b8;font-size:.82rem;margin:4px 0">参考范围：'+r.lo+'-'+r.hi+r.unit+'</div><div style="color:#cbd5e1;font-size:.85rem;line-height:1.9">'+r.msg+'</div></div>';
+ }).join('');
+ out.insertAdjacentHTML('beforeend','<div class="rec"><div class="rec-h">🔍 逐项解读</div><div class="rec-b">'+html+'</div></div>');
+ // 通用建议
+ var common=['体检前 8 小时空腹、前一天别熬夜喝酒，结果才准。','同一指标连续两次异常才有意义，一次异常先别慌。','报告上的「参考范围」是人群统计值，边缘值不一定有病。','拿报告找医生解读时，把过去 2-3 年的报告一起带上，看趋势比看单点更重要。'];
+ out.insertAdjacentHTML('beforeend','<div class="rec" style="border-color:rgba(99,102,241,.35)"><div class="rec-h">💡 看报告的 4 个常识</div><div class="rec-b">'+common.map(function(x,i){return (i+1)+'. '+x}).join('<br>')+'</div></div>');
+ out.insertAdjacentHTML('beforeend','<div class="rec" style="border-color:rgba(239,68,68,.3)"><div class="rec-h">⚠️ 免责声明</div><div class="rec-b">本解读基于常见成人参考范围，仅作健康科普与生活方式参考，不构成医疗建议，不能用于诊断。指标异常或有不适，请及时到正规医院就诊。</div></div>');
+ document.getElementById('resultArea').classList.add('active');
+}
+document.getElementById('genBtn').addEventListener('click',gen);
+</script>
+</body>
+</html>

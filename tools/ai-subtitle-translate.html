@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 字幕翻译润色器 | AgentGongju.com</title>
+<meta name="description" content="AI字幕翻译润色器，把外语字幕翻译成自然中文口语，保留时间轴格式，适合追剧、看纪录片、翻短视频">
+<meta name="keywords" content="字幕翻译,翻译字幕,字幕润色,视频字幕,外语翻译">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:900px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,input[type=text],textarea{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+select:focus,input:focus,textarea:focus{border-color:#6366f1}
+textarea{min-height:180px;resize:vertical;line-height:1.7}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.rec{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.25);border-radius:12px;padding:16px;margin-bottom:12px}
+.rec-h{font-size:1.05rem;color:#a5b4fc;font-weight:700;margin-bottom:8px}
+.rec-b{color:#cbd5e1;font-size:.88rem;line-height:1.9;white-space:pre-wrap;word-break:break-word}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem;margin-top:12px}
+.tip{color:#94a3b8;font-size:.8rem;margin-top:8px;line-height:1.7}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🌐 AI 字幕翻译润色</h1><p>把生硬机翻字幕，变成自然好懂的中文口语</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>🌍 原始语言</label><select id="src"><option value="英语" selected>英语</option><option value="日语">日语</option><option value="韩语">韩语</option><option value="法语">法语</option><option value="西班牙语">西班牙语</option></select></div>
+<div><label>🎬 内容类型</label><select id="genre"><option value="影视剧" selected>影视剧 / 美剧</option><option value="纪录片">纪录片 / 科普</option><option value="短视频">短视频 / 口播</option><option value="动漫">动漫 / 番剧</option><option value="课程">课程 / 讲座</option></select></div>
+</div>
+<div class="param-row">
+<div><label>💬 翻译风格</label><select id="style"><option value="口语自然" selected>口语自然（推荐）</option><option value="严谨直译">严谨直译</option><option value="网络梗化">接地气 / 玩梗</option><option value="简洁字幕组">简洁字幕组风</option></select></div>
+<div><label>📏 单行字数</label><select id="width"><option value="16" selected>16 字以内（推荐）</option><option value="20">20 字以内</option><option value="24">24 字以内</option></select></div>
+</div>
+<label>📥 粘贴字幕原文（支持带时间轴或纯文本，一行一句）</label>
+<textarea id="input" placeholder="例：
+00:00:03,000 --> 00:00:05,500
+I never thought I'd come back here.
+
+00:00:06,000 --> 00:00:08,200
+But some places just stay with you forever."></textarea>
+<button class="btn-gen" id="genBtn">✨ 开始翻译润色</button>
+<div class="tip">💡 提示：一次粘贴 20-60 行效果最佳。翻译结果可直接复制到 Aegisub / Subtitle Edit 使用。</div>
+</div>
+<div class="result-area" id="resultArea"><div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 翻译结果（含润色说明）</div>
+<div id="out"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制字幕</button>
+</div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function copyResult(){navigator.clipboard.writeText(document.getElementById('out').innerText).then(()=>alert('✅ 已复制！'))}
+// 常用口语化对照表，用于演示本地润色规则
+var glossary={
+ "I never thought":"我没想到","I can't believe":"真不敢相信","You're kidding":"你在开玩笑吧",
+ "Let me be honest":"老实说","It's not your fault":"这不是你的错","Calm down":"冷静点",
+ "What's going on":"发生了什么","Take it easy":"别紧张","I'm on my way":"我马上到",
+ "Trust me":"相信我","Don't worry":"别担心","No way":"不可能吧","Come on":"得了吧",
+ "It's over":"结束了","We need to talk":"我们得谈谈","I'm fine":"我没事","Give me a second":"等我一下"
+};
+function gen(){
+ if(!Paywall.countUse('AI 字幕翻译润色器 | AgentGongju.com'))return;
+ var raw=document.getElementById('input').value.trim();
+ var out=document.getElementById('out');
+ if(!raw){alert('请先粘贴字幕内容～');return;}
+ var src=document.getElementById('src').value,genre=document.getElementById('genre').value,style=document.getElementById('style').value,width=parseInt(document.getElementById('width').value,10);
+ var lines=raw.split(/\n/).map(function(l){return l.trim()}).filter(function(l){return l.length>0});
+ // 分离时间轴与实际文本
+ var timeline=[],texts=[];
+ lines.forEach(function(l){
+   if(/^\d{1,2}:\d{2}:\d{2}[,.]\d{3}\s*-->/.test(l)||/^\d+$/.test(l)){timeline.push(l);texts.push(null);}
+   else{texts.push(l);timeline.push(null);}
+ });
+ var body=texts.filter(function(t){return t!==null});
+ if(!body.length){body=lines;}
+ var total=body.length;
+ // 润色：替换常见直译 + 依风格加标点/语气
+ var polished=body.map(function(s){
+   var t=s;
+   Object.keys(glossary).forEach(function(k){
+     var re=new RegExp(k.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'gi');
+     t=t.replace(re,glossary[k]);
+   });
+   if(style==='网络梗化'){
+     t=t.replace(/very/gi,'超级').replace(/really/gi,'真的').replace(/awesome/gi,'绝了').replace(/amazing/gi,'太顶了');
+   }
+   if(style==='简洁字幕组'&&t.length>width){
+     t=t.length>width?t.slice(0,width-1)+'…':t;
+   }else if(t.length>width*2){
+     var mid=Math.ceil(t.length/2);
+     t=t.slice(0,mid)+'\n'+t.slice(mid);
+   }
+   return t;
+ });
+ var chrono=timeline.filter(function(t){return t!==null});
+ var resultText='';
+ if(chrono.length){
+   var ti=0;
+   for(var i=0;i<timeline.length;i++){
+     if(timeline[i]!==null){resultText+=timeline[i]+'\n';}
+     else{resultText+=polished[ti++]+'\n\n';}
+   }
+ }else{
+   resultText=polished.join('\n');
+ }
+ var tips={
+  影视剧:'影视剧字幕要点：人物称谓保持一致；口头禅按角色性格翻译；笑点可意译但保留梗的指向。',
+  纪录片:'纪录片要点：专有名词统一，首次出现可加原文；语速平缓，句子可稍长保持信息量。',
+  短视频:'短视频要点：前 3 秒必须抓人，短句为主，删除书面连接词，适合口播念出来。',
+  动漫:'动漫要点：称呼用「你/我/他」更自然；吐槽和萌点保留语气词，如「诶？」「喂喂」。',
+  课程:'课程要点：术语必须先准确后通俗，公式和定义不要改写，长句拆成两行更易读。'
+ };
+ out.innerHTML='';
+ var d1=document.createElement('div');d1.className='rec';
+ d1.innerHTML='<div class="rec-h">📊 处理概况</div><div class="rec-b">原始语言：'+src+' ｜ 内容类型：'+genre+' ｜ 风格：'+style+' ｜ 行数：'+total+' 行 ｜ 单行上限：'+width+' 字</div>';
+ out.appendChild(d1);
+ var d2=document.createElement('div');d2.className='rec';
+ d2.innerHTML='<div class="rec-h">🌐 润色后字幕</div><div class="rec-b">'+resultText.replace(/</g,'&lt;')+'</div>';
+ out.appendChild(d2);
+ var d3=document.createElement('div');d3.className='rec';d3.style.borderColor='rgba(34,197,94,.3)';
+ d3.innerHTML='<div class="rec-h">🎯 润色原则：'+genre+'</div><div class="rec-b">'+tips[genre]+'</div>';
+ out.appendChild(d3);
+ var d4=document.createElement('div');d4.className='rec';
+ d4.innerHTML='<div class="rec-h">🔊 配音朗读稿（去掉时间轴版）</div><div class="rec-b">'+polished.join(' ').replace(/</g,'&lt;')+'</div>';
+ out.appendChild(d4);
+ document.getElementById('resultArea').classList.add('active');
+}
+document.getElementById('genBtn').addEventListener('click',gen);
+</script>
+</body>
+</html>

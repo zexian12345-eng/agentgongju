@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 学习计划表生成器 | AgentGongju.com</title>
+<meta name="description" content="AI学习计划表生成器，输入目标和可用时间，自动排出每日学习表和阶段里程碑，含番茄钟安排与复盘机制">
+<meta name="keywords" content="学习计划,学习计划表,备考计划,时间管理,番茄钟">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:840px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,input[type=text],textarea{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+select:focus,input:focus,textarea:focus{border-color:#6366f1}
+textarea{min-height:80px;resize:vertical;line-height:1.8}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.rec{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.25);border-radius:12px;padding:16px;margin-bottom:12px}
+.rec-h{font-size:1.05rem;color:#a5b4fc;font-weight:700;margin-bottom:8px}
+.rec-b{color:#cbd5e1;font-size:.88rem;line-height:1.95}
+table{width:100%;border-collapse:collapse;font-size:.85rem}
+th,td{padding:9px 8px;text-align:left;border-bottom:1px solid rgba(255,255,255,.07);color:#cbd5e1}
+th{color:#a5b4fc;font-weight:600;font-size:.8rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem;margin-top:12px}
+.tip{color:#94a3b8;font-size:.8rem;margin-top:8px;line-height:1.7}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}table{font-size:.78rem}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📚 AI 学习计划表生成器</h1><p>有目标、有时间，就差一张能执行的表</p></div>
+
+<div class="card">
+<label>🎯 学习目标</label>
+<input type="text" id="goal" placeholder="例：通过英语六级 / 学会 Python / 考教师资格证">
+<div class="param-row">
+<div><label>📅 距离目标还有</label><select id="dur"><option value="30">1 个月</option><option value="60" selected>2 个月</option><option value="90">3 个月</option><option value="180">半年</option><option value="14">2 周（冲刺）</option></select></div>
+<div><label>⏰ 每天能学</label><select id="daily"><option value="1">1 小时</option><option value="2" selected>2 小时</option><option value="3">3 小时</option><option value="4">4 小时以上</option></select></div>
+</div>
+<div class="param-row">
+<div><label>🕐 学习时段偏好</label><select id="when"><option value="早晨" selected>早起型（6-9 点）</option><option value="午间">午休型（12-14 点）</option><option value="晚上">夜猫型（20-24 点）</option><option value="碎片">只能利用碎片时间</option></select></div>
+<div><label>🎓 当前基础</label><select id="base"><option value="零基础" selected>零基础</option><option value="有一些">有一点基础</option><option value="不错">基础不错，缺系统</option></select></div>
+</div>
+<label>📝 学习内容清单（每行一项，可选）</label>
+<textarea id="items" placeholder="例：
+单词 2000 个
+听力真题 10 套
+阅读真题 10 套
+写作模板 5 篇"></textarea>
+<button class="btn-gen" id="genBtn">✨ 生成学习计划</button>
+<div class="tip">💡 好计划的三个标准：每天知道做什么、做完能打勾、一周能看出进步。</div>
+</div>
+<div class="result-area" id="resultArea"><div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 你的学习计划</div>
+<div id="out"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制计划</button>
+</div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function copyResult(){navigator.clipboard.writeText(document.getElementById('out').innerText).then(()=>alert('✅ 已复制！'))}
+function gen(){
+ if(!Paywall.countUse('AI 学习计划表生成器 | AgentGongju.com'))return;
+ var goal=document.getElementById('goal').value.trim()||'我的学习目标';
+ var dur=parseInt(document.getElementById('dur').value,10),daily=parseFloat(document.getElementById('daily').value),when=document.getElementById('when').value,base=document.getElementById('base').value;
+ var items=(document.getElementById('items').value||'').split(/\n/).map(function(s){return s.trim()}).filter(function(s){return s});
+ if(!items.length)items=['基础知识点过一遍','配套练习 1 组','真题/实战演练','错题复盘'];
+ var out=document.getElementById('out');out.innerHTML='';
+ var totalH=Math.round(dur*daily);
+ out.innerHTML='<div style="color:#94a3b8;font-size:.85rem;margin-bottom:14px">🎯 '+goal+' ｜ 📅 '+dur+' 天 ｜ ⏰ 每天 '+daily+' 小时 ｜ 总计 <b style="color:#a5b4fc">'+totalH+'</b> 小时 ｜ 🎓 '+base+'</div>';
+ // 阶段划分
+ var p1=Math.round(dur*0.4),p2=Math.round(dur*0.35),p3=dur-p1-p2;
+ var stages=[
+  {n:'第一阶段 · 打基础',d:p1,ratio:0.35,
+   desc:'目标是「看懂+记住」。'+(base==='零基础'?'零基础务必慢，不求快，理解比进度重要。':'有基础可以直接跳到重难点。')+'每次学完立刻做 3-5 道对应练习，当天输出一次。'},
+  {n:'第二阶段 · 强化练习',d:p2,ratio:0.4,
+   desc:'目标是「会做+做对」。开始大量刷题/实操，建立错题本。这个阶段最累但提分最快，遇到瓶颈别停，坚持两周会有明显跃迁。'},
+  {n:'第三阶段 · 冲刺模考',d:p3,ratio:0.25,
+   desc:'目标是「稳定+速度」。全真模拟、限时训练、回归错题本。减少新内容摄入，把已会的东西练到不出错。'}
+ ];
+ var html=stages.map(function(s){
+   return '<div style="margin-bottom:14px"><div style="color:#a5b4fc;font-weight:700">'+s.n+'（'+s.d+' 天，约 '+Math.round(totalH*s.ratio)+' 小时）</div><div style="color:#cbd5e1;font-size:.86rem;line-height:1.9">'+s.desc+'</div></div>';
+ }).join('');
+ out.insertAdjacentHTML('beforeend','<div class="rec"><div class="rec-h">🗺 三阶段路线图</div><div class="rec-b">'+html+'</div></div>');
+ // 每日时间表
+ var slots={};
+ var half=Math.ceil(daily*2)/2;
+ if(when==='早晨'){
+   slots.early='06:30-07:00 起床+早餐（听音频/背单词）';
+   slots.main='07:00-'+String(7+Math.floor(half)).padStart(2,'0')+':'+(half%1?'30':'00')+' 主攻核心内容（精力最好的时段）';
+   slots.rev='21:00-21:30 复习当天内容（睡前记忆效率高）';
+   slots.sug='早起型适合啃硬骨头（数学、专业课）。早上没做完的任务别拖到晚上，会拖垮状态。';
+ }else if(when==='午间'){
+   slots.early='12:00-12:30 午餐（顺便听音频）';
+   slots.main='12:30-'+String(12+Math.floor(half)).padStart(2,'0')+':'+(half%1?'30':'00')+' 核心内容（注意午休，别硬撑）';
+   slots.rev='20:00-20:40 晚间复习+做题';
+   slots.sug='午间型要注意睡眠债。建议学完小睡 20 分钟再上班/上课，效果比硬扛好。';
+ }else if(when==='晚上'){
+   slots.early='07:00-07:30 起床后过一遍昨天的错题';
+   slots.main='20:00-'+String(20+Math.floor(half)).padStart(2,'0')+':'+(half%1?'30':'00')+' 核心学习（手机放远一点）';
+   slots.rev='睡前 10 分钟 闭眼回忆今天学了什么';
+   slots.sug='夜猫型要固定就寝时间。睡前记忆+睡眠巩固是黄金组合，但超过 24 点效率会暴跌。';
+ }else{
+   slots.early='通勤路上 10 分钟 听/背';
+   slots.main='午休 20 分钟 + 下班后 40 分钟 分两段';
+   slots.rev='睡前 10 分钟 复盘';
+   slots.sug='碎片时间只适合记忆和复习，不适合学新知识。新内容必须安排连续的 40 分钟以上。';
+ }
+ var tb='<table><tr><th>时段</th><th>安排</th></tr>'+
+   '<tr><td>'+slots.early.split(' ')[0]+'</td><td>'+slots.early.slice(slots.early.indexOf(' ')+1)+'</td></tr>'+
+   '<tr><td>'+slots.main.split(' ')[0]+'</td><td>'+slots.main.slice(slots.main.indexOf(' ')+1)+'</td></tr>'+
+   '<tr><td>'+slots.rev.split(' ')[0]+'</td><td>'+slots.rev.slice(slots.rev.indexOf(' ')+1)+'</td></tr></table>';
+ out.insertAdjacentHTML('beforeend','<div class="rec"><div class="rec-h">⏰ 每日时间表模板</div><div class="rec-b">'+tb+'<div style="margin-top:10px">💡 '+slots.sug+'</div></div></div>');
+ // 内容分配
+ var perDay=items.map(function(it,i){
+   return '<tr><td>'+it+'</td><td>每天 '+Math.round((daily*60)/items.length)+' 分钟</td><td>'+['早段','中段','早段','中段'][i%4]+'</td></tr>';
+ }).join('');
+ out.insertAdjacentHTML('beforeend','<div class="rec"><div class="rec-h">📋 内容分配</div><div class="rec-b"><table><tr><th>内容项</th><th>每日建议</th><th>推荐时段</th></tr>'+perDay+'</table></div></div>');
+ // 番茄钟
+ var poms=Math.floor(daily*60/30);
+ out.insertAdjacentHTML('beforeend','<div class="rec"><div class="rec-h">🍅 番茄钟安排</div><div class="rec-b">按每天 '+daily+' 小时算，建议 <b>'+poms+' 个番茄钟</b>（25 分钟专注 + 5 分钟休息）。<br>每完成 4 个，休息 15-20 分钟，起身走动、喝水、看远处。<br>'+(daily>=3?'每天超过 3 小时，务必留出 1 小时完全放空，否则第三天就会垮。':'')+'</div></div>');
+ // 复盘机制
+ out.insertAdjacentHTML('beforeend','<div class="rec" style="border-color:rgba(34,197,94,.3)"><div class="rec-h">🔄 每周复盘（每周日 20 分钟）</div><div class="rec-b">1. 本周完成了什么？（打勾，看得见进度）<br>2. 哪一天没完成？原因是「没时间」还是「不想做」？<br>3. 错题本里同一类错误出现了几次？<br>4. 下周微调：把做不完的量减 20%，宁可少而做完。</div></div>');
+ out.insertAdjacentHTML('beforeend','<div class="rec" style="border-color:rgba(245,158,11,.35)"><div class="rec-h">⚠️ 计划失败最常见的 3 个原因</div><div class="rec-b">1. <b>贪多</b>：第一天排 6 小时，第二天就放弃。宁可从 1 小时起步。<br>2. <b>只学不测</b>：没有练习和测试的学习，会有「以为自己会了」的错觉。每学完必须输出。<br>3. <b>没有缓冲</b>：计划里要留 20% 空白，用来补没做完的部分。</div></div>');
+ document.getElementById('resultArea').classList.add('active');
+}
+document.getElementById('genBtn').addEventListener('click',gen);
+</script>
+</body>
+</html>

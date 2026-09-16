@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 手机存储清理顾问 | AgentGongju.com</title>
+<meta name="description" content="AI手机存储清理顾问，输入各分类占用空间，自动算出该删什么、能腾出多少，附微信和相册瘦身实操步骤">
+<meta name="keywords" content="手机内存清理,存储空间不足,微信清理,相册瘦身,清理垃圾">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+select:focus,input:focus{border-color:#6366f1}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.grid3 label,.grid2 label{font-size:.82rem;color:#94a3b8}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.rec{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.25);border-radius:12px;padding:16px;margin-bottom:12px}
+.rec-h{font-size:1.05rem;color:#a5b4fc;font-weight:700;margin-bottom:8px}
+.rec-b{color:#cbd5e1;font-size:.88rem;line-height:1.95}
+.bar{height:12px;background:rgba(255,255,255,.07);border-radius:6px;overflow:hidden;margin:6px 0 10px;display:flex}
+.bar i{display:block;height:100%}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem;margin-top:12px}
+.tip{color:#94a3b8;font-size:.8rem;margin-top:8px;line-height:1.7}
+.big{font-size:1.6rem;font-weight:700;color:#22c55e}
+@media(max-width:600px){.grid3{grid-template-columns:1fr 1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📱 AI 手机存储清理顾问</h1><p>输入各分类占用，告诉你删哪儿最划算</p></div>
+
+<div class="card">
+<div class="grid2">
+<div><label>总容量（GB）</label><input type="number" id="total" value="128"></div>
+<div><label>已用（GB）</label><input type="number" id="used" value="118"></div>
+</div>
+<label>📊 各分类占用（打开「设置 → 通用 → iPhone 储存空间」或「安卓 → 存储」照着填，单位 GB）</label>
+<div class="grid3">
+<div><label>微信/QQ</label><input type="number" id="chat" value="38"></div>
+<div><label>照片视频</label><input type="number" id="photo" value="32"></div>
+<div><label>App 本体</label><input type="number" id="apps" value="20"></div>
+<div><label>系统占用</label><input type="number" id="sys" value="12"></div>
+<div><label>缓存/其他</label><input type="number" id="cache" value="10"></div>
+<div><label>音乐/播客</label><input type="number" id="media" value="4"></div>
+</div>
+<label>🎯 希望腾出多少（GB）</label>
+<input type="number" id="goal" value="20">
+<button class="btn-gen" id="genBtn">✨ 生成清理方案</button>
+<div class="tip">💡 微信是最大黑洞：清理「缓存」不影响聊天记录，清理「聊天文件」才会删图。</div>
+</div>
+<div class="result-area" id="resultArea"><div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 清理方案</div>
+<div id="out"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制方案</button>
+</div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function copyResult(){navigator.clipboard.writeText(document.getElementById('out').innerText).then(()=>alert('✅ 已复制！'))}
+function gen(){
+ if(!Paywall.countUse('AI 手机存储清理顾问 | AgentGongju.com'))return;
+ var g=function(id){return Math.max(0,parseFloat(document.getElementById(id).value)||0)};
+ var total=g('total'),used=g('used'),goal=g('goal');
+ var cats=[
+  {k:'chat',n:'微信 / QQ',v:g('chat'),color:'#22c55e',safe:0.7,
+   how:'1) 微信 → 我 → 设置 → 通用 → 存储空间 → 清理缓存（安全，不掉聊天记录）<br>2) 「管理聊天记录」按大小排序，删掉大群和表情包轰炸的聊天<br>3) 关闭「自动下载」：设置 → 通用 → 照片、视频、文件和通话，全部关掉<br>4) 群聊改成「不自动保存到相册」'},
+  {k:'photo',n:'照片视频',v:g('photo'),color:'#6366f1',safe:0.5,
+   how:'1) 开 iCloud/云相册「优化存储空间」，本地只留缩略图<br>2) 删除「最近删除」相册（很多人这里躺着几十 G）<br>3) 搜「截屏」「录屏」「连拍」批量删<br>4) 微信保存的图片单独建相册，看完就删<br>5) 视频转成 HEVC 格式，体积减半'},
+  {k:'apps',n:'App 本体',v:g('apps'),color:'#a855f7',safe:0.3,
+   how:'1) 卸载半年没用过的 App（不用删数据也能重装回来）<br>2) 用「卸载未使用的 App」功能自动处理<br>3) 游戏类单独看，很多带 2-3G 的资源包<br>4) 同一个功能留一个 App 就行'},
+  {k:'sys',n:'系统占用',v:g('sys'),color:'#64748b',safe:0.1,
+   how:'系统占用基本动不了。可以：<br>1) 删除旧的 iOS/安卓系统更新包<br>2) 重启手机清临时文件<br>3) 如果系统超过 20G，考虑备份后恢复出厂设置'},
+  {k:'cache',n:'缓存 / 其他',v:g('cache'),color:'#f59e0b',safe:0.8,
+   how:'1) 每个 App 里找「设置 → 清除缓存」（视频、购物、浏览器类最多）<br>2) 浏览器清历史记录和离线内容<br>3) 文件管理里搜 .tmp .log 删除<br>4) 抖音/快手 → 设置 → 清理缓存'},
+  {k:'media',n:'音乐 / 播客',v:g('media'),color:'#0ea5e9',safe:0.4,
+   how:'1) 音乐 App 关掉「自动下载」，改成在线听<br>2) 下载的播客听完就删<br>3) 有声书用在线播放'}
+ ];
+ var sum=cats.reduce(function(a,c){return a+c.v},0);
+ var out=document.getElementById('out');out.innerHTML='';
+ var free=Math.max(0,total-used);
+ var segs=cats.map(function(c){return '<i style="width:'+(sum?c.v/sum*100:0)+'%;background:'+c.color+'"></i>'}).join('');
+ out.innerHTML='<div style="color:#94a3b8;font-size:.85rem;margin-bottom:14px">💾 '+total+'GB 总容量 ｜ 已用 '+used+'GB ｜ 剩余 '+free.toFixed(1)+'GB ｜ 🎯 目标腾出 '+goal+'GB</div>';
+ out.insertAdjacentHTML('beforeend','<div class="rec"><div class="rec-h">📊 空间占用分布</div><div class="bar">'+segs+'</div><div class="rec-b">'+cats.map(function(c){return '<span style="display:inline-block;margin-right:14px">● <span style="color:'+c.color+'">'+c.n+'</span> '+c.v+'GB（'+(sum?Math.round(c.v/sum*100):0)+'%）</span>'}).join('')+'</div></div>');
+ // 计算可清理量
+ var canFree=cats.map(function(c){return {c:c,v:Math.round(c.v*c.safe*10)/10}}).filter(function(x){return x.v>0}).sort(function(a,b){return b.v-a.v});
+ var totalCan=canFree.reduce(function(a,x){return a+x.v},0);
+ var verdict=totalCan>=goal?'<span class="big">✅ 可以搞定</span><br>按下面顺序清理，预计能腾出 <b style="color:#22c55e">'+totalCan.toFixed(1)+'GB</b>，超过你目标的 '+goal+'GB。':'<span style="font-size:1.3rem;font-weight:700;color:#f59e0b">⚠️ 只靠清理有点勉强</span><br>全清一遍最多腾出 <b>'+totalCan.toFixed(1)+'GB</b>，离目标 '+goal+'GB 差 '+(goal-totalCan).toFixed(1)+'GB。<br>建议：开启云相册优化存储，或考虑换机/加一张存储卡。';
+ out.insertAdjacentHTML('beforeend','<div class="rec" style="border-color:rgba(34,197,94,.35)"><div class="rec-h">🎯 结论</div><div class="rec-b">'+verdict+'</div></div>');
+ // 按性价比排序的清理顺序
+ var order=canFree.slice(0,4);
+ var idx=1;
+ var html=order.map(function(x){
+   var r=idx++;
+   return '<div style="margin-bottom:16px;padding-bottom:14px;border-bottom:1px dashed rgba(255,255,255,.08)"><div style="color:#a5b4fc;font-weight:700;margin-bottom:6px">第 '+r+' 步：'+x.c.n+' → 可腾出约 '+x.v+'GB</div><div style="color:#cbd5e1;font-size:.85rem;line-height:1.95">'+x.c.how+'</div></div>';
+ }).join('');
+ out.insertAdjacentHTML('beforeend','<div class="rec"><div class="rec-h">🧹 按性价比排序的清理顺序</div><div class="rec-b">'+html+'</div></div>');
+ // 长期防反弹
+ out.insertAdjacentHTML('beforeend','<div class="rec"><div class="rec-h">🛡 防止再次爆满</div><div class="rec-b">1. 每月 1 号清一次缓存，定成习惯<br>2. 微信「自动下载」全部关闭（这是最大元凶）<br>3. 拍照后每周整理一次，截图看完就删<br>4. 视频类 App 一律关闭「WiFi 下自动缓存下一集」<br>5. 保留至少 10% 剩余空间，手机才不卡</div></div>');
+ document.getElementById('resultArea').classList.add('active');
+}
+document.getElementById('genBtn').addEventListener('click',gen);
+</script>
+</body>
+</html>

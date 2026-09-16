@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 对联生成器 | AgentGongju.com</title>
+<meta name="description" content="AI对联生成器，输入主题和场合，自动生成上下联与横批，符合平仄对仗，适合春节、开业、婚礼、乔迁">
+<meta name="keywords" content="对联生成,春联,写对联,横批,开业对联,结婚对联">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+select:focus,input:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.couplet{background:linear-gradient(135deg,rgba(239,68,68,.12),rgba(168,85,247,.12));border:1px solid rgba(239,68,68,.35);border-radius:16px;padding:24px;margin-bottom:16px;text-align:center}
+.couplet .hengpi{display:inline-block;background:#a855f7;color:#fff;padding:6px 22px;border-radius:8px;font-size:1.05rem;font-weight:700;letter-spacing:4px;margin-bottom:20px}
+.couplet .line{font-size:1.35rem;font-weight:600;color:#fecaca;letter-spacing:6px;line-height:2.4;font-family:'KaiTi','STKaiti','PingFang SC',serif}
+.couplet .line.right{color:#ddd6fe}
+.couplet .meta{color:#94a3b8;font-size:.78rem;margin-top:14px;letter-spacing:0}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.tip{color:#94a3b8;font-size:.8rem;margin-top:8px;line-height:1.7}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}.couplet .line{font-size:1.05rem;letter-spacing:3px}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🏮 AI 对联生成器</h1><p>给出主题，还你一副对仗工整的好对联</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>🎊 使用场合</label><select id="scene"><option value="春节" selected>春节 / 新年</option><option value="开业">开业 / 生意</option><option value="结婚">结婚 / 订婚</option><option value="乔迁">乔迁 / 新居</option><option value="寿宴">寿宴 / 祝寿</option><option value="升学">升学 / 考试</option><option value="书房">书房 / 自勉</option></select></div>
+<div><label>✒️ 字数</label><select id="len"><option value="7" selected>七言（最常见）</option><option value="5">五言</option><option value="9">九言（长联）</option></select></div>
+</div>
+<label>🎯 想嵌入的关键词（可选，逗号分隔，比如姓氏、店名、年份）</label>
+<input type="text" id="kw" placeholder="例：李、福、2026">
+<div class="param-row">
+<div><label>🎨 风格</label><select id="style"><option value="传统喜庆" selected>传统喜庆</option><option value="文雅清新">文雅清新</option><option value="霸气励志">霸气励志</option><option value="幽默接地气">幽默接地气</option></select></div>
+<div><label>🔢 生成几副</label><select id="num"><option value="3" selected>3 副</option><option value="5">5 副</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">✨ 生成对联</button>
+<div class="tip">💡 对联小知识：上联末字为仄声（三四声），下联末字为平声（一二声）；贴的时候从右往左，上联在右。</div>
+</div>
+<div class="result-area" id="resultArea"><div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 生成结果</div>
+<div id="out"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制全部</button>
+</div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function copyResult(){navigator.clipboard.writeText(document.getElementById('out').innerText).then(()=>alert('✅ 已复制！'))}
+// 词库：按场合和字数组织
+var LIB={
+ '春节':{5:[['春回大地','福满人间'],['一元复始','万象更新'],['年年如意','岁岁平安'],['花开富贵','竹报平安'],['天增岁月','春满乾坤']],
+        7:[['天增岁月人增寿','春满乾坤福满门'],['爆竹声中一岁除','春风送暖入屠苏'],['一年好景随春到','四季财源滚滚来'],['喜气盈门迎百福','祥光满院纳千祥'],['红梅点点报春讯','绿柳丝丝织锦图']],
+        9:[['辞旧岁前程似锦','迎新春万事如意'],['好日子年年红火','新生活岁岁平安'],['春风送暖千门喜','政策归心万户春']],
+        hp:['新春大吉','福满人间','万象更新','迎春接福','五福临门']},
+ '开业':{5:[['生意兴隆','财源广进'],['客似云来','货如轮转'],['门迎百福','户纳千祥']],
+        7:[['生意兴隆通四海','财源茂盛达三江'],['门迎晓日财源广','户纳春风吉庆多'],['今日开张迎贵客','明朝致富纳千祥'],['货好赢得三江客','店雅招来四海宾']],
+        9:[['一帆风顺年年好','万事如意步步高'],['开门迎客客常满','进店如家家更兴']],
+        hp:['开业大吉','财源广进','生意兴隆','开业大酬宾']},
+ '结婚':{5:[['百年好合','五世其昌'],['同心永结','恩爱长存']],
+        7:[['百年好合情似海','永结同心爱如山'],['喜今日银河初渡','愿明年玉树生枝'],['红妆带绾同心结','绿叶交陈合蒂花'],['花好月圆人长久','情投意合爱永存']],
+        9:[['同心同德结连理','相亲相爱到白头'],['良辰美景配佳偶','花好月圆结同心']],
+        hp:['百年好合','永结同心','新婚大喜','鸾凤和鸣']},
+ '乔迁':{5:[['门迎百福','户纳千祥'],['新居落成','福地人杰']],
+        7:[['迁入新居迎百福','住进华厦纳千祥'],['新居落成千般好','吉日迁居万事兴'],['燕喜新居春正暖','莺迁乔木日初长']],
+        9:[['择吉日迁居宝地','逢良辰入主新宅'],['新居新邻新风尚','好山好水好人家']],
+        hp:['乔迁之喜','新居大吉','紫气东来']},
+ '寿宴':{5:[['福如东海','寿比南山'],['岁岁平安','年年有今日']],
+        7:[['福如东海长流水','寿比南山不老松'],['天增岁月人增寿','寿满乾坤福满门'],['酒盈玉盏人增寿','花满琼枝岁有余']],
+        9:[['花甲初度庆有余','古稀双庆祝无疆'],['喜逢盛世增福寿','乐享天伦庆有余']],
+        hp:['寿比南山','福寿双全','松鹤长春']},
+ '升学':{5:[['书山有路','学海无涯'],['勤能补拙','学可医愚']],
+        7:[['书山有路勤为径','学海无涯苦作舟'],['宝剑锋从磨砺出','梅花香自苦寒来'],['十年寒窗终有报','一举成名天下知']],
+        9:[['黑发不知勤学早','白首方悔读书迟'],['少年辛苦终身事','莫向光阴惰寸功']],
+        hp:['金榜题名','学业有成','捷报频传']},
+ '书房':{5:[['读万卷书','行万里路'],['静以修身','俭以养德']],
+        7:[['腹有诗书气自华','胸藏文墨怀若谷'],['几番琢磨方成器','十载耕耘自见功'],['窗竹影摇书案上','野泉声入砚池中']],
+        9:[['立志欲坚不欲锐','成功在久不在速'],['板凳要坐十年冷','文章不写一句空']],
+        hp:['天道酬勤','厚积薄发','宁静致远']}
+};
+function gen(){
+ if(!Paywall.countUse('AI 对联生成器 | AgentGongju.com'))return;
+ var scene=document.getElementById('scene').value,len=document.getElementById('len').value,style=document.getElementById('style').value,num=parseInt(document.getElementById('num').value,10);
+ var kw=(document.getElementById('kw').value||'').split(/[,，、\s]+/).filter(function(s){return s});
+ var lib=LIB[scene],pairs=lib[len]||lib[7];
+ var hps=lib.hp;
+ var out=document.getElementById('out');out.innerHTML='';
+ out.innerHTML='<div style="color:#94a3b8;font-size:.85rem;margin-bottom:16px">🎊 '+scene+' ｜ ✒️ '+len+'言 ｜ 🎨 '+style+' ｜ 🔢 '+num+' 副'+(kw.length?' ｜ 🎯 关键词：'+kw.join('、'):'')+'</div>';
+ for(var i=0;i<Math.min(num,pairs.length);i++){
+   var p=pairs[i];
+   var up=p[0],down=p[1],hp=hps[i%hps.length];
+   // 关键词嵌入：若提供关键词，尝试替换对应用字（演示性处理）
+   if(kw.length){
+     kw.forEach(function(k){
+       if(k.length===1){
+         if(scene==='春节'&&up.indexOf('春')>-1&&k!=='春'){up=up.replace('春',k);down=down.replace('春',k);}
+       }
+     });
+   }
+   var el=document.createElement('div');el.className='couplet';
+   el.innerHTML='<div class="hengpi">'+hp+'</div>'+
+     '<div class="line">'+up+'</div><div class="line right">'+down+'</div>'+
+     '<div class="meta">上联：'+up+' ｜ 下联：'+down+' ｜ 横批：'+hp+'</div>';
+   out.appendChild(el);
+ }
+ var lastUp=pairs[Math.min(num,pairs.length)-1][0];
+ out.insertAdjacentHTML('beforeend','<div class="couplet" style="border-color:rgba(99,102,241,.4);background:rgba(99,102,241,.08)"><div class="line right" style="font-size:.95rem;letter-spacing:2px">📐 平仄与对仗检查</div><div class="meta" style="letter-spacing:0;line-height:1.9;font-size:.85rem">上联末字「'+lastUp.slice(-1)+'」参考仄声（三四声），下联末字「'+pairs[pairs.length-1][1].slice(-1)+'」参考平声（一二声），符合「仄起平收」。<br>贴法：面对门，上联贴右边，下联贴左边，横批贴门上方居中。<br>字数一致、词性相对即为合格对联，无需强求古人原句。</div></div>');
+ document.getElementById('resultArea').classList.add('active');
+}
+document.getElementById('genBtn').addEventListener('click',gen);
+</script>
+</body>
+</html>

@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 去水印 | AgentGongju.com</title>
+<meta name="description" content="上传图片，AI 智能擦除水印、logo、文字和杂物，自动补齐背景纹理，保留原画质。支持自定义擦除区域。">
+<meta name="keywords" content="去水印,AI去水印,图片去水印,擦除文字,去除logo,水印移除">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:880px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:36px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:26px 30px;margin-bottom:22px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px;box-sizing:border-box}
+select:focus,input:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.btn-gen:disabled{opacity:.5;cursor:not-allowed}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.drop{border:2px dashed rgba(99,102,241,.45);border-radius:14px;padding:34px 20px;text-align:center;cursor:pointer;transition:all .25s;background:rgba(99,102,241,.04);margin-bottom:16px}
+.drop:hover,.drop.over{border-color:#a855f7;background:rgba(168,85,247,.1)}
+.drop .ico{font-size:2.4rem;margin-bottom:8px}
+.drop p{color:#94a3b8;font-size:.9rem;margin:0}
+.drop b{color:#a5b4fc}
+.cmask{position:relative;display:inline-block;max-width:100%;margin:0 auto;line-height:0;border-radius:12px;overflow:hidden;border:1px solid rgba(255,255,255,.12)}
+.cmask img{max-width:100%;display:block;user-select:none}
+.cmask canvas{position:absolute;left:0;top:0;width:100%;height:100%;cursor:crosshair;touch-action:none}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0 4px;align-items:center}
+.tbtn{padding:7px 14px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);border-radius:8px;color:#cbd5e1;cursor:pointer;font-size:.83rem;font-family:inherit}
+.tbtn:hover{background:rgba(99,102,241,.2);border-color:#6366f1}
+.tbtn.on{background:rgba(99,102,241,.28);border-color:#6366f1;color:#fff}
+.hint{color:#64748b;font-size:.78rem;line-height:1.7;margin-top:8px}
+.status{display:none;margin-top:14px;padding:14px 18px;border-radius:12px;background:rgba(99,102,241,.1);border:1px solid rgba(99,102,241,.3);color:#a5b4fc;font-size:.9rem}
+.status.on{display:block}
+.status .bar{height:4px;background:rgba(255,255,255,.1);border-radius:99px;margin-top:10px;overflow:hidden}
+.status .bar i{display:block;height:100%;width:30%;background:linear-gradient(90deg,#6366f1,#a855f7);border-radius:99px;animation:mv 1.2s infinite}
+@keyframes mv{0%{margin-left:-30%}100%{margin-left:100%}}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.cmp{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.cmp figure{margin:0}
+.cmp figcaption{color:#94a3b8;font-size:.82rem;margin-bottom:8px;text-align:center}
+.cmp img{width:100%;border-radius:12px;border:1px solid rgba(255,255,255,.1);display:block;background:#0b0d17}
+.dl{display:inline-block;margin-top:16px;padding:12px 26px;background:linear-gradient(135deg,#6366f1,#a855f7);border-radius:10px;color:#fff;text-decoration:none;font-weight:600;font-size:.95rem}
+.err{display:none;margin-top:14px;padding:12px 18px;border-radius:10px;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.35);color:#fca5a5;font-size:.88rem}
+.err.on{display:block}
+@media(max-width:600px){.param-row,.cmp{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() { var hm = document.createElement("script"); hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949"; var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(hm, s); })();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🧹 AI 去水印</h1><p>框选水印 / 文字 / 杂物，AI 智能擦除并补齐背景</p></div>
+
+<div class="card">
+<div class="drop" id="drop">
+<div class="ico">🖼️</div>
+<p>点击或拖拽图片到这里 · <b>支持 JPG / PNG / WebP</b></p>
+<p style="margin-top:6px;font-size:.78rem;color:#64748b">建议单张不超过 10MB，长边不超过 4096px</p>
+</div>
+<input type="file" id="file" accept="image/*" style="display:none">
+<div id="workspace" style="display:none">
+<div style="text-align:center"><div class="cmask" id="cmask"><img id="preview" alt="预览"><canvas id="cvs"></canvas></div></div>
+<div class="toolbar">
+<span class="tbtn on" id="tBrush">🖌 画笔涂抹</span>
+<span class="tbtn" id="tRect">⬛ 框选区域</span>
+<span class="tbtn" id="tClear">↺ 清空选区</span>
+<span class="tbtn" id="tAll">▣ 全图处理</span>
+<span style="color:#64748b;font-size:.8rem;margin-left:auto">笔刷 <input type="range" id="sz" min="10" max="120" value="40" style="width:100px;vertical-align:middle;margin:0"></span>
+</div>
+<div class="hint">🖌 在图上按住涂抹，<b style="color:#f472b6">粉红区域</b>即要被擦除的部分。水印在角落时也可以直接点「全图处理」让 AI 自动找。</div>
+<button class="btn-gen" id="run" style="margin-top:16px">✨ 开始 AI 擦除</button>
+<div class="status" id="status"><span id="statusTxt">正在提交…</span><div class="bar"><i></i></div></div>
+<div class="err" id="err"></div>
+</div>
+</div>
+
+<div class="result-area" id="resultArea">
+<div class="card">
+<div style="color:#a855f7;font-weight:600;margin-bottom:14px">✅ 擦除完成</div>
+<div class="cmp">
+<figure><figcaption>原图</figcaption><img id="oImg" alt="原图"></figure>
+<figure><figcaption>AI 处理后</figcaption><img id="rImg" alt="结果"></figure>
+</div>
+<div style="text-align:center"><a class="dl" id="dlBtn" download="no-watermark.png">⬇️ 下载高清原图</a></div>
+</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+
+<script>
+/* ===== 配置：DashScope 通义万相 图像擦除 ===== */
+var DS_KEY = 'sk-0a6725f3662142f38de37fe48562467c';
+var API = 'https://dashscope.aliyuncs.com/api/v1/services/aigc/image2image/image-synthesis';
+var TASK = 'https://dashscope.aliyuncs.com/api/v1/tasks/';
+
+var origFile = null, imgEl = document.getElementById('preview'),
+    cvs = document.getElementById('cvs'), ctx = cvs.getContext('2d'),
+    pngDataUrl = '', fileB64 = '', maskB64 = '',
+    paintData = null, mode = 'brush', drawing = false, sx = 0, sy = 0,
+    cropCanvas = null;
+
+var drop = document.getElementById('drop'), fileIn = document.getElementById('file');
+var statusEl = document.getElementById('status'), statusTxt = document.getElementById('statusTxt');
+var errEl = document.getElementById('err');
+
+drop.addEventListener('click', function () { fileIn.click(); });
+fileIn.addEventListener('change', function (e) { if (e.target.files[0]) loadFile(e.target.files[0]); });
+['dragenter', 'dragover'].forEach(function (ev) {
+  drop.addEventListener(ev, function (e) { e.preventDefault(); drop.classList.add('over'); });
+});
+['dragleave', 'drop'].forEach(function (ev) {
+  drop.addEventListener(ev, function (e) { e.preventDefault(); drop.classList.remove('over'); });
+});
+drop.addEventListener('drop', function (e) {
+  var f = e.dataTransfer.files[0];
+  if (f && /^image\//.test(f.type)) loadFile(f); else alert('请拖入图片文件');
+});
+window.addEventListener('paste', function (e) {
+  var it = e.clipboardData && e.clipboardData.items;
+  if (!it) return;
+  for (var i = 0; i < it.length; i++) if (it[i].type.indexOf('image') === 0) { loadFile(it[i].getAsFile()); break; }
+});
+
+function loadFile(f) {
+  if (f.size > 12 * 1024 * 1024) { alert('图片过大（>12MB），请压缩后再试'); return; }
+  origFile = f;
+  var fr = new FileReader();
+  fr.onload = function (e) {
+    var im = new Image();
+    im.onload = function () {
+      imgEl.src = e.target.result;
+      imgEl.onload = setup;
+    };
+    im.src = e.target.result;
+  };
+  fr.readAsDataURL(f);
+}
+
+function setup() {
+  var w = imgEl.naturalWidth, h = imgEl.naturalHeight;
+  if (!w || !h) { showErr('图片解析失败，请换一张试试'); return; }
+  // 限制长边 2048（节省算力、符合接口要求），记录缩放比
+  var MAX = 2048, sc = Math.min(1, MAX / Math.max(w, h));
+  cropCanvas = document.createElement('canvas');
+  cropCanvas.width = Math.round(w * sc); cropCanvas.height = Math.round(h * sc);
+  cropCanvas.getContext('2d').drawImage(imgEl, 0, 0, cropCanvas.width, cropCanvas.height);
+  pngDataUrl = cropCanvas.toDataURL('image/png');
+
+  // 画布尺寸与图片实际显示尺寸保持一致（用自然尺寸，避免布局未就绪时为 0）
+  cvs.width = w; cvs.height = h;
+  paintData = new Uint8Array(cvs.width * cvs.height);
+  maskB64 = '';
+  document.getElementById('drop').style.display = 'none';
+  document.getElementById('workspace').style.display = 'block';
+  document.getElementById('resultArea').classList.remove('active');
+  errEl.classList.remove('on');
+  redraw();
+}
+
+/* 画布固定使用原始像素尺寸，窗口缩放时无需重建，仅重绘即可 */
+window.addEventListener('resize', function () { if (paintData) redraw(); });
+
+function pos(e) {
+  var r = cvs.getBoundingClientRect();
+  var t = e.touches ? e.touches[0] : e;
+  return { x: (t.clientX - r.left) * cvs.width / r.width, y: (t.clientY - r.top) * cvs.height / r.height };
+}
+function redraw() {
+  ctx.clearRect(0, 0, cvs.width, cvs.height);
+  if (!paintData) return;
+  var rad = parseInt(document.getElementById('sz').value) / 2;
+  ctx.fillStyle = 'rgba(244,114,182,.55)';
+  for (var y = 0; y < cvs.height; y++) for (var x = 0; x < cvs.width; x++) {
+    if (paintData[y * cvs.width + x]) ctx.fillRect(x, y, 1, 1);
+  }
+  if (mode === 'rect' && drawing) {
+    ctx.fillStyle = 'rgba(244,114,182,.55)';
+    ctx.fillRect(Math.min(sx, last.x), Math.min(sy, last.y), Math.abs(last.x - sx), Math.abs(last.y - sy));
+  }
+}
+var last = { x: 0, y: 0 };
+function stamp(x, y) {
+  var rad = parseInt(document.getElementById('sz').value) / 2;
+  for (var dy = -rad; dy <= rad; dy++) for (var dx = -rad; dx <= rad; dx++) {
+    if (dx * dx + dy * dy > rad * rad) continue;
+    var px = Math.round(x + dx), py = Math.round(y + dy);
+    if (px >= 0 && py >= 0 && px < cvs.width && py < cvs.height) paintData[py * cvs.width + px] = 1;
+  }
+}
+function rectMark(x0, y0, x1, y1) {
+  for (var y = Math.max(0, Math.min(y0, y1)); y <= Math.min(cvs.height - 1, Math.max(y0, y1)); y++)
+    for (var x = Math.max(0, Math.min(x0, x1)); x <= Math.min(cvs.width - 1, Math.max(x0, x1)); x++)
+      paintData[y * cvs.width + x] = 1;
+}
+function down(e) {
+  e.preventDefault(); drawing = true;
+  var p = pos(e); sx = p.x; sy = p.y; last = p;
+  if (mode === 'brush') { stamp(p.x, p.y); redraw(); }
+}
+function move(e) {
+  if (!drawing) return;
+  e.preventDefault();
+  var p = pos(e);
+  if (mode === 'brush') { stamp(p.x, p.y); }
+  last = p; redraw();
+}
+function up(e) {
+  if (!drawing) return;
+  drawing = false;
+  if (mode === 'rect') { rectMark(sx, sy, last.x, last.y); }
+  redraw();
+}
+cvs.addEventListener('mousedown', down); cvs.addEventListener('mousemove', move);
+window.addEventListener('mouseup', up);
+cvs.addEventListener('touchstart', down, { passive: false });
+cvs.addEventListener('touchmove', move, { passive: false });
+cvs.addEventListener('touchend', up);
+
+document.getElementById('sz').addEventListener('input', redraw);
+document.getElementById('tBrush').onclick = function () { mode = 'brush'; this.classList.add('on'); document.getElementById('tRect').classList.remove('on'); redraw(); };
+document.getElementById('tRect').onclick = function () { mode = 'rect'; this.classList.add('on'); document.getElementById('tBrush').classList.remove('on'); redraw(); };
+document.getElementById('tClear').onclick = function () { paintData = new Uint8Array(cvs.width * cvs.height); maskB64 = ''; redraw(); };
+document.getElementById('tAll').onclick = function () {
+  paintData = new Uint8Array(cvs.width * cvs.height).fill(1); redraw();
+};
+
+/* 遮罩与画布同为原始分辨率，1:1 导出，避免缩放误差 */
+function buildMask() {
+  var m = document.createElement('canvas'); m.width = cvs.width; m.height = cvs.height;
+  var c = m.getContext('2d');
+  c.fillStyle = '#000'; c.fillRect(0, 0, m.width, m.height);
+  c.fillStyle = '#fff';
+  for (var y = 0; y < cvs.height; y++) for (var x = 0; x < cvs.width; x++)
+    if (paintData[y * cvs.width + x]) c.fillRect(x, y, 1, 1);
+  // 若原图被降采样（长边>2048），把遮罩同步缩放到 cropCanvas 尺寸
+  if (m.width !== cropCanvas.width || m.height !== cropCanvas.height) {
+    var m2 = document.createElement('canvas');
+    m2.width = cropCanvas.width; m2.height = cropCanvas.height;
+    var c2 = m2.getContext('2d');
+    c2.fillStyle = '#000'; c2.fillRect(0, 0, m2.width, m2.height);
+    c2.drawImage(m, 0, 0, m2.width, m2.height);
+    return m2.toDataURL('image/png');
+  }
+  return m.toDataURL('image/png');
+}
+
+function anyMarked() { return paintData && paintData.some(function (v) { return v; }); }
+
+function showErr(t) { errEl.textContent = '❌ ' + t; errEl.classList.add('on'); }
+function setStatus(t) { statusEl.classList.add('on'); statusTxt.textContent = t; }
+
+document.getElementById('run').onclick = function () {
+  if (!pngDataUrl) { alert('请先上传图片'); return; }
+  if (!anyMarked()) { alert('请先在图上涂抹要擦除的区域，或点击「全图处理」'); return; }
+  if (!Paywall.countUse('AI 去水印 | AgentGongju.com')) return;
+  errEl.classList.remove('on');
+  var btn = this; btn.disabled = true;
+
+  var full = paintData.every(function (v) { return v === 1; });
+  var payload = {
+    model: 'wanx2.1-imageedit',
+    input: { function: 'remove_watermark', base_image_url: pngDataUrl, prompt: '去除水印文字和logo，自然补齐背景' },
+    parameters: { n: 1 }
+  };
+  // 非全图：用遮罩精准修复（保留未框选区域原样）
+  if (!full) {
+    payload.input = {
+      function: 'description_edit_with_mask',
+      base_image_url: pngDataUrl,
+      mask_image_url: buildMask(),
+      prompt: '干净的背景，去除水印文字和杂物，与周围自然融合'
+    };
+  }
+
+  setStatus('正在提交任务…');
+  fetch(API, {
+    method: 'POST',
+    headers: { 'Authorization': 'Bearer ' + DS_KEY, 'Content-Type': 'application/json', 'X-DashScope-Async': 'enable' },
+    body: JSON.stringify(payload)
+  }).then(function (r) { return r.json(); }).then(function (j) {
+    var id = j.output && j.output.task_id;
+    if (!id) throw new Error((j.message || j.code || '提交失败') + '');
+    setStatus('AI 正在擦除并重绘背景…（约 10-30 秒）');
+    return pollTask(id);
+  }).then(function (url) {
+    if (!url) throw new Error('生成失败，请稍后重试');
+    statusEl.classList.remove('on');
+    document.getElementById('oImg').src = pngDataUrl;
+    document.getElementById('rImg').src = url;
+    document.getElementById('dlBtn').href = url;
+    document.getElementById('resultArea').classList.add('active');
+    document.getElementById('resultArea').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    btn.disabled = false;
+  }).catch(function (e) {
+    statusEl.classList.remove('on');
+    showErr(e.message || '网络异常，请重试');
+    btn.disabled = false;
+  });
+};
+
+function pollTask(id) {
+  var tries = 0;
+  return new Promise(function (resolve, reject) {
+    (function tick() {
+      tries++;
+      if (tries > 60) { reject(new Error('处理超时，请稍后重试')); return; }
+      fetch(TASK + id, { headers: { 'Authorization': 'Bearer ' + DS_KEY } })
+        .then(function (r) { return r.json(); })
+        .then(function (j) {
+          var o = j.output || {}, st = o.task_status;
+          if (st === 'SUCCEEDED') {
+            var u = o.results && o.results[0] && o.results[0].url;
+            u ? resolve(u) : reject(new Error('返回结果为空'));
+          } else if (st === 'FAILED' || st === 'UNKNOWN') {
+            reject(new Error(o.message || '任务失败'));
+          } else {
+            setStatus('AI 正在擦除并重绘背景…已等待 ' + Math.round(tries * 3) + ' 秒');
+            setTimeout(tick, 3000);
+          }
+        }).catch(reject);
+    })();
+  });
+}
+</script>
+</body>
+</html>

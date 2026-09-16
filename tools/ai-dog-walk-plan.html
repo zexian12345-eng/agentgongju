@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 遛狗计划生成器 | AgentGongju.com</title>
+<meta name="description" content="AI遛狗计划生成器，根据犬种、年龄、体型和天气生成每日遛狗时长、路线与训练小游戏，还能判断狗狗能不能出门">
+<meta name="keywords" content="遛狗,遛狗时间,狗狗运动,狗训练,养狗日常">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:840px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,input[type=text],input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+select:focus,input:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.rec{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.25);border-radius:12px;padding:16px;margin-bottom:12px}
+.rec-h{font-size:1.05rem;color:#a5b4fc;font-weight:700;margin-bottom:8px}
+.rec-b{color:#cbd5e1;font-size:.88rem;line-height:1.95}
+.big{font-size:1.6rem;font-weight:700;color:#22c55e}
+.big2{font-size:1.6rem;font-weight:700;color:#f59e0b}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem;margin-top:12px}
+.tip{color:#94a3b8;font-size:.8rem;margin-top:8px;line-height:1.7}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🐕 AI 遛狗计划生成器</h1><p>看懂你家狗的体力，遛够还遛对</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>🐶 犬种体型</label><select id="size"><option value="小型犬（吉娃娃/泰迪/比熊）" selected>小型犬（泰迪/比熊/吉娃娃）</option><option value="中型犬（柯基/边牧/柴犬）">中型犬（柯基/柴犬/边牧）</option><option value="大型犬（金毛/拉布拉多/哈士奇）">大型犬（金毛/拉布/哈士奇）</option><option value="短鼻犬（法斗/巴哥/英斗）">短鼻犬（法斗/巴哥/西施）</option></select></div>
+<div><label>🎂 年龄</label><select id="age"><option value="幼犬（3-12月）">幼犬（3-12 月）</option><option value="成年（1-7岁）" selected>成年（1-7 岁）</option><option value="老年（7岁以上）">老年（7 岁以上）</option></select></div>
+</div>
+<div class="param-row">
+<div><label>☀️ 今天天气</label><select id="weather"><option value="凉爽宜人" selected>凉爽宜人（15-25℃）</option><option value="炎热">炎热（28℃ 以上）</option><option value="寒冷">寒冷（5℃ 以下）</option><option value="下雨">下雨 / 湿滑</option></select></div>
+<div><label>⏰ 你每天能溜</label><select id="have"><option value="30分钟以内" selected>30 分钟以内</option><option value="30-60分钟">30-60 分钟</option><option value="1小时以上">1 小时以上</option></select></div>
+</div>
+<div class="param-row">
+<div><label>🦴 健康情况</label><select id="health"><option value="健康" selected>很健康</option><option value="关节不好">有关节问题</option><option value="心脏/呼吸">心脏或呼吸偏弱</option><option value="刚绝育/术后">刚绝育 / 术后恢复</option></select></div>
+<div><label>🎯 想重点解决</label><select id="goal"><option value="日常运动" selected>日常运动就行</option><option value="拆家">爱拆家 / 精力过剩</option><option value="爆冲">遛的时候爱爆冲</option><option value="怕生">胆小 / 见狗就炸</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">✨ 生成遛狗方案</button>
+<div class="tip">💡 判断标准：遛完后狗狗精神放松、能安静趴下休息，就是量够了；回家还疯跑，说明没遛够。</div>
+</div>
+<div class="result-area" id="resultArea"><div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 遛狗方案</div>
+<div id="out"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制方案</button>
+</div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function copyResult(){navigator.clipboard.writeText(document.getElementById('out').innerText).then(()=>alert('✅ 已复制！'))}
+function gen(){
+ if(!Paywall.countUse('AI 遛狗计划生成器 | AgentGongju.com'))return;
+ var size=document.getElementById('size').value,age=document.getElementById('age').value,weather=document.getElementById('weather').value,have=document.getElementById('have').value,health=document.getElementById('health').value,goal=document.getElementById('goal').value;
+ var out=document.getElementById('out');out.innerHTML='';
+ // 计算建议运动量
+ var base=60; // 分钟/天
+ if(size.indexOf('小型')>-1)base=40;
+ else if(size.indexOf('中型')>-1)base=75;
+ else if(size.indexOf('大型')>-1)base=120;
+ else if(size.indexOf('短鼻')>-1)base=30;
+ if(age.indexOf('幼犬')>-1)base=Math.round(base*0.6);
+ if(age.indexOf('老年')>-1)base=Math.round(base*0.55);
+ if(health==='关节不好')base=Math.round(base*0.6);
+ if(health==='心脏/呼吸')base=Math.round(base*0.5);
+ if(health==='刚绝育/术后')base=Math.round(base*0.35);
+ if(weather==='炎热')base=Math.round(base*0.6);
+ if(weather==='寒冷')base=Math.round(base*0.8);
+ if(weather==='下雨')base=Math.round(base*0.5);
+ if(goal==='拆家')base=Math.round(base*1.3);
+ var times=size.indexOf('大型')>-1?2:2;
+ var per=Math.round(base/times);
+ // 能否出门判断
+ var canGo=true,warn='';
+ if(weather==='炎热'){warn='高温天：改到早上 7 点前或晚上 8 点后，避免柏油路烫脚（用手背贴地 5 秒，烫就是不能走）。';}
+ else if(weather==='下雨'){warn='雨天可以穿宠物雨衣，回家擦干脚垫并检查趾间，防止湿疹。';}
+ else if(weather==='寒冷'){warn='低温天：小型犬和短毛犬建议穿衣服，避开撒了融雪剂的路面。';}
+ if(health==='心脏/呼吸'&&weather==='炎热'){canGo=false;warn='⚠️ 短鼻/心脏问题 + 高温，是高危组合，建议今天只做室内活动。';}
+ out.innerHTML='<div style="color:#94a3b8;font-size:.85rem;margin-bottom:14px">🐶 '+size+' ｜ 🎂 '+age+' ｜ ☀️ '+weather+' ｜ ⏰ 可用时间：'+have+' ｜ 🎯 '+goal+'</div>';
+ out.insertAdjacentHTML('beforeend','<div class="rec" style="border-color:rgba(34,197,94,.35)"><div class="rec-h">🎯 建议运动量</div><div class="rec-b">每天总计 <span class="'+(canGo?'big':'big2')+'">'+base+'</span> 分钟，分 <b>'+times+' 次</b> 进行，每次约 <b>'+per+' 分钟</b>。<br>'+(canGo?'✅ 今天可以正常出门':'⚠️ 今天建议以室内活动为主')+'</div></div>');
+ // 时间安排
+ var sched=[];
+ if(weather==='炎热'){sched.push('🌅 早 6:30-7:30（趁凉，走完主要运动量）');sched.push('🌙 晚 20:00 后（只做排泄+短走 '+Math.round(per*0.6)+' 分钟）');}
+ else if(weather==='寒冷'){sched.push('🌤 上午 10:00-11:00（太阳出来气温回升后）');sched.push('🌆 下午 15:00-16:00（第二趟）');}
+ else{sched.push('🌅 早 7:00-8:00（第一趟，'+per+' 分钟）');sched.push('🌆 晚 18:00-19:30（第二趟，'+per+' 分钟）');}
+ out.insertAdjacentHTML('beforeend','<div class="rec"><div class="rec-h">⏰ 时间安排</div><div class="rec-b">'+sched.map(function(x){return '👉 '+x}).join('<br>')+'</div></div>');
+ // 路线建议
+ var route={};
+ route['小型犬（吉娃娃/泰迪/比熊）']='小区内圈 1 圈 + 定点草地嗅闻 10 分钟。小型犬运动量小但爱嗅闻，嗅闻本身消耗脑力，比快走更解压。';
+ route['中型犬（柯基/边牧/柴犬）']='小区外 2 公里标准路线，中间安排 15 分钟草地自由活动（长绳或封闭场地）。边牧这类高智商犬，纯走路不够，需要加训练游戏。';
+ route['大型犬（金毛/拉布拉多/哈士奇）']='3-5 公里快走或慢跑，最好有封闭场地奔跑 15 分钟。大型犬必须出汗式运动，否则拆家。';
+ route['短鼻犬（法斗/巴哥/英斗）']='短距离慢走，每走 5 分钟休息 2 分钟。重点看呼吸：舌头大张、喘不过气要立即停下。';
+ out.insertAdjacentHTML('beforeend','<div class="rec"><div class="rec-h">🗺 路线建议</div><div class="rec-b">'+route[size]+'</div></div>');
+ // 训练小游戏
+ var games={
+  '日常运动':['嗅闻寻宝：把零食藏在草地里，让狗用鼻子找，5 分钟嗅闻≈20 分钟走路','跟随练习：走 Z 字路线，狗跟着你的节奏走，训练注意力'],
+  '拆家':['拾取-放下游戏：用玩具反复抛接 20 次，消耗体力又练服从','慢食碗吃饭 + 漏食球，让狗狗花 20 分钟才能吃完，消耗脑力'],
+  '爆冲':['停止-等待：狗一拉绳你就停住不动，等它回头看你再走，一次遛弯练 20 次','换向走：狗往前冲就往反方向走，让它明白牵绳不能控制方向'],
+  '怕生':['远距离观察：坐在离其他狗 20 米的地方，看它安静就给零食，逐步缩短距离','不要抱着安慰：怕生的狗主人一抱就等于告诉它「确实危险」，保持平静走开更好']
+ };
+ out.insertAdjacentHTML('beforeend','<div class="rec"><div class="rec-h">🎮 针对「'+goal+'」的训练游戏</div><div class="rec-b">'+games[goal].map(function(x,i){return (i+1)+'. '+x}).join('<br>')+'</div></div>');
+ // 出门清单
+ out.insertAdjacentHTML('beforeend','<div class="rec"><div class="rec-h">🎒 出门清单</div><div class="rec-b">□ 牵引绳（建议 1.2m 短绳，不用伸缩绳）<br>□ 拾便袋（至少 2 个）<br>□ 水壶（超过 30 分钟要带）<br>□ 零食（训练奖励用）<br>□ 狗牌/芯片信息已更新<br>□ 夏天备降温垫，冬天备小衣服</div></div>');
+ if(warn)out.insertAdjacentHTML('beforeend','<div class="rec" style="border-color:rgba(245,158,11,.4)"><div class="rec-h">⚠️ 今日提醒</div><div class="rec-b">'+warn+'</div></div>');
+ document.getElementById('resultArea').classList.add('active');
+}
+document.getElementById('genBtn').addEventListener('click',gen);
+</script>
+</body>
+</html>

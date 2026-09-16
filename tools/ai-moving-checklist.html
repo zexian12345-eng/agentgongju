@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 搬家清单生成器 | AgentGongju.com</title>
+<meta name="description" content="AI搬家清单生成器，根据人数房型和时间生成搬家准备清单、打包顺序、水电过户与地址变更事项，一次搬清不遗漏">
+<meta name="keywords" content="搬家清单,搬家准备,打包顺序,地址变更,搬家注意事项">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:860px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,input[type=text]{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+select:focus,input:focus{border-color:#6366f1}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.rec{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.25);border-radius:12px;padding:16px;margin-bottom:12px}
+.rec-h{font-size:1.05rem;color:#a5b4fc;font-weight:700;margin-bottom:8px}
+.rec-b{color:#cbd5e1;font-size:.88rem;line-height:2}
+.rec-b i{display:inline-block;width:18px;height:18px;line-height:18px;text-align:center;border:1px solid rgba(99,102,241,.5);border-radius:4px;margin-right:8px;font-style:normal;font-size:.7rem;vertical-align:-3px}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem;margin-top:12px}
+.tip{color:#94a3b8;font-size:.8rem;margin-top:8px;line-height:1.7}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📦 AI 搬家清单生成器</h1><p>按你的情况排出打包顺序，一条都不落</p></div>
+
+<div class="card">
+<div class="param-row">
+<div><label>🏠 房型</label><select id="room"><option value="单间/合租" selected>单间 / 合租</option><option value="一居室">一居室</option><option value="两居室">两居室</option><option value="三居及以上">三居及以上</option></select></div>
+<div><label>👥 搬家人数</label><select id="people"><option value="1" selected>1 人</option><option value="2">2 人</option><option value="3+">3 人以上（有小孩/老人）</option></select></div>
+</div>
+<div class="param-row">
+<div><label>📅 距离搬家还有</label><select id="days"><option value="7">3-7 天</option><option value="14" selected>1-2 周</option><option value="30">1 个月</option><option value="3">明天就走</option></select></div>
+<div><label>🚚 搬家方式</label><select id="way"><option value="自己打包+货拉拉" selected>自己打包 + 货拉拉/小面</option><option value="搬家公司全包">搬家公司全包</option><option value="自己开车搬">自己开车 / 分次搬</option></select></div>
+</div>
+<div class="param-row">
+<div><label>🐱 有宠物</label><select id="pet"><option value="否" selected>没有</option><option value="有">有</option></select></div>
+<div><label>🧾 需要过户/变更</label><select id="util"><option value="都需要" selected>水电燃气网都要</option><option value="部分">只改其中几项</option><option value="不用">不用（房东负责）</option></select></div>
+</div>
+<button class="btn-gen" id="genBtn">✨ 生成搬家计划</button>
+<div class="tip">💡 最容易被漏掉的三件事：宽带拆机（没拆会继续扣费）、小区门禁卡退还、快递地址改默认。</div>
+</div>
+<div class="result-area" id="resultArea"><div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 你的搬家清单</div>
+<div id="out"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制清单</button>
+</div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function copyResult(){navigator.clipboard.writeText(document.getElementById('out').innerText).then(()=>alert('✅ 已复制！'))}
+function gen(){
+ if(!Paywall.countUse('AI 搬家清单生成器 | AgentGongju.com'))return;
+ var room=document.getElementById('room').value,people=document.getElementById('people').value,days=parseInt(document.getElementById('days').value,10),way=document.getElementById('way').value,pet=document.getElementById('pet').value,util=document.getElementById('util').value;
+ var big=(room==='两居室'||room==='三居及以上');
+ var D=function(n){if(days<=3)return '搬家前1天';if(n>days*0.7)return '搬家前'+(days-3)+'天起';if(n>days*0.4)return '搬家前1周';return '搬家前2-3周';};
+ var boxes=[];
+ // 第一阶段：提前规划
+ var p1=[];
+ p1.push('确认新家：签合同、抄水电燃气表底数、拍照留证，确认押金和退还条件');
+ p1.push('预约搬家：'+way+'，确认加价规则（楼层费、拆装费、超公里费）');
+ p1.push('列物品清单：扔掉不用的，'+(big?'大件家具提前拍照量尺寸，确认新家能不能进门':'确认大件能不能进电梯'));
+ if(util!=='不用'){
+   p1.push('水电网过户/新装：宽带提前 3-5 天预约移机或新装，燃气过户需带身份证+房产/租赁证明');
+   p1.push('地址变更：快递默认地址、外卖地址、银行预留地址、社保/公积金（如跨市）');
+ }
+ if(pet==='有')p1.push('宠物安排：搬家当天宠物单独安置，别放在搬家车上；提前准备航空箱和常用粮');
+ boxes.push({t:'📋 '+D(10)+'：规划与预约',items:p1});
+ // 第二阶段：打包
+ var p2=[];
+ p2.push('先打包不常用的：换季衣物、书籍、装饰品、备用被褥');
+ p2.push('打包原则：重物用小箱（书），轻物用大箱（衣物、被子），每箱不超过 20kg');
+ p2.push('每箱标记「房间+内容物+易碎」，'+(people==='1'?'一个人搬务必标注优先级，先搬必需箱':'多人协作按房间分色贴标签'));
+ p2.push('重要物品自己拿：证件、电脑、充电器、常用药、钥匙、现金、首饰');
+ p2.push('液体类（洗发水、酱油）单独袋装+封口，防止漏液污染整箱');
+ if(people==='3+')p2.push('有小孩/老人：提前准备 3 天用量的换洗衣物和常用药，单独一箱最后装车最先打开');
+ p2.push('拆家具：螺丝螺母装自封袋贴在家具上，拍一张拆前照片');
+ boxes.push({t:'📦 '+D(7)+'：分阶段打包',items:p2});
+ // 第三阶段：搬家前一天
+ var p3=[];
+ p3.push('确认搬家师傅电话、到达时间、车能不能停到楼下（提前问物业）');
+ p3.push('冰箱提前 1 天清空+断电化霜，避免搬运时漏水；冰箱搬后静置 4 小时再通电');
+ p3.push('洗衣机排水管里的水放干净，固定内筒（运输螺丝装回）');
+ p3.push('手机充好电，准备现金/零钱，新家钥匙确认在手');
+ p3.push('旧房打扫：按合同要求恢复原状，拍空房照片+水电气表读数，作为退押金证据');
+ boxes.push({t:'🚚 '+D(days)+'：搬前一天收尾',items:p3});
+ // 第四阶段：搬后
+ var p4=[];
+ p4.push('清点：按箱号核对，重点检查易碎和贵重物品，有问题当场拍照并让师傅签字确认');
+ p4.push('新家先通电通水：测试水压、燃气点火、插座、马桶、门窗锁');
+ p4.push('宽带装好后改 WiFi 名和密码，路由器放在房子中间位置');
+ p4.push('垃圾分类和纸箱处理：纸箱可卖掉或送给快搬家的人，泡沫和胶带属其他垃圾');
+ if(util!=='不用')p4.push('一周内核对：旧地址宽带是否已停、水电是否已过户、有无多扣费');
+ boxes.push({t:'🏡 搬家当天+一周内：入住',items:p4});
+
+ var out=document.getElementById('out');out.innerHTML='';
+ out.innerHTML='<div style="color:#94a3b8;font-size:.85rem;margin-bottom:14px">🏠 '+room+' ｜ 👥 '+people+' 人 ｜ 📅 '+days+' 天准备期 ｜ 🚚 '+way+' ｜ 🐱 宠物：'+pet+'</div>';
+ boxes.forEach(function(b){
+   var el=document.createElement('div');el.className='rec';
+   el.innerHTML='<div class="rec-h">'+b.t+'</div><div class="rec-b">'+b.items.map(function(x,i){return '<i>'+(i+1)+'</i>'+x}).join('<br>')+'</div>';
+   out.appendChild(el);
+ });
+ var extra='<div class="rec" style="border-color:rgba(245,158,11,.4)"><div class="rec-h">⚠️ 超容易被漏的 6 件事</div><div class="rec-b">'+
+ '<i>1</i>宽带不拆机，会一直扣费到合约结束<br>'+
+ '<i>2</i>旧小区门禁卡/停车卡没退，押金拿不回<br>'+
+ '<i>3</i>快递和外卖默认地址没改，东西寄到旧家<br>'+
+ '<i>4</i>挂在墙上的挂钩、洞没补，押金被扣<br>'+
+ '<i>5</i>冰箱搬完立刻通电，压缩机容易坏（要静置 4 小时）<br>'+
+ '<i>6</i>搬家当天才发现电梯要预约/要收费</div></div>';
+ out.insertAdjacentHTML('beforeend',extra);
+ document.getElementById('resultArea').classList.add('active');
+}
+document.getElementById('genBtn').addEventListener('click',gen);
+</script>
+</body>
+</html>
