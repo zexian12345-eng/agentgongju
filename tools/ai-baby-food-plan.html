@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 宝宝辅食食谱生成器 | AgentGongju.com</title>
+<meta name="description" content="AI宝宝辅食食谱生成器，按月龄自动生成一周辅食计划、做法步骤和过敏提醒，新手爸妈照着做就行">
+<meta name="keywords" content="宝宝辅食,辅食食谱,婴儿辅食,辅食添加,月龄食谱,育儿工具">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,input[type=text],textarea{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px}
+select:focus,input:focus,textarea:focus{border-color:#6366f1}
+textarea{min-height:120px;resize:vertical;line-height:1.8}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.param-row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.rec{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.25);border-radius:12px;padding:16px;margin-bottom:12px}
+.rec-h{font-size:1.05rem;color:#a5b4fc;font-weight:700;margin-bottom:8px}
+.rec-b{color:#cbd5e1;font-size:.88rem;line-height:1.9}
+.day-card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-left:3px solid #6366f1;border-radius:10px;padding:14px;margin-bottom:10px}
+.day-t{color:#a5b4fc;font-weight:700;font-size:.92rem;margin-bottom:6px}
+.day-b{color:#cbd5e1;font-size:.85rem;line-height:1.8}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem;margin-top:12px}
+.tip{color:#94a3b8;font-size:.8rem;margin-top:8px;line-height:1.7}
+@media(max-width:600px){.param-row,.param-row3{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🍚 AI 宝宝辅食食谱生成器</h1><p>按月龄排一周辅食，连做法和过敏提醒一起给你</p></div>
+
+<div class="card">
+<div class="param-row3">
+<div><label>👶 月龄</label><select id="age">
+<option value="6">6 个月（初添）</option>
+<option value="7">7 个月</option>
+<option value="8" selected>8 个月</option>
+<option value="10">10 个月</option>
+<option value="12">12 个月+</option>
+</select></div>
+<div><label>🦷 咀嚼能力</label><select id="chew">
+<option value="泥糊状" selected>泥糊状</option>
+<option value="细颗粒">细颗粒</option>
+<option value="小块状">小块状</option>
+<option value="手指食物">手指食物</option>
+</select></div>
+<div><label>🍽 每天几顿</label><select id="meals">
+<option value="1">1 顿</option>
+<option value="2" selected>2 顿</option>
+<option value="3">3 顿</option>
+</select></div>
+</div>
+<label>🚫 已知过敏 / 忌口食材（没有可留空）</label>
+<input type="text" id="avoid" placeholder="例：鸡蛋、牛奶、芒果、海鲜">
+<label>🥕 家里现有食材（可选，帮你优先用掉）</label>
+<input type="text" id="have" placeholder="例：南瓜、西兰花、小米、猪里脊">
+<label>⚠️ 特别关注（可选）</label>
+<input type="text" id="note" placeholder="例：有点便秘、贫血、不爱吃蔬菜">
+<button class="btn-gen" id="genBtn">✨ 生成一周辅食计划</button>
+<div class="tip">💡 首次添加新食材请单独试 2-3 天并观察反应。本工具提供参考建议，具体请遵医嘱。</div>
+</div>
+<div class="result-area" id="resultArea"><div class="card">
+<div style="color:#22c55e;font-weight:600;margin-bottom:12px">✅ 一周辅食计划已生成</div>
+<div id="out"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制计划</button>
+</div></div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function copyResult(){navigator.clipboard.writeText(document.getElementById('out').innerText).then(function(){alert('✅ 已复制！')})}
+
+var GRAIN={6:['强化铁米粉','小米糊'],7:['强化铁米粉','小米糊','大米粥'],8:['大米粥','小米粥','软烂面条'],10:['软饭','面条','馒头小块'],12:['软饭','面条','小馄饨','吐司条']};
+var VEG=['南瓜','胡萝卜','西兰花','菠菜','土豆','山药','西红柿','青菜','紫薯','玉米'];
+var PRO={6:['蛋黄泥'],7:['蛋黄泥','猪肝泥'],8:['鸡肉泥','猪里脊泥','豆腐','鳕鱼泥'],10:['鸡肉末','猪肉末','豆腐块','三文鱼末'],12:['肉末','鱼块','鸡蛋羹','虾仁末']};
+var FRUIT=['苹果泥','香蕉泥','梨泥','牛油果泥','蓝莓泥','火龙果丁'];
+var TIPS={
+ '泥糊状':'所有食材蒸熟后打成细腻泥糊，稠度参考酸奶，能挂住勺不滴落为佳。',
+ '细颗粒':'食材剁碎成 2-3mm 小颗粒，让宝宝学着用舌头碾碎，是咀嚼训练的关键期。',
+ '小块状':'切成黄豆大小，鼓励自己咀嚼。大人全程看护，避免整颗坚果、果冻、葡萄。',
+ '手指食物':'切成成人小指粗细、宝宝能一把抓住的长条（蒸软的胡萝卜条、西兰花小朵、吐司条）。'
+};
+var NOTES={
+ '便秘':'每天加一勺西梅泥或火龙果，主食里混 1/3 粗粮（小米/燕麦），多喝水。',
+ '贫血':'每周 2-3 次动物肝脏或红肉，搭配富含维C的水果（猕猴桃、橙子）帮助铁吸收。',
+ '不爱吃蔬菜':'把蔬菜剁碎藏进肉丸、蛋饼、面条里，先改变形态再谈接受度。',
+ '过敏':'新食材一次只加一种，早上喂，方便全天观察，出现红疹/呕吐立即停用并就医。'
+};
+
+function pick(arr,seed,n){var out=[];for(var i=0;i<n;i++){out.push(arr[(seed*7+i*13)%arr.length]);}return out;}
+function uniq(a){var s=[],seen={};a.forEach(function(x){if(!seen[x]){seen[x]=1;s.push(x)}});return s;}
+
+function gen(){
+ if(!Paywall.countUse('AI 宝宝辅食食谱生成器 | AgentGongju.com'))return;
+ var age=parseInt(document.getElementById('age').value,10);
+ var chew=document.getElementById('chew').value;
+ var meals=parseInt(document.getElementById('meals').value,10);
+ var avoid=(document.getElementById('avoid').value||'').split(/[,，、\s]+/).filter(function(s){return s});
+ var have=(document.getElementById('have').value||'').split(/[,，、\s]+/).filter(function(s){return s});
+ var note=document.getElementById('note').value.trim();
+
+ var grains=GRAIN[age].slice(), proteins=PRO[age].slice(), vegs=VEG.slice(), fruits=FRUIT.slice();
+ function filt(list){return list.filter(function(x){return !avoid.some(function(a){return x.indexOf(a)>-1})});}
+ grains=filt(grains);proteins=filt(proteins);vegs=filt(vegs);fruits=filt(fruits);
+ if(!grains.length)grains=['大米粥'];
+ if(!proteins.length)proteins=['豆腐'];
+ if(!vegs.length)vegs=['南瓜'];
+ if(!fruits.length)fruits=['苹果泥'];
+
+ // 优先使用家里现有食材
+ var used=[];
+ have.forEach(function(h){
+   [vegs,proteins,grains,fruits].forEach(function(list){
+     list.sort(function(a,b){var A=a.indexOf(h)>-1?-1:0,B=b.indexOf(h)>-1?-1:0;return A-B;});
+   });
+   if(vegs[0]&&vegs[0].indexOf(h)>-1)used.push(vegs[0]);
+ });
+
+ var days=['周一','周二','周三','周四','周五','周六','周日'];
+ var out=document.getElementById('out');out.innerHTML='';
+ out.innerHTML='<div style="color:#94a3b8;font-size:.85rem;margin-bottom:14px">👶 '+age+' 个月 ｜ 🦷 '+chew+' ｜ 🍽 每天 '+meals+' 顿 ｜ 共 '+(meals*7)+' 餐</div>';
+
+ if(used.length){
+   out.insertAdjacentHTML('beforeend','<div class="rec" style="border-color:rgba(34,197,94,.3)"><div class="rec-h">🥕 优先消耗家里现有食材</div><div class="rec-b">'+uniq(used).join('、')+' —— 已优先排进本周菜单，先吃新鲜度低的。</div></div>');
+ }
+
+ var plan='';
+ var seenProtein={},seenVeg={};
+ for(var d=0;d<7;d++){
+   var g=grains[d%grains.length];
+   var p=proteins[(d*3)%proteins.length];
+   var v=vegs[(d*5)%vegs.length];
+   var f=fruits[(d*2)%fruits.length];
+   var v2=vegs[(d*5+3)%vegs.length];
+   var line='主食：'+g;
+   if(meals>=1)line+=' ｜ 搭配：'+v+' + '+p;
+   if(meals>=2)line+=' ／ 加餐：'+f;
+   if(meals>=3)line+=' ／ 晚餐：'+g+' + '+v2;
+   plan+='<div class="day-card"><div class="day-t">📅 '+days[d]+'</div><div class="day-b">'+line+'</div></div>';
+   seenProtein[p]=1;seenVeg[v]=1;
+ }
+ out.insertAdjacentHTML('beforeend','<div class="rec"><div class="rec-h">📋 一周菜单</div><div class="rec-b">'+plan+'</div></div>');
+
+ out.insertAdjacentHTML('beforeend','<div class="rec"><div class="rec-h">🔪 做法通用公式</div><div class="rec-b">'+
+  '<b>1.</b> 肉/肝类：冷水浸泡 20 分钟去血水 → 冷水下锅焯 1 分钟 → 蒸 15 分钟 → 按「'+chew+'」处理<br>'+
+  '<b>2.</b> 蔬菜：蒸比煮好，蒸 8-12 分钟能更好保留维生素，蒸完立刻处理<br>'+
+  '<b>3.</b> 主食：'+ (age<=7?'米粉用 70℃ 水冲开，边倒边搅，静置 1 分钟再拌匀':'粥煮到米粒开花，面条煮到能用勺背压断') +'<br>'+
+  '<b>4.</b> 调味：<b>1 岁内不加盐、不加糖</b>，可用香菇粉、虾皮粉天然提鲜<br>'+
+  '<b>5.</b> 质地：'+TIPS[chew]+'</div></div>');
+
+ out.insertAdjacentHTML('beforeend','<div class="rec"><div class="rec-h">📈 营养价值速览</div><div class="rec-b">本周覆盖：主食 '+uniq(grains).length+' 种 ｜ 蛋白质 '+Object.keys(seenProtein).length+' 种 ｜ 蔬菜 '+Object.keys(seenVeg).length+' 种 ｜ 水果 '+fruits.length+' 种<br>一周食材种类越多，微量元素越不容易缺，比盯着某一顿吃多少更重要。</div></div>');
+
+ if(note){
+   var hits=[];
+   Object.keys(NOTES).forEach(function(k){if(note.indexOf(k)>-1)hits.push('<b>'+k+'</b>：'+NOTES[k]);});
+   var body=hits.length?hits.join('<br>'):'已记录「'+note+'」。辅食期的小问题多半和「质地」「进食节奏」有关，可以先调整两周再看变化；持续不改善请咨询儿科医生。';
+   out.insertAdjacentHTML('beforeend','<div class="rec" style="border-color:rgba(245,158,11,.35)"><div class="rec-h">⚠️ 针对你的关注点</div><div class="rec-b">'+body+'</div></div>');
+ }
+
+ out.insertAdjacentHTML('beforeend','<div class="rec" style="border-color:rgba(239,68,68,.3)"><div class="rec-h">🛡 安全清单</div><div class="rec-b">☑ 1 岁内不加盐糖蜂蜜 ☑ 不吃整颗坚果、果冻、大块葡萄 ☑ 进食必须坐餐椅、大人看护 ☑ 新食材单独试 2-3 天 ☑ 呛咳时勿喂水，海姆立克要提前学<br>急救提醒：婴幼儿异物卡喉请立即拨打 <b>120</b>。</div></div>');
+
+ document.getElementById('resultArea').classList.add('active');
+ document.getElementById('resultArea').scrollIntoView({behavior:'smooth'});
+}
+document.getElementById('genBtn').addEventListener('click',gen);
+</script>
+</body>
+</html>
