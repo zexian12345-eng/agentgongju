@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 空调选购计算器与型号推荐 | AgentGongju.com</title>
+<meta name="description" content="买空调不知道选几匹？输入房间面积、朝向、楼层和预算，算出所需匹数、能效建议与选购清单，避开常见加价陷阱。">
+<meta name="keywords" content="空调选购,空调几匹,空调匹数计算,变频空调,空调能效,买空调攻略">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,input[type=text],input[type=number],textarea{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px;box-sizing:border-box}
+textarea{min-height:90px;resize:vertical;line-height:1.7}
+select:focus,input:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;margin-bottom:12px;font-size:.92rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.tips{color:#64748b;font-size:.8rem;line-height:1.7;margin-top:6px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() { var hm = document.createElement("script"); hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949"; var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(hm, s); })();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>❄️ AI 空调选购计算器</h1><p>算匹数、定能效、配预算，一次买对不踩坑</p></div>
+<div class="card">
+<div class="param-row">
+<div><label>📐 房间面积（㎡）</label><input type="number" id="area" value="15" min="5" max="120"></div>
+<div><label>🏠 层高</label>
+<select id="height"><option value="1.0" selected>2.6-2.9m 标准</option><option value="1.08">3.0-3.5m 偏高</option><option value="1.16">3.6m 以上/挑高</option></select></div>
+</div>
+<div class="param-row">
+<div><label>🧭 朝向</label>
+<select id="face"><option value="1.0">朝北/无直射</option><option value="1.06">朝东/朝西（西晒）</option><option value="1.12" selected>朝南（日照充足）</option><option value="1.05">顶楼/无遮挡</option></select></div>
+<div><label>🪟 窗户情况</label>
+<select id="win"><option value="0.92">小窗/遮光好</option><option value="1.0" selected>普通窗</option><option value="1.12">大落地窗/西晒严重</option></select></div>
+</div>
+<div class="param-row">
+<div><label>👨‍👩‍👧 使用人数</label>
+<select id="people"><option value="0.96">1-2 人</option><option value="1.0" selected>3-4 人</option><option value="1.06">5 人以上</option></select></div>
+<div><label>🔧 主要用途</label>
+<select id="use"><option value="1.0" selected>卧室（睡眠为主）</option><option value="1.05">客厅（人来人往）</option><option value="1.1">书房/机房（发热大）</option><option value="0.95">出租房（够用就行）</option></select></div>
+</div>
+<div class="param-row">
+<div><label>💰 预算区间</label>
+<select id="budget"><option value="2000">2000 元以内（入门）</option><option value="3000" selected>2000-3500 元（主流）</option><option value="5000">3500-6000 元（舒适）</option><option value="9000">6000 元以上（高端）</option></select></div>
+<div><label>🌡 地区气候</label>
+<select id="climate"><option value="1.0" selected>华北/华东（四季分明）</option><option value="1.06">华南（长期高温）</option><option value="0.97">东北/西北（夏季短）</option></select></div>
+</div>
+<label>📝 补充需求（可选）</label>
+<textarea id="note" placeholder="例：家里有老人怕直吹，想买静音的，旧空调外机位很小"></textarea>
+<button class="btn-gen" id="genBtn">❄️ 生成选购方案</button>
+<div class="tips">💡 匹数买大不买小：宁可略大一点也不会更费电（变频会降频运行），买小了会一直满负荷跑，又吵又费电还不凉。</div>
+</div>
+<div class="result-area" id="resultArea">
+<div class="card"><div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制方案</button></div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function gen(){
+var area=+document.getElementById('area').value||15;
+var h=+document.getElementById('height').value;
+var face=+document.getElementById('face').value;
+var win=+document.getElementById('win').value;
+var people=+document.getElementById('people').value;
+var use=+document.getElementById('use').value;
+var budget=+document.getElementById('budget').value;
+var cli=+document.getElementById('climate').value;
+
+// 制冷量需求 W/㎡ 基准 150（卧室）/ 客厅 170
+var base=(use>1.0&&use<1.1)?170:150;
+var load=area*h*base*face*win*people*use*cli;
+var w=Math.round(load/50)*50;
+
+// 匹数换算：1匹≈2500W
+var pi=w/2500;
+var piTxt;
+if(w<2300)piTxt='小 1 匹（2300W）';
+else if(w<2600)piTxt='1 匹（2500W）';
+else if(w<3300)piTxt='大 1 匹 / 1.5 匹（3200-3500W）';
+else if(w<4000)piTxt='1.5 匹（3500W）';
+else if(w<5200)piTxt='2 匹（5000W）';
+else if(w<7200)piTxt='3 匹（7200W）';
+else if(w<9000)piTxt='3 匹以上（9000W+，建议柜机或两台挂机）';
+else piTxt='大 3 匹以上，建议中央空调或多台分区';
+
+// 推荐机型规格
+var rec;
+if(w<2600)rec='1 匹变频挂机';
+else if(w<3400)rec='大 1 匹 / 1.5 匹变频挂机';
+else if(w<4000)rec='1.5 匹变频挂机';
+else if(w<5200)rec=area>25?'2 匹挂机或小 2 匹柜机':'2 匹柜机';
+else if(w<7200)rec='3 匹柜机';
+else rec='多联机 / 中央空调 / 多台挂机组合';
+
+var out='════ 空调选购方案 ════\n\n';
+out+='房间面积：'+area+'㎡　｜　所需制冷量：'+w+'W\n';
+out+='对应匹数：'+piTxt+'\n';
+out+='推荐机型：'+rec+'\n\n';
+
+out+='──── 一、为什么是这个匹数 ────\n';
+out+='· 基准负荷 '+(base)+'W/㎡ × '+area+'㎡ = '+(Math.round(area*base))+'W\n';
+if(h>1)out+='· 层高高，空气体积大 ↑'+(Math.round((h-1)*100))+'%\n';
+if(face>1)out+='· '+(face>1.1?'朝南日照充足':'西晒/朝向不利')+'，冷负荷 ↑'+(Math.round((face-1)*100))+'%\n';
+if(win>1)out+='· 窗户大/西晒严重，热量从玻璃进来 ↑'+(Math.round((win-1)*100))+'%\n';
+if(people>1)out+='· 人多，人体散热 ↑'+(Math.round((people-1)*100))+'%\n';
+if(use>1.05)out+='· 客厅或发热环境，单位负荷更高\n';
+out+='\n👉 结论：买 '+piTxt+'，'+(w<4000?'注意要选"大 1 匹"，市面上很多标 1 匹只有 2500W，可能不够。':'匹数别买小，宁可大一级。')+'\n\n';
+
+out+='──── 二、能效与电费 ────\n';
+out+='· 认准新国标 APF 值：1 级能效 APF≥5.0，3 级 APF≥3.7。1 级比 3 级省电约 15-25%。\n';
+out+='· 年耗电估算（按每天 8 小时、夏季 4 个月）：\n';
+var kw=w/2500;
+var hours=8*120;
+var l1=kw*0.75*hours/1000, l3=kw*0.95*hours/1000;
+out+='   1 级能效约 '+(Math.round(l1))+' 度/年　→ 约 '+(Math.round(l1*0.55))+' 元\n';
+out+='   3 级能效约 '+(Math.round(l3))+' 度/年　→ 约 '+(Math.round(l3*0.55))+' 元\n';
+out+='   差价约 '+(Math.round((l3-l1)*0.55))+' 元/年，通常 2-3 年就能收回能效差价。\n';
+out+='· ⚠️ 别只看"一度电"—要看 APF。'+(budget>=3500?'你预算够，直接上 1 级能效，长期最划算。':'预算有限时，卧室一定选 1 级（用得多），客厅可以退而求其次。')+'\n\n';
+
+out+='──── 三、预算怎么花 ────\n';
+out+='你的预算：'+budget+' 元以内\n';
+if(budget<=2000){
+out+='· 这个价位只能买到 1 匹 3 级能效挂机，适合出租房或小卧室。\n';
+out+='· 建议：宁可加 300 元选大 1 匹，也不要为了牌子买小了。\n';
+}else if(budget<=3500){
+out+='· 主流区间，能买到 1.5 匹 1 级能效变频挂机，是性价比最高的档位。\n';
+out+='· 建议：优先国产品牌（格力/美的/海尔）的主力机型，售后网点多。\n';
+}else if(budget<=6000){
+out+='· 可以买到 1.5-2 匹 1 级能效＋自清洁＋无风感/柔风，舒适度明显提升。\n';
+out+='· 建议：卧室加钱买"柔风/无风感"，客厅看制冷速度。\n';
+}else{
+out+='· 高端区间，可考虑三菱/大金等日系，或新风空调、中央空调。\n';
+out+='· 建议：除非特别在意静音和寿命，国产品牌高端线已经很够用。\n';
+}
+out+='\n价格参考（2026 年市场，含基础安装）：\n';
+out+='· 1 匹 3 级挂机：1200-1800 元\n· 1.5 匹 1 级挂机：2200-3200 元\n· 2 匹柜机：3500-5000 元\n· 3 匹柜机：5000-8000 元\n\n';
+
+out+='──── 四、选购必看 6 个参数 ────\n';
+out+='① 匹数/制冷量：以 W 为准，别只看"匹"这个模糊概念。\n';
+out+='② 能效等级 APF：1 级＞2 级＞3 级，卧室必选 1 级。\n';
+out+='③ 是否全直流变频：全直流＝压缩机＋内外风机都是直流，更省电更静音。\n';
+out+='④ 静音值：卧室选内机噪音 ≤22dB 的型号，'+(/静音|老人|睡/.test(document.getElementById('note').value)?'你特别提到这点，一定要看清参数表标称值，别信"超静音"广告词。':'睡眠浅的人尤其注意。')+'\n';
+out+='⑤ 自清洁/防直吹：'+(/老人|小孩|直吹/.test(document.getElementById('note').value)?'你有防直吹需求，优选带"柔风/无风感"的型号。':'有老人小孩的家庭强烈建议带。')+'\n';
+out+='⑥ 外机尺寸：'+(/外机位|机位/.test(document.getElementById('note').value)?'你提到外机位小，务必先量好尺寸再下单，否则装不上要退货很麻烦。':'下单前量好外机位尺寸，尤其是飘窗和百叶内嵌位置。')+'\n\n';
+
+out+='──── 五、常见加价陷阱 ────\n';
+out+='❌ "免费安装"但铜管超出 3 米要加钱（约 80-120 元/米）——提前量好管线距离。\n';
+out+='❌ 高空作业费（4 楼以上无平台）通常 100-300 元，要提前问清。\n';
+out+='❌ 打孔费、支架费、加氟费，正规安装应含基础打孔支架。\n';
+out+='❌ 以旧换新/满减看起来很香，实则抬高原价，多平台比价最实在。\n';
+out+='❌ 延保推销：空调整机一般 6 年保修（新国标），没必要买额外延保。\n\n';
+
+out+='──── 六、下单前清单 ────\n';
+out+='□ 确认房间面积 '+area+'㎡ 需要 '+piTxt+'\n';
+out+='□ 选 1 级能效全直流变频\n';
+out+='□ 量好外机位尺寸、铜管距离、插座位置\n';
+out+='□ 确认上门安装是否收费项目\n';
+out+='□ 大促节点买（3-4 月空调季、6.18、双 11）价格最低\n';
+out+='□ 保留发票，注意 7 天无理由＋安装后试机验收\n\n';
+
+var note=document.getElementById('note').value.trim();
+if(note){
+out+='──── 针对你的补充需求 ────\n';
+out+='你提到：'+note+'\n';
+if(/老人|小孩|直吹|怕冷/.test(note))out+='· 有怕直吹的家人：选无风感/柔风机型，或加装导风板，出风口朝上打。\n';
+if(/静音|吵|睡不着/.test(note))out+='· 静音需求：看内机噪音标称值（≤22dB 为佳），安装时注意外机减震垫。\n';
+if(/外机|机位|位置/.test(note))out+='· 外机位受限：优先选尺寸紧凑的型号，或考虑一拖二/中央空调。\n';
+if(/出租|租/.test(note))out+='· 出租房：买 3 级能效 1.5 匹挂机即可，重点是好拆好移、牌子售后方便。\n';
+out+='\n';
+}
+out+='💡 一句话总结：先算对匹数（'+piTxt+'），再锁 1 级能效，最后比安装费和售后。买大一级不会错，买小一级天天难受。';
+return out;
+}
+function copyResult(){
+var t=document.getElementById('outputBox').innerText;
+if(navigator.clipboard){navigator.clipboard.writeText(t).then(function(){alert('已复制到剪贴板 ✅');},function(){fallbackCopy(t);});}
+else fallbackCopy(t);
+}
+function fallbackCopy(t){
+var ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');alert('已复制到剪贴板 ✅');}catch(e){alert('复制失败，请手动选中复制');}document.body.removeChild(ta);
+}
+document.getElementById('genBtn').addEventListener('click',function(){
+var box=document.getElementById('outputBox');
+box.textContent=gen();
+document.getElementById('resultArea').classList.add('active');
+document.getElementById('resultArea').scrollIntoView({behavior:'smooth',block:'start'});
+});
+</script>
+</body>
+</html>
