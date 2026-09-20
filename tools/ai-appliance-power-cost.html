@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 厨房小家电耗电电费计算 | AgentGongju.com</title>
+<meta name="description" content="空气炸锅、电饭煲、烤箱、热水壶到底多耗电？输入功率和使用频率，算出每次和每月电费，告诉你哪些是真正的电老虎。">
+<meta name="keywords" content="小家电耗电,电费计算,空气炸锅耗电,电费多少钱,厨房电器功率,省电">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,input[type=text],input[type=number],textarea{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px;box-sizing:border-box}
+select:focus,input:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;margin-bottom:12px;font-size:.92rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.tips{color:#64748b;font-size:.8rem;line-height:1.7;margin-top:6px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() { var hm = document.createElement("script"); hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949"; var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(hm, s); })();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>⚡ AI 厨房小家电耗电电费计算</h1><p>算清每次用多少钱，揪出真正的电老虎</p></div>
+<div class="card">
+<div class="param-row">
+<div><label>🔌 电器类型</label>
+<select id="dev">
+<option value="airfryer" selected>空气炸锅</option>
+<option value="ricecooker">电饭煲</option>
+<option value="oven">电烤箱</option>
+<option value="kettle">电热水壶</option>
+<option value="microwave">微波炉</option>
+<option value="induction">电磁炉</option>
+<option value="soymilk">豆浆机/破壁机</option>
+<option value="yogurt">酸奶机</option>
+<option value="custom">其他（自己填功率）</option>
+</select></div>
+<div><label>⚡ 额定功率（W）</label><input type="number" id="power" value="1400" min="1" step="50"></div>
+</div>
+<div class="param-row">
+<div><label>⏱ 每次使用时长（分钟）</label><input type="number" id="minutes" value="15" min="1" step="1"></div>
+<div><label>📅 使用频率</label>
+<select id="freq"><option value="3" >每周 1-2 次</option><option value="5" selected>每周 3-5 次</option><option value="7">每天 1 次</option><option value="14">每天 2 次以上</option></select></div>
+</div>
+<div class="param-row">
+<div><label>💵 电价（元/度）</label>
+<select id="price"><option value="1">1.0（一般商业/合租）</option><option value="0.56" selected>0.56（居民一档，全国常见）</option><option value="0.62">0.62（居民二档）</option><option value="0.88">0.88（居民三档/夏季高档）</option><option value="1.2">1.2（租房按度加价）</option></select></div>
+<div><label>📊 对比基准</label>
+<select id="compare"><option value="fridge" selected>与冰箱对比</option><option value="ac">与空调对比</option><option value="light">与客厅灯对比</option></select></div>
+</div>
+<div class="tips">💡 功率在电器铭牌或底部标签上，写「XX W」或「额定输入功率」。每次时长按实际工作（含预热）估算。</div>
+<button class="btn-gen" id="genBtn">🔍 生成电费报告</button>
+</div>
+<div class="result-area" id="resultArea">
+<div class="card"><div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制报告</button></div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+var DEV={'airfryer':'空气炸锅','ricecooker':'电饭煲','oven':'电烤箱','kettle':'电热水壶','microwave':'微波炉','induction':'电磁炉','soymilk':'豆浆机/破壁机','yogurt':'酸奶机','custom':'其他电器'};
+var REF={'fridge':{name:'冰箱（一级能效，约 0.9 度/天）',kwh:0.9},
+'ac':{name:'1.5 匹空调（制冷 8 小时，约 8 度）',kwh:8},
+'light':{name:'客厅 LED 灯（20W，5 小时 = 0.1 度）',kwh:0.1}};
+function gen(){
+var dev=document.getElementById('dev').value;
+var power=parseFloat(document.getElementById('power').value)||0;
+var minutes=parseFloat(document.getElementById('minutes').value)||0;
+var times=parseFloat(document.getElementById('freq').value)||5;
+var price=parseFloat(document.getElementById('price').value)||0.56;
+var ref=document.getElementById('compare').value;
+if(power<=0||minutes<=0){alert('请填写功率和使用时长');return '';}
+var kwhPer=power/1000*(minutes/60);
+var costPer=kwhPer*price;
+var kwhMonth=kwhPer*times*4.33;
+var costMonth=kwhMonth*price;
+var costYear=costMonth*12;
+var out='════ 厨房小家电耗电电费报告 ════\n\n';
+out+='电器：'+DEV[dev]+'\n';
+out+='功率：'+power+' W ｜ 每次 '+minutes+' 分钟 ｜ 频率：约每周 '+times+' 次\n';
+out+='电价：'+price+' 元/度\n\n';
+out+='──── 💡 单次成本 ────\n';
+out+='每次耗电：'+kwhPer.toFixed(3)+' 度\n';
+out+='每次电费：约 '+costPer.toFixed(2)+' 元\n';
+out+='（'+ (costPer<0.05?'不到一毛钱，很省钱':costPer<0.2?'一两毛钱，日常无压力':costPer<0.5?'五毛以内，可以放心用':'单次超 5 毛，用前值得掂量') +'）\n';
+out+='\n──── 📅 每月 / 每年支出 ────\n';
+out+='月耗电：约 '+kwhMonth.toFixed(1)+' 度\n';
+out+='月电费：约 '+costMonth.toFixed(2)+' 元\n';
+out+='年电费：约 '+costYear.toFixed(0)+' 元\n';
+var r=REF[ref];
+out+='\n──── ⚖️ 对比：'+r.name+' ────\n';
+var ratio=kwhPer*times/r.kwh;
+if(ref==='light'){
+out+='你一次用的电，相当于这盏灯亮 '+(kwhPer/r.kwh).toFixed(1)+' 小时。\n';
+}else{
+out+='一次使用的耗电，约等于该基准的 '+(kwhPer/r.kwh*100).toFixed(0)+'%；\n';
+out+='按你的频率，一个月的总耗电约等于该基准 '+(ratio).toFixed(2)+' 天的用电量。\n';
+if(ratio>=4)out+='📌 结论：它是你家的用电大户，减少几次能明显看到电费变化。\n';
+else if(ratio>=1)out+='📌 结论：用量中等，属于正常水平。\n';
+else out+='📌 结论：相对很省，不用为它焦虑。\n';
+}
+out+='\n──── 🔍 按电器类型的省电关键 ────\n';
+if(dev==='airfryer'){
+out+='空气炸锅（典型 1200-1800W）是名副其实的电老虎，1.5 度/小时左右。\n';
+out+='省电做法：\n· 别频繁开盖（每次开盖热量全跑，要重新加热）；\n· 一次炸多一点，比两次分开炸省一半电；\n· 小份食物用微波炉先加热再入锅，能缩短一半时间；\n· 不要预热太久（部分机型其实无需预热）。\n';
+}else if(dev==='ricecooker'){
+out+='电饭煲煮饭阶段约 500-800W，但保温只有 30-50W。\n';
+out+='省电做法：\n· 煮好后及时拔电或转保温，长时间\"保温\"其实很耗电（一天保温可耗 0.5-1 度）；\n· 米先泡 20 分钟，能缩短煮饭时间；\n· 别买过大的容量，大锅煮少量饭是最浪费的。\n';
+}else if(dev==='oven'){
+out+='电烤箱（1500-2500W）是最费电的厨房电器之一，1.5-2.5 度/小时。\n';
+out+='省电做法：\n· 烤前充分预热后用余温，中途尽量不开门；\n· 同一温度的食物一起烤，充分利用每次的加热；\n· 用带热风循环的机型，效率更高、时间更短；\n· 小份食物别用大烤箱，用空气炸锅更省。\n';
+}else if(dev==='kettle'){
+out+='电热水壶（1500-2000W）虽然功率大，但时间短，单次约 0.1-0.2 度，其实不费。\n';
+out+='省电做法：\n· 只烧需要的水量，烧半壶和烧满壶时间差一倍；\n· 定期除水垢，水垢厚了加热会明显变慢；\n· 烧好后倒进保温壶，避免反复烧。\n';
+}else if(dev==='microwave'){
+out+='微波炉（700-1200W）加热效率很高，属于\"功率高但时间极短\"的类型，非常省电。\n';
+out+='省电做法：\n· 少量食物微波比蒸锅/烤箱省得多；\n· 盖个微波专用盖，缩短加热时间；\n· 冷冻食物提前解冻，能明显省时省电。\n';
+}else if(dev==='induction'){
+out+='电磁炉（1800-2200W）火力大耗电也快，1 小时约 2 度，是火锅/炒菜大户。\n';
+out+='省电做法：\n· 锅底要平整、贴合，锅底不平会漏热严重；\n· 烧水煮汤用\"大火烧开+小火慢炖\"，别全程最大档；\n· 用带盖的锅，能省 20-30% 时间。\n';
+}else if(dev==='soymilk'){
+out+='豆浆机/破壁机（800-1500W）工作时间短，单次约 0.15-0.3 度，勉强算中等。\n';
+out+='省电做法：\n· 豆子提前泡发，能减少打磨和加热时间；\n· 一次打够两三天的量冷藏保存，比分次打省；\n· 避开\"反复加热保温\"的功能。\n';
+}else if(dev==='yogurt'){
+out+='酸奶机（通常只有 15-30W）是靠长时间低温发酵，单次 8 小时约 0.1-0.25 度，非常省。\n';
+out+='省电做法：\n· 用保温容器预热牛奶，可缩短发酵时间；\n· 夏天可缩短发酵时长；\n· 完全不用担心它的电费。\n';
+}else{
+out+='通用省电原则：\n· 先看功率再看时间——耗电 = 功率 × 时间，两者都重要；\n· 高功率电器尽量减少\"预热/反复加热\"；\n· 低功率长时间通电的（如保温类）反而容易被忽视，记得用完拔电；\n· 带待机指示灯的小电器长期插着也会持续耗电，建议用带开关的插排。\n';
+}
+out+='\n──── 📊 电价档位提醒 ────\n';
+if(price>=1)out+='你用的是 1 元以上的电价（常见于合租、按度收费的出租屋）。\n⚠️ 这种电价下，任何电器的年度电费都会翻倍，减少使用频率的收益也更大。\n提示：按国家规定，出租屋应执行居民电价，房东按 1 元以上收费是不合规的，可以沟通或向 12345 反映。\n';
+else if(price>=0.88)out+='你用的是较高档位电价，说明家庭月用电已进入高档，注意总用电量的控制。\n';
+else out+='你的电价属于居民常规档位，这是大多数家庭的情况。\n';
+out+='\n──── ✅ 省电行动清单 ────\n';
+out+='□ 用完拔插头或用带开关插排，杜绝待机耗电\n';
+out+='□ 把\"每周用几次\"减到\"每周几次\"以下有明确收益的，优先减\n';
+out+='□ 检查是否有老旧低效电器，换代时优先看一级能效\n';
+out+='□ 冰箱、空调、热水器才是真正的大户，小家电只是配角，别本末倒置\n';
+out+='\n💡 记住：家电的\"功率\"不代表总耗电，\"功率 × 使用时长\"才是。高压锅、微波炉功率都不高但极省，烤箱、电磁炉用时最长却最贵。';
+return out;
+}
+</script>
+<script>
+document.getElementById('dev').addEventListener('change',function(){
+var v=this.value;
+var def={'airfryer':1400,'ricecooker':700,'oven':2000,'kettle':1800,'microwave':1000,'induction':2000,'soymilk':1000,'yogurt':25};
+var defMin={'airfryer':15,'ricecooker':40,'oven':45,'kettle':6,'microwave':5,'induction':30,'soymilk':25,'yogurt':480};
+if(def[v])document.getElementById('power').value=def[v];
+if(defMin[v])document.getElementById('minutes').value=defMin[v];
+});
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('AI 厨房小家电耗电电费计算 | AgentGongju.com'))return;
+var t=gen();if(!t)return;
+document.getElementById('outputBox').innerText=t;
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(function(){alert('✅ 已复制！')})}
+</script>
+</body>
+</html>
