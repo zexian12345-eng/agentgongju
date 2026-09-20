@@ -310,6 +310,8 @@ const EN_MAP = {
   "按本气":"by primary qi",
   "取格依据：《子平真诠》以月令本气藏干透出天干者为格（本气优先），不透干则按本气取；喜忌按八格总表。":"Method per Zi Ping Zhen Quan: the pattern is set by the Month Branch's primary hidden stem when it appears among the stems (primary qi first); if not revealed, use the primary qi. Favorable/Avoid follows the Eight Patterns table.",
   "🌡️ 调候用神（据《穷通宝鉴》通行版本）":"🌡️ Seasonal Adjustors (per Qiong Tong Bao Jian)",
+  "成败依据：《子平真诠·论用神成败救应》——喜神（相神）得力则成、忌神当道则败；败中逢救应（忌神被合被制、喜神得生）可转败为成。本判断只取四柱静态喜忌，不含大运流年，属简化取象，不作绝对吉凶断定。":"Basis (Zi Ping Zhen Quan · On the Success/Failure and Rescue of the Useful God): the pattern forms when the favorable deity (Support) is strong and fails when the unfavorable deity dominates; a broken pattern can recover through rescue (the unfavorable deity is combined or controlled, or the favorable one is regenerated). This reads the static four-pillar favor/avoid only, excluding luck cycles — a simplified imagery, not an absolute judgment.",
+  "作用依据：大运干支与命局四柱逐一比对，取冲·合·刑·害·伏吟及天干五合，规则同流年/流月；此处仅作“十年环境”层面的静态提示，不替代逐年事件推断，具体应事仍须结合当年流年与现实。":"Basis: each luck cycle's stem-branch is compared pillar by pillar with the natal chart (clash · combine · punish · harm · repetition, plus stem combinations), with the same rules as year/month analysis. This is a static 'decade environment' hint only — it does not replace yearly event analysis; real outcomes still depend on the specific flow year and actual circumstances.",
   "调候依据：《穷通宝鉴》以月令气候定寒暖燥湿，先调候后扶抑；十干各月用神表为通行版本，流派间略有出入，本卡仅作命局特点提示，不作硬性断吉凶。":"Reference: Qiong Tong Bao Jian adjusts warmth/moisture by month climate — season first, balance second. The per-stem monthly table is the common edition (schools differ slightly); this card is only a chart-character hint, not a hard judgment.",
   "🧭 职业方向（用神五行 → 行业）":"🧭 Career Direction (Favorable Element → Fields)",
   "职业依据：用神五行对应行业（知识库§六）；取法为简化规则（身强喜克泄耗、身弱喜生扶，从格顺势；调候先于扶抑），仅作方向参考，择业仍以现实条件与个人兴趣为准。":"Reference: favorable element maps to industries (knowledge base §6); simplified method (strong favors draining, weak favors support, following patterns go with the flow; season before balance) — direction only; real-world conditions and interest still decide.",
@@ -1602,6 +1604,139 @@ function gejuAnalysis(bazi){
   }
   const info = GE_INFO[geSS] || GE_INFO["比肩"];
   return {geSS, geGan, viaTou, cong, name: info.name, xi: info.xi, ji: info.ji, plain: info.plain, en: info.en, mz, cang};
+}
+
+// ==================== 格局成败判析（《子平真诠·论用神成败救应》） ====================
+// 原则：相神（喜神/成格之神）得力则格成，忌神当道则格败；败中逢救应（忌神被合被制、喜神得生）可转败为成。
+// 落地：只对“命局静态”（四柱，不含大运流年）做倾向判断，标注简化取象，不作绝对吉凶断定。
+const GE_RULE = {
+  "正官": {xi:["正财","偏财","正印","偏印"], ji:["伤官","七杀"], jie:"忌神为伤官、七杀：逢印星制伤护官、或合杀留官、或以食制杀可救应。"},
+  "七杀": {xi:["食神","伤官","正印","偏印"], ji:["正财","偏财"], jiNeedNo:["食神","伤官"], jie:"食神制杀、印星化杀即为成；财星滋杀为忌，逢食伤先制其杀则财不为害。"},
+  "正财": {xi:["食神","伤官"], ji:["比肩","劫财"], jie:"忌比劫夺财：逢官杀制比劫、或食伤通关（比劫生食伤、食伤生财）可救应。"},
+  "偏财": {xi:["食神","伤官"], ji:["比肩","劫财"], jie:"忌比劫分财：逢官杀制比劫、或以食伤泄比劫而生财可救应。"},
+  "正印": {xi:["正官","七杀"], ji:["正财","偏财"], jie:"忌财星坏印：逢比劫制财、或合财存印（财被合去）可救应。"},
+  "偏印": {xi:["正财","偏财"], ji:["食神"], jie:"忌枭神夺食：逢偏财制印、或食神有根不弱可救应。"},
+  "食神": {xi:["正财","偏财"], ji:["偏印"], jie:"忌偏印夺食：逢偏财制偏印可救应。"},
+  "伤官": {xi:["正印","偏印"], ji:["正官"], jie:"忌伤官见官：逢印星制伤、或以财通关（伤生财、财生官）可救应。"},
+  "比肩": {xi:["正财","偏财","正官","七杀"], ji:["比肩","劫财","正印","偏印"], jie:"月令建禄身旺：喜财官耗泄，忌比印再帮；行财官运即成。"},
+  "劫财": {xi:["七杀","食神","伤官"], ji:["比肩","劫财","正印","偏印"], jie:"月令羊刃：喜七杀或食伤制刃，忌印比再扶；行制刃之运即成。"}
+};
+// 扫描四柱（天干年月时 + 四支藏干）中各十神出现情况
+// excludeSS：仅当“月令本气”的十神与格神相同时（即比肩/劫财格）才剔除，避免格神自身被误当成忌神；其余格局保留月令本气
+function chartSsPresence(bazi, excludeSS){
+  const dg = bazi.pillars.day.g;
+  const map = {};
+  const put = (ss, where, tou, isMzMain)=>{
+    if(!ss) return;
+    if(isMzMain && excludeSS && ss===excludeSS) return;
+    (map[ss] = map[ss] || {tou:false, cang:false, pos:[]});
+    if(tou) map[ss].tou = true; else map[ss].cang = true;
+    map[ss].pos.push(where);
+  };
+  const stems = [["年",bazi.pillars.year.g],["月",bazi.pillars.month.g],["时",bazi.pillars.hour.g]];
+  for(const [p,g] of stems) put(shishen(dg,g), p+"干", true, false);
+  const zhis = [["年",bazi.pillars.year.z],["月",bazi.pillars.month.z],["日",bazi.pillars.day.z],["时",bazi.pillars.hour.z]];
+  for(const [p,z] of zhis){
+    const cs = CANG[z] || [];
+    for(let i=0;i<cs.length;i++) put(shishen(dg,cs[i]), p+"支"+cs[i], false, (p==="月" && i===0));
+  }
+  return map;
+}
+function gejuChengBai(bazi){
+  const gj = gejuAnalysis(bazi);
+  if(!gj) return null;
+  const rule = GE_RULE[gj.geSS];
+  if(!rule) return null;
+  const dg = bazi.pillars.day.g;
+  const mzMain = shishen(dg, (CANG[bazi.monthZhi] || [dg])[0]);
+  const map = chartSsPresence(bazi, (mzMain===gj.geSS) ? mzMain : null);
+  const w = s => (map[s] && map[s].tou) ? 2 : 1;
+  const xi = rule.xi.filter(s=>map[s]);
+  let ji = rule.ji.filter(s=>map[s]);
+  if(rule.jiNeedNo && rule.jiNeedNo.some(s=>map[s])) ji = []; // 七杀：有食伤制杀，则财不为忌
+  const xiScore = xi.reduce((a,s)=>a+w(s),0);
+  const jiScore = ji.reduce((a,s)=>a+w(s),0);
+  const zai = s => (map[s]?(map[s].tou?"透干":"藏干")+"（"+map[s].pos.join("、")+"）":"");
+  let level, verdictZh, verdictEn, plainZh, plainEn;
+  if(gj.cong){
+    level="cong";
+    verdictZh="从格·顺势"; verdictEn="Following Pattern";
+    plainZh="此命为从格：日主极弱、满盘异党，顺势而行反得助力，成败看行运是否顺其势（行异党之运则成，逢印比逆势则败）。";
+    plainEn="A Following Pattern: the Day Master is extremely weak among opposing stars — go with the current. Success depends on luck cycles that follow the flow; Resource/Peer cycles against it break the pattern.";
+  } else if(xiScore>0 && jiScore===0){
+    level="cheng";
+    verdictZh="成格"; verdictEn="Formed";
+    plainZh="喜神（相神）已在命局出现、又不见忌神：格局立得住，走对路子做事顺、成事概率高，是本命的一大看点。";
+    plainEn="The favorable deity (Support) appears in the chart with no unfavorable deity present: the pattern holds well — things go smoothly when you follow the right path.";
+  } else if(xiScore>0 && jiScore>0){
+    level="mixed";
+    verdictZh="成中有败"; verdictEn="Formed with Flaws";
+    plainZh="喜神虽在，忌神也现：格局大体成立但带破绽，顺境中夹杂损耗，靠后天调理与行运补喜神、化忌神，仍可转圆。";
+    plainEn="Both favorable and unfavorable deities appear: the pattern largely holds but has flaws — smooth stretches mixed with losses. Postnatal effort and favorable cycles can still smooth it out.";
+  } else if(xiScore===0 && jiScore>0){
+    level="po";
+    verdictZh="破格倾向"; verdictEn="Broken Pattern";
+    plainZh="忌神当道、喜神不显：格局有伤，行事易受阻、成事偏费劲。重点不是认命，而是顺着「救应」方向去补——行运走到喜用、忌神被合被制之年，格局即由败转成。";
+    plainEn="Unfavorable deities dominate while favorable ones are absent: the pattern is damaged — things tend to meet resistance. The key is to follow the 'rescue' direction: when cycles bring the favorable element or neutralize the unfavorable one, the pattern recovers.";
+  } else {
+    level="clean";
+    verdictZh="清纯·待运"; verdictEn="Clean · Awaiting Cycles";
+    plainZh="命局喜忌皆未显露：格局清纯，吉凶更多由大运流年引动，走进喜用之地即成、逢忌神当运则有起伏。";
+    plainEn="Neither favorable nor unfavorable deity is obvious: the pattern is clean — fortune is mostly triggered by luck cycles; favorable cycles form it, unfavorable ones bring ups and downs.";
+  }
+  const xiTxt = xi.length ? xi.map(s=>s+zai(s)).join("、") : "（命局未见喜神）";
+  const jiTxt = ji.length ? ji.map(s=>s+zai(s)).join("、") : "（命局未见忌神）";
+  return {
+    geSS:gj.geSS, name:gj.name, cong:gj.cong, level, verdictZh, verdictEn,
+    xi, ji, xiScore, jiScore, xiTxt, jiTxt,
+    jie: (level==="po"||level==="mixed") ? (rule.jie||"") : "",
+    plainZh, plainEn
+  };
+}
+
+// ==================== 大运与命局作用（十神 + 冲合刑害伏吟 + 天干合）====================
+// 每步大运的干支与命局四柱逐一比对，列出冲/合/刑/害/伏吟/天干合，并配大白话“这十年的环境变量”。
+const GAN_HE = {"甲":"己","己":"甲","乙":"庚","庚":"乙","丙":"辛","辛":"丙","丁":"壬","壬":"丁","戊":"癸","癸":"戊"};
+const DY_HIT = {
+  "冲": { "年柱":["冲年柱：长辈、根基、老家之事易动——搬家、长辈健康、祖业变动。","Clashes the Year pillar: elders, roots, and hometown matters stir — moving, elders' health, ancestral affairs."], "月柱":["冲月柱：事业与父母兄弟之事有大动——换工作、岗位调整、与家人相关之事。","Clashes the Month pillar: career and parents/siblings see big moves — job change, role shifts, family matters."], "日柱":["冲日柱：自身、婚恋、居所之事起波澜——感情起伏、身体劳顿、住处变动。","Clashes the Day pillar: self, marriage, and residence churn — emotional swings, fatigue, home moves."], "时柱":["冲时柱：子女、下属、晚年之事变动——子女升学就业、行业转向、搬迁。","Clashes the Hour pillar: children, subordinates, and later years shift — kids' education/career, career pivot, relocation."] },
+  "合": { "年柱":["合年柱：与长辈、祖业、根基之事有缘、易得助力。","Combines the Year pillar: affinity and support from elders, roots, and ancestry."], "月柱":["合月柱：事业、父母兄弟之事和顺，易有合作与牵线。","Combines the Month pillar: career and family matters run smoothly — cooperation and helpful introductions."], "日柱":["合日柱：感情婚恋有缘、与伴侣关系走近，或自身之事顺遂。","Combines the Day pillar: affinity in love and marriage, closer bonds with the partner, or smooth personal affairs."], "时柱":["合时柱：子女、晚运之事和顺，易有喜事或新缘。","Combines the Hour pillar: children and later years go well — likely good news or new bonds."] },
+  "刑": { "年柱":["刑年柱：与长辈、根基之事有摩擦口舌，家事需多沟通。","Punishes the Year pillar: friction and disputes over elders and roots — communicate more at home."], "月柱":["刑月柱：事业与家事易起纠纷，凡事留三分余地。","Punishes the Month pillar: career and family disputes — leave room for compromise."], "日柱":["刑日柱：自身与伴侣易生别扭，注意情绪与说话分寸。","Punishes the Day pillar: friction with self and partner — mind your mood and words."], "时柱":["刑时柱：为子女、晚辈之事操心，亲子沟通要有耐心。","Punishes the Hour pillar: worry over children and juniors — be patient in communication."] },
+  "害": { "年柱":["害年柱：长辈、根基之事暗中耗损，防亲友间误会。","Harms the Year pillar: hidden losses around elders and roots — guard against misunderstandings."], "月柱":["害月柱：事业与家事有暗损，防备合作中的小人。","Harms the Month pillar: hidden losses in career and family — beware petty rivals in cooperation."], "日柱":["害日柱：感情有暗伤，伴侣间多体谅、少猜疑。","Harms the Day pillar: hidden strains in love — more understanding, less suspicion."], "时柱":["害时柱：子女、晚运之事有暗耗，防被骗或替人担责。","Harms the Hour pillar: hidden drains around children and later years — avoid being cheated or taking blame."] },
+  "伏吟": { "年柱":["伏吟年柱：长辈、根基之事重复折腾，宜守成。","Repeats the Year pillar: elders and roots churn repeatedly — better to hold steady."], "月柱":["伏吟月柱：事业或家事原地打转、反复拉锯，宜稳住。","Repeats the Month pillar: career or family stuck in loops — stay steady."], "日柱":["伏吟日柱：自身与感情之事内耗反复，多静心少折腾。","Repeats the Day pillar: inner friction and repeated emotional loops — stay calm, avoid upheaval."], "时柱":["伏吟时柱：子女、晚运之事反复操心，放宽心。","Repeats the Hour pillar: repeated worries over children and later years — take it easy."] },
+  "天干合": { "年柱":["大运天干合年干：与长辈、根基有牵绊之力（有情亦有羁绊）。","Luck-stem combines the Year stem: bonding with elders and roots (affinity, but also entanglement)."], "月柱":["大运天干合月干：事业、父母之事有牵绊，合作机会多。","Luck-stem combines the Month stem: ties in career and parental matters, more cooperation."], "日柱":["大运天干合日干：自身易被牵绊、分心，宜专注。","Luck-stem combines the Day stem: you're easily pulled and distracted — stay focused."], "时柱":["大运天干合时干：子女、晚运之事有牵绊。","Luck-stem combines the Hour stem: ties around children and later years."] }
+};
+function dayunRelations(bazi){
+  const dg = bazi.pillars.day.g;
+  const gender = bazi.gender;
+  const P = [["年柱",bazi.pillars.year],["月柱",bazi.pillars.month],["日柱",bazi.pillars.day],["时柱",bazi.pillars.hour]];
+  const out = [];
+  for(const step of bazi.dayun.steps){
+    const g = step.gz[0], z = step.gz[1];
+    const ssG = shishen(dg, g), ssZ = shishen(dg, (CANG[z]||[])[0]);
+    const hits = [];
+    for(const [name,p] of P){
+      if(LIUCHONG[z]===p.z) hits.push({t:"冲",name});
+      if(LIUHE[z]===p.z) hits.push({t:"合",name});
+      if((XING[z]||"").includes(p.z)) hits.push({t:"刑",name});
+      if(HAI[z]===p.z) hits.push({t:"害",name});
+      if(g===p.g && z===p.z) hits.push({t:"伏吟",name});
+      if(GAN_HE[g]===p.g) hits.push({t:"天干合",name});
+    }
+    // 去重（同一类型同一柱只留一条）
+    const seen = {};
+    const uniq = hits.filter(h=>{ const k=h.t+h.name; if(seen[k]) return false; seen[k]=1; return true; });
+    const strong = uniq.filter(h=>h.t!=="天干合");
+    const plains = uniq.slice(0,3).map(h=>(DY_HIT[h.t][h.name]||[])[LANG==="zh"?0:1]);
+    let lead;
+    const zhn = LANG==="zh";
+    if(!uniq.length){
+      lead = zhn ? "这步大运与命局四柱无明显冲合刑害，运势主线较平稳，按部就班即可。" : "This cycle shows no marked clash/combination/punishment with the natal pillars — a steady stretch; just keep going.";
+    } else {
+      lead = zhn ? "这步大运与命局有多处作用，环境变量如下：" : "This cycle interacts with your chart in several ways:";
+    }
+    out.push({gz:g+z, ssG, ssZ, hits:uniq, strong, plains, lead, zhn, range: Math.round(step.start)+"–"+Math.round(step.end)});
+  }
+  return out;
 }
 
 // 单流年分析（细分事件 + 大白话）
@@ -2991,6 +3126,16 @@ function renderReport(bazi, input){
     h.push(`<div style="line-height:1.9;margin-top:6px">✅ ${T("喜：")}${zh?gj.xi:gj.en.xi}<br>❌ ${T("忌：")}${zh?gj.ji:gj.en.ji}</div>`);
     h.push(`<div style="line-height:1.9;color:#475569;margin-top:6px">🧭 ${zh?gj.plain:gj.en.plain}</div>`);
     if(gj.cong) h.push(`<div style="line-height:1.9;color:#b45309;margin-top:4px">${zh?`（${gj.cong}：日主极弱无根，满盘异党，顺势而行反得助力，行运喜异党、忌印比帮身。）`:`(${gj.cong}: Day Master extremely weak and rootless among opposing stars — go with the current; favorable cycles are the opposing group, avoid Resource/Peer support.)`}</div>`);
+    // 格局成败判析（命局静态倾向）
+    const cb = gejuChengBai(bazi);
+    if(cb){
+      const cbColor = cb.level==="cheng"?"#4ade80":cb.level==="mixed"?"#fbbf24":cb.level==="po"?"#f87171":"#94a3b8";
+      h.push(`<div style="line-height:1.9;margin-top:6px;border-top:1px dashed rgba(148,163,184,.3);padding-top:6px">🎯 ${zh?"格局成败（命局静态倾向）：":"Pattern outcome (static natal tendency): "}<b style="color:${cbColor}">${zh?cb.verdictZh:cb.verdictEn}</b></div>`);
+      h.push(`<div style="line-height:1.9;color:#334155;margin-top:4px">🧭 ${zh?cb.plainZh:cb.plainEn}</div>`);
+      h.push(`<div style="line-height:1.8;color:#64748b;font-size:.83rem;margin-top:3px">${zh?`成格喜神：${cb.xiTxt}<br>破格忌神：${cb.jiTxt}`:`Favorable (support): ${cb.xi.map(ssName).join(", ")||"none"}<br>Unfavorable: ${cb.ji.map(ssName).join(", ")||"none"}`}</div>`);
+      if(cb.jie && zh) h.push(`<div style="line-height:1.8;color:#0f766e;font-size:.83rem;margin-top:3px">💡 救应方向：${cb.jie}</div>`);
+      h.push(`<div style="color:#94a3b8;font-size:.72rem;margin-top:6px">${T("成败依据：《子平真诠·论用神成败救应》——喜神（相神）得力则成、忌神当道则败；败中逢救应（忌神被合被制、喜神得生）可转败为成。本判断只取四柱静态喜忌，不含大运流年，属简化取象，不作绝对吉凶断定。")}</div>`);
+    }
     h.push(`<div style="color:#94a3b8;font-size:.72rem;margin-top:6px">${T("取格依据：《子平真诠》以月令本气藏干透出天干者为格（本气优先），不透干则按本气取；喜忌按八格总表。")}</div>`);
     h.push(`</div>`);
   }
@@ -3056,6 +3201,28 @@ function renderReport(bazi, input){
     h.push(`<tr><td class="gz-cell">${gzDisplay(s.gz)}</td><td>${ssShort(ss)}</td><td>${zh?`${s.start}—${s.end}岁`:`Age ${s.start}–${s.end}`}</td><td>${zh?`${sy}—${ey}年`:sy+"–"+ey}</td><td style="font-size:.78rem;color:#94a3b8">${zh?theme.split("：")[0]:theme}</td></tr>`);
   }
   h.push(`</table></div>`);
+
+  // 大运与命局作用明细卡（十神 + 冲合刑害伏吟 + 天干合）
+  {
+    const dr = dayunRelations(bazi);
+    if(dr && dr.length){
+      h.push(`<div class="section-title">${zh?"🧩 大运与命局作用（每步运的环境变量）":"🧩 Luck Cycles vs Your Chart (environmental shifts)"}</div>`);
+      h.push(`<div class="gua-box" style="font-size:.88rem">`);
+      h.push(`<div style="color:#475569;margin-bottom:8px;line-height:1.8">${zh?"把每一步大运的干支，和你命盘的四个柱逐一比对：看它是冲你哪一柱（大动）、合你哪一柱（走近/合作）、还是刑害伏吟（摩擦/重复）。这十年大概会往哪个方向使劲，看这里就清楚。":"Each luck cycle's stem-branch is compared pillar by pillar with your natal chart: which pillar it clashes (big moves), combines (closeness/cooperation), or punishes/repeats (friction/loops) — showing where this decade is likely to push."}</div>`);
+      const HIT_EN = {"冲":"Clash","合":"Combine","刑":"Punish","害":"Harm","伏吟":"Repeat","天干合":"Stem-Combine"};
+      const PIL_EN = {"年柱":"Year","月柱":"Month","日柱":"Day","时柱":"Hour"};
+      for(const d of dr){
+        h.push(`<div style="padding:9px 0;border-bottom:1px dashed rgba(148,163,184,.25)">`);
+        h.push(`<div class="gua-name" style="font-size:.92rem">${gzDisplay(d.gz)} <span class="tag">${zh?`${d.range}岁`:`age ${d.range}`}</span> <span class="tag">${ssName(d.ssG)}</span> <span class="tag" style="opacity:.8">${zh?"支主气 ":"branch "}${ssName(d.ssZ)}</span></div>`);
+        if(d.hits.length) h.push(`<div style="margin-top:4px">${d.hits.map(hh=>`<span class="tag-badge" style="margin-right:4px">${zh?hh.t+"·"+hh.name:(HIT_EN[hh.t]||hh.t)+" · "+(PIL_EN[hh.name]||hh.name)}</span>`).join("")}</div>`);
+        h.push(`<div style="line-height:1.9;color:#334155;margin-top:4px">🧭 ${d.lead}</div>`);
+        if(d.plains.length) h.push(`<div style="line-height:1.8;color:#475569;font-size:.84rem;margin-top:2px">${d.plains.map(p=>"• "+p).join("<br>")}</div>`);
+        h.push(`</div>`);
+      }
+      h.push(`<div style="color:#94a3b8;font-size:.72rem;margin-top:6px">${T("作用依据：大运干支与命局四柱逐一比对，取冲·合·刑·害·伏吟及天干五合，规则同流年/流月；此处仅作“十年环境”层面的静态提示，不替代逐年事件推断，具体应事仍须结合当年流年与现实。")}</div>`);
+      h.push(`</div>`);
+    }
+  }
 
   // 四线运势评分卡（事业·财运·感情·健康；按大运）
   {
