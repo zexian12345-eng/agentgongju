@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 老照片修复指南与工具选型 | AgentGongju.com</title>
+<meta name="description" content="家里老照片发黄、破损、模糊？按照片年代和损坏类型，自动生成最佳修复方案、免费/付费工具推荐和翻拍上传技巧。">
+<meta name="keywords" content="老照片修复,照片翻新,黑白照片上色,AI修复照片,模糊照片变清晰,破损照片修补">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,input[type=text],input[type=number],textarea{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px;box-sizing:border-box}
+textarea{min-height:90px;resize:vertical;line-height:1.7}
+select:focus,input:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;margin-bottom:12px;font-size:.92rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.param-row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+.tips{color:#64748b;font-size:.8rem;line-height:1.7;margin-top:6px}
+@media(max-width:600px){.param-row,.param-row3{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() { var hm = document.createElement("script"); hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949"; var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(hm, s); })();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🖼 AI 老照片修复指南</h1><p>按照片年代和损坏类型，给出修复方案＋工具选型＋翻拍技巧</p></div>
+<div class="card">
+<div class="param-row">
+<div><label>📅 照片大概是什么年代</label>
+<select id="era">
+<option value="a">1980 年前（黑白为主）</option>
+<option value="b" selected>1980–2000 年（彩色胶卷）</option>
+<option value="c">2000–2010 年（数码相机/翻拍）</option>
+<option value="d">2010 年后（手机翻拍的老照片）</option>
+</select></div>
+<div><label>🧩 主要问题（可多选感觉，选最严重的）</label>
+<select id="issue">
+<option value="fade" selected>发黄褪色、整体发灰</option>
+<option value="blur">模糊、看不清人脸</option>
+<option value="tear">有折痕、裂口、缺角</option>
+<option value="stain">有霉斑、水渍、油污</option>
+<option value="noise">颗粒噪点多、噪点糊成一片</option>
+<option value="bw">黑白照想上色</option>
+</select></div>
+</div>
+<div class="param-row">
+<div><label>👤 照片里主要是</label>
+<select id="subject">
+<option value="face" selected>人像（单人）</option>
+<option value="group">合影（多人）</option>
+<option value="scene">风景 / 建筑</option>
+<option value="object">证件照 / 特殊物件</option>
+</select></div>
+<div><label>💻 你能用的设备</label>
+<select id="device">
+<option value="phone" selected>只有手机</option>
+<option value="pc">有电脑（可装软件）</option>
+<option value="pcgpu">电脑带独立显卡</option>
+</select></div>
+</div>
+<div class="param-row">
+<div><label>💸 预算</label>
+<select id="budget">
+<option value="0" selected>只想用免费方案</option>
+<option value="low">能接受 50 元以内</option>
+<option value="high">愿意花钱，效果优先</option>
+</select></div>
+<div><label>🎯 用途</label>
+<select id="purpose">
+<option value="keep" selected>自己留念 / 存电子档</option>
+<option value="print">要打印装裱送人</option>
+<option value="funeral">用于老人后事 / 遗像</option>
+</select></div>
+</div>
+<div class="param-row3">
+<div><label>📏 原片尺寸</label>
+<select id="size">
+<option value="small">小（一寸/两寸、钱包照）</option>
+<option value="mid" selected>中（5 寸 / 6 寸）</option>
+<option value="big">大（8 寸以上、合影长条）</option>
+</select></div>
+<div><label>🔍 是否已扫描</label>
+<select id="scan">
+<option value="no" selected>还没扫描，只有实物</option>
+<option value="yes">已扫描 / 已翻拍成电子版</option>
+</select></div>
+<div><label>⏱ 你能花的时间</label>
+<select id="time">
+<option value="fast" selected>越快越好，10 分钟内搞定</option>
+<option value="mid">半小时左右可以接受</option>
+<option value="slow">愿意慢慢调，追求最好效果</option>
+</select></div>
+</div>
+<label>📝 补充描述（可选，越具体方案越准）</label>
+<textarea id="note" placeholder="例：爷爷奶奶的 1950 年代黑白结婚照，右下角撕掉一块，人脸还清楚但整体发黄，想修复后打印成 8 寸装裱"></textarea>
+<button class="btn-gen" id="genBtn">🖼 生成修复方案</button>
+<div class="tips">⚠️ 修复原则：先"抢救存档"再"美化"。任何工具处理前，务必保留一份原始文件，不要覆盖。涉及逝者遗像、家族合影，建议先做无损扫描备份。</div>
+</div>
+<div class="result-area" id="resultArea">
+<div class="card"><div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制结果</button></div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function gen(){
+var era=document.getElementById('era').value;
+var issue=document.getElementById('issue').value;
+var subject=document.getElementById('subject').value;
+var device=document.getElementById('device').value;
+var budget=document.getElementById('budget').value;
+var purpose=document.getElementById('purpose').value;
+var size=document.getElementById('size').value;
+var scan=document.getElementById('scan').value;
+var time=document.getElementById('time').value;
+var note=document.getElementById('note').value.trim();
+
+var eraTxt={a:'1980 年前（黑白为主）',b:'1980–2000 年（彩色胶卷）',c:'2000–2010 年（数码/翻拍）',d:'2010 年后（手机翻拍版）'}[era];
+var issueTxt={fade:'发黄褪色、整体发灰',blur:'模糊、人脸不清',tear:'折痕裂口缺角',stain:'霉斑水渍油污',noise:'颗粒噪点重',bw:'黑白需上色'}[issue];
+var subjTxt={face:'单人人像',group:'多人合影',scene:'风景建筑',object:'证件照/特殊物件'}[subject];
+
+var out='════ 老照片修复方案 ════\n\n';
+out+='照片类型：'+eraTxt+'\n';
+out+='主要问题：'+issueTxt+'\n';
+out+='画面主体：'+subjTxt+'\n';
+out+='可用设备：'+({phone:'只有手机',pc:'电脑（无独显）',pcgpu:'电脑＋独立显卡'}[device])+'\n';
+if(note){out+='补充说明：'+note+'\n';}
+out+='\n';
+
+// 第 0 步：数字化（如果还没扫描）
+out+='──── 第 0 步：先把它变成电子版 ────\n';
+if(scan==='no'){
+  out+='你还没扫描，这一步最关键，直接决定修复上限：\n';
+  out+='① 首选去打印店/照相馆用「平板扫描仪」，300–600 DPI，存 TIFF 或高质量 JPG。\n';
+  out+='   全国多数打印店 5–15 元一张，这是性价比最高的投入。\n';
+  out+='② 没条件扫描时用手机翻拍，按下面做：\n';
+  out+='   · 白天靠窗，光线从侧面 45° 来，别开顶灯更别开闪光灯（反光会毁掉细节）。\n';
+  out+='   · 照片平放在深色哑光纸上（黑卡纸最好），避免桌面反光进画面。\n';
+  out+='   · 手机与照片保持平行，镜头正对中心，用书本夹住避免翘边。\n';
+  out+='   · 用 2 倍焦距拍（拉近一点）比 1 倍更清晰，不要数码变焦。\n';
+  out+='   · 同一个角度连拍 3 张，挑最清楚的一张。\n';
+  if(size==='small'){out+='   ⚠️ 小尺寸照片（一寸/两寸）翻拍极易糊，强烈建议直接去店里扫描。\n';}
+  if(size==='big'){out+='   ⚠️ 大尺寸/长条合影要用手机「全景模式」横着扫，或分两半拍后拼接。\n';}
+  out+='   · 分辨率目标：短边不低于 2000 像素，修复后才经得起放大打印。\n';
+}else{
+  out+='你已有电子版，检查一下质量：\n';
+  out+='· 短边低于 1500 像素 → 建议重新扫描，否则修复后放大就糊。\n';
+  out+='· 是微信/QQ 传过的 → 已压缩，尽量找回原图，压缩痕迹会被 AI 放大。\n';
+  out+='· 存好原图副本，命名为 xxx_original.jpg，永远不要在原图上直接处理。\n';
+}
+out+='\n';
+
+// 第 1 步：处理顺序
+out+='──── 第 1 步：修复顺序（顺序错了白费功夫）────\n';
+out+='正确顺序：修破损 → 去噪 → 提清晰 → 校色 → （上色）→ 输出\n';
+out+='很多人在线工具一上传就自动上色，结果色块和破损一起被 AI 固化，就没法回头了。\n\n';
+
+// 第 2 步：工具选型
+out+='──── 第 2 步：工具选型（按你的设备/预算）────\n';
+if(device==='phone'){
+  out+='你只有手机，推荐组合：\n';
+  out+='① 微信小程序搜索「老照片修复」「照片修复上色」，多数前 1–3 张免费，适合先试效果。\n';
+  out+='② 美图秀秀 / 醒图 的「画质修复」「老照片」功能，免费、对合影和发黄处理不错。\n';
+  out+='③ 特别推荐：手机浏览器打开 Google Photos 或国内大厂的在线修复页，效果比小程序稳。\n';
+  out+='⚠️ 手机方案的通病：上传后压缩、只给结果不给参数，破损修复能力弱。\n';
+  if(issue==='tear'){out+='⚠️ 你这张有破损折痕，手机端基本修不好裂缝，需要电脑端手工修补或找专业人士。\n';}
+}
+if(device==='pc'){
+  out+='你有电脑，免费方案就够用了：\n';
+  out+='① 【首推】腾讯 ARC（arc.tencent.com）——网页版免费，人脸修复＋老照片上色是国内效果最好的免费选项之一，无需装软件。\n';
+  out+='② 【首推】Upscayl —— 免费开源，本地运行不外传照片，专门做无损放大，装好一次能用一辈子。\n';
+  out+='③ GIMP（免费）配合「修复画笔」手工补裂口、补缺角，比 AI 全自动更可控。\n';
+  out+='④ Photoshop 的「神经滤镜 → 照片修复」效果最好，但有订阅门槛。\n';
+  out+='工作流建议：GIMP 补破损 → Upscayl 放大 → 腾讯 ARC 做面部修复与上色。\n';
+}
+if(device==='pcgpu'){
+  out+='你有独立显卡，可以玩最强本地方案（照片不出本机，隐私最好）：\n';
+  out+='① GFPGAN / CodeFormer —— 人脸修复神器，适合人脸模糊的老照片，有整合包可直接跑。\n';
+  out+='② Real-ESRGAN —— 通用超分辨率，风景建筑和整体放大用它。\n';
+  out+='③ Stable Diffusion + 局部重绘（Inpaint）—— 补缺角、去霉斑最强，但要会调参。\n';
+  out+='④ 上色用 DeOldify 或国内 DDColor 模型，肤色自然度优于大多数在线工具。\n';
+  out+='⚠️ 显存 6GB 起步，跑之前先确认能装下整合包。不会折腾就直接用腾讯 ARC 网页版。\n';
+}
+out+='\n';
+if(budget==='0'){out+='预算：0 元。上面的免费方案完全够用，不用花钱。\n';}
+if(budget==='low'){out+='预算 50 元内：优先花在「去店里扫描」而不是买软件，扫描提升画质的上限远大于修图软件。\n';}
+if(budget==='high'){out+='预算充足：直接在淘宝/京东搜「老照片修复」，人像修复 30–200 元一张，\n专业店家会手工修补＋精修，重大纪念意义的照片值得。认准「不满意可返修」的店。\n';}
+out+='\n';
+
+// 第 3 步：针对性建议
+out+='──── 第 3 步：针对你这张照片的关键动作 ────\n';
+if(issue==='fade'){
+  out+='· 发黄褪色：先用「自动白平衡」或灰点吸管找回中性色，再提对比度。\n';
+  out+='· 发黄往往伴随青色通道丢失，校正时加一点青/减黄，肤色会立刻回正。\n';
+  out+='· 不要让 AI 自动上色，先把颜色校准回来，再决定是否补色。\n';
+}
+if(issue==='blur'){
+  out+='· 模糊分两种：对焦模糊（难救）和分辨率低（好救）。先在电脑上看 100% 放大的画面。\n';
+  out+='· 分辨率低 → 用 Real-ESRGAN / Upscayl 放大 2–4 倍。\n';
+  out+='· 人脸糊 → 用 GFPGAN / CodeFormer，强度别拉满（0.5–0.7），否则脸会变"塑料"、不像本人。\n';
+  out+='· 严重失焦的整张照片，不要硬修，AI 会"编"出不存在的五官，反而不尊重。\n';
+}
+if(issue==='tear'){
+  out+='· 先补后修：GIMP / PS 用「仿制图章」从邻近区域取样把裂缝盖上。\n';
+  out+='· 缺角补全优先用 PS「内容识别填充」，其次 SD 局部重绘。\n';
+  out+='· 缺的是人脸或手就不要用 AI 猜，会生成不存在的五官，家属看了会难受。\n';
+  out+='· 破损处如果穿过眼睛、嘴巴，建议只做减淡处理（降低对比），不强行补全。\n';
+}
+if(issue==='stain'){
+  out+='· 霉斑/水渍先做「色阶调整」把最亮和最暗拉回来，往往能淡化一半。\n';
+  out+='· 顽固霉斑用局部色彩平衡＋减饱和，比直接涂抹自然。\n';
+  out+='· 物理霉斑很重的照片，扫描后先在 PS 里用「蒙版＋曲线」分区处理，别全局动。\n';
+}
+if(issue==='noise'){
+  out+='· 先去噪再放大，顺序反了噪点会被放大 4 倍，越修越糟。\n';
+  out+='· 去噪用 Topaz DeNoise 或 PS「减少杂色」，强度宁轻勿重（保留颗粒感更真实）。\n';
+  out+='· 胶片颗粒是年代感的一部分，全部抹平反而假。\n';
+}
+if(issue==='bw'){
+  out+='· 上色放在最后一步，且务必先存一份"未上色修复版"。\n';
+  out+='· 上色只能参考常识：军装是绿/蓝、旗袍多深色、老一代内衣领是白。拿不准宁可不上色。\n';
+  out+='· 上色后肤色不均，回 PS 单独调「可选颜色→红色」里的肤色调。\n';
+  out+='· 想更准，可以提供给懂历史服装的长辈看看，比 AI 猜得准。\n';
+}
+out+='\n';
+
+// 第 4 步：按主体特殊提示
+out+='──── 第 4 步：按画面主体的额外提醒 ────\n';
+if(subject==='face'){out+='单人人像：重点保脸。修完务必 100% 放大看眼睛和牙齿，AI 最爱在这两处出错。\n';}
+if(subject==='group'){out+='多人合影：千万别用全局"面部增强"，容易只修好中间那个人。\n建议在 PS/GIMP 里按人头逐个选区处理，每人强度统一，否则脸色不一致会很怪。\n';}
+if(subject==='scene'){out+='风景建筑：别用人脸修复模型，会把云、树叶、砖墙生成成塑料质感。\n用 Real-ESRGAN 通用模型，或干脆只做放大＋色阶校正，保真最重要。\n';}
+if(subject==='object'){out+='证件照/特殊物件：细节（字、印章、编号）优先于美观。\n放大倍数控制在 2 倍内，超过就可能把字修变形，重要信息反而失真。\n';}
+out+='\n';
+
+// 第 5 步：输出
+out+='──── 第 5 步：输出与保存 ────\n';
+if(purpose==='keep'){out+='自留存档：同时存 3 个版本——原图（原始文件）、修复版（高质量 JPG 95%）、小图（发朋友圈用）。\n';}
+if(purpose==='print'){
+  out+='要打印装裱，注意：\n';
+  out+='· 300 DPI 是打印标准，8 寸照片需约 2400×3000 像素。像素不够就先放大再打印。\n';
+  out+='· 提前问清店家是否帮你做色彩管理，同一张图在不同机器上颜色差很多。\n';
+  out+='· 老照片通常偏暖，打印前把色温往冷调一点，纸质上出来才不会更黄。\n';
+  out+='· 装裱选无酸卡纸，否则几年后照片会被卡纸腐蚀发黄。\n';
+}
+if(purpose==='funeral'){
+  out+='⚠️ 用于老人后事的照片，请特别谨慎：\n';
+  out+='· 不要用 AI 上色，很多家属认为失真的颜色不庄重。\n';
+  out+='· 不要用生成式修补猜测面部，缺的部分保持原样更得体。\n';
+  out+='· 黑白照保持黑白，只做对比度调整和破损清理即可。\n';
+  out+='· 建议 1 寸/2 寸 各冲印 10 张备用（不同用途尺寸不同），找照相馆现场出片比网上快。\n';
+}
+out+='\n';
+if(time==='fast'){
+  out+='⏱ 你想快速搞定，最快路径（约 10 分钟）：\n';
+  out+='1. 手机或扫描仪得到清晰电子版（5 分钟）\n';
+  out+='2. 打开腾讯 ARC 网页版，上传 → 勾选"老照片修复＋上色" → 下载（3 分钟）\n';
+  out+='3. 对比原图看人脸有没有变形，变形就换个工具再试（2 分钟）\n';
+  out+='⚠️ 破损严重的话这 10 分钟不够，建议直接走专业店家。\n';
+}
+if(time==='mid'){
+  out+='⏱ 半小时路径：\n';
+  out+='1. 数字化并备份原图（5 分钟）\n';
+  out+='2. GIMP/PS 手工修补破损裂缝与缺角（10 分钟）\n';
+  out+='3. Upscayl 或 Real-ESRGAN 放大 2 倍（5 分钟）\n';
+  out+='4. 腾讯 ARC 做面部修复（5 分钟）\n';
+  out+='5. 色阶/白平衡微调后导出（5 分钟）\n';
+}
+if(time==='slow'){
+  out+='⏱ 追求最佳效果，不要一次到位：\n';
+  out+='· 分三天做，每天重新看一眼前一天的结果，疲劳状态下容易把照片修过头。\n';
+  out+='· 每次调整都导出一版带编号的副本（v1/v2/v3），最后横向对比挑最好。\n';
+  out+='· 请家里的年轻人或长辈一起看，人脸像不像他们最有发言权。\n';
+  out+='· 关键照片可以同时用两三种工具处理，取各自最好的部分合成。\n';
+}
+out+='\n';
+out+='──── 常见坑，提前避开 ────\n';
+out+='❌ 在原图上直接操作，修坏了没法回头 → 永远先备份。\n';
+out+='❌ 一次性把所有 AI 功能全开 → 效果好得过头，人脸变网红脸，不像本人。\n';
+out+='❌ 只存 JPG 反复另存 → 每次压缩都在掉画质，中间过程存 PNG/TIFF。\n';
+out+='❌ 上传到不知名网站 → 家族照片涉及隐私，优先用本地软件或大厂产品。\n';
+out+='❌ 一次修太多，追求"像新拍的" → 老照片的旧质感也是记忆的一部分，别全抹掉。\n';
+
+document.getElementById('outputBox').textContent=out;
+document.getElementById('resultArea').classList.add('active');
+document.getElementById('resultArea').scrollIntoView({behavior:'smooth',block:'start'});
+}
+function copyResult(){
+var t=document.getElementById('outputBox').textContent;
+navigator.clipboard.writeText(t).then(function(){alert('已复制到剪贴板');},function(){alert('复制失败，请手动选择文字');});
+}
+document.getElementById('genBtn').addEventListener('click',gen);
+</script>
+</body>
+</html>

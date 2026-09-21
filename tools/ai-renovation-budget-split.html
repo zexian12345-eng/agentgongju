@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 装修预算分配计算器 | AgentGongju.com</title>
+<meta name="description" content="输入户型面积和总预算，自动分配硬装、水电、主材、家具家电各项预算，给出超支预警和省钱优先级排序。">
+<meta name="keywords" content="装修预算,装修报价,装修费用分配,硬装软装,装修省钱,水电改造预算,全包半包">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,input[type=text],input[type=number],textarea{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px;box-sizing:border-box}
+textarea{min-height:90px;resize:vertical;line-height:1.7}
+select:focus,input:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;margin-bottom:12px;font-size:.92rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.param-row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+.tips{color:#64748b;font-size:.8rem;line-height:1.7;margin-top:6px}
+@media(max-width:600px){.param-row,.param-row3{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() { var hm = document.createElement("script"); hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949"; var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(hm, s); })();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🏠 AI 装修预算分配计算器</h1><p>输入面积和总预算，自动拆分各项开销＋超支预警＋省钱优先级</p></div>
+<div class="card">
+<div class="param-row3">
+<div><label>📐 建筑面积（㎡）</label><input type="number" id="area" value="89" min="20" max="600"></div>
+<div><label>💰 总预算（万元）</label><input type="number" id="budget" value="20" min="3" max="500" step="0.5"></div>
+<div><label>🏙 所在城市</label>
+<select id="city">
+<option value="1.35">一线（北上广深）</option>
+<option value="1.1" selected>新一线/二线</option>
+<option value="0.88">三四线</option>
+<option value="0.75">县城乡镇</option>
+</select></div>
+</div>
+<div class="param-row">
+<div><label>🔨 装修方式</label>
+<select id="mode">
+<option value="half" selected>半包（自己买主材）</option>
+<option value="full">全包（省心但贵）</option>
+<option value="clear">清包（只请工人）</option>
+<option value="all">整装（含家具家电）</option>
+</select></div>
+<div><label>🏗 房屋状态</label>
+<select id="status">
+<option value="new" selected>新房毛坯</option>
+<option value="old">二手房需全拆</option>
+<option value="refresh">精装房局部改造</option>
+</select></div>
+</div>
+<div class="param-row">
+<div><label>🚿 水电是否需要大改</label>
+<select id="plumbing">
+<option value="major" selected>要大改（全屋重排）</option>
+<option value="normal">局部调整</option>
+<option value="none">基本不动</option>
+</select></div>
+<div><label>🍳 厨房卫生间数量</label>
+<select id="wet">
+<option value="1" selected>1 厨 1 卫</option>
+<option value="2">1 厨 2 卫</option>
+<option value="3">2 厨 2 卫 / 大平层</option>
+</select></div>
+</div>
+<div class="param-row">
+<div><label>✨ 风格档次</label>
+<select id="level">
+<option value="eco">经济实用（能住就行）</option>
+<option value="std" selected>标准舒适（大多数家庭）</option>
+<option value="good">品质升级（好材料好设计）</option>
+<option value="lux">高阶定制（进口品牌）</option>
+</select></div>
+<div><label>🛋 家具家电是否已包含在预算里</label>
+<select id="furn">
+<option value="yes" selected>包含（预算里全算上）</option>
+<option value="no">不包含（只算硬装软装）</option>
+</select></div>
+</div>
+<div class="param-row">
+<div><label>🧰 是否找独立设计师</label>
+<select id="designer">
+<option value="no" selected>不找，自己搞/用装修公司免费设计</option>
+<option value="basic">找普通设计师（80–150 元/㎡）</option>
+<option value="pro">找资深设计师（200 元/㎡以上）</option>
+</select></div>
+<div><label>💳 付款方式</label>
+<select id="pay">
+<option value="cash" selected>全款自付</option>
+<option value="loan">装修贷 / 分期</option>
+</select></div>
+</div>
+<label>📝 其他说明（可选）</label>
+<textarea id="note" placeholder="例：婚房，明年 3 月入住，家里有老人要有扶手和防滑，两个阳台想封起来，厨房想改开放式"></textarea>
+<button class="btn-gen" id="genBtn">🏠 生成预算分配方案</button>
+<div class="tips">⚠️ 本工具基于 2024–2025 年全国装修市场常见报价区间估算，实际价格受品牌、工艺、地区影响很大，请作为谈判与比价的参考基准，不构成报价承诺。</div>
+</div>
+<div class="result-area" id="resultArea">
+<div class="card"><div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制结果</button></div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function money(n){
+  if(n>=10000){return (Math.round(n/100)/100)+' 万';}
+  return Math.round(n)+' 元';
+}
+function gen(){
+var area=+document.getElementById('area').value||0;
+var budgetW=+document.getElementById('budget').value||0;
+var cityK=+document.getElementById('city').value;
+var mode=document.getElementById('mode').value;
+var status=document.getElementById('status').value;
+var plumbing=document.getElementById('plumbing').value;
+var wet=+document.getElementById('wet').value;
+var level=document.getElementById('level').value;
+var furn=document.getElementById('furn').value;
+var designer=document.getElementById('designer').value;
+var pay=document.getElementById('pay').value;
+var note=document.getElementById('note').value.trim();
+
+if(area<=0||budgetW<=0){alert('请填写面积和预算');return;}
+var budget=budgetW*10000;
+var per=budget/area; // 元/㎡
+
+var out='════ 装修预算分配方案 ════\n\n';
+out+='建筑面积：'+area+' ㎡　｜　总预算：'+budgetW+' 万元\n';
+out+='单位造价：约 '+Math.round(per)+' 元/㎡（含税含利润的常见水平）\n';
+var cityName={1.35:'一线城市',1.1:'新一线/二线',0.88:'三四线',0.75:'县城乡镇'}[cityK];
+out+='地区系数：'+cityName+'（×'+cityK+'）\n';
+if(note){out+='补充说明：'+note+'\n';}
+out+='\n';
+
+// 档次系数
+var levelK={eco:0.8,std:1.0,good:1.28,lux:1.75}[level];
+var levelTxt={eco:'经济实用',std:'标准舒适',good:'品质升级',lux:'高阶定制'}[level];
+out+='──── 一、你的预算处于什么水平 ────\n';
+out+='档次定位：'+levelTxt+'（品质系数 ×'+levelK+'）\n';
+if(per<800){out+='⚠️ 不到 800 元/㎡，属于极简/出租房水平。这个价位做全屋装修，效果会打折扣，建议降低期待或延后预算。\n';}
+else if(per<1500){out+='✅ 1000–1500 元/㎡：能满足基本居住需求，材料选国产品牌性价比款。\n';}
+else if(per<2500){out+='✅ 1500–2500 元/㎡：多数家庭的主流区间，能做出舒适耐看的效果。\n';}
+else if(per<4000){out+='✅ 2500–4000 元/㎡：可以做品质升级，主材可选一线品牌，适合对细节有要求。\n';}
+else {out+='💎 4000 元/㎡以上：高端定制区间，建议直接找设计工作室＋品牌主材商做整体方案。\n';}
+out+='\n';
+
+// 基础比例（半包+含家具家电 为基准）
+var base={
+  '硬装施工':0.22,
+  '水电改造':0.09,
+  '主材（瓷砖地板门窗）':0.20,
+  '橱柜卫浴':0.13,
+  '定制柜体':0.11,
+  '墙面油漆':0.05,
+  '家具家电':0.15,
+  '灯具窗帘五金':0.05
+};
+
+// 按条件调整
+if(mode==='full'){out+='说明：全包模式下，主材／橱柜／涂料等由装修公司统一采购，价格通常比自购高 15%–30%，但省时间。\n';}
+if(mode==='clear'){
+  out+='说明：清包只付工钱，材料全部自购。工钱一般占硬装部分的 35%–45%，你要准备大量采购时间。\n';
+}
+if(mode==='all'){out+='说明：整装含家电家具，注意合同里"品牌型号"必须写清楚，否则容易被替换成低配款。\n';}
+if(furn==='no'){
+  out+='注意：你的家具家电不在这笔预算里，需要另外准备。按你的面积，家具家电通常还要 6–15 万元。\n';
+}
+
+// 重分配逻辑
+var w=Object.assign({},base);
+if(plumbing==='major'){w['水电改造']=0.12;w['硬装施工']-=0.02;}
+else if(plumbing==='none'){w['水电改造']=0.045;w['硬装施工']+=0.02;}
+if(wet>=2){w['橱柜卫浴']+=0.03;w['主材（瓷砖地板门窗）']-=0.01;w['定制柜体']-=0.01;w['家具家电']-=0.01;}
+if(status==='old'){w['硬装施工']+=0.03;w['主材（瓷砖地板门窗）']-=0.02;w['灯具窗帘五金']-=0.01;}
+if(status==='refresh'){w['硬装施工']-=0.05;w['定制柜体']+=0.02;w['家具家电']+=0.02;w['橱柜卫浴']+=0.01;}
+if(furn==='no'){w['家具家电']=0;}
+if(designer==='basic'||designer==='pro'){
+  var fee=designer==='basic'?100:200;
+  var designCost=area*fee*cityK;
+  out+='设计费预估：'+money(designCost)+'（'+area+' ㎡ × '+fee+' 元/㎡ × 地区系数）\n';
+  out+='👉 设计费通常单独计算，不在这 8 项里，记得预留。\n\n';
+}
+// 防止调整后出现负数
+for(var k in w){if(w[k]<0.02){w[k]=0.02;}}
+// 归一化
+var sum=0;for(var k in w){sum+=w[k];}
+var rows=[];
+for(var k in w){if(w[k]>0){rows.push({name:k,pct:w[k]/sum,amt:budget*w[k]/sum});}}
+rows.sort(function(a,b){return b.amt-a.amt;});
+
+out+='──── 二、预算分配明细（按金额排序）────\n';
+var i=1;
+rows.forEach(function(r){
+  var bar='';
+  var bars=Math.round(r.pct*40);
+  for(var j=0;j<bars;j++){bar+='█';}
+  out+=(i<10?' ':'')+i+'. '+r.name+'\n';
+  out+='   '+money(r.amt)+'　（占 '+(Math.round(r.pct*1000)/10)+'%）\n';
+  out+='   '+bar+'\n';
+  i++;
+});
+out+='────────────────────\n';
+out+='合计：'+budgetW+' 万元\n\n';
+
+out+='──── 三、每项参考单价（用于比价谈判）────\n';
+var tile=Math.round(90*levelK*cityK);
+var floor=Math.round(160*levelK*cityK);
+var paint=Math.round(35*levelK*cityK);
+var labor=Math.round(260*levelK*cityK);
+out+='· 水电改造：'+Math.round(110*levelK*cityK)+'–'+Math.round(180*levelK*cityK)+' 元/㎡（含开槽、线管、暗盒）\n';
+out+='· 瓦工铺贴人工：'+Math.round(55*levelK*cityK)+'–'+Math.round(90*levelK*cityK)+' 元/㎡\n';
+out+='· 木工吊顶：'+Math.round(130*levelK*cityK)+'–'+Math.round(220*levelK*cityK)+' 元/㎡（投影面积）\n';
+out+='· 墙面乳胶漆（含腻子）：'+paint+'–'+Math.round(60*levelK*cityK)+' 元/㎡\n';
+out+='· 瓷砖（中端品牌）：'+tile+'–'+Math.round(200*levelK*cityK)+' 元/㎡\n';
+out+='· 实木复合地板：'+floor+'–'+Math.round(320*levelK*cityK)+' 元/㎡\n';
+out+='· 定制衣柜（投影面积）：'+Math.round(600*levelK*cityK)+'–'+Math.round(1200*levelK*cityK)+' 元/㎡\n';
+out+='· 整体人工费综合：'+labor+'–'+Math.round(450*levelK*cityK)+' 元/㎡\n';
+out+='⚠️ 报价里"元/㎡"的口径一定要问清：建筑面积 / 套内面积 / 展开面积 / 投影面积，四种口径能差 40%。\n\n';
+
+out+='──── 四、超支预警（最容易失控的几项）────\n';
+out+='🔴 第一位：水电改造。绝大多数超支都从这里开始，报价单上常写"按实结算"。\n';
+out+='   → 对策：签合同前要求出水电点位图＋按点位报价，不接受"按米数实收"。\n';
+out+='🔴 第二位：定制柜体。加抽屉、加隔板、换五金都要另外加钱。\n';
+out+='   → 对策：让设计师列清每个柜子的抽屉数、板材品牌、五金品牌型号。\n';
+out+='🟡 第三位：主材升级。逛门店时"再加两千块换个好的"最容易累积成几万。\n';
+out+='   → 对策：主材先定死预算上限，超了就从别处砍，不做单点加钱。\n';
+out+='🟡 第四位：拆改与增项。二手房尤其多，墙体、防水、找平都是隐藏费用。\n';
+out+='   → 对策：合同里写明"除业主主动变更外，不再产生任何增项费用"。\n';
+out+='🟢 第五位：灯具五金小件。单价低但数量多，容易被忽略。\n';
+out+='   → 对策：开关插座、水龙头可以网购，同品牌比线下便宜 20%–40%。\n\n';
+
+out+='──── 五、省钱优先级（从哪砍最不心疼）────\n';
+out+='可以砍（不影响居住体验）↓↓\n';
+out+='· 复杂吊顶、背景墙造型、灯带 → 简约反而耐看，省 1–3 万\n';
+out+='· 电视墙、玄关造型 → 用实用收纳代替纯装饰\n';
+out+='· 品牌溢价明显的"网红款"单品 → 功能相同，价格差一倍\n';
+out+='· 窗帘、灯具、软装 → 网购＋自己安装，能省 30%\n';
+out+='· 客卧、次卧 → 先简单处理，等入住后按实际需求再补\n\n';
+out+='千万不能砍（后期返工代价极大）↓↓\n';
+out+='· 水电材料与施工（隐蔽工程，出问题要砸墙）\n';
+out+='· 防水（尤其卫生间、阳台、厨房）\n';
+out+='· 门窗与隔音（换了才知道安静多重要）\n';
+out+='· 橱柜五金铰链、滑轨（决定柜子用 3 年还是 15 年）\n';
+out+='· 室内环保材料等级（甲醛释放是长期健康问题）\n';
+out+='· 卫生间瓷砖防滑性（家里有老人的话是安全问题）\n\n';
+
+out+='──── 六、资金节奏与合同要点 ────\n';
+out+='建议付款节奏（按阶段付，别一次付清）：\n';
+out+='· 开工预付 30% ｜ 水电验收 30% ｜ 泥木完成 25% ｜ 竣工验收 10% ｜ 质保金 5%（留 3–6 个月）\n';
+out+='· 每一笔付款前，必须现场验收并拍照留证。\n';
+out+='· 质保金在入住一个完整季节后再付，能有效发现渗水、开裂等隐患。\n';
+if(pay==='loan'){
+  out+='\n装修贷提示：年化利率通常在 3.5%–8%，注意区分"费率"和"利率"。\n';
+  out+='· 业务员说的"月费率 0.3%"折算成年化约 6.5%–7%，不是 3.6%。\n';
+  out+='· 提前还款是否有违约金，一定要问清并写进合同。\n';
+  out+='· 贷款额度建议不超过总预算的 50%，装修是消费不是投资，别加杠杆过头。\n';
+}
+out+='\n';
+out+='──── 七、按你的情况，额外提醒 ────\n';
+if(status==='old'){
+  out+='二手房：先请专业机构做一次结构检查（承重墙、墙体裂缝、管道老化）。\n';
+  out+='拆旧人工费常被低估，按 '+Math.round(area*60*cityK)+'–'+Math.round(area*110*cityK)+' 元预留。\n';
+  out+='老房子的电线多是铝线或 2.5 平方铜线，大功率电器（空调、烤箱）必须换线，别省。\n';
+}
+if(status==='refresh'){
+  out+='精装房改造：先确认哪些能拆。开发商做的吊顶、地暖管线、防水层拆了可能影响保修。\n';
+  out+='重点通常在水电点位、柜体、软装上，这些改动性价比最高。\n';
+}
+if(wet>=2){
+  out+='多卫户型：每个卫生间都是独立防水单元，预算要按数量分别算，不要摊平。\n';
+  out+='主卫次卫的档次可以拉开，客卫够用就行，主卫值得多投入。\n';
+}
+if(designer==='no'){
+  out+='没找设计师：务必自己画一张平面布置图（哪怕是手绘＋尺寸标注）。\n';
+  out+='施工队按图干活，没图全靠口头沟通，最后的误差基本都是返工。\n';
+}
+if(designer==='pro'){
+  out+='资深设计师：签合同要写明交付物——平面图、水电点位图、施工图、效果图、软装清单各几套。\n';
+  out+='并要求设计师至少到现场交底 2 次、验收 3 次，这些要写进合同。\n';
+}
+out+='\n';
+out+='──── 八、签约前必查清单 ────\n';
+out+='□ 报价单是否按项目逐条列出，而不是"打包价 X 万"\n';
+out+='□ 材料清单是否标明品牌＋型号＋规格（只写品牌不写型号必被换货）\n';
+out+='□ 是否写明"总价包干，除业主主动变更外不产生增项"\n';
+out+='□ 工期、违约金、延期赔偿标准是否写清\n';
+out+='□ 质保期（一般隐蔽工程 5 年、其他 2 年）与售后响应时间\n';
+out+='□ 水电改造是否出图并明确计价方式（按点位，不按米）\n';
+out+='□ 是否提供完整施工图与竣工图\n';
+out+='□ 装修公司营业执照、施工资质、过往工地实拍\n';
+out+='□ 付款节点与验收标准一一对应\n';
+out+='□ 所有口头承诺全部写进合同附件\n';
+
+document.getElementById('outputBox').textContent=out;
+document.getElementById('resultArea').classList.add('active');
+document.getElementById('resultArea').scrollIntoView({behavior:'smooth',block:'start'});
+}
+function copyResult(){
+var t=document.getElementById('outputBox').textContent;
+navigator.clipboard.writeText(t).then(function(){alert('已复制到剪贴板');},function(){alert('复制失败，请手动选择文字');});
+}
+document.getElementById('genBtn').addEventListener('click',gen);
+</script>
+</body>
+</html>

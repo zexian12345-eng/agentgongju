@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 感冒用药与就医判断助手 | AgentGongju.com</title>
+<meta name="description" content="发烧咳嗽流鼻涕，该吃药还是该去医院？输入症状和人群，给出家庭护理方案、常用药参考和必须就医的危险信号。">
+<meta name="keywords" content="感冒怎么办,发烧处理,咳嗽用药,流感和感冒区别,儿童感冒,孕妇感冒用药,就医指征">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,input[type=text],input[type=number],textarea{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px;box-sizing:border-box}
+textarea{min-height:90px;resize:vertical;line-height:1.7}
+select:focus,input:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;margin-bottom:12px;font-size:.92rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.param-row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+.tips{color:#64748b;font-size:.8rem;line-height:1.7;margin-top:6px}
+@media(max-width:600px){.param-row,.param-row3{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() { var hm = document.createElement("script"); hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949"; var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(hm, s); })();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🤒 AI 感冒用药与就医判断助手</h1><p>该扛、该吃药还是该去医院？逐条对照危险信号，别耽误也别乱吃药</p></div>
+<div class="card">
+<div class="param-row3">
+<div><label>🌡 最高体温（℃）</label><input type="number" id="temp" value="38.2" min="35" max="42" step="0.1"></div>
+<div><label>⏱ 已经病了几天</label>
+<select id="days">
+<option value="1">1 天以内</option>
+<option value="3" selected>1–3 天</option>
+<option value="5">4–7 天</option>
+<option value="10">超过 1 周</option>
+</select></div>
+<div><label>👤 谁生病了</label>
+<select id="who">
+<option value="adult" selected>成年人（18–64 岁）</option>
+<option value="child">儿童（3–12 岁）</option>
+<option value="baby">婴幼儿（3 岁以下）</option>
+<option value="elder">老人（65 岁以上）</option>
+<option value="pregnant">孕妇 / 哺乳期</option>
+</select></div>
+</div>
+<div class="param-row">
+<div><label>😷 主要症状（选最明显的）</label>
+<select id="symptom">
+<option value="throat" selected>嗓子疼、咽部不适</option>
+<option value="nose">鼻塞流涕、打喷嚏</option>
+<option value="cough">咳嗽（干咳或少痰）</option>
+<option value="phlegm">咳嗽有痰、痰黄黏</option>
+<option value="fever">以发烧为主，其他不明显</option>
+<option value="body">全身酸痛、乏力头痛</option>
+</select></div>
+<div><label>🫁 是否有这些情况（选最严重的一项）</label>
+<select id="danger">
+<option value="none" selected>都没有</option>
+<option value="breath">呼吸急促、胸闷、喘不上气</option>
+<option value="chest">胸口疼、咳血</option>
+<option value="neck">脖子僵硬、剧烈头痛、怕光</option>
+<option value="mind">意识模糊、嗜睡叫不醒、抽搐</option>
+<option value="dehydrate">喝不进水、尿很少、嘴唇干裂</option>
+<option value="rash">身上起疹子 / 皮肤发花</option>
+</select></div>
+</div>
+<div class="param-row">
+<div><label>🩺 基础疾病（选最相关的一项）</label>
+<select id="chronic">
+<option value="no" selected>没有慢性病</option>
+<option value="lung">哮喘 / 慢阻肺 / 老慢支</option>
+<option value="heart">心脏病 / 高血压</option>
+<option value="sugar">糖尿病</option>
+<option value="immune">免疫力低 / 正在化疗 / 长期用激素</option>
+<option value="kidney">肾病 / 肝病</option>
+</select></div>
+<div><label>💊 是否已吃过药</label>
+<select id="med">
+<option value="no" selected>还没吃药</option>
+<option value="antipyretic">吃过退烧药</option>
+<option value="antibiotic">吃过抗生素（头孢/阿莫西林等）</option>
+<option value="tcm">吃过中成药感冒药</option>
+<option value="mix">退烧药＋中成药都吃了</option>
+</select></div>
+</div>
+<div class="param-row">
+<div><label>💉 是否打过流感疫苗</label>
+<select id="vac"><option value="no" selected>没打</option><option value="yes">今年打过</option></select></div>
+<div><label>🏥 是否接触过确诊流感/新冠的人</label>
+<select id="contact"><option value="no" selected>没有</option><option value="yes">有密切接触</option></select></div>
+</div>
+<label>📝 补充描述（可选）</label>
+<textarea id="note" placeholder="例：昨天开始发烧 38.5，吃了布洛芬降到 37.8，今天又烧起来，嗓子很疼，同事上周得了甲流"></textarea>
+<button class="btn-gen" id="genBtn">🤒 生成判断与护理方案</button>
+<div class="tips">⚠️ 本工具提供的是通用健康科普与就医决策参考，不能替代医生面诊。出现危险信号请立即就医，不要在网上自诊拖延。</div>
+</div>
+<div class="result-area" id="resultArea">
+<div class="card"><div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制结果</button></div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function gen(){
+var temp=+document.getElementById('temp').value||37;
+var days=+document.getElementById('days').value;
+var who=document.getElementById('who').value;
+var symptom=document.getElementById('symptom').value;
+var danger=document.getElementById('danger').value;
+var chronic=document.getElementById('chronic').value;
+var med=document.getElementById('med').value;
+var vac=document.getElementById('vac').value;
+var contact=document.getElementById('contact').value;
+var note=document.getElementById('note').value.trim();
+
+var whoTxt={adult:'成年人',child:'儿童',baby:'婴幼儿',elder:'老年人',pregnant:'孕妇/哺乳期'}[who];
+var symptomTxt={throat:'嗓子疼',nose:'鼻塞流涕',cough:'干咳',phlegm:'咳嗽有痰',fever:'以发热为主',body:'全身酸痛乏力'}[symptom];
+
+var out='════ 症状判断与护理方案 ════\n\n';
+out+='最高体温：'+temp.toFixed(1)+' ℃　｜　病程：'+({1:'1 天以内',3:'1–3 天',5:'4–7 天',10:'超过 1 周'}[days])+'\n';
+out+='患者：'+whoTxt+'　｜　主要症状：'+symptomTxt+'\n';
+if(note){out+='补充说明：'+note+'\n';}
+out+='\n';
+
+// ===== 第一优先：危险信号 =====
+var red=false;
+out+='──── 一、危险信号筛查（最重要，先看这里）────\n';
+if(danger==='none'){
+  out+='✅ 目前你选择的选项中，没有出现需要立即急诊的危险信号。\n';
+  out+='但仍需每 4–6 小时观察一次体温和精神状态，出现变化随时重新判断。\n';
+}else{
+  red=true;
+  out+='🔴🔴 你勾选了危险信号，请优先处理就医，不要在家观察 🔴🔴\n\n';
+  if(danger==='breath'){out+='【呼吸急促 / 胸闷喘不上气】\n可能是肺炎、重症流感或哮喘急性发作。\n· 立即前往急诊，不要等明天。\n· 去的路上保持坐位，不要平躺，解开领口。\n· 家里有指夹血氧仪的话，测一下血氧，低于 93% 必须马上叫 120。\n';}
+  if(danger==='chest'){out+='【胸痛 / 咳血】\n· 咳血无论量多少都要就诊，可能是支气管或肺部出血。\n· 胸痛若伴随出汗、左侧压榨感，按心梗处理，立刻叫 120，不要自己开车。\n· 到院前不要吃阿司匹林以外的药，尤其别吃止咳药把血憋住。\n';}
+  if(danger==='neck'){out+='【脖子僵硬 / 剧烈头痛 / 怕光】\n这三条同时出现要高度警惕脑膜炎，属于急症。\n· 立即急诊，不要在家吃退烧药观察。\n· 就诊时说清"是否有颈部僵硬、是否怕光"，医生会优先处理。\n· 婴幼儿表现为持续尖哭、囟门凸起、不肯吃奶，同样要急诊。\n';}
+  if(danger==='mind'){out+='【意识模糊 / 嗜睡叫不醒 / 抽搐】\n这是最紧急的情况之一。\n· 立即拨打 120，同时让患者侧卧，防止呕吐物窒息。\n· 抽搐时不要往嘴里塞任何东西，不要按压四肢，清空周围硬物。\n· 记录抽搐开始时间和持续时长，告诉急救人员。\n';}
+  if(danger==='dehydrate'){out+='【喝不进水 / 尿很少 / 嘴唇干裂】\n这是脱水表现，儿童和老人尤其危险。\n· 尽快就医，可能需要静脉补液。\n· 就医前可少量多次喂口服补液盐（不是白水，白水补不了电解质）。\n· 判断指标：6 小时以上无尿、哭时无泪、眼窝凹陷，符合任意两条直接去医院。\n';}
+  if(danger==='rash'){out+='【皮疹 / 皮肤发花】\n· 发烧伴随皮疹，可能是猩红热、麻疹、手足口或药物过敏。\n· 如果皮疹按压不褪色（压下去还是红的），立刻急诊，警惕脑膜炎球菌感染。\n· 如果是吃药后出现的，立即停药并就医，拍照记录皮疹范围变化。\n';}
+}
+out+='\n';
+
+// ===== 第二：人群特殊 =====
+out+='──── 二、你这类人群的特殊注意 ────\n';
+if(who==='adult'){
+  out+='成年人：普通感冒一般 7 天自愈，重点是对症缓解，不必吃抗生素。\n';
+  out+='· 体温低于 38.5℃ 且精神尚可 → 可以不吃退烧药，多喝水多休息。\n';
+  out+='· 高于 38.5℃ 或明显难受 → 可服退烧药，同一种药间隔至少 4–6 小时。\n';
+}
+if(who==='child'){
+  out+='🔶 儿童（3–12 岁）：\n';
+  out+='· 退烧药只用对乙酰氨基酚或布洛芬，二选一，不要交替混用（容易过量）。\n';
+  out+='· 剂量按体重算，不按年龄！包装说明按体重对应的那一栏。\n';
+  out+='· ⛔ 绝对禁止给儿童吃阿司匹林（可能引发瑞氏综合征，可致命）。\n';
+  out+='· ⛔ 不要用成人感冒药减半给孩子吃，配方和剂量都不合适。\n';
+  out+='· 儿童感冒药（复方感冒制剂）4 岁以下不建议使用，4–6 岁谨慎使用。\n';
+  out+='· 判断要不要去医院，看"精神状态"比看"体温高低"更准。\n';
+}
+if(who==='baby'){
+  out+='🔴 婴幼儿（3 岁以下）：这是需要最谨慎对待的人群。\n';
+  out+='· 3 个月以下婴儿肛温 ≥38℃ → 无论精神多好，都应立即就医。\n';
+  out+='· 3–6 个月 ≥39℃ 或持续 24 小时以上 → 就医。\n';
+  out+='· 婴儿不会说，观察：吃奶量、哭声响亮度、眼神是否灵活、尿量。\n';
+  out+='· 出现拒奶、尖哭、囟门凸起、呼吸急促、皮肤发花 → 急诊。\n';
+  out+='· ⛔ 不要自行给婴儿用任何复方感冒药、止咳药。\n';
+  out+='· 物理降温可用温水擦拭，不要用酒精擦身（会通过皮肤吸收中毒）。\n';
+}
+if(who==='elder'){
+  out+='🔶 老年人（65 岁以上）：\n';
+  out+='· 免疫反应弱，可能"不发烧但已经重症"，别只看体温。\n';
+  out+='· 更危险的是并发症：肺炎、心衰加重、基础病失控。\n';
+  out+='· 出现精神萎靡、食欲骤减、说话含糊、走路不稳 → 尽快就医。\n';
+  out+='· 发烧期间要注意补液，但有心衰病史者别猛灌水，遵医嘱。\n';
+  out+='· 家里有老人感冒，建议尽早做流感/新冠抗原检测，阳性可尽早用抗病毒药。\n';
+}
+if(who==='pregnant'){
+  out+='🔴 孕妇 / 哺乳期：用药必须由医生判断。\n';
+  out+='· 相对安全的退烧药：对乙酰氨基酚（孕中期后需遵医嘱，避免长期大剂量）。\n';
+  out+='· ⛔ 孕期尤其是孕晚期避免布洛芬等非甾体抗炎药。\n';
+  out+='· ⛔ 不要自行服用中成药、复方感冒药（成分复杂，风险不明确）。\n';
+  out+='· 哺乳期大部分常用药会少量进入乳汁，服药前请咨询医生或药师。\n';
+  out+='· 孕妇发烧本身可能影响胎儿，持续高热应尽快就诊，不要硬扛。\n';
+}
+out+='\n';
+
+// ===== 第三：病程与用药时机 =====
+out+='──── 三、病程与用药时机判断 ────\n';
+if(days===1){
+  out+='第 1 天：普通感冒或病毒感染的初期，症状会先加重再减轻。\n';
+  out+='· 此时吃药主要是缓解难受，并不能让感冒更快结束。\n';
+  out+='· 首选：休息＋大量喝温水＋清淡饮食，观察 24 小时。\n';
+}
+if(days===3){
+  out+='第 2–3 天：通常是症状高峰，体温可能反复，这本身不一定代表恶化。\n';
+  out+='· 只要退烧后精神状态好，就可以继续对症处理。\n';
+  out+='· 如体温持续 39℃ 以上超过 3 天不退，或退烧后精神很差 → 就医。\n';
+}
+if(days===5){
+  out+='第 4–7 天：普通感冒应开始好转。\n';
+  out+='⚠️ 如果这时候反而加重（烧得更厉害、咳嗽更凶、痰变黄绿黏稠），\n';
+  out+='要考虑继发细菌感染（鼻窦炎、支气管炎、肺炎），建议就医。\n';
+  out+='· 注意：痰变黄不等于一定需要抗生素，判断要看医生。\n';
+}
+if(days===10){
+  out+='⚠️ 超过 1 周还没好，已经超出普通感冒的典型病程。\n';
+  out+='建议就医排查：流感后咳嗽、支原体感染、细菌性鼻窦炎、过敏性咳嗽、肺炎。\n';
+  out+='· 长期咳嗽超过 8 周属于慢性咳嗽，需专科检查（呼吸内科）。\n';
+  out+='· 别自己连续吃抗生素，不规范用药反而会造成耐药和菌群紊乱。\n';
+}
+out+='\n';
+
+// ===== 第四：症状对症 =====
+out+='──── 四、针对你主要症状的护理建议 ────\n';
+if(symptom==='throat'){
+  out+='嗓子疼：\n· 温盐水漱口（一杯温水半勺盐），每 2–3 小时一次，能明显减轻疼痛。\n· 多喝温水，可以含润喉糖或蜂蜜（1 岁以上儿童可用蜂蜜）。\n· 室内开加湿器，湿度 40%–60%，干燥会让咽痛更重。\n· 疼痛剧烈影响吞咽、或看到扁桃体有白色脓点 → 可能是链球菌咽炎，需就医。\n';
+}
+if(symptom==='nose'){
+  out+='鼻塞流涕：\n· 生理性海盐水冲洗鼻腔，一天 2–3 次，非常有效且无副作用，孕妇儿童都能用。\n· 鼻塞严重时可用含麻黄素的鼻喷剂，但连续使用不超过 3 天，否则会反跳性鼻塞。\n· 睡觉时把枕头垫高一点，能减轻夜间鼻塞。\n· 流黄浓涕超过 10 天不改善，考虑鼻窦炎，需就医。\n';
+}
+if(symptom==='cough'){
+  out+='干咳：\n· 干咳不必强行止咳，但影响睡眠可以用止咳药。\n· 蜂蜜水（睡前一小勺蜂蜜）对夜间咳嗽有明确缓解作用，1 岁以上适用。\n· 开加湿器、远离烟味油烟冷空气。\n· ⛔ 不要给儿童自行使用含可待因的止咳药（12 岁以下禁用）。\n';
+}
+if(symptom==='phlegm'){
+  out+='咳嗽有痰：\n· 有痰时不要用强效镇咳药，把痰憋在气道里反而危险。\n· 用祛痰药（如氨溴索、乙酰半胱氨酸类）稀释痰液，配合多喝温水。\n· 拍背排痰：手掌空心，从下往上、从外往内拍，每次 5 分钟。\n· 痰中带血、痰量大增、呼吸困难 → 立即就医。\n';
+}
+if(symptom==='fever'){
+  out+='以发热为主：\n· 退烧药的作用是让你舒服，不是治病，体温 38.5℃ 以下且不难受可以不退。\n· 对乙酰氨基酚和布洛芬不要同时吃、不要交替用（成人也一样，容易过量伤肝）。\n· 退烧药生效需要 30–60 分钟，别刚吃完没降就补第二剂。\n· 退烧后大量出汗，记得补电解质水，别只喝白水。\n· 反复发烧 3 天以上建议就医查血常规。\n';
+}
+if(symptom==='body'){
+  out+='全身酸痛乏力：\n· 这一条更像流感而不是普通感冒，尤其伴随高热、头痛、明显乏力。\n· 建议做流感抗原自测；若在发病 48 小时内确诊，医生可能开奥司他韦，越早越有效。\n· 充分卧床休息，不要硬撑着上班，流感后过早劳累易引发心肌炎。\n· 恢复期（退烧后 1–2 周）避免剧烈运动，出现心慌胸闷要就医。\n';
+}
+out+='\n';
+
+// ===== 第五：药物提示 =====
+out+='──── 五、用药安全提示 ────\n';
+out+='🔸 最重要的一条：很多中成药感冒药里已经含有对乙酰氨基酚。\n';
+out+='   如果同时吃退烧药＋感冒灵/复方感冒颗粒，很容易重复用药导致肝损伤。\n';
+out+='   吃药前一定看成分表，对乙酰氨基酚一天总量上限 2 克（成人，超量伤肝）。\n';
+out+='🔸 感冒是病毒引起的，抗生素（头孢、阿莫西林等）对病毒无效。\n';
+out+='   除非医生判断有细菌感染，否则不要自行吃抗生素。\n';
+out+='🔸 多种感冒药不要一起吃，成分重叠会导致同一成分超量。\n';
+out+='🔸 退烧药不要空腹吃，饭后或与食物同服可减轻胃肠刺激。\n';
+out+='🔸 服药期间不要喝酒，尤其对乙酰氨基酚＋酒精会显著增加肝损伤风险。\n';
+if(med==='mix'){out+='⚠️ 你同时吃了退烧药和中成药感冒药，请立刻核对两者是否都含对乙酰氨基酚，\n如果含，就是重复用药，应停掉其中一种。若出现恶心呕吐、右上腹痛，尽快就医查肝功能。\n';}
+if(med==='antibiotic'){out+='⚠️ 你自行吃了抗生素。如果 48–72 小时没有好转，说明可能不是细菌感染，\n不要继续加量或换另一种抗生素，去医院查血常规后再定。\n';}
+if(med==='antipyretic'){out+='✅ 你吃过退烧药。注意记录：吃的什么药、几点吃的、吃了几次。\n就诊时把这个记录给医生看，能避免重复开药。\n';}
+if(vac==='yes'){out+='✅ 你打过流感疫苗，即使感染，重症概率也会明显降低，这是很好的保护。\n';}
+else{out+='💡 今年还没打流感疫苗的话，康复后可以考虑接种（每年 9–11 月是最佳时间）。\n';}
+if(contact==='yes'){out+='⚠️ 你有确诊流感/新冠接触史，建议做抗原自测。\n流感在发病 48 小时内用抗病毒药效果最好，别拖。\n';}
+out+='\n';
+
+// ===== 第六：基础病 =====
+if(chronic!=='no'){
+  out+='──── 六、有基础疾病的特别注意 ────\n';
+  if(chronic==='lung'){out+='哮喘/慢阻肺/老慢支：呼吸道感染极易诱发急性发作。\n· 备好急救吸入药，按医生原方案继续用，不要因为"怕依赖"擅自停。\n· 出现喘息加重、说话断续、夜间憋醒 → 急诊。\n';}
+  if(chronic==='heart'){out+='心脏病/高血压：\n· 感冒药里常见的伪麻黄碱会升血压、加快心率，高血压患者慎用。\n· 退烧药选对乙酰氨基酚更安全，非甾体抗炎药可能影响血压和肾功能。\n· 发烧脱水会加重心脏负担，注意补液但别过量，出现胸闷水肿尽快就医。\n';}
+  if(chronic==='sugar'){out+='糖尿病：\n· 感染会让血糖明显升高，这几天要加密监测（至少每天 4 次）。\n· 部分感冒糖浆剂型含糖，选无糖剂型或片剂。\n· 血糖持续高于 16.7 mmol/L 或出现口渴多尿加重 → 就医。\n';}
+  if(chronic==='immune'){out+='免疫力低下：\n· 你的感染风险与重症风险都显著高于常人，建议尽早就医而不是居家观察。\n· 发烧应视为重要信号，即使体温不高也要联系主诊医生。\n· 尽量远离人群密集场所，家人有感冒应做好隔离和通风。\n';}
+  if(chronic==='kidney'){out+='肾病/肝病：\n· 用药种类和剂量必须由医生调整，很多感冒药需减量或禁用。\n· 退烧药对肾脏血流有影响，肾病者应避免自行使用非甾体抗炎药。\n· 注意尿量变化，明显减少要立即就医。\n';}
+  out+='\n';
+}
+
+// ===== 结论 =====
+out+='──── 七、结论：现在该怎么做 ────\n';
+if(red){
+  out+='🔴 优先就医/急诊。请携带：身份证、医保卡、既往病历、近期用药清单。\n';
+  out+='就诊时主动告诉医生：体温变化曲线、已用什么药、有哪些基础病、是否接触过流感患者。\n';
+}else{
+  var go=false;
+  if(who==='baby'){go=true;}
+  if(who==='pregnant'&&temp>=38.5){go=true;}
+  if(days>=10){go=true;}
+  if(temp>=39.5){go=true;}
+  if(chronic==='immune'||chronic==='lung'){go=true;}
+  if(temp>=38&&(who==='elder'||who==='child')&&days>=3){go=true;}
+  if(go){out+='🟡 建议尽快就医（门诊即可，不必急诊）。\n';}
+  else{out+='🟢 可以先居家对症处理，按下面的清单做，并设好观察节点。\n';}
+}
+out+='\n居家护理四件事（无论去不去医院都要做）：\n';
+out+='① 充分休息：请假、别熬夜，睡眠是最好的免疫支持。\n';
+out+='② 大量补水：温开水、淡盐水、口服补液盐；观察尿色，淡黄为正常。\n';
+out+='③ 清淡饮食：粥、面条、蒸蛋、蔬菜汤；不要吃油腻辛辣，不要喝酒。\n';
+out+='④ 定时监测：每 4–6 小时量一次体温并记录，同时记录症状变化。\n';
+out+='\n建议记录一张"病情小卡"，就诊时给医生看：\n';
+out+='时间 / 体温 / 症状 / 吃了什么药 / 药后反应 —— 五行就够了。\n';
+out+='\n';
+out+='⚠️ 免责声明：本工具为健康科普与就医决策参考，不构成诊断或处方。\n';
+out+='用药请遵医嘱或药师指导。症状变化请及时就医，切勿因自诊延误治疗。\n';
+
+document.getElementById('outputBox').textContent=out;
+document.getElementById('resultArea').classList.add('active');
+document.getElementById('resultArea').scrollIntoView({behavior:'smooth',block:'start'});
+}
+function copyResult(){
+var t=document.getElementById('outputBox').textContent;
+navigator.clipboard.writeText(t).then(function(){alert('已复制到剪贴板');},function(){alert('复制失败，请手动选择文字');});
+}
+document.getElementById('genBtn').addEventListener('click',gen);
+</script>
+</body>
+</html>
