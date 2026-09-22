@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 快递理赔与丢件索赔助手 | AgentGongju.com</title>
+<meta name="description" content="快递丢件、破损、被冒签怎么办？输入物品价值和快递公司，自动算出法定赔偿金额，生成投诉话术与索赔流程。">
+<meta name="keywords" content="快递丢件,快递理赔,快递破损,快递投诉,快递赔偿标准,邮政投诉,12305,保价">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,input[type=text],input[type=number],textarea{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px;box-sizing:border-box}
+textarea{min-height:90px;resize:vertical;line-height:1.7}
+select:focus,input:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;margin-bottom:12px;font-size:.92rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.param-row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+.tips{color:#64748b;font-size:.8rem;line-height:1.7;margin-top:6px}
+@media(max-width:600px){.param-row,.param-row3{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() { var hm = document.createElement("script"); hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949"; var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(hm, s); })();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📦 AI 快递理赔助手</h1><p>丢件破损被冒签？算清法定赔偿，生成投诉话术与索赔路线</p></div>
+<div class="card">
+<div class="param-row">
+<div><label>📮 快递公司</label>
+<select id="company">
+<option value="sf" selected>顺丰速运</option>
+<option value="jd">京东物流</option>
+<option value="yto">圆通速递</option>
+<option value="zto">中通快递</option>
+<option value="sto">申通快递</option>
+<option value="yunda">韵达速递</option>
+<option value="ems">中国邮政 EMS</option>
+<option value="jd_da">极兔速递</option>
+<option value="debon">德邦快递</option>
+<option value="other">其他 / 小快递</option>
+</select></div>
+<div><label>❓ 出了什么问题</label>
+<select id="issue">
+<option value="1" selected>快递丢件（一直没送到）</option>
+<option value="2">物品破损/压坏</option>
+<option value="3">被冒签/代收点丢失</option>
+<option value="4">少件/被掉包</option>
+<option value="5">物流停滞 / 虚假签收</option>
+</select></div>
+</div>
+<div class="param-row">
+<div><label>💵 物品实际价值（元）</label><input type="number" id="value" value="800" min="0" max="1000000"></div>
+<div><label>🛡 是否保价</label>
+<select id="insured"><option value="0" selected>没有保价</option><option value="1">已保价 500 元</option><option value="2">已保价 1000 元</option><option value="3">已保价 3000 元</option><option value="4">已保价 10000 元</option><option value="5">保价金额自定义（填在下方）</option></select></div>
+</div>
+<div class="param-row">
+<div><label>⚖️ 你是什么身份</label>
+<select id="role"><option value="1" selected>个人寄件（消费者）</option><option value="2">网购商家发货</option><option value="3">我是收件人（商家寄给我）</option></select></div>
+<div><label>🧾 手上有什么证据</label>
+<select id="proof"><option value="0" selected>只有聊天记录/无凭证</option><option value="1">有快递单号+寄件记录</option><option value="2">有订单截图/付款凭证/发票</option><option value="3">有拆件视频+物品照片+付款凭证（最强）</option></select></div>
+</div>
+<div class="param-row">
+<div><label>📅 距今已过多少天</label><input type="number" id="days" value="10" min="0" max="3650"></div>
+<div><label>📞 已经投诉过吗</label>
+<select id="stage"><option value="0" selected>还没找过快递公司</option><option value="1">找了网点/客服，被推诿</option><option value="2">已向快递总部投诉，无果</option><option value="3">已投诉邮政管理局/12305</option></select></div>
+</div>
+<label>📝 详细情况（可选，越具体建议越准）</label>
+<textarea id="note" placeholder="例：寄了一台二手手机，价值 800 元没保价，快递显示已签收但我从没收到，网点说放代收点了，代收点说没有"></textarea>
+<button class="btn-gen" id="genBtn">📦 生成索赔方案</button>
+<div class="tips">⚠️ 依据《快递暂行条例》《快递服务国家标准》及《邮政法》相关条款测算，仅供参考。实际赔偿以快件详情单背书条款和司法实践为准。</div>
+</div>
+<div class="result-area" id="resultArea">
+<div class="card"><div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制结果</button></div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function money(n){return Math.round(n*100)/100;}
+function gen(){
+  var company=document.getElementById('company').value;
+  var issue=document.getElementById('issue').value;
+  var value=+document.getElementById('value').value||0;
+  var insuredCode=document.getElementById('insured').value;
+  var role=document.getElementById('role').value;
+  var proof=+document.getElementById('proof').value;
+  var days=+document.getElementById('days').value||0;
+  var stage=+document.getElementById('stage').value;
+  var note=document.getElementById('note').value.trim();
+
+  var names={sf:'顺丰速运',jd:'京东物流',yto:'圆通速递',zto:'中通快递',sto:'申通快递',yunda:'韵达速递',ems:'中国邮政 EMS',jd_da:'极兔速递',debon:'德邦快递',other:'其他快递'};
+  var cname=names[company];
+
+  // 保价金额
+  var insuredAmt=0;
+  if(insuredCode==='1')insuredAmt=500;
+  else if(insuredCode==='2')insuredAmt=1000;
+  else if(insuredCode==='3')insuredAmt=3000;
+  else if(insuredCode==='4')insuredAmt=10000;
+  else if(insuredCode==='5')insuredAmt=Math.max(value,500); // 自定义按实际价值
+  var isInsured=insuredAmt>0;
+
+  // 法定赔偿测算
+  // 未保价：一般按实际损失赔偿，但不超过所收资费的倍数（各公司背书条款不同，常见为运费的3-7倍）
+  // 邮政企业（EMS 平邮）适用《邮政法》第47条：未保价最高赔资费3倍；快递企业（民营）适用民事法律，应按实际损失赔
+  var freight=18; // 估算运费
+  var nationalPost=(company==='ems');
+  var legalCap;
+  if(isInsured){
+    legalCap=Math.min(value, insuredAmt);
+  } else if(nationalPost){
+    legalCap=freight*3;
+  } else {
+    legalCap=Math.min(value, Math.max(freight*7, 300));
+  }
+
+  var status=issue==='1'?'丢件':issue==='2'?'破损':issue==='3'?'被冒签/代收点丢失':issue==='4'?'少件/被掉包':'物流停滞/虚假签收';
+
+  var out='════ 快递索赔评估报告 ════\n\n';
+  out+='快递公司：'+cname+'\n';
+  out+='问题类型：'+status+'\n';
+  out+='物品价值：'+money(value)+' 元\n';
+  out+='保价情况：'+(isInsured?('已保价 '+money(insuredAmt)+' 元'):'未保价 ⚠️')+'\n';
+  out+='你的身份：'+(role==='1'?'个人寄件人':role==='2'?'发货商家':'收件人')+'\n';
+  out+='已过时间：'+days+' 天　｜　投诉阶段：'+['还没找过快递公司','已找网点/客服被推诿','已投诉总部无果','已投诉邮政管理局/12305'][stage]+'\n\n';
+
+  out+='──── 一、你能拿到多少赔偿 ────\n';
+  if(isInsured){
+    out+='🟢 你已保价，这是最有利的情况。\n';
+    out+='· 保价规则：按保价金额与实际损失孰低赔偿，另加退还运费。\n';
+    out+='· 理论上限：'+money(Math.min(value,insuredAmt))+' 元\n';
+    if(value>insuredAmt) out+='· ⚠️ 注意：你的物品价值 '+money(value)+' 元高于保价额 '+money(insuredAmt)+' 元，超出部分通常不予赔偿。这就是「保价多少赔多少」的规则。\n';
+    out+='· '+(issue==='2'?'部分破损按损失比例赔偿，不一定全额。':'丢件一般按保价全额赔。')+'\n';
+  } else {
+    out+='🟡 你未保价，这会让赔偿变复杂，但并非拿不到。\n';
+    if(nationalPost){
+      out+='· 中国邮政（EMS 邮政普遍服务）适用《邮政法》第 47 条：未保价邮件丢失，按实际损失赔偿，但最高不超过所收资费的 3 倍。\n';
+      out+='· 按普通资费估算，法定上限约：'+money(freight*3)+' 元 —— 这个数字往往远低于你的损失。\n';
+      out+='· 但如果是 EMS 特快专递（快递业务而非普遍服务），实践中多按民事法律处理，仍可主张按实际损失赔偿。\n';
+    } else {
+      out+='· 民营快递公司不属于邮政普遍服务，《邮政法》第 47 条的 3 倍资费限制【不适用】于它们。\n';
+      out+='· 依《民法典》第 832 条，承运人对运输过程中货物的毁损、灭失承担赔偿责任；快递单背书条款中「未保价只赔运费的几倍」属于限制责任的格式条款，若未以显著方式提示，可主张无效。\n';
+      out+='· 👉 所以你的核心策略：主张按【实际损失】赔偿，而不是接受「赔运费的 3-7 倍」。\n';
+      out+='· 实务参考区间：'+money(Math.min(value,Math.max(freight*7,300)))+' 元 ～ '+money(value)+' 元\n';
+    }
+    if(proof>=2) out+='· ✅ 你有付款凭证/订单截图，能证明物品真实价值，这是突破「运费倍数」限制的关键武器。\n';
+    else out+='· ⚠️ 你缺少价值凭证，快递公司很可能只愿赔运费的几倍。建议现在立刻去补齐：订单截图、付款记录、同款商品链接与价格。\n';
+  }
+  out+='\n';
+
+  out+='──── 二、这个案子的胜负手 ────\n';
+  if(proof===3){ out+='🟢 你有「拆件视频 + 物品照片 + 付款凭证」，证据链完整，属于教科书级取证，索赔成功率非常高。\n'; }
+  else if(proof===2){ out+='🟡 你有付款凭证，价值能证明，但缺「当场拆件」的画面。建议补：向快递员索要派送时的监控/录音，或调取代收点监控。\n'; }
+  else if(proof===1){ out+='🟡 你有单号但缺价值凭证。先去补证据：电商订单截图、微信/支付宝付款记录、发票。\n'; }
+  else { out+='🔴 证据很弱。现在首要任务不是投诉，而是【补证据】：付款记录、商品链接、聊天记录、通话录音，全部截图保存。\n'; }
+  if(role==='3') out+='💡 你是收件人：可以双线施压 —— 一边让【商家】找快递公司索赔（商家是寄件方，与快递有合同关系），一边自己投诉。很多商家为保评分会先赔付你。\n';
+  if(role==='2') out+='💡 你是商家：寄件人身份直接与快递公司构成运输合同关系，索赔主体资格最强，可要求按货物实际价值赔付并出具书面理赔方案。\n';
+  out+='\n';
+
+  out+='──── 三、时效提醒 ────\n';
+  if(days<=7) out+='· 现在是黄金期，快递公司内部追查效率最高，立刻行动。\n';
+  else if(days<=30) out+='· 时间尚可，仍在常规处理窗口内，尽快提交理赔申请。\n';
+  else if(days<=365) out+='· ⚠️ 已超过一个月，快递公司可能以「超时」推诿。要强调：诉讼时效为 3 年，你从未放弃权利主张。\n';
+  else out+='· 🔴 已超过 1 年，常规理赔渠道基本关闭，但仍可通过民事诉讼主张（诉讼时效 3 年），需准备完整证据。\n';
+  out+='· 法律要点：快递服务纠纷的诉讼时效为 3 年（《民法典》第 188 条），快递公司内部「7 天内申请」的规定不能约束你的诉讼权利。\n\n';
+
+  out+='──── 四、投诉索赔四步法 ────\n';
+  out+='第 1 步｜找快递公司总部（不是网点！）\n';
+  out+='   · '+cname+'官方客服电话，直接说：「我的单号 XXXX 出现'+status+'，要求按实际价值 '+money(value)+' 元理赔，请在 24 小时内给书面答复。」\n';
+  out+='   · 关键：要求【工单号】，并记录接线员编号和处理时限。网点没有理赔权限，找总部最有效。\n\n';
+  out+='第 2 步｜向邮政管理局投诉（杀手锏，免费且极有效）\n';
+  out+='   · 拨打 12305（邮政业消费者申诉电话），或登录【国家邮政局申诉网站 ss12305.cn】在线申诉。\n';
+  out+='   · 规则：需先向快递企业投诉满 7 天未解决，才可申诉。\n';
+  out+='   · 威力：申诉后会转办至快递公司，公司必须在规定时限内答复，且申诉率直接影响其考核 —— 这是让快递公司「秒变好说话」的最强手段。\n\n';
+  out+='第 3 步｜12315 / 12345 双线投诉\n';
+  out+='   · 12315 消费者热线：以消费者身份投诉服务质量与赔偿不合理。\n';
+  out+='   · 12345 市民热线：转属地邮政管理部门处理。\n\n';
+  out+='第 4 步｜法院起诉（金额不大也可行）\n';
+  out+='   · 向【被告住所地】或【运输始发地/目的地】法院起诉。\n';
+  out+='   · 可网上立案（人民法院在线服务小程序），案件受理费很低，'+ (value<=10000?'你的金额适用小额诉讼，一审终审，通常 25-50 元受理费。':'建议准备充分证据或咨询律师。') +'\n';
+  out+='   · 主张：货物损失赔偿 + 退还运费 + 合理维权费用。\n\n';
+
+  out+='──── 五、投诉话术模板（直接复制发出去）────\n';
+  out+='【致 '+cname+' 客服】\n';
+  out+='本人于 X 月 X 日通过贵公司寄出/接收快件（单号：XXXXXX），内件为【物品名称】，价值 '+money(value)+' 元，有订单截图及付款凭证为证。现该快件'+status+'。\n';
+  if(isInsured) out+='该件已保价 '+money(insuredAmt)+' 元，请在 3 个工作日内按保价条款理赔。\n';
+  else out+='该件虽未保价，但依《民法典》第 832 条，贵公司作为承运人应对货物损失承担赔偿责任。快递单上「未保价仅赔运费数倍」的格式条款未以显著方式提示，依《民法典》第 496 条不产生效力。\n';
+  out+='请于 24 小时内联系本人并给出书面理赔方案，否则本人将向国家邮政局（12305）申诉并向消协投诉。联系方式：XXX。\n\n';
+
+  out+='──── 六、行动清单 ────\n';
+  out+='□ 截图保存：单号、物流轨迹（含虚假签收记录）、订单与付款凭证\n';
+  out+='□ 录屏保存物流页面（防止轨迹被修改）\n';
+  out+='□ 若已签收但没收到：立刻找派件员和代收点调监控，录音留证\n';
+  out+='□ 电话沟通一律录音（单方录音在国内合法有效）\n';
+  out+='□ 每次沟通后让对方发文字确认，或自己发总结消息让对方回复「确认」\n';
+  out+='□ 超过 7 天未解决，马上上 12305 申诉\n';
+  out+='□ 所有证据云盘备份一份，别只存手机\n\n';
+
+  if(note){
+    out+='──── 针对你描述的情况 ────\n';
+    out+='你说：'+note+'\n\n';
+    if(/已签收|虚假签收|显示签收/.test(note)) out+='· 「显示已签收但没收到」是最好的突破口：快递公司必须证明【本人签收】或【经你同意的代收】。未经同意放代收点属于违规投递，责任在快递公司。直接要求调取签收底单和派件录音。\n';
+    if(/代收点|驿站|快递柜|门卫/.test(note)) out+='· 快递员未经你同意将快件放代收点/快递柜，违反《快递暂行条例》第 25 条（应投递到约定地址并告知收件人当面验收）。由此造成的丢失，快递公司要担责。\n';
+    if(/没保价|未保价|没有保价/.test(note)) out+='· 未保价是关键不利点，但正如报告所述，民营快递不适用「3 倍资费」上限，坚持主张实际损失，配上付款凭证，多数能谈到 50%-100% 的赔付。\n';
+    if(/手机|电脑|相机|平板|显卡/.test(note)) out+='· 高价值电子产品建议：保留 IMEI 号、序列号、购买发票，一旦被掉包可凭序列号锁定，也能证明价值，大幅提高赔付比例。\n';
+    if(/推诿|不管|拒绝|态度差|踢皮球/.test(note)) out+='· 网点推诿是常态，别在网点层面耗时间，直接上总部工单 + 12305 申诉，两招下去处理速度会明显变化。\n';
+    if(/二手|闲鱼|转卖/.test(note)) out+='· 二手物品的价值证明可以用：闲鱼成交记录、同款在售价格截图、聊天约定价格。法院通常参考市场价认定，不必强求发票。\n';
+    out+='· 核心策略：证据先行 → 总部工单 → 12305 申诉 → 必要时小额诉讼。绝大多数快递纠纷在 12305 这一步就解决了。\n';
+  }
+  out+='\n💡 一句话：快递公司赔多少，不取决于它喊的「几倍运费」，而取决于你能证明物品值多少钱，以及你敢不敢走到 12305。\n';
+  return out;
+}
+function copyResult(){
+  var t=document.getElementById('outputBox').innerText;
+  if(navigator.clipboard){navigator.clipboard.writeText(t).then(function(){alert('已复制到剪贴板 ✅');},function(){fallbackCopy(t);});}
+  else fallbackCopy(t);
+}
+function fallbackCopy(t){
+  var ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');alert('已复制到剪贴板 ✅');}catch(e){alert('复制失败，请手动选中复制');}document.body.removeChild(ta);
+}
+document.getElementById('genBtn').addEventListener('click',function(){
+  var box=document.getElementById('outputBox');
+  box.textContent=gen();
+  document.getElementById('resultArea').classList.add('active');
+  document.getElementById('resultArea').scrollIntoView({behavior:'smooth',block:'start'});
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 空调电费与省电模式优化 | AgentGongju.com</title>
+<meta name="description" content="空调开一晚到底多少钱？输入匹数、温度、电价和房间面积，算出 hourly 耗电与月度电费，并给出实测有效的省电方案。">
+<meta name="keywords" content="空调电费,空调耗电,空调省电,变频空调,一级能效,电费计算,温度设置,26度">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,input[type=text],input[type=number],textarea{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px;box-sizing:border-box}
+textarea{min-height:90px;resize:vertical;line-height:1.7}
+select:focus,input:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;margin-bottom:12px;font-size:.92rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.param-row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+.tips{color:#64748b;font-size:.8rem;line-height:1.7;margin-top:6px}
+@media(max-width:600px){.param-row,.param-row3{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() { var hm = document.createElement("script"); hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949"; var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(hm, s); })();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>❄️ AI 空调电费与省电优化</h1><p>算清每小时耗电与月度电费，给出可落地的省电方案</p></div>
+<div class="card">
+<div class="param-row">
+<div><label>❄️ 空调匹数</label>
+<select id="hp">
+<option value="1">1 匹（小 1P，26 机型，约 10㎡）</option>
+<option value="1.5" selected>1.5 匹（35 机型，约 15-20㎡）</option>
+<option value="2">2 匹（50 机型，约 25-30㎡）</option>
+<option value="3">3 匹（72 机型，约 35-45㎡）</option>
+<option value="5">5 匹（柜机/客厅，55㎡+）</option>
+</select></div>
+<div><label>⚡ 能效等级</label>
+<select id="eff">
+<option value="0.75" selected>一级能效（最省电）</option>
+<option value="0.85">二级能效</option>
+<option value="0.95">三级能效</option>
+<option value="1.15">四级/五级（老机型）</option>
+<option value="1.35">定频老空调（2010 年前）</option>
+</select></div>
+</div>
+<div class="param-row">
+<div><label>🌡 设定温度（℃）</label><input type="number" id="temp" value="26" min="16" max="30"></div>
+<div><label>🌤 室外温度（℃）</label><input type="number" id="outdoor" value="35" min="15" max="48"></div>
+</div>
+<div class="param-row">
+<div><label>🏠 房间面积（㎡）</label><input type="number" id="area" value="18" min="3" max="200"></div>
+<div><label>🪟 房间朝向/西晒</label>
+<select id="sun"><option value="1">阴面/不西晒（good）</option><option value="1.1" selected>普通朝向</option><option value="1.2">西晒/顶楼（更费电）</option></select></div>
+</div>
+<div class="param-row">
+<div><label>⏱ 每天开多少小时</label><input type="number" id="hours" value="8" min="0" max="24"></div>
+<div><label>💴 电价（元/度）</label>
+<select id="price"><option value="0.56" selected>0.56（居民一档，全国常见）</option><option value="0.53">0.53（北京）</option><option value="0.617">0.617（上海）</option><option value="0.68">0.68（广州）</option><option value="0.62">0.62（其他）</option><option value="0.85">0.85（商业电/出租房加价）</option></select></div>
+</div>
+<div class="param-row">
+<div><label>🌙 是否开睡眠模式/ECO</label>
+<select id="eco"><option value="0.8" selected>开（省电）</option><option value="1">不开</option></select></div>
+<div><label>👨‍👩‍👧 使用人数</label>
+<select id="people"><option value="1" selected>1-2 人</option><option value="1.08">3-4 人</option><option value="1.15">5 人以上</option></select></div>
+</div>
+<label>📝 补充情况（可选）</label>
+<textarea id="note" placeholder="例：老房子顶楼西晒，1.5 匹一级能效，晚上 10 点到早上 7 点开 26 度，觉得电费很贵，想知道怎么省"></textarea>
+<button class="btn-gen" id="genBtn">❄️ 计算电费</button>
+<div class="tips">⚠️ 测算基于额定功率与经验系数，实际耗电受房屋密封性、压缩机启停、温度设定影响，会有 ±20% 偏差，仅供参考。</div>
+</div>
+<div class="result-area" id="resultArea">
+<div class="card"><div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制结果</button></div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function money(n){return Math.round(n*100)/100;}
+function gen(){
+  var hp=+document.getElementById('hp').value;
+  var eff=+document.getElementById('eff').value;
+  var temp=+document.getElementById('temp').value||26;
+  var outdoor=+document.getElementById('outdoor').value||35;
+  var area=+document.getElementById('area').value||18;
+  var sun=+document.getElementById('sun').value;
+  var hours=+document.getElementById('hours').value||0;
+  var price=+document.getElementById('price').value;
+  var eco=+document.getElementById('eco').value;
+  var people=+document.getElementById('people').value;
+  var note=document.getElementById('note').value.trim();
+
+  // 制冷量：1匹≈2500W
+  var capacity=hp*2500;
+  // 额定输入功率 ≈ 制冷量 / 能效比(约3.2)，再乘能效系数
+  var ratedPower=capacity/3.2*eff/0.85; // W
+  // 变频空调稳态功耗约为额定的 45%-65%，取决于温差
+  var diff=Math.max(outdoor-temp,3);
+  // 温差每增加1度，负载增加约6%（基准8度）
+  var loadFactor=0.45+ (diff-8)*0.045;
+  loadFactor=Math.max(0.30, Math.min(loadFactor, 1.0));
+  // 面积与匹数不匹配的修正
+  var matchRatio=area/(hp*12); // 1匹约管12㎡
+  var areaFactor=Math.max(0.8, Math.min(matchRatio, 1.8));
+  // 开机初期的全功率阶段（前30分钟约1.0倍）
+  var startExtra=0.25; // 等效额外时长占比
+
+  var steadyW=ratedPower*loadFactor*areaFactor*sun*eco*people;
+  // 每小时实际耗电（含开机拉满阶段）
+  var kwhPerHour=(steadyW*(hours-startExtra>0?hours-startExtra:hours) + ratedPower*Math.min(startExtra,hours))/1000/hours;
+  var kwhTotal=kwhPerHour*hours;
+  var costDay=kwhTotal*price;
+  var costMonth=costDay*30;
+  var costSeason=costMonth*4;
+
+  var out='════ 空调电费与省电报告 ════\n\n';
+  out+='机型：'+hp+' 匹　｜　制冷量约 '+capacity+' W\n';
+  out+='能效：'+(eff<=0.75?'一级能效':eff<=0.85?'二级能效':eff<=0.95?'三级能效':eff<=1.15?'四级/五级':'定频老机')+'\n';
+  out+='设定 '+temp+'℃ vs 室外 '+outdoor+'℃（温差 '+diff+'℃）\n';
+  out+='房间 '+area+' ㎡　｜　每天 '+hours+' 小时　｜　电价 '+price+' 元/度\n\n';
+
+  out+='──── 一、耗电测算 ────\n';
+  out+='额定输入功率（铭牌参考）：约 '+Math.round(ratedPower)+' W\n';
+  out+='实际平均功率：约 '+Math.round(steadyW)+' W\n';
+  out+='👉 每小时耗电：约 '+money(kwhPerHour)+' 度\n';
+  out+='👉 每天耗电：约 '+money(kwhTotal)+' 度\n';
+  out+='👉 每天电费：约 '+money(costDay)+' 元\n';
+  out+='👉 每月电费（30 天）：约 '+money(costMonth)+' 元\n';
+  out+='👉 一个夏天（4 个月）：约 '+money(costSeason)+' 元\n\n';
+
+  // 等效对比
+  out+='💡 换算一下：开一晚（8 小时）约 '+money(kwhPerHour*8)+' 度电，相当于 '+(Math.round(kwhPerHour*8*1000/15)/1000)+' 小时的 15W LED 灯，或连续烧 '+(Math.round(kwhPerHour*8/1.2*10)/10)+' 升水。\n\n';
+
+  out+='──── 二、为什么是这些电费（关键变量）────\n';
+  out+='1. 温差：你设 '+temp+'℃，室外 '+outdoor+'℃。温差每降 1℃，耗电减少约 6%-8%。\n';
+  out+='2. 面积匹配：'+area+' ㎡ 用 '+hp+' 匹，'+ (matchRatio>1.4?'⚠️ 匹数偏小，压缩机长时间满负荷运转，「小马拉大车」反而更费电。':'✅ 匹数匹配合理。') +'\n';
+  out+='3. 西晒/顶楼：'+(sun>1.15?'⚠️ 西晒或顶楼会让房间热负荷增加约 20%，这是硬伤，靠调温补不回来，建议加遮阳。':'✅ 朝向尚可。')+'\n';
+  out+='4. 能效等级：'+(eff>=1.15?'🔴 老机/定频是电费大头。同样制冷量，一级能效比五级省电 30% 以上。':'✅ 能效不错。')+'\n';
+  out+='5. 睡眠模式：'+(eco<1?'✅ 已开启，夜间自动升温可省 20% 左右。':'⚠️ 未开睡眠模式，夜间人体代谢下降，维持低温纯属浪费。')+'\n\n';
+
+  // 省电方案计算
+  var save27=(diff-1)/diff; // 提高1度
+  var saveTemp1=kwhTotal*0.07;
+  var saveEcoOn=(eco>=1)?kwhTotal*0.2:0;
+  var saveClean=kwhTotal*0.05;
+  var saveFilter=kwhTotal*0.08;
+  var saveCurtain=sun>1.15?kwhTotal*0.12:0;
+
+  out+='──── 三、你的省电方案（按性价比排序）────\n';
+  out+='① 温度设到 26-27℃ —— 最省事、效果最大\n';
+  out+='   空调每调高 1℃，耗电减少 6%-8%。从 '+temp+'℃ 调到 27℃，每月省约 '+money(saveTemp1*30*price)+' 元。\n';
+  out+='   26℃ 是国家推荐的夏季空调温度，人体舒适且省电。\n\n';
+  if(eco>=1){
+    out+='② 开启睡眠模式 / ECO 模式\n';
+    out+='   夜间空调会分阶段自动升温 1-2℃，可省电约 20%，每月省约 '+money(kwhTotal*0.2*30*price)+' 元。\n';
+    out+='   遥控器上的「睡眠」键就是它，几乎没人用，但这是最被浪费的省电功能。\n\n';
+  } else {
+    out+='② 保持睡眠模式常开\n';
+    out+='   你已经在用，继续坚持，每月省约 '+money(kwhTotal*0.2*30*price)+' 元。\n\n';
+  }
+  out+='③ 每 2 周清洗一次滤网\n';
+  out+='   滤网堵塞会让风量下降、制冷变慢，压缩机被迫延长运转，耗电增加 5%-10%。\n';
+  out+='   自己拆下来用水冲洗晾干即可，零成本，每月省约 '+money(saveFilter*30*price)+' 元。\n\n';
+  out+='④ 加装遮光窗帘 / 贴隔热膜\n';
+  if(sun>1.15){ out+='   你的房间西晒严重，下午阳光直射会让室温飙升。白天拉上遮阳帘，可降低耗电约 12%，每月省约 '+money(saveCurtain*30*price)+' 元。\n'; }
+  else { out+='   白天拉窗帘能减少约 8% 的冷负荷，每月省约 '+money(kwhTotal*0.08*30*price)+' 元。\n'; }
+  out+='\n';
+  out+='⑤ 配合风扇 / 空气循环扇\n';
+  out+='   风扇本身功耗仅 30-50W，但能让你在 28℃ 下也感到凉爽。空调温度可以再调高 2℃，\n';
+  out+='   二者组合比单独开空调省电约 15%。这是「体感温度」的科学用法：凉的是风，不是数字。\n\n';
+  out+='⑥ 短时间离开（1-2 小时）不要关机\n';
+  out+='   频繁开关机最费电：每次重启压缩机都要全功率运行 10-20 分钟。\n';
+  out+='   出门 1 小时内建议保持开启或调高 2℃，比关机再开更省。\n\n';
+  out+='⑦ 密封门窗、堵住缝隙\n';
+  out+='   门缝窗缝漏冷气，等同于把钱吹到楼下。用密封条/门底挡风条，成本十几元，效果立竿见影。\n\n';
+  out+='⑧ 室外机别被遮挡、每年清洗一次\n';
+  out+='   室外机散热片积灰或被杂物包围，散热效率下降，耗电增加 10% 以上。保持周围 50cm 通风。\n\n';
+
+  var totalSave=saveTemp1+saveFilter+kwhTotal*0.15+(eco>=1?kwhTotal*0.2:0)+saveCurtain;
+  out+='──── 四、省电潜力汇总 ────\n';
+  out+='按上述方案全部执行，每天可省约 '+money(totalSave)+' 度电，\n';
+  out+='👉 每月约省 '+money(totalSave*30*price)+' 元\n';
+  out+='👉 整个夏天约省 '+money(totalSave*30*4*price)+' 元\n';
+  out+='（相当于把电费从每月 '+money(costMonth)+' 元降到约 '+money(Math.max(costMonth-totalSave*30*price,0))+' 元）\n\n';
+
+  out+='──── 五、要不要换空调？算笔账 ────\n';
+  if(eff>=1.15){
+    out+='你的空调是高耗能机型。假设换一台一级能效同匹数空调（售价约 '+ (hp<=1.5?2500:hp<=2?3500:6000) +' 元）：\n';
+    var newCost=costMonth*0.65; // 一级能效约省35%
+    var savePerMonth=costMonth-newCost;
+    var months=Math.ceil((hp<=1.5?2500:hp<=2?3500:6000)/(savePerMonth*4));
+    out+='· 新机每月电费约 '+money(newCost)+' 元，每月省 '+money(savePerMonth)+' 元\n';
+    out+='· 换机成本约 '+(hp<=1.5?2500:hp<=2?3500:6000)+' 元，约需 '+(months>0?months:'—')+' 个夏天的电费才能回本\n';
+    out+='· 参考国家「以旧换新」补贴政策，部分地区可再省 10%-20%\n';
+    if(months<=4) out+='👉 结论：值得换。回本周期短，而且新机更静音、制冷更快。\n';
+    else out+='👉 结论：如果空调还能用，先优化使用习惯更划算；如果已接近寿命（10 年以上）或常出故障，则建议更换。\n';
+  } else {
+    out+='你的空调能效尚可，暂无必要为省电而更换。如需换机，优先看「新一级能效」标识和 APF 值（数值越高越省电）。\n';
+    out+='选购提示：房间面积 × 150W = 所需制冷量。例如 18㎡ × 150W = 2700W，选 1.5 匹（3500W）足够且有余量，不要盲目买大。\n';
+  }
+  out+='\n';
+
+  out+='──── 六、常见省电谣言（别信）────\n';
+  out+='❌ 「空调开除湿模式更省电」——除湿模式制冷量小，长时间用反而更耗电，只在潮湿天气短暂使用。\n';
+  out+='❌ 「一直开着更省电」——仅适用于短时离开（1 小时内），长时间外出必须关机。\n';
+  out+='❌ 「风速调小就省电」——风速只影响风机功耗（几十瓦），对压缩机没影响，还降低舒适度。建议自动风速。\n';
+  out+='❌ 「把温度调到 16℃ 冷得快」——降温速度取决于制冷量，设在 16℃ 只是让压缩机不停机，结果是更费电且过冷。\n';
+  out+='❌ 「加氟/雪种能省电」——只有缺氟（制冷效果差）时才需要，正常空调加氟不但不省电还可能损坏压缩机。\n\n';
+
+  out+='──── 七、你的行动清单 ────\n';
+  out+='□ 今天：把温度从 '+temp+'℃ 调到 27℃（或 26℃）\n';
+  out+='□ 今天：按下遥控器「睡眠」键\n';
+  out+='□ 本周末：拆下滤网冲洗晾干\n';
+  out+='□ 本周末：检查门窗缝隙，贴上密封条\n';
+  out+='□ 本月：清洗一次室外机散热片\n';
+  out+='□ 本月：检查电表，记录一周用电量，对比计算值验证\n';
+  out+='□ 长期：白天拉遮阳帘；配一台空气循环扇\n\n';
+
+  if(note){
+    out+='──── 针对你的情况 ────\n';
+    out+='你说：'+note+'\n\n';
+    if(/顶楼|西晒|晒/.test(note)) out+='· 顶楼西晒是耗电主因之一，热负荷比普通房间高 20%-30%。优先级排序：加遮阳帘（今天就能做）> 屋顶隔热（长效）> 降低设定温度（没用，只会更贵）。\n';
+    if(/老|旧|十几年|很多年/.test(note)) out+='· 老空调的能效衰减很严重：使用 8 年以上，实际能耗可能比铭牌高 20%-30%。可以考虑以旧换新，同时享受国家补贴。\n';
+    if(/电费很贵|电费高|太贵|吃不消/.test(note)) out+='· 如果电费异常高，先做一次验证：单独记录空调运行前后 1 小时的电表读数，算出实际每小时耗电，和本报告测算值对比。若远高于测算值，可能是空调缺氟、滤网严重堵塞，或线路/电表有问题。\n';
+    if(/出租|房东|商业电/.test(note)) out+='· ⚠️ 出租房常见「电费加价」（收 1 元/度甚至 1.5 元/度）。按规定应转供电不加价，加价部分可向 12345 或市场监管局投诉。参考：本报告按 0.85 元/度计算，电价翻倍电费也翻倍。\n';
+    if(/晚上|通宵|一夜|睡觉/.test(note)) out+='· 夜间通宵建议：设定 27℃ + 睡眠模式 + 定时关机 2 小时前（利用余冷）。人体睡眠时对温度不敏感，27℃ 睡眠模式的体感接近白天 25℃。\n';
+    if(/宝宝|孩子|老人|婴儿/.test(note)) out+='· 有老人小孩时不要一味追求省电：建议 26-27℃，避免直吹，可开除湿档短暂改善闷热感。健康优先于省电。\n';
+    out+='· 记住省电优先级：遮阳 > 温度设定 > 睡眠模式 > 滤网清洁 > 密封 > 外机清洁。前两项就能省一半。\n';
+  }
+  out+='\n💡 一句话：空调电费 = 温差 × 面积不匹配 × 使用习惯。把温度调高 1℃、开着睡眠模式、清一次滤网，这三件小事就能省下三成电费。\n';
+  return out;
+}
+function copyResult(){
+  var t=document.getElementById('outputBox').innerText;
+  if(navigator.clipboard){navigator.clipboard.writeText(t).then(function(){alert('已复制到剪贴板 ✅');},function(){fallbackCopy(t);});}
+  else fallbackCopy(t);
+}
+function fallbackCopy(t){
+  var ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');alert('已复制到剪贴板 ✅');}catch(e){alert('复制失败，请手动选中复制');}document.body.removeChild(ta);
+}
+document.getElementById('genBtn').addEventListener('click',function(){
+  var box=document.getElementById('outputBox');
+  box.textContent=gen();
+  document.getElementById('resultArea').classList.add('active');
+  document.getElementById('resultArea').scrollIntoView({behavior:'smooth',block:'start'});
+});
+</script>
+</body>
+</html>
