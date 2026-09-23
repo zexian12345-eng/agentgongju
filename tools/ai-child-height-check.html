@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 孩子身高体重生长发育评估 | AgentGongju.com</title>
+<meta name="description" content="孩子身高偏矮吗？输入性别、年龄、身高体重，对照国内参考标准算出身高体重百分位，给出饮食、睡眠、运动的具体追赶建议。">
+<meta name="keywords" content="孩子身高,儿童身高标准,身高百分位,生长发育,孩子长高,骨龄">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,input[type=text],input[type=number],textarea{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px;box-sizing:border-box}
+select:focus,input:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;margin-bottom:12px;font-size:.92rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.tips{color:#64748b;font-size:.8rem;line-height:1.7;margin-top:6px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() { var hm = document.createElement("script"); hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949"; var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(hm, s); })();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📏 AI 孩子身高体重评估</h1><p>对照国内参考标准，看孩子长得够不够</p></div>
+<div class="card">
+<div class="param-row">
+<div><label>👦 性别</label>
+<select id="sex"><option value="m" selected>男孩</option><option value="f">女孩</option></select></div>
+<div><label>🎂 年龄（周岁）</label>
+<input type="number" id="age" value="8" min="2" max="18" step="0.5"></div>
+</div>
+<div class="param-row">
+<div><label>📐 身高（厘米）</label>
+<input type="number" id="h" value="128" min="50" max="210" step="0.1"></div>
+<div><label>⚖️ 体重（公斤）</label>
+<input type="number" id="w" value="26" min="5" max="150" step="0.1"></div>
+</div>
+<div class="param-row">
+<div><label>👨 爸爸身高（厘米，可填 0）</label>
+<input type="number" id="fh" value="172" min="0" max="220" step="1"></div>
+<div><label>👩 妈妈身高（厘米，可填 0）</label>
+<input type="number" id="mh" value="160" min="0" max="220" step="1"></div>
+</div>
+<div class="param-row">
+<div><label>😴 每天睡多久</label>
+<select id="sleep">
+<option value="lt8">不足 8 小时</option>
+<option value="8_9">8-9 小时</option>
+<option value="9_10" selected>9-10 小时</option>
+<option value="gt10">10 小时以上</option>
+</select></div>
+<div><label>🏃 运动情况</label>
+<select id="sport">
+<option value="rare">几乎不运动</option>
+<option value="some" selected>每周 1-2 次</option>
+<option value="much">每周 3 次以上，有跳跃类运动</option>
+</select></div>
+</div>
+<div><label>🍚 胃口和挑食情况</label>
+<select id="diet">
+<option value="picky">挑食，吃得少</option>
+<option value="normal" selected>正常</option>
+<option value="much">吃得偏多，爱吃零食饮料</option>
+</select></div>
+<div class="tips">💡 参考国家卫健委《7 岁以下儿童生长标准》及常用儿童青少年身高体重参考值（P3-P97 为正常范围）。本工具为参考估算，不替代医生诊断。</div>
+<button class="btn-gen" id="genBtn">📏 生成评估报告</button>
+</div>
+<div class="result-area" id="resultArea">
+<div class="card"><div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制报告</button></div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+// 男孩身高参考值（厘米）：[年龄, P3, P10, P25, P50, P75, P90, P97]
+var HB=[
+[2,81.0,84.0,86.5,89.0,91.5,94.0,96.5],
+[3,89.0,92.0,94.5,97.0,99.5,102.5,105.0],
+[4,95.5,99.0,101.5,104.0,107.0,110.0,113.0],
+[5,101.5,105.0,108.0,111.0,114.0,117.0,120.0],
+[6,107.5,111.5,114.5,117.5,121.0,124.5,128.0],
+[7,113.5,117.5,121.0,124.0,127.5,131.5,135.0],
+[8,119.0,123.5,127.0,130.5,134.5,138.5,142.5],
+[9,124.0,128.5,132.5,136.0,140.5,145.0,149.5],
+[10,128.5,133.5,138.0,142.0,146.5,151.5,156.5],
+[11,133.5,138.5,143.5,148.0,153.0,158.5,164.0],
+[12,139.0,145.0,150.5,156.0,161.5,167.5,173.5],
+[13,146.5,153.0,158.5,164.0,169.5,175.0,180.5],
+[14,154.0,160.0,165.0,170.0,175.0,180.0,185.0],
+[15,160.0,165.5,170.0,174.5,179.0,183.5,188.0],
+[16,164.0,169.0,173.0,177.0,181.0,185.0,189.0],
+[17,166.5,171.0,175.0,178.5,182.5,186.0,190.0],
+[18,168.0,172.5,176.0,180.0,183.5,187.0,191.0]
+];
+// 女孩身高参考值
+var HG=[
+[2,79.5,82.5,85.0,87.5,90.0,92.5,95.0],
+[3,87.5,90.5,93.0,95.5,98.5,101.0,104.0],
+[4,94.0,97.0,99.5,102.5,105.5,108.5,111.5],
+[5,99.5,103.0,106.0,109.0,112.0,115.5,119.0],
+[6,105.5,109.0,112.0,115.5,119.0,122.5,126.0],
+[7,111.0,115.0,118.5,122.0,125.5,129.5,133.5],
+[8,116.5,120.5,124.0,128.0,131.5,136.0,140.5],
+[9,122.0,126.5,130.5,134.0,138.5,143.0,148.0],
+[10,127.5,132.5,137.0,141.0,146.0,151.0,156.5],
+[11,133.5,139.0,144.0,148.5,153.5,159.0,165.0],
+[12,140.5,146.0,151.0,155.5,160.5,166.0,172.0],
+[13,146.5,151.5,156.0,160.5,165.0,169.5,175.0],
+[14,150.5,155.0,159.0,163.0,167.0,171.5,176.5],
+[15,153.0,157.0,161.0,164.5,168.5,172.5,177.5],
+[16,154.5,158.5,162.0,165.5,169.0,173.0,177.5],
+[17,155.0,159.0,162.5,166.0,169.5,173.5,177.5],
+[18,155.5,159.5,163.0,166.5,170.0,174.0,178.0]
+];
+function pctLevel(v,row){
+ var names=['P3','P10','P25','P50','P75','P90','P97'];
+ var vals=row.slice(1);
+ if(v<vals[0])return{txt:'低于 P3',idx:-1};
+ if(v>vals[6])return{txt:'高于 P97',idx:7};
+ for(var i=0;i<6;i++){if(v>=vals[i]&&v<=vals[i+1])return{txt:'约 '+names[i]+'~'+names[i+1]+' 之间',idx:i+1};}
+ return{txt:'约 P50 附近',idx:3};
+}
+function gen(){
+ var sex=document.getElementById('sex').value;
+ var age=parseFloat(document.getElementById('age').value)||0;
+ var h=parseFloat(document.getElementById('h').value)||0;
+ var w=parseFloat(document.getElementById('w').value)||0;
+ var fh=parseFloat(document.getElementById('fh').value)||0;
+ var mh=parseFloat(document.getElementById('mh').value)||0;
+ var sleep=document.getElementById('sleep').value;
+ var sport=document.getElementById('sport').value;
+ var diet=document.getElementById('diet').value;
+ var table=(sex==='m'?HB:HG);
+ var ai=Math.round(Math.max(2,Math.min(18,age)))-2;
+ if(ai<0)ai=0; if(ai>table.length-1)ai=table.length-1;
+ var row=table[ai];
+ var out='════ 生长发育参考评估 ════\n\n';
+ out+='性别：'+(sex==='m'?'男孩':'女孩')+' ｜ 年龄：'+age+' 周岁\n';
+ out+='身高：'+h+' cm ｜ 体重：'+w+' kg\n\n';
+ var lv=pctLevel(h,row);
+ var p50=row[4];
+ out+='──── 📐 身高评估 ────\n';
+ out+='该年龄段身高参考中位数（P50）：'+p50+' cm\n';
+ out+='你家孩子身高所处水平：'+lv.txt+'\n';
+ var diff=(h-p50).toFixed(1);
+ out+='与中位数相差：'+(diff>=0?'+':'')+diff+' cm\n\n';
+ var flag='';
+ if(lv.idx===-1){flag='low';out+='⚠️ 低于 P3：属于同龄中偏矮，建议尽早在儿童保健科/内分泌科做一次专业评估（含生长曲线追踪、必要时骨龄检测）。\n';}
+ else if(lv.idx<=1){flag='lowmid';out+='🟡 处于 P3-P25：偏矮区间。不一定是问题，但值得重点关注和干预，先看增长速度。\n';}
+ else if(lv.idx>=7){out+='✅ 高于 P97：明显高个。多数是好事，但如果年增长突然异常加速，也建议查一下。\n';}
+ else{out+='✅ 处于正常范围（P25-P97）：不用焦虑，保持现有节奏即可。\n';}
+ out+='\n──── 📈 比"排位"更重要的是"增长速度" ────\n';
+ out+='· 3 岁到青春期前：每年应长 5-7 cm；\n';
+ out+='· 青春期猛长期：每年 7-10 cm；\n';
+ out+='· 如果连续 1 年增长不足 5 cm，即使身高还在正常范围，也应就医排查。\n';
+ out+='💡 建议每 3 个月固定时间（早晨）量一次并记录，画出自己的生长曲线，比单位百分位更有意义。\n\n';
+ if(fh>0&&mh>0){
+   var th=(fh+mh+(sex==='m'?13:-13))/2;
+   out+='──── 🧬 遗传身高参考 ────\n';
+   out+='按父母身高估算的遗传靶身高：约 '+th.toFixed(1)+' cm（±5 cm 属正常波动）\n';
+   out+='这只是"潜力区间"的中位估计，后天环境决定能兑现多少。\n';
+   if(h<p50-6&&th>p50+3)out+='👀 注意：遗传潜力不低，但当前身高明显落后，说明后天因素（睡眠/营养/疾病）可能在拖后腿，值得重视。\n';
+   else if(h>=th-2)out+='👏 当前身高已接近或达到遗传潜力水平，说明养育得当。\n';
+   out+='\n';
+ }
+ out+='──── 🎯 针对性建议 ────\n';
+ if(sleep==='lt8'){out+='😴 睡眠：这是最关键的短板！生长激素分泌高峰在夜间 22:00-2:00 的深睡期。学龄儿童应保证 9-11 小时睡眠，尽量 21:30 前上床入睡。\n';}
+ else if(sleep==='8_9'){out+='😴 睡眠：基本达标但可以再早一点。学龄期理想是 9-10 小时，试着把入睡时间提前 30 分钟，效果可能比补营养更明显。\n';}
+ else{out+='😴 睡眠：达标，继续保持。作息规律（固定时间睡起）比单纯睡够更重要。\n';}
+ if(sport==='rare'){out+='🏃 运动：太少了。跳跃类纵向运动对身高促进最直接——跳绳（每天 1000-1500 个）、摸高、打篮球、羽毛球。每天至少 1 小时中等强度活动。\n';}
+ else if(sport==='some'){out+='🏃 运动：建议增加到每周 3-5 次，重点是跳绳/摸高一类的纵向弹跳运动，而不是只做跑步。\n';}
+ else{out+='🏃 运动：很棒。跳绳 + 摸高 + 篮球的组合，是性价比最高的"助长运动"，注意别过量（每天 60-90 分钟足够）。\n';}
+ if(diet==='picky'){out+='🍚 饮食：挑食要重点解决。保证每天 300-500ml 奶制品、1 个鸡蛋、手掌大小的肉，蛋白质和钙是长高的原料。缺锌会明显影响食欲，长期挑食可查一下微量元素。\n';}
+ else if(diet==='much'){out+='🍚 饮食：注意别让孩子"横向发展"。要警惕含糖饮料、油炸和过量主食——肥胖会让骨龄提前，反而压缩长高时间（性早熟风险）。\n';}
+ else{out+='🍚 饮食：正常即可。记住"奶、蛋、肉、豆、深色蔬菜"每天都要有，不必迷信增高药、增高贴、保健品，没有科学依据。\n';}
+ out+='\n──── ⚠️ 什么情况必须去医院 ────\n';
+ out+='· 身高长期低于 P3 或明显落后同龄；\n';
+ out+='· 连续一年增长不足 5 cm；\n';
+ out+='· 明显比同龄人早发育（女孩 8 岁前乳房发育、男孩 9 岁前睾丸增大）；\n';
+ out+='· 身高远超同龄且增长突然加速（排查性早熟/内分泌问题）。\n';
+ out+='检查科室：儿童保健科或儿科内分泌科，通常查生长曲线、骨龄片、生长激素激发试验等。\n\n';
+ out+='💡 骨龄是判断"还能长多久"的金标准。青春期前干预空间大，别等到闭合才着急。\n\n';
+ out+='──── 📌 免责声明 ────\n';
+ out+='本工具基于公开的儿童生长发育参考值做估算，仅供参考，不能代替医生面诊和临床检查。如有疑虑请及时就医。';
+ return out;
+}
+</script>
+<script>
+document.getElementById('genBtn').addEventListener('click',function(){
+if(!Paywall.countUse('AI 孩子身高体重生长发育评估 | AgentGongju.com'))return;
+document.getElementById('outputBox').innerText=gen();
+document.getElementById('resultArea').classList.add('active');
+});
+function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(function(){alert('✅ 已复制！')})}
+</script>
+</body>
+</html>
