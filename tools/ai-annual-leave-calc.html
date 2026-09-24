@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 年假天数与未休折算计算器 | AgentGongju.com</title>
+<meta name="description" content="输入入职日期、累计工作年限和已休天数，自动算出法定年假天数、剩余天数、未休年假3倍工资补偿金额及维权依据。">
+<meta name="keywords" content="年假计算,带薪年休假,未休年假补偿,3倍工资,工龄年假,年休假条例">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,input[type=text],input[type=number],input[type=date],textarea{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px;box-sizing:border-box}
+textarea{min-height:90px;resize:vertical;line-height:1.7}
+select:focus,input:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;margin-bottom:12px;font-size:.92rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.tips{color:#64748b;font-size:.8rem;line-height:1.7;margin-top:6px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() { var hm = document.createElement("script"); hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949"; var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(hm, s); })();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🏖 AI 年假天数计算器</h1><p>算清你有几天年假、还剩几天、不休能拿多少钱</p></div>
+<div class="card">
+<div class="param-row">
+<div><label>📅 入职本公司日期</label><input type="date" id="joinDate"></div>
+<div><label>📆 查询截止日期</label><input type="date" id="endDate"></div>
+</div>
+<div class="param-row">
+<div><label>🎯 累计工作年限（含前公司）</label>
+<select id="years">
+<option value="1">满1年不满10年</option>
+<option value="10">满10年不满20年</option>
+<option value="20">满20年以上</option>
+<option value="0" selected>不满1年（刚工作）</option>
+</select></div>
+<div><label>🛏 本年度已休年假（天）</label><input type="number" id="used" value="0" min="0" max="30" step="0.5"></div>
+</div>
+<div class="param-row">
+<div><label>💵 月薪（税前，用于折算补偿）</label><input type="number" id="salary" value="12000" min="1000" max="300000"></div>
+<div><label>🚪 是否准备离职</label>
+<select id="leave"><option value="0" selected>还在职，只是问问</option><option value="1">准备离职，想主张补偿</option></select></div>
+</div>
+<label>📝 补充情况（可选）</label>
+<textarea id="note" placeholder="例：公司规定年假当年作废，我2023年还有5天没休，现在要离职能要回来吗"></textarea>
+<button class="btn-gen" id="genBtn">🏖 计算年假与补偿</button>
+<div class="tips">⚠️ 依据《职工带薪年休假条例》：累计工作满1年不满10年享5天，满10年不满20年享10天，满20年享15天。单位应支付未休年假300%工资（含正常工资，即额外2倍）。</div>
+</div>
+<div class="result-area" id="resultArea">
+<div class="card"><div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制结果</button></div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function money(n){return Math.round(n*100)/100;}
+function gen(){
+  var joinV=document.getElementById('joinDate').value;
+  var endV=document.getElementById('endDate').value;
+  var years=+document.getElementById('years').value;
+  var used=+document.getElementById('used').value||0;
+  var sal=+document.getElementById('salary').value||0;
+  var leave=+document.getElementById('leave').value;
+  var note=document.getElementById('note').value.trim();
+
+  var out="";
+  var join = joinV? new Date(joinV) : null;
+  var end = endV? new Date(endV) : new Date();
+
+  var baseDays = 0;
+  if(years===1) baseDays=5;
+  else if(years===10) baseDays=10;
+  else if(years===20) baseDays=15;
+  else baseDays=0;
+
+  out+="【基本结论】\n";
+  if(baseDays===0){
+    out+="⚠️ 累计工作不满1年，暂不享受法定带薪年休假。\n";
+    out+="· 需连续工作满12个月以上才开始享受，第一年按在本单位剩余日历天数折算。\n";
+  } else {
+    out+="✅ 你的法定年假标准：每年 "+baseDays+" 天（累计工作年限对应档位）\n";
+  }
+
+  var monthsIn=0, remainDays=baseDays, thisYearQuota=baseDays;
+  if(join && years>0){
+    var y = end.getFullYear();
+    // 在本单位本年度已过的日历天数
+    var startY = new Date(Math.max(join.getTime(), new Date(y,0,1).getTime()));
+    var daysThisYear = Math.floor((end - startY)/86400000)+1;
+    if(daysThisYear>366) daysThisYear=366;
+    thisYearQuota = Math.round(daysThisYear/365*baseDays*10)/10;
+    out+="\n【本年度折算】\n";
+    out+="· 本年度在本单位日历天数："+daysThisYear+" 天\n";
+    out+="· 折算应享年假："+thisYearQuota+" 天（"+daysThisYear+"/365 × "+baseDays+"）\n";
+  }
+  remainDays = Math.max(0, Math.round((thisYearQuota-used)*10)/10);
+  out+="\n【使用情况】\n";
+  out+="· 已休："+used+" 天\n";
+  out+="· 剩余可用："+remainDays+" 天\n";
+
+  var dayPay = sal/21.75;
+  var comp = remainDays * dayPay * 2;   // 额外2倍部分
+  out+="\n【未休年假折算】\n";
+  out+="· 日工资（月薪÷21.75）：¥"+money(dayPay)+"\n";
+  if(remainDays>0){
+    out+="· 若年底作废/离职未休，公司应额外补偿：约 ¥"+money(comp)+"\n";
+    out+="  （按300%计算，其中100%已含在正常工资里，额外再给200%）\n";
+    out+="· 若按全额300%口径（部分仲裁委支持）：约 ¥"+money(remainDays*dayPay*3)+"\n";
+  } else {
+    out+="· 本年度年假已休完，暂无可主张补偿。\n";
+  }
+
+  out+="\n—— 维权要点 ——\n";
+  out+="1. 年假可跨年安排，公司"当年不休即作废"的规定无效，除非书面征得你本人同意。\n";
+  out+="2. 离职时未休年假，公司必须按日工资200%额外补偿，不得以"调休"名义拒绝。\n";
+  out+="3. 仲裁时效：一般自知道权利被侵害之日起1年内，离职的从离职之日起算。\n";
+  if(leave===1) out+="4. 离职前务必截图考勤系统里的年假余额，这是最关键的证据。\n";
+  if(note) out+="\n📝 你的情况："+note+"\n建议按上述金额向HR提出主张，协商不成可向劳动仲裁委申请仲裁（免费）。\n";
+  return out;
+}
+function run(){
+  var box=document.getElementById('outputBox');
+  box.textContent=gen();
+  document.getElementById('resultArea').classList.add('active');
+  box.scrollIntoView({behavior:'smooth',block:'center'});
+}
+function copyResult(){
+  navigator.clipboard.writeText(document.getElementById('outputBox').textContent).then(function(){alert('已复制到剪贴板');});
+}
+// 默认填充日期
+(function(){
+  var d=new Date();
+  document.getElementById('endDate').value=d.toISOString().slice(0,10);
+  var j=new Date(); j.setFullYear(j.getFullYear()-2);
+  document.getElementById('joinDate').value=j.toISOString().slice(0,10);
+})();
+document.getElementById('genBtn').addEventListener('click',run);
+</script>
+</body>
+</html>

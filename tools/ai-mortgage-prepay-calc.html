@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 房贷提前还款测算器 | AgentGongju.com</title>
+<meta name="description" content="输入剩余本金、利率和剩余期数，对比"缩短年限"与"减少月供"两种提前还款方式，算出能省多少利息，附决策建议。">
+<meta name="keywords" content="房贷提前还款,提前还贷划算吗,等额本息,缩短年限,减少月供,省多少利息">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,input[type=text],input[type=number],textarea{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px;box-sizing:border-box}
+textarea{min-height:90px;resize:vertical;line-height:1.7}
+select:focus,input:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;margin-bottom:12px;font-size:.92rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.tips{color:#64748b;font-size:.8rem;line-height:1.7;margin-top:6px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() { var hm = document.createElement("script"); hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949"; var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(hm, s); })();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🏠 AI 房贷提前还款测算器</h1><p>提前还一笔钱，到底能省多少利息？缩短年限 vs 减少月供</p></div>
+<div class="card">
+<div class="param-row">
+<div><label>💰 剩余本金（元）</label><input type="number" id="principal" value="800000" min="1000" max="20000000"></div>
+<div><label>📉 当前年利率（%）</label><input type="number" id="rate" value="4.2" min="0.1" max="24" step="0.05"></div>
+</div>
+<div class="param-row">
+<div><label>📆 剩余还款期数（月）</label><input type="number" id="months" value="240" min="1" max="480"></div>
+<div><label>💳 计划提前还款金额（元）</label><input type="number" id="prepay" value="100000" min="100" max="20000000"></div>
+</div>
+<div class="param-row">
+<div><label>📐 还款方式</label>
+<select id="method"><option value="1" selected>等额本息（每月还一样）</option><option value="2">等额本金（递减）</option></select></div>
+<div><label>🏦 是否等额本金时的当前月供（选填）</label><input type="number" id="curPay" value="0" min="0" max="200000"></div>
+</div>
+<label>📝 你的情况（可选）</label>
+<textarea id="note" placeholder="例：2021年贷款100万，利率4.2%，已还3年，手里有10万闲钱，理财收益3%左右，要不要提前还"></textarea>
+<button class="btn-gen" id="genBtn">🏠 测算提前还款</button>
+<div class="tips">⚠️ 本工具按按月计息、月利率=年利率/12 估算，结果与实际银行计算可能有小幅出入；提前还款是否收违约金请咨询贷款行。</div>
+</div>
+<div class="result-area" id="resultArea">
+<div class="card"><div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制结果</button></div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function money(n){return Math.round(n*100)/100;}
+function fmt(n){return Math.round(n).toLocaleString();}
+// 等额本息月供
+function pmt(P,r,n){ if(r===0) return P/n; return P*r*Math.pow(1+r,n)/(Math.pow(1+r,n)-1); }
+// 计算总利息
+function totalInterest(P,r,n,pay){ // pay=每月还款额
+  var bal=P, interest=0, i;
+  for(i=0;i<n && bal>0.01;i++){
+    var int=bal*r;
+    var prin=Math.min(pay-int, bal);
+    if(prin<=0) return Infinity;
+    interest+=int; bal-=prin;
+  }
+  return interest;
+}
+function gen(){
+  var P=+document.getElementById('principal').value||0;
+  var rateY=+document.getElementById('rate').value||0;
+  var n=+document.getElementById('months').value||0;
+  var prepay=+document.getElementById('prepay').value||0;
+  var method=+document.getElementById('method').value;
+  var curPay=+document.getElementById('curPay').value||0;
+  var note=document.getElementById('note').value.trim();
+  var r=rateY/100/12;
+
+  var out="";
+  if(P<=0||n<=0||rateY<=0){ out="请填写有效的剩余本金、利率和剩余期数。"; return out; }
+  if(prepay>=P) prepay=P-1;
+
+  var pay0 = (method===1)? pmt(P,r,n) : (curPay>0?curPay: P/n + P*r);
+  var interestBefore = totalInterest(P,r,n,pay0);
+
+  out+="【当前贷款状况】\n";
+  out+="· 剩余本金：¥"+fmt(P)+"\n";
+  out+="· 当前月供：约 ¥"+money(pay0)+"\n";
+  out+="· 剩余期数："+n+" 个月（约"+ (n/12).toFixed(1) +" 年）\n";
+  out+="· 若正常还完，剩余利息约：¥"+fmt(interestBefore)+"\n";
+
+  // 方式一：缩短年限，月供基本不变
+  var Pb=P-prepay;
+  var n1=0, bal=Pb, interest1=0;
+  var k=0;
+  while(bal>0.01 && k<600){
+    var int=bal*r; var prin=Math.min(pay0-int, bal);
+    if(prin<=0){ prin=bal; }
+    interest1+=int; bal-=prin; k++;
+  }
+  n1=k;
+  // 方式二：减少月供，期数不变
+  var pay2=(method===1)? pmt(Pb,r,n) : (Pb/n + Pb*r);
+  var interest2=totalInterest(Pb,r,n,pay2);
+
+  out+="\n【方案一：缩短年限，月供不变】\n";
+  out+="· 提前还 ¥"+fmt(prepay)+" 后剩余期数："+n1+" 个月\n";
+  out+="· 比原来少还 "+(n-n1)+" 个月（约"+((n-n1)/12).toFixed(1)+" 年）\n";
+  out+="· 节省利息：¥"+fmt(interestBefore-interest1)+"\n";
+
+  out+="\n【方案二：减少月供，期数不变】\n";
+  out+="· 新月供：约 ¥"+money(pay2)+"（每月少还 ¥"+money(pay0-pay2)+"）\n";
+  out+="· 节省利息：¥"+fmt(interestBefore-interest2)+"\n";
+
+  var diff=(interest1<interest2)? (interest2-interest1) : 0;
+  out+="\n【结论】\n";
+  out+="✅ 节省利息更多：「"+(interest1<=interest2?"缩短年限":"减少月供")+"」，多省约 ¥"+fmt(Math.abs(interest2-interest1))+"\n";
+  out+="· 缩短年限适合：收入稳定、月供无压力、想尽早无债一身轻\n";
+  out+="· 减少月供适合：现金流紧张、想降低每月压力或预计未来收入下降\n";
+
+  out+="\n—— 要不要提前还？——\n";
+  out+="· 核心对比：房贷利率 "+rateY+"% vs 你的理财年化收益。理财跑不赢贷款利率，提前还就更划算。\n";
+  if(rateY>=4) out+="· 当前利率 "+rateY+"% 偏高，若有闲钱且无更好投资渠道，提前还款性价比高。\n";
+  else out+="· 当前利率 "+rateY+"% 已较低，若理财能稳定超过此收益，钱不如留在手里。\n";
+  out+="· 别忘了确认：是否有提前还款违约金、每年可还次数限制、是否有最低还款额要求。\n";
+  out+="· 若公积金贷款且利率很低（3%以下），通常不建议提前还，留着更划算。\n";
+  if(note) out+="\n📝 你的情况："+note+"\n建议结合上面两条方案金额，优先选节省利息更多的「缩短年限」。\n";
+  return out;
+}
+function run(){
+  var box=document.getElementById('outputBox');
+  box.textContent=gen();
+  document.getElementById('resultArea').classList.add('active');
+  box.scrollIntoView({behavior:'smooth',block:'center'});
+}
+function copyResult(){
+  navigator.clipboard.writeText(document.getElementById('outputBox').textContent).then(function(){alert('已复制到剪贴板');});
+}
+document.getElementById('genBtn').addEventListener('click',run);
+</script>
+</body>
+</html>

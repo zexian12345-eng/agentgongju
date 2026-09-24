@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 工资到手计算器（五险一金+个税） | AgentGongju.com</title>
+<meta name="description" content="输入税前月薪和城市，自动算出五险一金个人缴纳、个税、税后到手工资，附专项附加扣除估算与薪资谈判话术。">
+<meta name="keywords" content="工资到手计算,税后工资,五险一金,个税计算,专项附加扣除,到手工资">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,input[type=text],input[type=number],textarea{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px;box-sizing:border-box}
+textarea{min-height:90px;resize:vertical;line-height:1.7}
+select:focus,input:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;margin-bottom:12px;font-size:.92rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.tips{color:#64748b;font-size:.8rem;line-height:1.7;margin-top:6px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() { var hm = document.createElement("script"); hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949"; var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(hm, s); })();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>💴 AI 工资到手计算器</h1><p>税前月薪 → 五险一金 → 个税 → 真正到手多少钱</p></div>
+<div class="card">
+<div class="param-row">
+<div><label>💰 税前月薪（元）</label><input type="number" id="salary" value="15000" min="1000" max="500000"></div>
+<div><label>🏙 所在城市（社保基数参考）</label>
+<select id="city">
+<option value="0.10" selected>一线（北上广深）</option>
+<option value="0.085">新一线（杭成武宁）</option>
+<option value="0.07">二线（省会）</option>
+<option value="0.055">三四线及以下</option>
+</select></div>
+</div>
+<div class="param-row">
+<div><label>🏦 公积金缴纳比例</label>
+<select id="fund"><option value="0.05">5%（最低）</option><option value="0.07" selected>7%</option><option value="0.12">12%（最高）</option><option value="0">不缴公积金</option></select></div>
+<div><label>📊 年终奖（元，可选）</label><input type="number" id="bonus" value="0" min="0" max="1000000"></div>
+</div>
+<label>👨‍👩‍👧 专项附加扣除（勾选适用项，每月合计）</label>
+<select id="special">
+<option value="0">暂无 / 不清楚</option>
+<option value="1000">一个子女教育（1000）</option>
+<option value="2000">两个及以上子女教育（2000）</option>
+<option value="1500">独生子女赡养老人（3000）</option>
+<option value="1000">非独生赡养老人（分摊1000）</option>
+<option value="1000">住房贷款利息（1000）</option>
+<option value="1500">租房租金·一线（1500）</option>
+<option value="1100">住房贷款 1000 + 子女教育 1000 等自填</option>
+</select>
+<label>📝 你的情况（可选，用于给出谈薪建议）</label>
+<textarea id="note" placeholder="例：刚拿到offer，HR说月薪15000，想知道实际到手多少，另外有房贷和1个孩子"></textarea>
+<button class="btn-gen" id="genBtn">💴 算算到手工资</button>
+<div class="tips">⚠️ 各城市社保基数上下限与比例略有差异，本工具按常见比例估算。公积金为个人账户余额，严格说仍属于你的钱。</div>
+</div>
+<div class="result-area" id="resultArea">
+<div class="card"><div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制结果</button></div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function money(n){return Math.round(n*100)/100;}
+function calcTax(taxable){
+  var t;
+  if(taxable<=0) return 0;
+  if(taxable<=3000) t=taxable*0.03;
+  else if(taxable<=12000) t=taxable*0.10-210;
+  else if(taxable<=25000) t=taxable*0.20-1410;
+  else if(taxable<=35000) t=taxable*0.25-2660;
+  else if(taxable<=55000) t=taxable*0.30-4410;
+  else if(taxable<=80000) t=taxable*0.35-7160;
+  else t=taxable*0.45-15160;
+  return Math.max(0,t);
+}
+function gen(){
+  var sal=+document.getElementById('salary').value||0;
+  var rate=+document.getElementById('city').value;
+  var fund=+document.getElementById('fund').value;
+  var special=+document.getElementById('special').value||0;
+  var note=document.getElementById('note').value.trim();
+
+  // 社保基数上下限（按当地平均工资粗估）
+  var avg=sal;
+  var low=Math.max(3000,Math.round(sal*0.6));
+  var high=Math.round(sal*3);
+  var base=Math.min(Math.max(sal,low),high);
+  if(sal>60000) base=Math.min(sal, high);
+
+  var pension=base*0.08;   // 养老 8%
+  var medical=base*0.02;   // 医疗 2%
+  var unemp=base*0.005;    // 失业 0.5%
+  var social=pension+medical+unemp;
+  var fundAmt=base*fund;
+
+  var monthlyDeduct=5000+special;
+  var taxable=sal-social-fundAmt-monthlyDeduct;
+  var tax=calcTax(taxable);
+  var net=sal-social-fundAmt-tax;
+
+  var annualTax=0;
+  var annualNet=0;
+  for(var m=1;m<=12;m++){
+    var cumTaxable=(sal-social-fundAmt-monthlyDeduct)*m;
+    var t=calcTax(cumTaxable);
+    if(m===12){ annualTax=t; annualNet=sal*12-social*12-fundAmt*12-t; }
+  }
+  var rate2=sal>0?((sal-net)/sal*100):0;
+
+  var out="";
+  out+="【税前月薪】¥"+money(sal).toLocaleString()+"\n";
+  out+="──────────────\n";
+  out+="😰 五险个人缴纳：¥"+money(social)+"\n";
+  out+="   · 养老 8%：¥"+money(pension)+"\n";
+  out+="   · 医疗 2%：¥"+money(medical)+"\n";
+  out+="   · 失业 0.5%：¥"+money(unemp)+"\n";
+  out+="🏦 公积金个人：¥"+money(fundAmt)+"（进你个人账户）\n";
+  out+="📊 个税：¥"+money(tax)+"\n";
+  out+="   · 起征点5000 + 专项扣除"+special+"\n";
+  out+="──────────────\n";
+  out+="✅【每月到手】¥"+money(net).toLocaleString()+"\n";
+  out+="✅【全年到手】约¥"+Math.round(annualNet).toLocaleString()+"\n";
+  out+="📉 综合税负率：约"+rate2.toFixed(1)+"%（不含公积金）\n";
+  out+="💼 公积金每月进账合计：¥"+money(fundAmt*2)+"（含公司同额部分）\n";
+  out+="\n—— 建议 ——\n";
+  if(special===0) out+="· 你还没填专项附加扣除，子女教育/赡养老人/房贷租房每年能省下几千元，快去个税APP填报。\n";
+  if(salaryIsHigh(sal)) out+="· 月薪较高，可关注年终奖单独计税 vs 并入综合所得，哪个划算选哪个（一年只能选一次）。\n";
+  out+="· 谈薪时优先谈税前月薪，但也要确认公积金比例——12%和5%每月能差出上千元。\n";
+  if(note) out+="\n📝 你的情况："+note+"\n建议把上述到手金额作为底线，低于此数可要求提高税前基数。\n";
+  return out;
+}
+function salaryIsHigh(s){return s>=20000;}
+function run(){
+  var box=document.getElementById('outputBox');
+  box.textContent=gen();
+  document.getElementById('resultArea').classList.add('active');
+  box.scrollIntoView({behavior:'smooth',block:'center'});
+}
+function copyResult(){
+  navigator.clipboard.writeText(document.getElementById('outputBox').textContent).then(function(){
+    alert('已复制到剪贴板');
+  });
+}
+document.getElementById('genBtn').addEventListener('click',run);
+</script>
+</body>
+</html>
