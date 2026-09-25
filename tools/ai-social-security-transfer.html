@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI 社保转移接续攻略 | AgentGongju.com</title>
-<meta name="description" content="换城市工作了社保怎么办？养老、医疗、公积金转移全流程，含办理入口、材料清单和常见坑。">
-<meta name="keywords" content="社保转移,跨省转移,养老保险转移,医保转移,公积金转移,异地社保">
+<title>AI 社保转移接续指南与材料清单 | AgentGongju.com</title>
+<meta name="description" content="换城市工作了社保怎么办？输入原参保地和现参保地，生成养老、医疗、公积金转移接续的完整流程、所需材料和注意事项，附常见坑点提醒。">
+<meta name="keywords" content="社保转移,社保接续,异地社保,养老保险转移,公积金转移,换城市工作">
 <link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
 <style>
 .tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
@@ -13,7 +13,6 @@
 .card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
 .card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
 select,input[type=text],input[type=number],textarea{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px;box-sizing:border-box}
-textarea{min-height:110px;resize:vertical;line-height:1.7}
 select:focus,input:focus,textarea:focus{border-color:#6366f1}
 .btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
 .btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
@@ -23,6 +22,8 @@ select:focus,input:focus,textarea:focus{border-color:#6366f1}
 .copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
 .copy-btn:hover{background:rgba(99,102,241,0.25)}
 .param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.chk{display:flex;align-items:center;gap:8px;color:#e2e8f0;font-size:.9rem;margin-bottom:10px}
+.chk input{width:auto;margin:0}
 .tips{color:#64748b;font-size:.8rem;line-height:1.7;margin-top:6px}
 @media(max-width:600px){.param-row{grid-template-columns:1fr}}
 </style>
@@ -35,109 +36,123 @@ var _hmt = _hmt || [];
 <body>
 <nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
 <div class="tool-container">
-<div class="tool-header"><h1>🪪 AI 社保转移接续攻略</h1><p>养老/医疗/公积金跨省转移全流程</p></div>
+<div class="tool-header"><h1>🔁 AI 社保转移接续指南</h1><p>换城市工作，社保公积金怎么办一次说清</p></div>
 <div class="card">
 <div class="param-row">
-<div><label>📦 要转移什么</label>
-<select id="item">
-<option value="all">养老＋医疗＋公积金都转</option>
+<div><label>📍 原参保城市</label><input type="text" id="fromCity" value="成都"></div>
+<div><label>📍 现参保城市</label><input type="text" id="toCity" value="深圳"></div>
+</div>
+<div class="param-row">
+<div><label>🧭 转移类型</label>
+<select id="type">
+<option value="all" selected>养老 + 医疗 + 公积金全部转移</option>
 <option value="pension">只转养老保险</option>
 <option value="medical">只转医疗保险</option>
 <option value="fund">只转住房公积金</option>
 </select></div>
-<div><label>🧭 转移方向</label>
-<select id="dir">
-<option value="in">外地 → 本市（新入职）</option>
-<option value="out">本市 → 外地（要走了）</option>
-<option value="both">两地来回换过好几次</option>
+<div><label>💼 当前状态</label>
+<select id="status">
+<option value="new" selected>刚到新城市、新单位已参保</option>
+<option value="gap">离职中，暂时没新单位</option>
+<option value="ready">准备离职，想先了解流程</option>
 </select></div>
 </div>
-<div class="param-row">
-<div><label>👔 就业状态</label>
-<select id="job"><option value="employed">已在新城市入职（单位缴）</option><option value="self">灵活就业/自己缴</option><option value="gap">暂时没工作</option><option value="retire">快退休了，要合并</option></select></div>
-<div><label>⏳ 参保年限</label>
-<select id="years"><option value="low">不满 5 年</option><option value="mid" selected>5-10 年</option><option value="high">10 年以上</option><option value="near">接近 15 年</option></select></div>
+<div><label>🧩 你的情况（可多选）</label>
+<div class="chk"><input type="checkbox" id="c1" checked><span>有视同缴费年限（国企/事业单位老工龄）</span></div>
+<div class="chk"><input type="checkbox" id="c2"><span>年龄已超过 40 岁（男）/ 35 岁（女）</span></div>
+<div class="chk"><input type="checkbox" id="c3" checked><span>打算以后在新城市退休</span></div>
+<div class="chk"><input type="checkbox" id="c4"><span>原单位还有未结清的公积金</span></div>
 </div>
-<button class="btn-gen" id="genBtn">📋 生成转移攻略</button>
-<div class="tips">💡 社保转移是"跟着人走"的，多地参保不会作废，但退休前一定要合并到一处。</div>
+<div class="tips">💡 全国已实现社保关系转移"跨省通办"，通过"国家社会保险公共服务平台"或掌上 12333 App 即可在线申请，无需两地来回跑。</div>
+<button class="btn-gen" id="genBtn">🔍 生成转移指南</button>
 </div>
 <div class="result-area" id="resultArea">
 <div class="card"><div class="output-box" id="outputBox"></div>
-<button class="copy-btn" onclick="copyResult()">📋 复制攻略</button></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制结果</button></div>
 </div>
 </div>
 <footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
 <script>
-var ITEM={
-all:'养老保险＋医疗保险＋住房公积金（最常见组合）',
-pension:'仅养老保险',
-medical:'仅医疗保险',
-fund:'仅住房公积金'
-};
+function copyResult(){
+var t=document.getElementById('outputBox').innerText;
+navigator.clipboard.writeText(t).then(function(){alert('已复制到剪贴板');},function(){alert('复制失败，请手动选择');});
+}
 function gen(){
-var item=ITEM[document.getElementById('item').value];
-var dir=document.getElementById('dir').value;
-var job=document.getElementById('job').value;
-var years=document.getElementById('years').value;
-var out='════ 社保转移接续攻略 ════\n\n';
-out+='本次要办：'+item+'\n';
-out+='\n──── 🧠 先搞懂 3 件事 ────\n';
-out+='1. 养老保险：可以跨省转移，缴费年限累计计算，个人账户全额转移＋统筹部分按比例转移；\n';
-out+='2. 医疗保险：可以转移，缴费年限累计，个人账户余额可随转移（部分地区需单独申请）；\n';
-out+='3. 住房公积金：可以转移，余额全额随人走。\n';
-out+='★ 关键：多地参保记录不会清零，最终退休时合并到待遇领取地即可。\n\n';
-out+='──── 📱 办理入口（线上优先）────\n';
-out+='· 国家社会保险公共服务平台（si.12333.gov.cn）→「社保转移申请」\n';
-out+='· 「掌上 12333」App → 社保转移\n';
-out+='· 电子社保卡（微信/支付宝小程序）→ 社保转移\n';
-out+='· 医保：国家医保服务平台 App → 跨省转移接续\n';
-out+='· 公积金：全国住房公积金小程序 → 转移接续（异地转移）\n\n';
-out+='──── 🚶 具体流程 ────\n';
-if(dir!=='out'){
-out+='【外地 → 本市】\n';
-out+='① 先在新城市正常参保（单位缴或自己缴），有参保记录才能发起转入；\n';
-out+='② 打开掌上 12333 或国家社保平台，选择"社保转移申请"；\n';
-out+='③ 填写原参保地与新参保地，提交申请；\n';
-out+='④ 新参保地社保机构审核后，向原参保地发起联系函；\n';
-out+='⑤ 原参保地办理转出并划转基金，全程线上，一般 15-45 个工作日；\n';
-out+='⑥ 可在平台查询进度，无需两地跑。\n';
+var from=document.getElementById('fromCity').value.trim()||'原城市';
+var to=document.getElementById('toCity').value.trim()||'新城市';
+var type=document.getElementById('type').value;
+var status=document.getElementById('status').value;
+var c1=document.getElementById('c1').checked;
+var c2=document.getElementById('c2').checked;
+var c3=document.getElementById('c3').checked;
+var c4=document.getElementById('c4').checked;
+
+var out='════ 社保转移接续方案 ════\n\n';
+out+='转移路线：'+from+' → '+to+'\n';
+out+='办理方式：在线跨省通办（推荐）+ 必要时线下窗口补充\n\n';
+
+out+='【一、办理前置条件】\n';
+if(status==='new'){
+out+='✅ 新单位已为你参保（通常入职后次月可查）\n✅ 原单位已办停保（即原社保已"减员"）\n';
+}else if(status==='gap'){
+out+='⚠️ 你现在处于离职空档期，社保转移可以办，但要注意：\n';
+out+='· 养老保险、医疗保险仍可申请转入，不受是否有新单位影响\n';
+out+='· 医疗保险断缴超过 3 个月，连续缴费年限会清零 \n';
+out+='· 建议先以"灵活就业"身份在新城市续上，再办转移\n';
+}else{
+out+='✅ 离职前先确认原单位社保缴至哪个月，避免出现断档\n';
+out+='✅ 离职当月月底前可请 HR 打印《参保缴费凭证》备用\n';
 }
-if(dir!=='in'){
-out+=dir==='both'?'\n【多地来回换过】\n':'\n【本市 → 外地】\n';
-out+='① 确认原单位已为你办理"停保"（离职当月通常次月停保）；\n';
-out+='② 到新城市参保后，由新城市发起转入（如今基本不用自己跑原城市）；\n';
-out+='③ 若新城市要求提供《参保缴费凭证》，可在原城市社保 App 自助打印；\n';
-out+='④ 公积金离职后可选择"封存"，到新城市后办理异地转移即可，余额不会丢。\n';
+out+='\n【二、养老保险转移】\n';
+out+='办理入口：国家社会保险公共服务平台 / 掌上 12333 / 电子社保卡小程序\n';
+out+='操作路径：首页 → 社保转移 → 企业职工基本养老保险关系转移申请\n';
+out+='所需信息：身份证号、原参保地、新参保地（系统自动带出参保信息）\n';
+out+='时间预估：15 个工作日内完成审核，两地机构后台对接\n';
+out+='转移内容：个人账户余额全额转移 + 统筹部分按比例转移\n';
+if(c1){
+out+='⚠️ 你有视同缴费年限，务必保留好档案和工龄证明材料（招工表、工资表等），视同缴费年限需人工认定，建议提前咨询 '+to+' 社保局。\n';
 }
-out+='\n──── 📄 可能需要准备的材料 ────\n';
-out+='· 身份证（原件或电子身份证）\n· 社保卡\n· 原参保地《基本养老保险参保缴费凭证》（部分地区已免）\n· 新单位劳动合同或参保记录\n· 公积金转移需提供新城市公积金账号\n';
-out+='\n──── ⏳ 年限提醒（你的情况）────\n';
-if(years==='low')out+='不满 5 年：年限较短，转移流程一样，但影响不大，可等工作稳定后再统一办。';
-else if(years==='mid')out+='5-10 年：已经有相当积累，务必办理转移，别让年限断档。';
-else if(years==='high')out+='10 年以上：年限价值很高，建议尽早合并，避免退休时才发现记录分散。';
-else out+='接近 15 年：⚠️ 这是退休领养老金的最低门槛，务必确保年限连续、多地记录已合并，差 1 年都影响领取。';
-out+='\n\n──── 👔 就业状态对应做法 ────\n';
-if(job==='employed')out+='已入职：由新单位正常缴纳后，自己在线上发起转入申请即可，单位不会代办转移。';
-else if(job==='self')out+='灵活就业：以个人身份在新城市参保（多数城市需本地户籍或居住证），参保后同样可申请转移。';
-else if(job==='gap')out+='暂无工作：社保会中断，建议以灵活就业身份自缴，或找正规机构代缴（注意假代缴风险），别长时间断缴影响医保报销与购房资格。';
-else out+='快退休：务必在退休前把所有参保地记录合并到待遇领取地（通常是户籍地或最后参保满 10 年的城市），可到社保局窗口办理"多地合并"。';
-out+='\n\n──── ⚠️ 常见坑 ────\n';
-out+='1. 医保断缴次月起可能无法报销，连续缴纳年限还会被清零（影响大病门诊额度）；\n';
-out+='2. 部分城市购房、落户、摇号要求"连续缴纳"，一断就得重新计算；\n';
-out+='3. 公积金转移需要新单位已开户并缴存，否则先封存；\n';
-out+='4. 转移不需要"退保"，任何要求你先退保再重新缴的说法都是错的；\n';
-out+='5. 跨省转移不用跑两趟，网上办理即可，收费代办基本都是骗钱。\n';
-out+='\n☎️ 全国社保服务热线：12333　｜　公积金热线：12329\n';
-return out;
+out+='\n【三、医疗保险转移】\n';
+out+='办理入口：同上（国家社保平台 → 医保关系转移申请）\n';
+out+='转移内容：个人账户余额随关系一并转移；缴费年限各地累计认定\n';
+out+='⚠️ 关键提醒：医保转移不等于即时可用，转入后需在新城市重新连续缴费才恢复报销比例\n';
+out+='💡 转移期间如需就医，先在 '+to+' 参保并正常缴费，再凭票据手工报销\n';
+out+='\n【四、住房公积金转移】\n';
+out+='办理入口：全国住房公积金小程序 → 转移接续\n';
+out+='前提条件：'+from+'的公积金账户已封存，'+to+'已开立新账户\n';
+out+='操作：填写原账户与新账户信息，一般 5~10 个工作日到账\n';
+out+='替代方案：若不符合转移条件，可先办理销户提取（需满足离职、户籍迁出等条件）\n';
+if(c4){
+out+='⚠️ 原单位有未结清公积金：先联系原 HR 补缴到账后再办转移，否则金额不完整。\n';
 }
-</script>
-<script>
-document.getElementById('genBtn').addEventListener('click',function(){
-if(!Paywall.countUse('AI 社保转移接续攻略 | AgentGongju.com'))return;
-document.getElementById('outputBox').innerText=gen();
+out+='\n【五、办理顺序建议】\n';
+out+='1️⃣ 先在'+to+'参保（新单位或灵活就业）\n';
+out+='2️⃣ 确认'+from+'社保已停保\n';
+out+='3️⃣ 线上提交养老保险转移申请\n';
+out+='4️⃣ 同步提交医保、公积金转移\n';
+out+='5️⃣ 15 个工作日后登录平台查询进度，显示"已办结"即完成\n';
+
+out+='\n【六、常见坑点】\n';
+out+='❌ 以为不转移就作废：养老和医保个人账户不会清零，只是年限不合并\n';
+out+='❌ 一次性转移多个城市：多地参保建议逐一核对，避免遗漏\n';
+if(c2){
+out+='⚠️ 你已超过男性 40 / 女性 35 岁：在新城市建立的将是"临时账户"，不能在新城市办理退休，最终要回户籍地或满 10 年缴费地办理。\n';
+}
+if(!c3){
+out+='💡 若不确定以后在哪退休，先只转养老保险合并年限即可，医保可等确定长期居住地再转。\n';
+}
+out+='❌ 轻信"代缴机构包转社保"：官方转移全程免费，收费代办多为骗局\n';
+
+out+='\n【七、需要准备的材料】\n';
+out+='· 身份证原件及复印件\n· 社保卡\n· 原单位离职证明（部分地区需要）\n· 劳动合同（新单位）\n· 视同缴费年限档案材料（如有）\n';
+
+out+='\n📞 咨询电话：'+to+'社保局可在 12333 查询，公积金咨询 12329\n';
+out+='⚠️ 各地政策存在差异，办理前请以当地官方最新公告为准。';
+document.getElementById('outputBox').innerText=out;
 document.getElementById('resultArea').classList.add('active');
-});
-function copyResult(){navigator.clipboard.writeText(document.getElementById('outputBox').innerText).then(function(){alert('✅ 已复制！')})}
+document.getElementById('resultArea').scrollIntoView({behavior:'smooth'});
+}
+document.getElementById('genBtn').addEventListener('click',gen);
 </script>
 </body>
 </html>
