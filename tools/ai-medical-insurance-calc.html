@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 医保报销计算器 | AgentGongju.com</title>
+<meta name="description" content="输入医院等级、总费用、医保类型，自动算出门诊/住院起付线、报销比例、自付金额和大病保险二次报销，看懂医保怎么报。">
+<meta name="keywords" content="医保报销,住院报销比例,起付线,封顶线,城乡居民医保,职工医保,大病保险,自费药">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,input[type=text],input[type=number],input[type=date],textarea{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px;box-sizing:border-box}
+textarea{min-height:90px;resize:vertical;line-height:1.7}
+select:focus,input:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;margin-bottom:12px;font-size:.92rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.tips{color:#64748b;font-size:.8rem;line-height:1.7;margin-top:6px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() { var hm = document.createElement("script"); hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949"; var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(hm, s); })();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>🏥 AI 医保报销计算器</h1><p>住院花 3 万，自己到底要掏多少？一算就清楚</p></div>
+<div class="card">
+<div class="param-row">
+<div><label>🏥 医保类型</label>
+<select id="kind">
+<option value="employee" selected>职工医保</option>
+<option value="resident">城乡居民医保（新农合）</option>
+</select></div>
+<div><label>🛏 就医类型</label>
+<select id="type">
+<option value="in" selected>住院</option>
+<option value="out">门诊 / 普通门诊</option>
+<option value="slow">门诊慢特病</option>
+</select></div>
+</div>
+<div class="param-row">
+<div><label>🏨 医院等级</label>
+<select id="level">
+<option value="3">三级医院</option>
+<option value="2" selected>二级医院</option>
+<option value="1">一级医院 / 社区</option>
+</select></div>
+<div><label>💰 医疗总费用（元）</label><input type="number" id="total" value="30000" min="0"></div>
+</div>
+<div class="param-row">
+<div><label>🚫 医保外自费部分（元）</label><input type="number" id="selfpay" value="3000" min="0"></div>
+<div><label>📉 乙类先自付比例（%）</label><input type="number" id="bclass" value="10" min="0" max="50"></div>
+</div>
+<div class="param-row">
+<div><label>📍 参保地（示例参数）</label>
+<select id="city">
+<option value="std" selected>通用示例</option>
+<option value="bj">北京</option>
+<option value="sh">上海</option>
+<option value="gz">广州</option>
+<option value="cd">成都</option>
+</select></div>
+<div><label>🧾 是否已办异地就医备案</label>
+<select id="remote"><option value="0" selected>本地就医</option><option value="1">异地已备案</option><option value="2">异地未备案</option></select></div>
+</div>
+<label>📝 补充情况（可选）</label>
+<textarea id="note" placeholder="例：住院花了3万，其中进口药8000全自费，剩下的能报多少"></textarea>
+<button class="btn-gen" id="genBtn">🏥 计算报销金额</button>
+<div class="tips">⚠️ 各地政策差异较大，本工具按常见参数估算，仅供快速预估。实际以参保地医保局公布的报销政策为准，可拨打 12333 咨询。</div>
+</div>
+<div class="result-area" id="resultArea">
+<div class="card"><div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制结果</button></div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function m(n){return Math.round(n*100)/100;}
+function yuan(n){return "¥"+m(n).toLocaleString('zh-CN',{minimumFractionDigits:2,maximumFractionDigits:2});}
+
+var P={
+  employee:{
+    in:{3:{start:1300,rate:0.85},2:{start:800,rate:0.87},1:{start:400,rate:0.90}},
+    out:{3:{start:1800,rate:0.50},2:{start:1800,rate:0.50},1:{start:1800,rate:0.50}},
+    slow:{3:{start:1300,rate:0.80},2:{start:800,rate:0.85},1:{start:400,rate:0.88}},
+    cap:300000
+  },
+  resident:{
+    in:{3:{start:1200,rate:0.60},2:{start:600,rate:0.70},1:{start:200,rate:0.80}},
+    out:{3:{start:500,rate:0.40},2:{start:300,rate:0.50},1:{start:100,rate:0.55}},
+    slow:{3:{start:1000,rate:0.60},2:{start:500,rate:0.65},1:{start:200,rate:0.70}},
+    cap:200000
+  }
+};
+var CITY={
+  bj:{mul:1.15,off:0,diff:1.0}, sh:{mul:1.05,off:0,diff:1.0},
+  gz:{mul:0.95,off:0,diff:1.0}, cd:{mul:0.9,off:0,diff:1.0},
+  std:{mul:1,off:0,diff:1.0}
+};
+function gen(){
+  var kind=document.getElementById('kind').value;
+  var type=document.getElementById('type').value;
+  var lv=document.getElementById('level').value;
+  var total=+document.getElementById('total').value||0;
+  var selfpay=+document.getElementById('selfpay').value||0;
+  var bclass=+document.getElementById('bclass').value||0;
+  var city=document.getElementById('city').value;
+  var remote=+document.getElementById('remote').value;
+  var note=document.getElementById('note').value.trim();
+
+  if(total<=0){document.getElementById('outputBox').textContent="请输入医疗总费用。";document.getElementById('resultArea').classList.add('active');return;}
+
+  var cfg=P[kind][type][lv];
+  var cm=CITY[city];
+  var start=Math.round(cfg.start*cm.mul);
+  var rate=cfg.rate;
+
+  var out="【费用拆解】\n";
+  out+="· 医疗总费用："+yuan(total)+"\n";
+
+  var sp=Math.min(selfpay,total);
+  out+="· 其中医保目录外/全自费："+yuan(sp)+"\n";
+
+  var inCatalog=total-sp;                 // 进入医保目录的费用
+  var bSelf=inCatalog*bclass/100;         // 乙类先自付
+  var covered=inCatalog-bSelf;            // 可参与报销的金额
+  if(bclass>0){
+    out+="· 目录内费用："+yuan(inCatalog)+"\n";
+    out+="· 乙类先自付 "+bclass+"%："+yuan(bSelf)+"\n";
+    out+="· 可计报销基数："+yuan(covered)+"\n";
+  }
+
+  out+="\n【报销计算（"+({in:'住院',out:'门诊',slow:'门诊慢特病'}[type])+" · "+lv+"级医院）】\n";
+  out+="· 起付线："+yuan(start)+"（需自己先承担）\n";
+  out+="· 报销比例："+Math.round(rate*100)+"%\n";
+
+  var basis=Math.max(0,covered-start);
+  var reimbursed=basis*rate;
+
+  if(covered<=start){
+    out+="⚠️ 可报销金额未超过起付线，本次无法报销，全部自付。\n";
+    reimbursed=0;
+  } else {
+    out+="· 报销基数 = "+yuan(covered)+" - "+yuan(start)+" = "+yuan(basis)+"\n";
+    out+="· 医保报销 = "+yuan(basis)+" × "+Math.round(rate*100)+"% = "+yuan(reimbursed)+"\n";
+  }
+
+  // 异地就医
+  if(remote===1){
+    out+="· 异地已备案：报销比例降低约 5~10 个百分点\n";
+    reimbursed=reimbursed*0.93; start=start*1.5;
+    out+="  实际报销调整为："+yuan(reimbursed)+"\n";
+  } else if(remote===2){
+    out+="· ⚠️ 异地未备案：报销比例大幅下调（约按 50%~60% 结算）\n";
+    reimbursed=reimbursed*0.55;
+    out+="  实际报销调整为："+yuan(reimbursed)+"\n";
+  }
+
+  // 封顶线
+  if(reimbursed>cfg.cap){
+    out+="· ⚠️ 超过年度封顶线 "+yuan(cfg.cap)+"，按封顶线结算\n";
+    reimbursed=cfg.cap;
+  }
+
+  out+="\n【最终结果】\n";
+  out+="· 医保报销："+yuan(reimbursed)+"\n";
+  var outOfPocket=total-reimbursed;
+  out+="· 自己承担："+yuan(outOfPocket)+"\n";
+  out+="· 实际报销比例："+m(reimbursed/total*100)+"%\n";
+
+  // 大病保险二次报销（个人自付超过起付线部分）
+  var bigStart=kind==='employee'?15000:8000;
+  var selfPaidLegal=selfpay+bSelf+start+ (total-reimbursed-selfpay-bSelf-start>0?(total-reimbursed-selfpay-bSelf-start):0);
+  var policySelf=outOfPocket-sp;   // 合规自付部分
+  out+="\n【大病保险（二次报销）】\n";
+  out+="· 当地起付线参考："+yuan(bigStart)+"（合规自付部分超过后才能启动）\n";
+  if(policySelf>bigStart){
+    var bigBase=policySelf-bigStart;
+    var bigRate= bigBase>100000?0.75:(bigBase>50000?0.65:0.60);
+    var big=bigBase*bigRate;
+    out+="· 可报基数："+yuan(bigBase)+" × "+Math.round(bigRate*100)+"%\n";
+    out+="· 大病保险二次报销："+yuan(big)+"\n";
+    out+="· 二次报销后实际自付："+yuan(outOfPocket-big)+"\n";
+  } else {
+    out+="· 合规自付 "+yuan(policySelf)+" 未达起付线，暂不启动大病保险。\n";
+  }
+
+  out+="\n【省钱提示】\n";
+  out+="· 优先使用医保目录内药品：同疗效的甲类/乙类药比进口自费药便宜很多。\n";
+  out+="· 小病先去社区/一级医院，起付线低（"+yuan(P[kind][type][1].start)+"）、报销比例高。\n";
+  out+="· 住院前办好异地就医备案（国家医保服务平台App可办），能多报一大截。\n";
+  out+="· 保留好发票、费用清单、出院小结，手工报销和二次报销都要用。\n";
+
+  if(note){
+    out+="\n【结合你的情况】\n";
+    out+="· 你的补充：「"+note+"」\n";
+    if(/进口|自费药|不在目录/.test(note)){
+      out+="· 目录外费用医保一律不报，这部分只能自付或靠商业医疗险（如百万医疗险）覆盖。\n";
+      out+="· 可让医生开「医保目录内替代方案」，多数常见病都有可比替代药。\n";
+    }
+    if(/异地|外地|跨省/.test(note)){
+      out+="· 跨省就医务必先备案，未备案报销比例可能腰斩。\n";
+    }
+    if(/二次|大病/.test(note)){
+      out+="· 大病保险通常「一站式结算」，出院时医保系统自动算，无需单独申请。\n";
+    }
+  }
+
+  document.getElementById('outputBox').textContent=out;
+  document.getElementById('resultArea').classList.add('active');
+}
+document.getElementById('genBtn').addEventListener('click',gen);
+function copyResult(){
+  var t=document.getElementById('outputBox').textContent;
+  navigator.clipboard.writeText(t).then(function(){
+    var b=document.querySelector('.copy-btn');var o=b.textContent;b.textContent="✅ 已复制";setTimeout(function(){b.textContent=o;},1500);
+  });
+}
+</script>
+</body>
+</html>

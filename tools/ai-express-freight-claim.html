@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 快递运费与赔付计算器 | AgentGongju.com</title>
+<meta name="description" content="输入重量、体积、目的地，自动算出快递首重续重运费和体积重，快递丢了/坏了/延误能赔多少，附申诉流程与维权电话。">
+<meta name="keywords" content="快递运费计算,体积重,首重续重,快递丢件赔偿,保价,12305,快递理赔">
+<link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
+<style>
+.tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
+.tool-header{text-align:center;margin-bottom:40px}
+.tool-header h1{font-size:2.2rem;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.tool-header p{color:#94a3b8}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
+.card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
+select,input[type=text],input[type=number],input[type=date],textarea{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px;box-sizing:border-box}
+textarea{min-height:90px;resize:vertical;line-height:1.7}
+select:focus,input:focus,textarea:focus{border-color:#6366f1}
+.btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3)}
+.result-area{display:none;margin-top:20px}
+.result-area.active{display:block}
+.output-box{background:rgba(255,255,255,0.03);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;color:#e2e8f0;line-height:2;white-space:pre-wrap;margin-bottom:12px;font-size:.92rem}
+.copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
+.copy-btn:hover{background:rgba(99,102,241,0.25)}
+.param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.tips{color:#64748b;font-size:.8rem;line-height:1.7;margin-top:6px}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
+</style>
+<script>
+var _hmt = _hmt || [];
+(function() { var hm = document.createElement("script"); hm.src = "https://hm.baidu.com/hm.js?53f16ef45879b94dce1bf43bd616f949"; var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(hm, s); })();
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</head>
+<body>
+<nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
+<div class="tool-container">
+<div class="tool-header"><h1>📦 AI 快递运费与赔付计算器</h1><p>运费多少、体积重怎么算、丢件赔几倍，一次说清</p></div>
+<div class="card">
+<div class="param-row">
+<div><label>📐 计算模式</label>
+<select id="mode"><option value="price" selected>算运费</option><option value="claim">算赔付</option></select></div>
+<div><label>🚚 快递公司</label>
+<select id="co">
+<option value="yuantong" selected>圆通</option>
+<option value="zhongtong">中通</option>
+<option value="shentong">申通</option>
+<option value="yunda">韵达</option>
+<option value="jd">京东物流</option>
+<option value="sf">顺丰</option>
+<option value="debang">德邦（大件）</option>
+</select></div>
+</div>
+<div class="param-row">
+<div><label>⚖️ 实际重量（kg）</label><input type="number" id="weight" value="2" min="0" step="0.1"></div>
+<div><label>📏 长×宽×高（cm，可留空）</label><input type="text" id="dims" placeholder="例：40*30*20"></div>
+</div>
+<div class="param-row">
+<div><label>🗺 目的地</label>
+<select id="zone"><option value="1" selected>同省 / 长三角珠三角</option><option value="2">跨省（邻省）</option><option value="3">跨省（较远）</option><option value="4">新疆/西藏/内蒙/青海</option></select></div>
+<div><label>🧊 体积重系数</label>
+<select id="divisor"><option value="8000" selected>8000（普通快递）</option><option value="6000">6000（部分航空件）</option><option value="5000">5000（顺丰特快/航空）</option></select></div>
+</div>
+<hr style="border:none;border-top:1px solid rgba(255,255,255,.08);margin:8px 0 16px">
+<div class="param-row">
+<div><label>💵 货物实际价值（元，赔付用）</label><input type="number" id="value" value="800" min="0"></div>
+<div><label>🛡 是否保价</label>
+<select id="insured"><option value="0" selected>未保价</option><option value="1">已保价</option></select></div>
+</div>
+<div class="param-row">
+<div><label>❗ 出险情况</label>
+<select id="issue"><option value="lost" selected>快件丢失</option><option value="damage">内件破损</option><option value="delay">延误超时</option><option value="none">没出事，只算运费</option></select></div>
+<div><label>💳 已支付运费（元）</label><input type="number" id="freight" value="0" min="0" placeholder="留空则按计算值"></div>
+</div>
+<label>📝 补充情况（可选）</label>
+<textarea id="note" placeholder="例：寄了台显示器，没保价，快递弄碎了，只肯赔3倍运费，合理吗"></textarea>
+<button class="btn-gen" id="genBtn">📦 开始计算</button>
+<div class="tips">⚠️ 运费为常见市场价估算，实际以下单页报价为准。赔付依据《快递暂行条例》《邮政法》及快递公司服务协议，未保价快件通常按运费倍数或实际损失酌定赔偿。</div>
+</div>
+<div class="result-area" id="resultArea">
+<div class="card"><div class="output-box" id="outputBox"></div>
+<button class="copy-btn" onclick="copyResult()">📋 复制结果</button></div>
+</div>
+</div>
+<footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
+<script>
+function m(n){return Math.round(n*100)/100;}
+function yuan(n){return "¥"+m(n).toLocaleString('zh-CN',{minimumFractionDigits:2,maximumFractionDigits:2});}
+
+// 首重1kg价格 / 续重每kg价格，按区域
+var RATE={
+  yuantong:[[8,2],[10,5],[12,8],[18,15]],
+  zhongtong:[[8,2],[10,5],[12,8],[18,15]],
+  shentong:[[8,2],[10,5],[12,8],[18,15]],
+  yunda:[[8,2],[10,5],[12,8],[18,15]],
+  jd:[[9,3],[11,5],[14,8],[20,15]],
+  sf:[[13,2],[18,5],[23,8],[30,15]],
+  debang:[[15,3],[20,5],[25,8],[35,15]]
+};
+var CONAME={yuantong:'圆通',zhongtong:'中通',shentong:'申通',yunda:'韵达',jd:'京东物流',sf:'顺丰',debang:'德邦'};
+
+function gen(){
+  var mode=document.getElementById('mode').value;
+  var co=document.getElementById('co').value;
+  var weight=+document.getElementById('weight').value||0;
+  var dims=document.getElementById('dims').value.trim();
+  var zone=+document.getElementById('zone').value;
+  var divisor=+document.getElementById('divisor').value;
+  var value=+document.getElementById('value').value||0;
+  var ins=+document.getElementById('insured').value;
+  var issue=document.getElementById('issue').value;
+  var freightIn=+document.getElementById('freight').value||0;
+  var note=document.getElementById('note').value.trim();
+
+  var out="";
+  var volW=0;
+  if(dims){
+    var nums=dims.split(/[*x×,，\s]+/).map(Number).filter(function(n){return !isNaN(n)&&n>0;});
+    if(nums.length>=3){
+      var vol=nums[0]*nums[1]*nums[2];
+      volW=Math.round(vol/divisor*100)/100;
+      out+="【体积重计算】\n";
+      out+="· 体积 = "+nums[0]+"×"+nums[1]+"×"+nums[2]+" = "+vol+" cm³\n";
+      out+="· 体积重 = "+vol+" ÷ "+divisor+" = "+volW+" kg\n";
+    } else {
+      out+="⚠️ 尺寸格式无法识别（示例：40*30*20），已忽略体积重。\n\n";
+    }
+  }
+
+  var chargeW=Math.max(weight,volW);
+  if(volW>0){
+    out+="· 实际重量："+weight+" kg ／ 体积重："+volW+" kg\n";
+    out+="· 计费重量取较大者："+chargeW+" kg\n";
+    out+="💡 若体积重大于实重，说明是「抛货」，按体积收费，寄送时压缩体积能省钱。\n\n";
+  } else {
+    out+="· 计费重量："+chargeW+" kg\n\n";
+  }
+
+  var rate=RATE[co][zone-1];
+  var first=rate[0], add=rate[1];
+  var cont90=Math.ceil(Math.max(0,chargeW-1)*100)/100;
+  var cont=Math.ceil(Math.max(0,chargeW-1));
+  var contCost=cont*add;
+  var totalFreight=first+contCost;
+
+  out+="【运费估算（"+CONAME[co]+"）】\n";
+  out+="· 首重 1kg："+yuan(first)+"\n";
+  out+="· 续重 "+cont+"kg × "+yuan(add)+" = "+yuan(contCost)+"\n";
+  out+="· 预估运费合计："+yuan(totalFreight)+"\n";
+  if(co==='sf') out+="💡 顺丰首重贵但时效稳、破损率低，寄贵重物建议走顺丰。\n";
+  if(co==='debang') out+="💡 德邦适合大件/重货，超过20kg通常比普通快递划算。\n";
+
+  var usedFreight=freightIn>0?freightIn:totalFreight;
+
+  if(mode==='price' && issue==='none'){
+    out+="\n【结论】\n";
+    out+="· 你这次寄 "+chargeW+"kg 到该区域，运费约 "+yuan(totalFreight)+"。\n";
+    out+="· 若快递员报价明显高于此值，可要求出示价目表或改用其他公司。\n";
+  }
+
+  if(mode==='claim' || issue!=='none'){
+    out+="\n【赔付估算】\n";
+    out+="· 出险类型："+({lost:'快件丢失',damage:'内件破损',delay:'延误超时',none:'无'}[issue])+"\n";
+    out+="· 货物实际价值："+yuan(value)+"\n";
+    out+="· 已付运费："+yuan(usedFreight)+"\n";
+    if(ins===1){
+      var pay=Math.min(value,value);
+      out+="✅ 已保价：按实际损失赔，最高不超过保价金额。\n";
+      out+="· 应赔金额约："+yuan(pay)+"（另加退还运费）\n";
+      out+="· 若保价金额低于货物真实价值，超出部分自担，这是最常见的坑。\n";
+    } else {
+      out+="⚠️ 未保价：多数快递公司按「运费的3~7倍」或「不超过1000元」中较低者赔付。\n";
+      var byFreight=usedFreight*5;
+      var est=Math.min(byFreight,1000);
+      out+="· 按3~7倍运费估算："+yuan(usedFreight*3)+" ~ "+yuan(usedFreight*7)+"\n";
+      out+="· 常见上限1000元，初步预估可主张："+yuan(est)+"\n";
+      out+="· 💡 但未保价≠只能赔这点。若能证明快递公司存在重大过失（如暴力分拣、内件被调包、无理由拒赔），\n";
+      out+="  可依据《民法典》第832条主张按实际损失赔偿，实践中法院支持全额赔偿的案例不少。\n";
+    }
+    if(issue==='delay'){
+      out+="\n· 延误赔付：多数公司承诺「超时赔运费」，通常退运费或按运费一定倍数赔，一般不赔间接损失。\n";
+    }
+    out+="\n【维权四步走】\n";
+    out+="1️⃣ 保留证据：快递单号、下单截图、打包过程视频/照片、货物价值凭证（发票、购买记录）。\n";
+    out+="2️⃣ 找快递公司官方客服投诉，要求书面答复（记录工号、通话时间）。\n";
+    out+="3️⃣ 7天未解决 → 拨打国家邮政业申诉电话 12305（或登录 12305.cn 在线申诉）。\n";
+    out+="4️⃣ 仍未解决 → 向法院起诉（小额诉讼程序，标的1万元以下一审终审，流程快）。\n";
+    out+="· 寄贵重物品前务必保价 + 拍打包视频，这是唯一真正有效的保险。\n";
+  }
+
+  if(note){
+    out+="\n【结合你的情况】\n";
+    out+="· 你的补充：「"+note+"」\n";
+    if(/显示器|电脑|手机|相机|贵|万元/.test(note)){
+      out+="· 电子产品属于高价值易损件，快递公司常以「未保价」为由压价，务必主张「重大过失」。\n";
+      out+="· 破损类建议先让快递员当面验货开箱，并在签收单上注明「内件破损」再签字。\n";
+    }
+    if(/没保价|未保价|3倍|三倍|只肯/.test(note)){
+      out+="· 「只赔3倍运费」是行业内部惯例，不是法律规定，你有权拒绝并继续申诉至 12305。\n";
+      out+="· 12305 申诉后，快递公司通常会在3~7天内主动联系协商，赔付额度往往明显提高。\n";
+    }
+    if(/丢了|丢失|不见/.test(note)){
+      out+="· 丢失件先要求快递公司出具《丢件证明》，这是后续索赔和报警的关键材料。\n";
+      out+="· 怀疑内部盗窃可同时报警，警方立案会给快递公司更大压力。\n";
+    }
+  }
+
+  document.getElementById('outputBox').textContent=out;
+  document.getElementById('resultArea').classList.add('active');
+}
+document.getElementById('genBtn').addEventListener('click',gen);
+function copyResult(){
+  var t=document.getElementById('outputBox').textContent;
+  navigator.clipboard.writeText(t).then(function(){
+    var b=document.querySelector('.copy-btn');var o=b.textContent;b.textContent="✅ 已复制";setTimeout(function(){b.textContent=o;},1500);
+  });
+}
+</script>
+</body>
+</html>

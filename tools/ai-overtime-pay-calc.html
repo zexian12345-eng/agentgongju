@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI 加班费计算器与维权指南 | AgentGongju.com</title>
-<meta name="description" content="加班费被少算了吗？输入月薪、加班类型和时长，按劳动法精确算出应付加班费、差额，附仲裁维权步骤与证据清单。">
-<meta name="keywords" content="加班费计算,加班工资,劳动法,996赔偿,仲裁维权,调休,加班费公式">
+<title>AI 加班费与调休计算器 | AgentGongju.com</title>
+<meta name="description" content="输入加班时长和月薪，自动算出平时加班1.5倍、休息日2倍、法定节假日3倍的加班费金额，判断公司是用调休还是必须给钱，并给出维权依据。">
+<meta name="keywords" content="加班费计算,加班工资,1.5倍,2倍,3倍,调休,法定节假日,劳动法加班">
 <link rel="stylesheet" href="../css/style.css" /><script src="../js/paywall.js"></script>
 <style>
 .tool-container{max-width:820px;margin:100px auto 60px;padding:0 20px}
@@ -12,7 +12,7 @@
 .tool-header p{color:#94a3b8}
 .card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:30px;margin-bottom:24px}
 .card label{display:block;color:#e2e8f0;margin-bottom:8px;font-weight:500}
-select,input[type=text],input[type=number],textarea{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px;box-sizing:border-box}
+select,input[type=text],input[type=number],input[type=date],textarea{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:0.9rem;outline:none;font-family:inherit;margin-bottom:12px;box-sizing:border-box}
 textarea{min-height:90px;resize:vertical;line-height:1.7}
 select:focus,input:focus,textarea:focus{border-color:#6366f1}
 .btn-gen{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:white;font-size:1.05rem;font-weight:600;cursor:pointer;transition:all .3s}
@@ -23,9 +23,8 @@ select:focus,input:focus,textarea:focus{border-color:#6366f1}
 .copy-btn{padding:8px 20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:8px;color:#a5b4fc;cursor:pointer;font-size:.85rem}
 .copy-btn:hover{background:rgba(99,102,241,0.25)}
 .param-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-.param-row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
 .tips{color:#64748b;font-size:.8rem;line-height:1.7;margin-top:6px}
-@media(max-width:600px){.param-row,.param-row3{grid-template-columns:1fr}}
+@media(max-width:600px){.param-row{grid-template-columns:1fr}}
 </style>
 <script>
 var _hmt = _hmt || [];
@@ -36,31 +35,30 @@ var _hmt = _hmt || [];
 <body>
 <nav class="navbar"><div class="nav-inner"><a href="../" class="logo">🛠 AgentGongju</a><div class="nav-links"><a href="../">首页</a><a href="../#tools">工具</a></div></div></nav>
 <div class="tool-container">
-<div class="tool-header"><h1>⏱ AI 加班费计算器</h1><p>按劳动法算清加班费，对比实发差额＋维权步骤</p></div>
+<div class="tool-header"><h1>⏰ AI 加班费计算器</h1><p>平时1.5倍、休息日2倍、节假日3倍，一分钱都别少算</p></div>
 <div class="card">
 <div class="param-row">
-<div><label>💰 月薪（税前，元）</label><input type="number" id="salary" value="10000" min="500" max="200000"></div>
-<div><label>📅 月计薪天数</label>
-<select id="days"><option value="21.75" selected>21.75 天（法定标准）</option><option value="22">22 天</option><option value="21">21 天</option></select></div>
+<div><label>💵 月薪（税前，元）</label><input type="number" id="salary" value="10000" min="1000" max="300000"></div>
+<div><label>📆 月计薪天数</label>
+<select id="baseDays"><option value="21.75" selected>21.75 天（标准）</option><option value="20.83">20.83 天（月工作日）</option></select></div>
 </div>
 <div class="param-row">
-<div><label>🌙 工作日加班（小时/月）</label><input type="number" id="otWork" value="20" min="0" max="300"></div>
-<div><label>🌤 休息日加班（小时/月）</label><input type="number" id="otRest" value="16" min="0" max="300"></div>
+<div><label>🌆 平时加班（小时）</label><input type="number" id="h1" value="10" min="0" step="0.5"></div>
+<div><label>🌞 休息日加班（小时）</label><input type="number" id="h2" value="8" min="0" step="0.5"></div>
 </div>
 <div class="param-row">
-<div><label>🎉 法定节假日加班（小时/月）</label><input type="number" id="otHoliday" value="0" min="0" max="200"></div>
-<div><label>💵 实发加班费（元/月，也不知道可填 0）</label><input type="number" id="paid" value="0" min="0" max="200000"></div>
+<div><label>🎉 法定节假日加班（小时）</label><input type="number" id="h3" value="0" min="0" step="0.5"></div>
+<div><label>🔁 休息日是否已安排调休</label>
+<select id="comp"><option value="0" selected>没有，公司只给调休承诺</option><option value="1">已经补休过了（可不算钱）</option></select></div>
 </div>
 <div class="param-row">
-<div><label>🔄 休息日加班是否安排了调休</label>
-<select id="comp"><option value="0" selected>没有调休</option><option value="1">已安排等额调休</option><option value="2">调休了但一直没休成</option></select></div>
-<div><label>🏙 所在地区（影响仲裁实践）</label>
-<select id="city"><option value="a" selected>一线城市（北上广深）</option><option value="b">二线城市</option><option value="c">三四线/县城</option></select></div>
+<div><label>🕐 每天标准工时（小时）</label><input type="number" id="daily" value="8" min="1" max="12"></div>
+<div><label>🧾 工资单上已发的加班费（元）</label><input type="number" id="paid" value="0" min="0"></div>
 </div>
-<label>📝 你的情况（可选，越详细建议越准）</label>
-<textarea id="note" placeholder="例：公司说月薪已包含加班费，钉钉打卡记录我有，去年 3 月开始天天 996，想离职前要回来"></textarea>
-<button class="btn-gen" id="genBtn">⏱ 计算加班费</button>
-<div class="tips">⚠️ 加班费争议属于劳动争议，时效为离职后 1 年内。本工具按《劳动法》第 44 条计算，仅供参考，具体以当地司法实践为准。</div>
+<label>📝 补充情况（可选）</label>
+<textarea id="note" placeholder="例：公司说加班都可以调休，但一直排不上，我该要加班费吗"></textarea>
+<button class="btn-gen" id="genBtn">⏰ 计算加班费</button>
+<div class="tips">⚠️ 依据《劳动法》第44条：平时加班不低于150%工资；休息日加班不能补休的按200%；法定节假日加班必须付300%，不能用调休替代。月计薪天数通常为21.75天。</div>
 </div>
 <div class="result-area" id="resultArea">
 <div class="card"><div class="output-box" id="outputBox"></div>
@@ -69,130 +67,98 @@ var _hmt = _hmt || [];
 </div>
 <footer class="footer"><div class="footer-inner"><p style="color:#64748b;text-align:center;padding:20px 0;">© 2026 AgentGongju.com — 让 AI 工具触手可及</p></div></footer>
 <script>
-function money(n){return Math.round(n*100)/100;}
+function m(n){return Math.round(n*100)/100;}
+function fmt(n){return "¥"+m(n).toLocaleString('zh-CN',{minimumFractionDigits:2,maximumFractionDigits:2});}
+var LEGAL=[
+"1月1日 元旦","春节 3天（农历除夕至初二/初三）","4月5日前后 清明","5月1日 劳动节","端午 1天","中秋 1天","10月1-3日 国庆"
+];
 function gen(){
-var sal=+document.getElementById('salary').value||0;
-var days=+document.getElementById('days').value;
-var otWork=+document.getElementById('otWork').value||0;
-var otRest=+document.getElementById('otRest').value||0;
-var otHoliday=+document.getElementById('otHoliday').value||0;
-var paid=+document.getElementById('paid').value||0;
-var comp=+document.getElementById('comp').value;
-var city=document.getElementById('city').value;
+  var sal=+document.getElementById('salary').value||0;
+  var base=+document.getElementById('baseDays').value||21.75;
+  var h1=+document.getElementById('h1').value||0;
+  var h2=+document.getElementById('h2').value||0;
+  var h3=+document.getElementById('h3').value||0;
+  var comp=+document.getElementById('comp').value;
+  var daily=+document.getElementById('daily').value||8;
+  var paid=+document.getElementById('paid').value||0;
+  var note=document.getElementById('note').value.trim();
 
-// 小时工资 = 月薪 / 21.75 / 8
-var hourly=sal/days/8;
-// 加班倍数
-var w1=hourly*1.5, w2=hourly*2, w3=hourly*3;
+  if(sal<=0){document.getElementById('outputBox').textContent="请输入有效月薪。";document.getElementById('resultArea').classList.add('active');return;}
 
-var restShouldPay=comp===1?0:w2; // 已调休可不付加班费（合法）
-var feeWork=otWork*w1;
-var feeRest=otRest*restShouldPay;
-var feeHoliday=otHoliday*w3;
-var total=feeWork+feeRest+feeHoliday;
-var diff=total-paid;
+  var dayPay=sal/base;
+  var hourPay=dayPay/daily;
+  var p1=h1*hourPay*1.5;
+  var p2raw=h2*hourPay*2;
+  var p2=(comp===1)?0:p2raw;
+  var p3=h3*hourPay*3;
+  var total=p1+p2+p3;
+  var owed=total-paid;
 
-var out='════ 加班费核算报告 ════\n\n';
-out+='税前月薪：'+sal+' 元　｜　月计薪天数：'+days+' 天\n';
-out+='折算小时工资：'+money(hourly)+' 元/小时\n';
-out+='（月薪 ÷ '+days+' ÷ 8 小时）\n\n';
+  var out="【计算基准】\n";
+  out+="· 日工资 = "+sal+" ÷ "+base+" = "+fmt(dayPay)+" / 天\n";
+  out+="· 时工资 = "+fmt(dayPay)+" ÷ "+daily+" = "+fmt(hourPay)+" / 小时\n";
 
-out+='──── 一、法定倍数标准 ────\n';
-out+='· 工作日延长工作时间：1.5 倍 → '+money(w1)+' 元/小时\n';
-out+='· 休息日（周末）加班：2 倍 → '+money(w2)+' 元/小时\n';
-out+='· 法定节假日加班：3 倍 → '+money(w3)+' 元/小时\n';
-out+='⚠️ 法定节假日加班不能以调休代替，必须给 3 倍工资；休息日加班若安排了等额调休，可以不给加班费。\n\n';
+  out+="\n【① 平时加班（延时）】\n";
+  out+="· 时长："+h1+" 小时（1.5倍）\n";
+  out+="· 应得："+h1+" × "+fmt(hourPay)+" × 1.5 = "+fmt(p1)+"\n";
 
-out+='──── 二、你的加班费明细 ────\n';
-out+='工作日加班 '+otWork+' 小时 × 1.5 倍 = '+money(feeWork)+' 元\n';
-if(comp===1){out+='休息日加班 '+otRest+' 小时 × 2 倍 = 0 元（已安排调休，合法）\n';}
-else{out+='休息日加班 '+otRest+' 小时 × 2 倍 = '+money(feeRest)+' 元'+(comp===2?'\n   ⚠️ 你说"调休一直没休成"：未实际休假的调休是无效的，仍应支付加班费。':'\n   ⚠️ 未安排调休就必须付 2 倍工资。')+'\n';}
-out+='法定节假日加班 '+otHoliday+' 小时 × 3 倍 = '+money(feeHoliday)+' 元\n';
-out+='────────────────────\n';
-out+='👉 应付加班费合计：'+money(total)+' 元/月\n';
-if(paid>0){
-out+='👉 公司实发：'+money(paid)+' 元/月\n';
-if(diff>1){
-out+='🔴 每月被少发：'+money(diff)+' 元\n';
-out+='🔴 一年累计差额（估算）：'+money(diff*12)+' 元\n';
-}else if(diff<-1){
-out+='🟢 实发高于应付 '+money(-diff)+' 元，没有少给。\n';
-}else{
-out+='🟢 实发与应付基本相符。\n';
+  out+="\n【② 休息日加班】\n";
+  out+="· 时长："+h2+" 小时（2倍）\n";
+  if(comp===1){
+    out+="· 公司已安排补休 → 依法可不付加班费，计 0 元\n";
+    out+="· （若未实际补休，仍可主张 "+fmt(p2raw)+"）\n";
+  } else {
+    out+="· 未补休，应得："+h2+" × "+fmt(hourPay)+" × 2 = "+fmt(p2)+"\n";
+  }
+
+  out+="\n【③ 法定节假日加班】\n";
+  out+="· 时长："+h3+" 小时（3倍，不可用调休替代）\n";
+  out+="· 应得："+h3+" × "+fmt(hourPay)+" × 3 = "+fmt(p3)+"\n";
+
+  out+="\n【合计】\n";
+  out+="· 应发加班费总计："+fmt(total)+"\n";
+  out+="· 工资单已发："+fmt(paid)+"\n";
+  if(owed>0.01){
+    out+="· ⚠️ 公司还欠你："+fmt(owed)+"\n";
+  } else if(owed<-0.01){
+    out+="· ✅ 已发金额多于应发，多出 "+fmt(-owed)+"\n";
+  } else {
+    out+="· ✅ 已足额支付，无欠款\n";
+  }
+
+  var extra=total*0.5;
+  out+="\n【维权提示】\n";
+  out+="· 加班费属于劳动报酬，仲裁时效从离职之日起1年内计算，不受1年时效限制。\n";
+  out+="· 关键证据：打卡记录、排班表、工作群通知、邮件往来、加班申请单。\n";
+  out+="· 注意月计薪天数口径：公司若用「基本工资」而非「全部月收入」再按21.75折，日工资会被压低，属常见套路。\n";
+  out+="· 法定节假日（" + LEGAL.slice(0,4).join("、") + " 等）加班必须给钱，调休不能顶替。\n";
+  out+="· 若按「全部月收入」核算，你的日工资还会更高；若公司只按基本工资核算，实际到手约打 6~8 折。\n";
+
+  if(note){
+    out+="\n【结合你的情况】\n";
+    out+="· 你的补充：「"+note+"」\n";
+    if(/调休|补休|调休/.test(note) && comp===0){
+      out+="· 公司口头承诺调休但未落实，休息日加班部分可主张 2 倍工资（"+fmt(p2raw)+"）。\n";
+    }
+    if(/不给|不发|没有|扣|拖欠/.test(note)){
+      out+="· 属于拖欠劳动报酬，可拨打 12333 投诉，或向当地劳动监察大队举报。\n";
+      out+="· 也可先发书面《加班费支付催告函》给公司，留作证据。\n";
+    }
+    if(/离职|走人|辞职/.test(note)){
+      out+="· 建议离职前把加班证据备份到个人邮箱/网盘，离职后1年内仍可举证主张。\n";
+    }
+  }
+
+  document.getElementById('outputBox').textContent=out;
+  document.getElementById('resultArea').classList.add('active');
 }
-}else{
-out+='👉 公司实发：未填写（若一分没发，被拖欠即 '+money(total)+' 元/月）\n';
-if(total>0)out+='🔴 一年累计可达：'+money(total*12)+' 元\n';
-}
-out+='\n';
-
-out+='──── 三、法律依据（拿去跟 HR 对线）────\n';
-out+='《劳动法》第四十四条：\n';
-out+='（一）安排劳动者延长工作时间的，支付不低于工资的 150% 的工资报酬；\n';
-out+='（二）休息日安排工作又不能安排补休的，支付不低于 200% 的工资报酬；\n';
-out+='（三）法定休假日安排工作的，支付不低于 300% 的工资报酬。\n';
-out+='💡 关键：计算基数不得低于当地最低工资，且"月薪已包含加班费"的说法在司法实践中通常不被支持（除非书面约定且不低于法定标准）。\n\n';
-
-out+='──── 四、公司常见的 5 个坑 ────\n';
-out+='❌ "月薪已包含加班费"——除非合同明确约定包薪制的具体数额且不低于法定加班费，否则无效。\n';
-out+='❌ "我们是综合工时/不定时工时"——这需要劳动部门审批批文，没批文就是标准工时，照付。\n';
-out+='❌ "用调休抵加班费"——只适用于休息日，工作日和法定节假日的加班不能用调休抵。\n';
-out+='❌ "按最低工资算加班费基数"——应按劳动合同约定的正常工作时间工资计算，多数情况下是全额月薪。\n';
-out+='❌ "离职签了结算确认书就没事了"——若低于法定标准，签字后仍可能主张，但难度加大，别轻易签。\n\n';
-
-out+='──── 五、维权路线图 ────\n';
-out+='第 1 步：收集证据（现在就开始）\n';
-out+='   ✅ 打卡记录：钉钉/企业微信考勤截图、门禁记录\n';
-out+='   ✅ 加班指令：领导微信/钉钉让你加班的聊天、邮件、会议通知\n';
-out+='   ✅ 工作痕迹：深夜提交的代码/文件、工作群消息时间戳\n';
-out+='   ✅ 工资条、劳动合同、银行流水\n';
-out+='   ✅ 同事证人（离职后联系，别提前声张）\n\n';
-out+='第 2 步：先谈后诉\n';
-out+='   · 先找 HR 或领导书面沟通（微信文字也行），明确索要加班费 —— 这一步能固定"你主张过"的证据。\n';
-out+='第 3 步：劳动监察大队投诉（免费、快）\n';
-out+='   · 拨打 12333 或到公司所在地劳动监察大队投诉，适合拖欠工资类。\n';
-out+='第 4 步：劳动仲裁（免费，不请律师也行）\n';
-out+='   · 向公司所在地或劳动合同履行地的劳动争议仲裁委员会申请。\n';
-out+='   · 时效：劳动关系存续期间不受限；离职的，自离职之日起 1 年内。\n';
-out+='   · 举证责任的倾斜：考勤记录由公司保存，公司不提供要承担不利后果 —— 这对你有利。\n';
-out+='第 5 步：法院起诉（仲裁败诉可 15 日内起诉）\n\n';
-
-out+='──── 六、你的行动清单 ────\n';
-out+='□ 今天就导出/截图所有考勤记录（离职后账号会被回收）\n';
-out+='□ 把加班相关聊天记录备份到个人手机/邮箱\n';
-out+='□ 核对自己的工资条，确认加班费项目\n';
-if(diff>1)out+='□ 书面（微信文字）向公司主张 '+money(diff)+' 元/月的加班费差额\n';
-out+='□ '+(city==='a'?'一线城市仲裁实践较成熟，加班费胜诉案例多，大胆主张。':city==='b'?'二线城市可先咨询当地 12333 或工会法律援助。':'小城市建议先咨询当地法律援助中心，必要时走仲裁。')+'\n';
-out+='□ 离职前把所有证据带出公司系统（合法取证，不涉及商业秘密）\n\n';
-
-var note=document.getElementById('note').value.trim();
-if(note){
-out+='──── 针对你的情况 ────\n';
-out+='你描述：'+note+'\n\n';
-if(/包含|包薪|已含/.test(note))out+='· "月薪已包含加班费"是最常见的推责话术。除非你的劳动合同里明确写了包薪制金额且高于法定加班费，否则这句话不成立。\n';
-if(/996|天天|长期|去年|一直/.test(note))out+='· 长期 996 属严重超时加班，除加班费外，还可向劳动监察举报违法用工，'+(city==='a'?'一线城市这类举报处理较快。':'可一并投诉。')+'\n';
-if(/离职|辞职|要走/.test(note))out+='· 离职前是关键窗口：仲裁时效从离职日起算 1 年，但证据要趁在职时收集，走后系统就进不去了。建议在离职前先备份证据。\n';
-if(/打卡|钉钉|考勤|记录/.test(note))out+='· 你手上有打卡记录，这是核心证据，好好保存。公司若否认，仲裁庭可要求公司提供考勤原始记录。\n';
-if(/打卡|钉钉/.test(note)===false)out+='· 如果没打卡记录，就用微信加班指令、深夜邮件、工作群消息时间戳来举证，形成证据链同样有效。\n';
-out+='· 若金额较大且公司强硬，建议先花几百元咨询一位劳动法律师，评估一下胜诉概率再决定是否撕破脸。\n\n';
-}
-out+='💡 一句话总结：加班费是你应得的，不是公司恩赐。证据先拿好，再谈再仲裁 —— 现在不动手，离职后系统一关，什么都要不回来。';
-return out;
-}
+document.getElementById('genBtn').addEventListener('click',gen);
 function copyResult(){
-var t=document.getElementById('outputBox').innerText;
-if(navigator.clipboard){navigator.clipboard.writeText(t).then(function(){alert('已复制到剪贴板 ✅');},function(){fallbackCopy(t);});}
-else fallbackCopy(t);
+  var t=document.getElementById('outputBox').textContent;
+  navigator.clipboard.writeText(t).then(function(){
+    var b=document.querySelector('.copy-btn');var o=b.textContent;b.textContent="✅ 已复制";setTimeout(function(){b.textContent=o;},1500);
+  });
 }
-function fallbackCopy(t){
-var ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');alert('已复制到剪贴板 ✅');}catch(e){alert('复制失败，请手动选中复制');}document.body.removeChild(ta);
-}
-document.getElementById('genBtn').addEventListener('click',function(){
-var box=document.getElementById('outputBox');
-box.textContent=gen();
-document.getElementById('resultArea').classList.add('active');
-document.getElementById('resultArea').scrollIntoView({behavior:'smooth',block:'start'});
-});
 </script>
 </body>
 </html>
